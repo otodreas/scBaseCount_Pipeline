@@ -1,2 +1,8 @@
+# Environments
 .venv*/
+
+# Data
 data/
+
+# Other
+project_specification.docx
