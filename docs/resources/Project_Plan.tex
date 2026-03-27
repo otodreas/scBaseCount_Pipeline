@@ -8,8 +8,11 @@
 \usepackage{hyperref}
 \usepackage{parskip}
 \usepackage{microtype}
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
 
 \geometry{margin=2.5cm}
+
+\addbibresource{../report/references.bib}
 
 \hypersetup{
     colorlinks=true,
@@ -101,7 +104,6 @@ Weeks & Phase & Activities \\
 
 \textbf{Course deliverables:} Reserve time in the final project weeks for synthesis, final report drafting, and GitHub + README polish; submit the \textbf{final report and repository one week before the seminar presentation} (per course guidelines). Weekly progress reviews with the supervisor continue throughout; remote or in-office work; optional Nygen Lund office days; cloud, compute, and LLM resources as provided by the host.
 
-\bibliographystyle{unsrt}
-\bibliography{../report/references}
+\printbibliography
 
 \end{document}
