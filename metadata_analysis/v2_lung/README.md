@@ -12,9 +12,9 @@ We will focus on lung data. We suspect it is a manageably small yet diverse data
 
 ```
 metadata_analysis/v2_lung
-├── .images/
+├── images
 ├── README.md
 ├── analysis.ipynb
 ├── report.md
-└── scbasecount_metadata -> data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/
+└── scbasecount_metadata -> ../../data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens
 ```
