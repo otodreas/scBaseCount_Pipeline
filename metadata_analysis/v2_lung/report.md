@@ -18,8 +18,6 @@ Samples are filtered to those with **known, non-healthy labels** in both the `di
 
 Of the 35,266 total unique SRX accessions, 16,716 (47.4%) are discarded as healthy/unknown. Of the remaining known samples, 858 carry a lung-specific disease *and* tissue label, 361 of which (42.1%) involve a cancer diagnosis. The broader lung union (either label is lung-related) contains 7,986 samples, but the stricter intersection is used as the primary analysis set.
 
-
-
 ## 1.2 Regex at a glance
 
 Four regular expressions drive the filtering pipeline (all case-insensitive):
@@ -29,7 +27,7 @@ Four regular expressions drive the filtering pipeline (all case-insensitive):
 | ---------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `NORMAL_HEALTHY_REGEX` | Discard healthy / control samples              | `normal`, `healthy`, `control`, `unknown`, `wild-type`, `baseline`, …                          |
 | `LUNG_DISEASE_RE`      | Keep samples with a lung-related disease label | `lung`, `pulmonary`, `NSCLC`, `SCLC`, `fibrosis`, `COPD`, `COVID-19`, `cancer`, `carcinoma`, … |
-| `LUNG_TISSUE_RE`       | Keep samples with a lung-related tissue label  | `lung`, `pulmonary`, `alveol`*, `bronch*`, `pleura`, `trachea`, `parenchyma`, …                |
+| `LUNG_TISSUE_RE`       | Keep samples with a lung-related tissue label  | `lung`, `pulmonary`, `alveol`*, `bronch`*, `pleura`, `trachea`, `parenchyma`, …                |
 | `CANCER_RE`            | Flag samples as cancer vs. non-cancer          | `cancer`, `carcinoma`, `tumour`, `malignant`, `NSCLC`, `SCLC`, `mesothelioma`, …               |
 
 
@@ -119,62 +117,25 @@ The tables below show the top 10 free-text labels exactly as they appear in the 
 | carcinoma non-small cell            | 1.86         |
 
 
-### 2.1.3 Top lung union labels
-
-The 7,986 samples in the **lung union** (disease *or* tissue is lung-related). Because the union casts a wider net, many non-lung diseases appear — the disease column reflects whatever was annotated regardless of whether the tissue label is lung-specific.
-
-**Top 10 tissue labels (union)**
-
-| Tissue label                              | % of union samples |
-| ----------------------------------------- | ------------------:|
-| lung                                      | 6.30               |
-| blood                                     | 3.69               |
-| breast                                    | 2.55               |
-| Peripheral Blood Mononuclear Cells (PBMC) | 2.23               |
-| liver                                     | 1.89               |
-| Peripheral blood mononuclear cells (PBMCs)| 1.78               |
-| peripheral blood mononuclear cells        | 1.68               |
-| blood monocyte                            | 1.38               |
-| esophageal carcinoma                      | 1.36               |
-| brain                                     | 1.35               |
-
-**Top 10 disease labels (union)**
-
-| Disease label                          | % of union samples |
-| -------------------------------------- | ------------------:|
-| COVID-19                               | 5.71               |
-| breast cancer                          | 2.09               |
-| Crohn's disease                        | 1.78               |
-| colorectal cancer                      | 1.48               |
-| lung adenocarcinoma                    | 1.48               |
-| high-grade serous ovarian cancer       | 1.35               |
-| cardiovascular disease risk factors    | 1.15               |
-| hepatocellular carcinoma               | 1.13               |
-| Hepatocellular carcinoma               | 1.05               |
-| Alzheimer's Disease                    | 1.01               |
-
-
 ## 2.2 Normalised disease breakdown
 
 The table below shows the regex rules used to map free-text disease labels into broad categories. Rules are applied in order — the first match wins. Labels that match none of the rules are placed in **Other**.
 
 
-| Category                     | Pattern                                                                        |
-| ---------------------------- | ------------------------------------------------------------------------------ |
-| IPF / Pulmonary Fibrosis     | `pulmonary fibrosis | IPF | idiopathic pulmonary fibrosis`                     |
-| COVID-19 / SARS-CoV-2        | `COVID | SARS.CoV`                                                             |
-| Lung Adenocarcinoma (LUAD)   | `lung adenocarcinoma | LUAD`                                                   |
-| NSCLC                        | `NSCLC | non.small.cell lung | non.small.cell carcinoma | carcinoma non.small` |
-| Lung Squamous Cell Carcinoma | `squamous cell carcinoma of the lung | lung squamous`                          |
-| COPD                         | `\bCOPD\b`                                                                     |
-| Lung Cancer (general)        | `lung cancer | lung carcinoma | MPLC | KRAS.mutant lung | SCLC`                |
-| Cystic Fibrosis              | `cystic fibrosis`                                                              |
-| Interstitial Lung Disease    | `interstitial lung | ILD | SSc`                                                |
+| Category                     | Pattern                              |
+| ---------------------------- | ------------------------------------ |
+| IPF / Pulmonary Fibrosis     | `pulmonary fibrosis`                  |
+| COVID-19 / SARS-CoV-2        | `COVID`                               |
+| Lung Adenocarcinoma (LUAD)   | `lung adenocarcinoma`                 |
+| NSCLC                        | `NSCLC`                               |
+| Lung Squamous Cell Carcinoma | `squamous cell carcinoma of the lung` |
+| COPD                         | `\bCOPD\b`                           |
+| Lung Cancer (general)        | `lung cancer`                         |
+| Cystic Fibrosis              | `cystic fibrosis`                    |
+| Interstitial Lung Disease    | `interstitial lung`                   |
 
 
 Within the 858 lung-intersection samples, free-text disease labels are normalised into broad categories via regex. Categories representing < 2% are collapsed into **Other**. IPF / Pulmonary Fibrosis and Lung Adenocarcinoma together account for roughly 40% of the set.
-
-
 
 ---
 
@@ -182,3 +143,42 @@ Within the 858 lung-intersection samples, free-text disease labels are normalise
 
 The 858 lung-intersection SRX samples contain ~6.1M cells in total (mean 7,126 / median 5,125 per SRX). The distribution is right-skewed, with most samples in the 3,000–9,000 cell range and a small number of outliers above 40,000.
 
+
+# Appendix
+
+## Top lung union labels
+
+The 7,986 samples in the **lung union** (disease *or* tissue is lung-related). Because the union casts a wider net, many non-lung diseases appear, the disease column reflects whatever was annotated regardless of whether the tissue label is lung-specific.
+
+**Top 10 tissue labels (union)**
+
+
+| Tissue label                               | % of union samples |
+| ------------------------------------------ | ------------------ |
+| lung                                       | 6.30               |
+| blood                                      | 3.69               |
+| breast                                     | 2.55               |
+| Peripheral Blood Mononuclear Cells (PBMC)  | 2.23               |
+| liver                                      | 1.89               |
+| Peripheral blood mononuclear cells (PBMCs) | 1.78               |
+| peripheral blood mononuclear cells         | 1.68               |
+| blood monocyte                             | 1.38               |
+| esophageal carcinoma                       | 1.36               |
+| brain                                      | 1.35               |
+
+
+**Top 10 disease labels (union)**
+
+
+| Disease label                       | % of union samples |
+| ----------------------------------- | ------------------ |
+| COVID-19                            | 5.71               |
+| breast cancer                       | 2.09               |
+| Crohn's disease                     | 1.78               |
+| colorectal cancer                   | 1.48               |
+| lung adenocarcinoma                 | 1.48               |
+| high-grade serous ovarian cancer    | 1.35               |
+| cardiovascular disease risk factors | 1.15               |
+| hepatocellular carcinoma            | 1.13               |
+| Hepatocellular carcinoma            | 1.05               |
+| Alzheimer's Disease                 | 1.01               |
