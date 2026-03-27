@@ -57,8 +57,6 @@ The 17,692 samples in `sample_known` that did **not** pass the lung-intersection
 
 Notice that there are a good number of COVID-19 disease labeled data that get discarded due to tissue filtering. These are likely not labeled `lung` or similar in the tissue field. 
 
-TODO: consider adding rule to let through specific rows where labels only match for disease
-
 **Top 10 disease labels (excluded)**
 
 
