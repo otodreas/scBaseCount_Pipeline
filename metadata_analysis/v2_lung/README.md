@@ -15,6 +15,5 @@ metadata_analysis/v2_lung
 ├── .figs/
 ├── README.md
 ├── analysis.ipynb
-├── report.md
-└── scbasecount_metadata -> ../../data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens
+└── report.md
 ```
