@@ -163,7 +163,7 @@ The 858 lung-intersection SRX samples contain ~6.1M cells in total (mean 7,126 /
 
 ---
 
-# Appendix
+# 4. Appendix
 
 ## Top lung union labels
 
