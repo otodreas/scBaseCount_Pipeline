@@ -4,9 +4,9 @@ This report characterises the lung-related subset of the scBaseCount human singl
 
 It follows Parashar and Oliver's decision to change approaches relating to data curation (see `README.md`)
 
-Of 35,266 unique SRX accessions, 16,716 (47.4%) are discarded as healthy or unknown. The remaining 18,550 known samples are filtered with lung-specific regex patterns applied to both the `disease` and `tissue` fields. 7,986 samples match at least one lung-related label (**lung union**); 858 pass the stricter requirement that *both* fields are lung-related (**lung intersection**), which is the primary analysis set.
+Samples with fewer than 1,000 cells are excluded up front. Of the remaining 33,337 unique SRX accessions, 15,806 (47.4%) are discarded as healthy or unknown. The remaining 17,531 known samples are filtered with lung-specific regex patterns applied to both the `disease` and `tissue` fields. 7,484 samples match at least one lung-related label (**lung union**); 801 pass the stricter requirement that *both* fields are lung-related (**lung intersection**), which is the primary analysis set.
 
-Within the 858-sample intersection, 361 (42.1%) involve a cancer diagnosis. The dominant disease categories are IPF / Pulmonary Fibrosis (~21%), Lung Adenocarcinoma (~18%), COVID-19 / SARS-CoV-2, and NSCLC. These 858 samples contain approximately 6.1 million cells in total, with a right-skewed distribution (mean 7,126 / median 5,125 cells per SRX).
+Within the 801-sample intersection, 346 (43.2%) involve a cancer diagnosis. The dominant disease categories are IPF / Pulmonary Fibrosis, Lung Adenocarcinoma, COVID-19 / SARS-CoV-2, and NSCLC. These 801 samples contain approximately 6.1 million cells in total, with a right-skewed distribution (mean 7,601 / median 5,506 cells per SRX).
 
 ---
 
@@ -14,21 +14,22 @@ Within the 858-sample intersection, 361 (42.1%) involve a cancer diagnosis. The 
 
 ## 1.1 Samples by disease
 
-Samples are filtered to those with **known, non-healthy labels** in both the `disease` and `tissue` fields (i.e. entries labelled normal, healthy, control, unknown, etc. are discarded). The remaining samples are split based on whether both the disease *and* tissue label are lung-related (**lung intersection**, 858 SRX) or either one is (**lung union**, 7,986 SRX). The intersection is the primary analysis set.
+Samples with fewer than 1,000 cells are excluded up front. The remaining samples are then filtered to those with **known, non-healthy labels** in both the `disease` and `tissue` fields (i.e. entries labelled normal, healthy, control, unknown, etc. are discarded). The remaining samples are split based on whether both the disease *and* tissue label are lung-related (**lung intersection**, 801 SRX) or either one is (**lung union**, 7,484 SRX). The intersection is the primary analysis set.
 
 
-| Stage                                                           | SRX     | Notes                                      |
-| --------------------------------------------------------------- | ------- | ------------------------------------------ |
-| Total unique SRX                                                | 35,266  | Raw dataset                                |
-| Healthy / unknown (discarded)                                   | 16,716  | Matched by `NORMAL_HEALTHY_REGEX` (47.4 %) |
-| Known, non-healthy (`sample_known`)                             | 18,550  | Remainder after discarding                 |
-| Lung union (disease **or** tissue is lung-related)              | 7,986   | At least one lung-related label            |
-| **Lung intersection** (disease **and** tissue are lung-related) | **858** | Primary analysis set                       |
-| └─ Cancer subset                                                | 361     | 42.1 % of intersection                     |
-| Not in lung intersection                                        | 17,692  | Non-lung known samples (see §2.3)          |
+| Stage                                                           | *n* SRX | Notes                                          |
+| --------------------------------------------------------------- | ------- | ---------------------------------------------- |
+| Total unique SRX                                                | 35,266  | Raw dataset                                    |
+| Remaining (≥ 1,000 cells)                                       | 33,337  | After min-cell filter (5.5 % of SRX discarded) |
+| Healthy / unknown (discarded)                                   | 15,806  | Matched by `NORMAL_HEALTHY_REGEX` (47.4 %)     |
+| Known, non-healthy (`sample_known`)                             | 17,531  | Remainder after discarding                     |
+| Lung union (disease **or** tissue is lung-related)              | 7,484   | At least one lung-related label                |
+| **Lung intersection** (disease **and** tissue are lung-related) | **801** | Primary analysis set                           |
+| └─ Cancer subset                                                | 346     | 43.2 % of intersection                         |
+| Not in lung intersection                                        | 16,730  | Non-lung known samples (see §2.3)              |
 
 
-Of the 35,266 total unique SRX accessions, 16,716 (47.4%) are discarded as healthy/unknown. Of the remaining known samples, 858 carry a lung-specific disease *and* tissue label, 361 of which (42.1%) involve a cancer diagnosis. The broader lung union (either label is lung-related) contains 7,986 samples, but the stricter intersection is used as the primary analysis set.
+Of the 35,266 total unique SRX accessions, 1,929 (5.5%) are dropped for having fewer than 1,000 cells. Of the remaining 33,337, 15,806 (47.4%) are discarded as healthy/unknown. Of the remaining known samples, 801 carry a lung-specific disease *and* tissue label, 346 of which (43.2%) involve a cancer diagnosis. The broader lung union (either label is lung-related) contains 7,484 samples, but the stricter intersection is used as the primary analysis set.
 
 ![](.figs/sample_breakdown.svg)
 
@@ -62,16 +63,16 @@ Notice that there are a good number of COVID-19 disease labeled data that get di
 
 | Disease label                | % of excluded samples |
 | ---------------------------- | --------------------- |
-| chronic myelogenous leukemia | 4.47                  |
-| COVID-19                     | 2.49                  |
-| acute T cell leukemia        | 2.33                  |
-| Chronic Myelogenous Leukemia | 1.55                  |
-| other                        | 1.54                  |
-| *(blank)*                    | 1.45                  |
-| glioblastoma                 | 1.03                  |
-| multiple myeloma             | 1.02                  |
-| breast cancer                | 0.94                  |
-| melanoma                     | 0.86                  |
+| chronic myelogenous leukemia | 4.72                  |
+| acute T cell leukemia        | 2.47                  |
+| COVID-19                     | 2.33                  |
+| Chronic Myelogenous Leukemia | 1.64                  |
+| other                        | 1.60                  |
+| *(blank)*                    | 1.31                  |
+| multiple myeloma             | 1.08                  |
+| breast cancer                | 0.95                  |
+| glioblastoma                 | 0.93                  |
+| melanoma                     | 0.88                  |
 
 
 **Top 10 tissue labels (excluded)**
@@ -79,16 +80,16 @@ Notice that there are a good number of COVID-19 disease labeled data that get di
 
 | Tissue label                              | % of excluded samples |
 | ----------------------------------------- | --------------------- |
-| CML                                       | 4.30                  |
-| blood                                     | 4.25                  |
-| K562 cell line                            | 3.28                  |
-| bone marrow                               | 3.13                  |
-| acute T cell leukemia                     | 2.08                  |
-| Peripheral Blood Mononuclear Cells (PBMC) | 1.97                  |
-| peripheral blood                          | 1.74                  |
+| CML                                       | 4.53                  |
+| blood                                     | 4.21                  |
+| K562 cell line                            | 3.45                  |
+| bone marrow                               | 3.18                  |
+| acute T cell leukemia                     | 2.19                  |
+| Peripheral Blood Mononuclear Cells (PBMC) | 2.00                  |
+| peripheral blood                          | 1.75                  |
 | liver                                     | 1.46                  |
-| skin                                      | 1.46                  |
-| breast                                    | 1.36                  |
+| skin                                      | 1.41                  |
+| breast                                    | 1.39                  |
 
 
 ### 2.1.2 Top lung labels
@@ -100,16 +101,16 @@ The tables below show the top 10 free-text labels exactly as they appear in the 
 
 | Tissue label                 | % of samples |
 | ---------------------------- | ------------ |
-| lung                         | 50.70        |
-| lung tumor                   | 3.26         |
-| lung tumour                  | 1.52         |
-| lung adenocarcinoma          | 1.28         |
-| lung tissue                  | 1.28         |
-| lung tumor central margin    | 1.17         |
-| lung (primary basal cells)   | 1.05         |
-| lung biopsy                  | 1.05         |
-| lung tumor subpleural margin | 0.93         |
-| parietal pleura              | 0.70         |
+| lung                         | 52.43        |
+| lung tumor                   | 3.12         |
+| lung tumour                  | 1.62         |
+| lung adenocarcinoma          | 1.37         |
+| lung tissue                  | 1.25         |
+| lung tumor central margin    | 1.12         |
+| lung (primary basal cells)   | 1.12         |
+| lung biopsy                  | 1.12         |
+| lung tumor subpleural margin | 1.00         |
+| parietal pleura              | 0.75         |
 
 
 **Top 10 disease labels**
@@ -117,16 +118,16 @@ The tables below show the top 10 free-text labels exactly as they appear in the 
 
 | Disease label                       | % of samples |
 | ----------------------------------- | ------------ |
-| lung adenocarcinoma                 | 12.82        |
-| idiopathic pulmonary fibrosis (IPF) | 8.51         |
-| Idiopathic Pulmonary Fibrosis (IPF) | 7.46         |
-| SARS-CoV-2 infection                | 4.66         |
-| idiopathic pulmonary fibrosis       | 3.96         |
-| pulmonary fibrosis                  | 2.91         |
-| COPD                                | 2.80         |
-| non-small cell lung cancer (NSCLC)  | 2.56         |
-| lung adenocarcinoma (LUAD)          | 2.56         |
-| carcinoma non-small cell            | 1.86         |
+| lung adenocarcinoma                 | 13.48        |
+| idiopathic pulmonary fibrosis (IPF) | 8.74         |
+| Idiopathic Pulmonary Fibrosis (IPF) | 7.87         |
+| SARS-CoV-2 infection                | 4.87         |
+| idiopathic pulmonary fibrosis       | 3.75         |
+| COPD                                | 2.87         |
+| non-small cell lung cancer (NSCLC)  | 2.75         |
+| lung adenocarcinoma (LUAD)          | 2.75         |
+| pulmonary fibrosis                  | 2.62         |
+| carcinoma non-small cell            | 2.00         |
 
 
 ## 2.2 Normalised disease breakdown
@@ -134,20 +135,20 @@ The tables below show the top 10 free-text labels exactly as they appear in the 
 The table below shows the regex rules used to map free-text disease labels into broad categories. Rules are applied in order — the first match wins. Labels that match none of the rules are placed in **Other**.
 
 
-| Category                     | Pattern                              |
-| ---------------------------- | ------------------------------------ |
+| Category                     | Pattern                               |
+| ---------------------------- | ------------------------------------- |
 | IPF / Pulmonary Fibrosis     | `pulmonary fibrosis`                  |
 | COVID-19 / SARS-CoV-2        | `COVID`                               |
 | Lung Adenocarcinoma (LUAD)   | `lung adenocarcinoma`                 |
 | NSCLC                        | `NSCLC`                               |
 | Lung Squamous Cell Carcinoma | `squamous cell carcinoma of the lung` |
-| COPD                         | `\bCOPD\b`                           |
+| COPD                         | `\bCOPD\b`                            |
 | Lung Cancer (general)        | `lung cancer`                         |
-| Cystic Fibrosis              | `cystic fibrosis`                    |
+| Cystic Fibrosis              | `cystic fibrosis`                     |
 | Interstitial Lung Disease    | `interstitial lung`                   |
 
 
-Within the 858 lung-intersection samples, free-text disease labels are normalised into broad categories via regex. Categories representing < 2% are collapsed into **Other**. IPF / Pulmonary Fibrosis and Lung Adenocarcinoma together account for roughly 40% of the set.
+Within the 801 lung-intersection samples, free-text disease labels are normalised into broad categories via regex. Categories representing < 2% are collapsed into **Other**. IPF / Pulmonary Fibrosis and Lung Adenocarcinoma together account for roughly 40% of the set.
 
 ![](.figs/lung_disease_breakdown.svg)
 
@@ -155,7 +156,7 @@ Within the 858 lung-intersection samples, free-text disease labels are normalise
 
 # 3. Cell count distribution
 
-The 858 lung-intersection SRX samples contain ~6.1M cells in total (mean 7,126 / median 5,125 per SRX). The distribution is right-skewed, with most samples in the 3,000–9,000 cell range and a small number of outliers above 40,000.
+The 801 lung-intersection SRX samples contain ~6.1M cells in total (mean 7,601 / median 5,506 per SRX). The distribution is right-skewed, with most samples in the 3,000–9,000 cell range and a small number of outliers above 40,000. The minimum is 1,082 cells per SRX (reflecting the ≥ 1,000-cell pre-filter) and the maximum is 81,811.
 
 ![](.figs/lung_cell_number_hist.svg)
 
@@ -165,23 +166,23 @@ The 858 lung-intersection SRX samples contain ~6.1M cells in total (mean 7,126 /
 
 ## Top lung union labels
 
-The 7,986 samples in the **lung union** (disease *or* tissue is lung-related). Because the union casts a wider net, many non-lung diseases appear, the disease column reflects whatever was annotated regardless of whether the tissue label is lung-specific.
+The 7,484 samples in the **lung union** (disease *or* tissue is lung-related). Because the union casts a wider net, many non-lung diseases appear, the disease column reflects whatever was annotated regardless of whether the tissue label is lung-specific.
 
 **Top 10 tissue labels (union)**
 
 
 | Tissue label                               | % of union samples |
 | ------------------------------------------ | ------------------ |
-| lung                                       | 6.30               |
-| blood                                      | 3.69               |
-| breast                                     | 2.55               |
-| Peripheral Blood Mononuclear Cells (PBMC)  | 2.23               |
-| liver                                      | 1.89               |
+| lung                                       | 6.49               |
+| blood                                      | 3.62               |
+| breast                                     | 2.62               |
+| Peripheral Blood Mononuclear Cells (PBMC)  | 2.32               |
+| liver                                      | 1.92               |
 | Peripheral blood mononuclear cells (PBMCs) | 1.78               |
-| peripheral blood mononuclear cells         | 1.68               |
-| blood monocyte                             | 1.38               |
-| esophageal carcinoma                       | 1.36               |
-| brain                                      | 1.35               |
+| peripheral blood mononuclear cells         | 1.67               |
+| blood monocyte                             | 1.47               |
+| brain                                      | 1.44               |
+| esophageal carcinoma                       | 1.39               |
 
 
 **Top 10 disease labels (union)**
@@ -189,13 +190,15 @@ The 7,986 samples in the **lung union** (disease *or* tissue is lung-related). B
 
 | Disease label                       | % of union samples |
 | ----------------------------------- | ------------------ |
-| COVID-19                            | 5.71               |
-| breast cancer                       | 2.09               |
-| Crohn's disease                     | 1.78               |
-| colorectal cancer                   | 1.48               |
-| lung adenocarcinoma                 | 1.48               |
-| high-grade serous ovarian cancer    | 1.35               |
-| cardiovascular disease risk factors | 1.15               |
-| hepatocellular carcinoma            | 1.13               |
-| Hepatocellular carcinoma            | 1.05               |
-| Alzheimer's Disease                 | 1.01               |
+| COVID-19                            | 5.38               |
+| breast cancer                       | 2.12               |
+| Crohn's disease                     | 1.86               |
+| lung adenocarcinoma                 | 1.55               |
+| colorectal cancer                   | 1.46               |
+| high-grade serous ovarian cancer    | 1.40               |
+| cardiovascular disease risk factors | 1.23               |
+| hepatocellular carcinoma            | 1.16               |
+| Hepatocellular carcinoma            | 1.12               |
+| Alzheimer's Disease                 | 1.08               |
+
+
