@@ -1,3 +1,15 @@
+# 0. Report summary
+
+This report characterises the lung-related subset of the scBaseCount human single-cell RNA-seq metadata catalogue (snapshot: 2026-01-12).
+
+It follows Parashar and Oliver's decision to change approaches relating to data curation (see `README.md`)
+
+Of 35,266 unique SRX accessions, 16,716 (47.4%) are discarded as healthy or unknown. The remaining 18,550 known samples are filtered with lung-specific regex patterns applied to both the `disease` and `tissue` fields. 7,986 samples match at least one lung-related label (**lung union**); 858 pass the stricter requirement that *both* fields are lung-related (**lung intersection**), which is the primary analysis set.
+
+Within the 858-sample intersection, 361 (42.1%) involve a cancer diagnosis. The dominant disease categories are IPF / Pulmonary Fibrosis (~21%), Lung Adenocarcinoma (~18%), COVID-19 / SARS-CoV-2, and NSCLC. These 858 samples contain approximately 6.1 million cells in total, with a right-skewed distribution (mean 7,126 / median 5,125 cells per SRX).
+
+---
+
 # 1. Sample overview
 
 ## 1.1 Samples by disease
