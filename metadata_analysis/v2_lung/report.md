@@ -10,6 +10,8 @@ Samples are filtered to those with **known, non-healthy labels** in both the `di
 
 Of the 35,266 total unique SRX accessions, 16,716 (47.4%) are discarded as healthy/unknown. Of the remaining known samples, 858 carry a lung-specific disease *and* tissue label — 361 of which (42.1%) involve a cancer diagnosis.
 
+![](.figs/sample_breakdown.svg)
+
 ### 1.1 Regex at a glance
 
 Four regular expressions drive the filtering pipeline (all case-insensitive):
@@ -83,6 +85,8 @@ The table below shows the regex rules used to map free-text disease labels into 
 
 Within the 858 lung-intersection samples, free-text disease labels are normalised into broad categories via regex. Categories representing < 2% are collapsed into **Other**. IPF / Pulmonary Fibrosis and Lung Adenocarcinoma together account for roughly 40% of the set.
 
+![](.figs/lung_disease_breakdown.svg)
+
 
 
 ---
@@ -90,4 +94,6 @@ Within the 858 lung-intersection samples, free-text disease labels are normalise
 ## 3. Cell count distribution
 
 The 858 lung-intersection SRX samples contain ~6.1M cells in total (mean 7,126 / median 5,125 per SRX). The distribution is right-skewed, with most samples in the 3,000–9,000 cell range and a small number of outliers above 40,000.
+
+![](.figs/lung_cell_number_hist.svg)
 
