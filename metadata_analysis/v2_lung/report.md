@@ -10,7 +10,7 @@ Samples are filtered to those with **known, non-healthy labels** in both the `di
 
 Of the 35,266 total unique SRX accessions, 16,716 (47.4%) are discarded as healthy/unknown. Of the remaining known samples, 858 carry a lung-specific disease *and* tissue label — 361 of which (42.1%) involve a cancer diagnosis.
 
-<img src="images/sample_breakdown.svg" width="560"/>
+<!-- <img src="images/sample_breakdown.svg" width="560"/> -->
 ![](images/sample_breakdown.svg)
 
 ---
