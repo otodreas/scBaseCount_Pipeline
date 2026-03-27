@@ -12,7 +12,7 @@ We will focus on lung data. We suspect it is a manageably small yet diverse data
 
 ```
 metadata_analysis/v2_lung
-├── images
+├── .figs/
 ├── README.md
 ├── analysis.ipynb
 ├── report.md
