@@ -8,4 +8,5 @@ data/
 DailyNotes.md
 
 # Resources for Lund University
-docs/resources/
+docs/resources/*
+!docs/resources/Project_Plan.tex
