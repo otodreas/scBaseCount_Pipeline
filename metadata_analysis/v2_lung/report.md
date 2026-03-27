@@ -6,13 +6,15 @@
 
 ## 1. Sample overview
 
+### 1.1 Samples by disease
+
 Samples are filtered to those with **known, non-healthy labels** in both the `disease` and `tissue` fields (i.e. entries labelled normal, healthy, control, unknown, etc. are discarded). The remaining samples are split based on whether both the disease *and* tissue label are lung-related (**lung intersection**, 858 SRX) or either one is (**lung union**, 7,986 SRX). The intersection is the primary analysis set.
 
 Of the 35,266 total unique SRX accessions, 16,716 (47.4%) are discarded as healthy/unknown. Of the remaining known samples, 858 carry a lung-specific disease *and* tissue label — 361 of which (42.1%) involve a cancer diagnosis.
 
 ![](.figs/sample_breakdown.svg)
 
-### 1.1 Regex at a glance
+### 1.2 Regex at a glance
 
 Four regular expressions drive the filtering pipeline (all case-insensitive):
 
