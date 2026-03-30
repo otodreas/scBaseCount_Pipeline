@@ -48,15 +48,15 @@ Disease-focused single-cell atlases will be built from scBaseCount, a large stan
 
 \subsection*{Introduction}
 
-Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{wolfSCANPYLargescaleSinglecell2018}. scBaseCount standardizes single cell data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy/Harmony) \cite{wolfSCANPYLargescaleSinglecell2018}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{ahujaMultiagentAIEnables2025}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2–3 priorities aligned with the company's therapeutic focus.
+Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{wolfSCANPYLargescaleSinglecell2018}. scBaseCount standardizes single cell data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison \cite{youngblutScBaseCountAIAgentcurated2025}. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy) \cite{wolfSCANPYLargescaleSinglecell2018}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{ahujaMultiagentAIEnables2025}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2–3 priorities aligned with the company's therapeutic focus.
 
 \subsection*{Hypothesis and Specific Aims}
 
-\textbf{Hypothesis:} scVI, scanpy, and scGPT integration will produce CyteType label assignments that differ from STATE annotations from the Arc Institute in a pattern measurable by concordance metrics for one or more datasets; whether integration improves or harms annotation consistency will be assessed per dataset and subset.
+\textbf{Hypothesis:} scVI, scanpy, and scGPT integration will produce CyteType label assignments that differ from STATE annotations from the Arc Institute in a pattern measurable by concordance metrics for one or more datasets.
 
 \textbf{Aims:}
 \begin{itemize}
-    \item[\textbf{(A)}] Survey CELLxGENE Census metadata; assess 5–6 candidate disease areas; jointly select 2–3 priority areas and subset SC Base Count accordingly.
+    \item[\textbf{(A)}] Survey CELLxGENE Census metadata; assess 5–6 candidate disease areas; jointly select 2–3 priority areas and subset scBaseCount accordingly.
     \item[\textbf{(B)}] Per dataset: scVI, multi-resolution clustering, subclustering as needed, CyteType, documented quality.
     \item[\textbf{(C)}] Integrate per disease area; compare integrated versus individual CyteType outputs.
     \item[\textbf{(D)}] Benchmark scanpy and scGPT workflows against the above and STATE in a structured four-way comparison.
@@ -71,7 +71,7 @@ Aggregating many scRNA-seq studies requires consistent preprocessing, batch inte
     \item \textbf{Phase 1 (weeks 1–3):} Disease atlas curation and selection.
     \item \textbf{Phase 2 (weeks 4–10):} Per-dataset scVI, clustering/subclustering, manual cluster QC, CyteType, edge-case logs.
     \item \textbf{Phase 3 (weeks 11–16):} scVI integration per disease, CyteType on integrated objects, comparison to per-dataset annotations, manuscript-style notes.
-    \item \textbf{Phase 4 (weeks 17–20):} scanpy and scGPT embeddings into CyteType versus scVI (Phases 2–3), compared to STATE annotations (Arc Institute).
+    \item \textbf{Phase 4 (weeks 17–20):} scanpy and scGPT embeddings as CyteType inputs versus scVI (Phases 2–3), compared to STATE annotations (Arc Institute).
 \end{itemize}
 Tools: Python, scvi-tools, scanpy, scGPT, CyteType SDK.
 
