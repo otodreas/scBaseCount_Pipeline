@@ -34,7 +34,7 @@
     \textbf{Name of student:}      & Oliver E. Todreas \\
     \textbf{Contact email:}        & \href{mailto:ol6437ek-s@student.lu.se}{ol6437ek-s@student.lu.se} \\
     \textbf{Name of supervisor:}   & Parashar Dhapola \\
-    \textbf{Department/Host:}      & Nygen Analytics AB \\
+    \textbf{Department:}      & Nygen Analytics AB \\
     \textbf{Contact email:}        & \href{mailto:parashar@nygen.io}{parashar@nygen.io} \\
     \textbf{Course code:}          & BINP39 \\
     \textbf{Start–end date:}    & March 23, 2026–August 28, 2026 \\
@@ -42,17 +42,17 @@
 
 \section*{Abstract}
 
-Disease-focused single-cell atlases will be built from SC Base Count, a large standardized scRNA-seq resource that currently lacks systematic clustering and annotation. Disease priorities will be informed by a structured survey of CELLxGENE Census metadata. The work implements a reproducible pipeline (scVI, scanpy, CyteType; AnnData; GitHub) to curate 2–3 disease areas, process datasets individually over an extended per-dataset phase, integrate batches, and benchmark scGPT embeddings against scVI-, PCA/Harmony-, and STATE (Arc Institute) annotation workflows. Evaluation combines concordance metrics (e.g.\ ARI, NMI) with documented edge cases for manuscript-ready comparison.
+Disease-focused single-cell atlases will be built from SC Base Count, a large standardized scRNA-seq resource that currently lacks systematic clustering and annotation. Disease priorities will be informed by a structured survey of CELLxGENE Census metadata. The work implements a reproducible pipeline (AnnData, scVI, scanpy, CyteType, GitHub) to curate 2–3 disease areas, process datasets individually over an extended per-dataset phase, integrate batches, and benchmark scGPT embeddings against scVI-, PCA/Harmony-, and STATE (Arc Institute) annotation workflows. Evaluation combines concordance metrics (e.g.\ ARI, NMI) with documented edge cases for manuscript-ready comparison.
 
 \section*{Project Plan}
 
 \subsection*{Introduction}
 
-Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{placeholder1, placeholder2}. scBaseCount standardizes data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy/Harmony) \cite{placeholder1}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{ahujaMultiagentAIEnables2025}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2–3 priorities aligned with the company's therapeutic focus.
+Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{wolfSCANPYLargescaleSinglecell2018}. scBaseCount standardizes single cell data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy/Harmony) \cite{wolfSCANPYLargescaleSinglecell2018}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{ahujaMultiagentAIEnables2025}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2–3 priorities aligned with the company's therapeutic focus.
 
 \subsection*{Hypothesis and Specific Aims}
 
-\textbf{H1:} For at least one prioritized disease area, scVI integration will yield CyteType label assignments that differ from per-dataset processing in a pattern measurable by concordance metrics (e.g.\ ARI, NMI); whether integration improves or harms annotation consistency will be assessed per dataset and subset.
+\textbf{H1:} For at least one prioritized disease area, scVI integration will produce CyteType label assignments that differ from per dataset processing in a pattern measurable by concordance metrics (e.g.\ ARI, NMI); whether integration improves or harms annotation consistency will be assessed per dataset and subset.
 
 \textbf{H2:} CyteType on scGPT-derived structures will not be identical to scVI- or PCA/Harmony-based workflows on the same cells; concordance and discordance versus STATE (Arc Institute) will be quantified and interpreted for biological plausibility.
 
