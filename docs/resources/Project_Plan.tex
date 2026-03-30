@@ -37,18 +37,18 @@
     \textbf{Department/Host:}      & Nygen Analytics AB \\
     \textbf{Contact email:}        & \href{mailto:parashar@nygen.io}{parashar@nygen.io} \\
     \textbf{Course code:}          & BINP39 \\
-    \textbf{Start -- end date:}    & March 23, 2026 -- August 28, 2026 \\
+    \textbf{Start–end date:}    & March 23, 2026–August 28, 2026 \\
 \end{tabular}
 
 \section*{Abstract}
 
-Disease-focused single-cell atlases will be built from SC Base Count, a large standardized scRNA-seq resource that currently lacks systematic clustering and annotation. Disease priorities will be informed by a structured survey of CELLxGENE Census metadata. The work implements a reproducible pipeline (scVI, scanpy, CyteType; AnnData; GitHub) to curate 2--3 disease areas, process datasets individually over an extended per-dataset phase, integrate batches, and benchmark scGPT embeddings against scVI-, PCA/Harmony-, and STATE (Arc Institute) annotation workflows. Evaluation combines concordance metrics (e.g.\ ARI, NMI) with documented edge cases for manuscript-ready comparison.
+Disease-focused single-cell atlases will be built from SC Base Count, a large standardized scRNA-seq resource that currently lacks systematic clustering and annotation. Disease priorities will be informed by a structured survey of CELLxGENE Census metadata. The work implements a reproducible pipeline (scVI, scanpy, CyteType; AnnData; GitHub) to curate 2–3 disease areas, process datasets individually over an extended per-dataset phase, integrate batches, and benchmark scGPT embeddings against scVI-, PCA/Harmony-, and STATE (Arc Institute) annotation workflows. Evaluation combines concordance metrics (e.g.\ ARI, NMI) with documented edge cases for manuscript-ready comparison.
 
 \section*{Project Plan}
 
 \subsection*{Introduction}
 
-Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{placeholder1, placeholder2}. scBaseCount standardizes data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI)\cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy/Harmony) \cite{placeholder1}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{placeholder5}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2--3 priorities aligned with the company's therapeutic focus.
+Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{placeholder1, placeholder2}. scBaseCount standardizes data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy/Harmony) \cite{placeholder1}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{placeholder5}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2–3 priorities aligned with the company's therapeutic focus.
 
 \subsection*{Hypothesis and Specific Aims}
 
@@ -58,7 +58,7 @@ Aggregating many scRNA-seq studies requires consistent preprocessing, batch inte
 
 \textbf{Aims:}
 \begin{itemize}
-    \item[\textbf{(A)}] Survey CELLxGENE Census metadata; assess 5--6 candidate disease areas; jointly select 2--3 priority areas and subset SC Base Count accordingly.
+    \item[\textbf{(A)}] Survey CELLxGENE Census metadata; assess 5–6 candidate disease areas; jointly select 2–3 priority areas and subset SC Base Count accordingly.
     \item[\textbf{(B)}] Per dataset: scVI, multi-resolution clustering, subclustering as needed, CyteType, documented quality.
     \item[\textbf{(C)}] Integrate per disease area; compare integrated versus individual CyteType outputs.
     \item[\textbf{(D)}] Benchmark scGPT + CyteType against the above and STATE in a structured four-way comparison.
@@ -70,10 +70,10 @@ Aggregating many scRNA-seq studies requires consistent preprocessing, batch inte
 
 \textbf{Procedure:} Phases follow the extended host specification:
 \begin{itemize}
-    \item \textbf{Phase 1 (weeks 1--3):} Disease atlas curation and selection.
-    \item \textbf{Phase 2 (weeks 4--10):} Per-dataset scVI, clustering/subclustering, manual cluster QC, CyteType, edge-case logs.
-    \item \textbf{Phase 3 (weeks 11--16):} scVI integration per disease, CyteType on integrated objects, comparison to per-dataset annotations, manuscript-style notes.
-    \item \textbf{Phase 4 (weeks 17--20):} scGPT embeddings and CyteType versus scVI-based (Phases 2--3), scanpy PCA/Harmony + CyteType, and STATE (Arc Institute).
+    \item \textbf{Phase 1 (weeks 1–3):} Disease atlas curation and selection.
+    \item \textbf{Phase 2 (weeks 4–10):} Per-dataset scVI, clustering/subclustering, manual cluster QC, CyteType, edge-case logs.
+    \item \textbf{Phase 3 (weeks 11–16):} scVI integration per disease, CyteType on integrated objects, comparison to per-dataset annotations, manuscript-style notes.
+    \item \textbf{Phase 4 (weeks 17–20):} scGPT embeddings and CyteType versus scVI-based (Phases 2–3), scanpy PCA/Harmony + CyteType, and STATE (Arc Institute).
 \end{itemize}
 Tools: Python, scanpy, scvi-tools, scGPT, CyteType SDK.
 
@@ -94,10 +94,10 @@ The pipeline serves these biological comparisons; success is defined by evaluabl
 \toprule
 Weeks & Phase & Activities \\
 \midrule
-1--3  & Phase 1 & Literature; CELLxGENE Census metadata survey; structured assessment of 5--6 candidate disease areas (tissues, dataset counts, cells, metadata); joint selection of 2--3 priorities. \\[6pt]
-4--10 & Phase 2 & Per-dataset scVI training; multi-resolution clustering and subclustering where warranted; manual cluster inspection; CyteType; document annotation quality, edge cases, and CyteType improvement areas. \\[6pt]
-11--16 & Phase 3 & scVI batch integration per disease area; CyteType on integrated data; compare with individual-dataset annotations; evaluate where integration helps or hurts; manuscript-ready documentation. \\[6pt]
-17--20 & Phase 4 & scGPT embeddings on constructed atlases; CyteType on scGPT-derived clusters; systematic comparison to scVI-, PCA/Harmony-, and STATE-based workflows; structured comparison for manuscript. \\
+1–3  & Phase 1 & Literature; CELLxGENE Census metadata survey; structured assessment of 5–6 candidate disease areas (tissues, dataset counts, cells, metadata); joint selection of 2–3 priorities. \\[6pt]
+4–10 & Phase 2 & Per-dataset scVI training; multi-resolution clustering and subclustering where warranted; manual cluster inspection; CyteType; document annotation quality, edge cases, and CyteType improvement areas. \\[6pt]
+11–16 & Phase 3 & scVI batch integration per disease area; CyteType on integrated data; compare with individual-dataset annotations; evaluate where integration helps or hurts; manuscript-ready documentation. \\[6pt]
+17–20 & Phase 4 & scGPT embeddings on constructed atlases; CyteType on scGPT-derived clusters; systematic comparison to scVI-, PCA/Harmony-, and STATE-based workflows; structured comparison for manuscript
 \bottomrule
 \end{tabular}
 \end{table}
