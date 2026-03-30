@@ -7,13 +7,3 @@ On 2026-03-26, Parashar and Oliver decided that the previous approach to data co
 ## Steps forward
 
 We will focus on lung data. We suspect it is a manageably small yet diverse dataset. Informed by the previous round of metadata analysis, we suspect there to be < 1,000,000 cells with a lung-like tissue label in scBaseCount.
-
-## In this directory
-
-```
-metadata_analysis/v2_lung
-├── .figs/
-├── README.md
-├── analysis.ipynb
-└── report.md
-```
