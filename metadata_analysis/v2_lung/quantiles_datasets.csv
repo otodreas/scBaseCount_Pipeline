@@ -1,0 +1,4 @@
+srx_accession,file_path,obs_count,quantile
+SRX22996378,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22996378.h5ad,3413,0.25
+SRX17412841,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412841.h5ad,5506,0.5
+SRX13198730,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13198730.h5ad,9419,0.75
