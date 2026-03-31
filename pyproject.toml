@@ -8,5 +8,5 @@ dependencies = [
     "ipykernel>=7.2.0",
     "matplotlib>=3.10.8",
     "pyarrow>=23.0.1",
-    "scanpy>=1.12",
+    "scanpy[leiden]>=1.12",
 ]
