@@ -10,3 +10,7 @@ DailyNotes.md
 # Resources for Lund University
 docs/resources/project_plan/*
 !docs/resources/project_plan/Project_Plan.tex
+
+# Cursor
+.cursor/
+cluster_validation_sandbox/cursor_plans/
