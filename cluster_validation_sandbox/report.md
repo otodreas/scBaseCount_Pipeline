@@ -42,7 +42,6 @@ See §**Appendix** for a breakdown on the parameters I used.
 - Scale the summed Jaccard score by a denominator that grows when predicted cluster count exceeds the reference type count, penalising excessove over-clustering
 - Train a `RandomForestClassifier` on per-cell HVG expression profiles labelled by cluster; merge pairs whose out-of-fold confusion exceeds a fixed threshold
 
----
 
 # Methods
 
@@ -109,7 +108,6 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 ![](.figs/umap_merged_file2.svg)
 ![](.figs/composition_bars_file2.svg)
 
----
 
 # Appendix: Key parameters
 
