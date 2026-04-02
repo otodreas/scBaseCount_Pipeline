@@ -38,7 +38,7 @@ See §Appendix for a breakdown on the parameters I used.
 
 - Sweep Leiden resolution (0.2–2.0) to generate a range of candidate partitions
 - Build a Jaccard similarity matrix between each predicted cluster and every reference cell type
-- Apply the Hungarian algorithm to find the optimal one-to-one assignment between clusters and reference types, maximising total matched Jaccard
+- Apply the Hungarian algorithm to find the jointly optimal one-to-one assignment between clusters and reference types that maximises the total summed Jaccard across all matched pairs
 - Scale the summed Jaccard score by a denominator that grows when predicted cluster count exceeds the reference type count, penalising excessove over-clustering
 - Train a `RandomForestClassifier` on per-cell HVG expression profiles labelled by cluster; merge pairs whose out-of-fold confusion exceeds a fixed threshold
 
@@ -55,8 +55,11 @@ Leiden clustering (igraph flavour) is run at ten resolutions: 0.2, 0.4, 0.6, 0.8
 For each resolution, the quality of the partition is assessed relative to the `cell_type` prior using the following procedure:
 
 1. Build a contingency table between the Leiden clusters and the reference cell types.
+*The contingency table is made up of (n unique clusters) rows and (n unique cell types) columns. It starts out populated with 0's, and a 1 is added for each cell in the anndata object*
 2. Convert each cell of the contingency table to an IoU (Jaccard) value: `J[i,j] = intersection / union` between cluster *i* and cell type *j*.
+*This converts raw overlap counts into a size-corrected similarity, preventing large clusters from scoring highly simply by virtue of containing more cells.*
 3. Find the optimal one-to-one assignment between clusters and cell types using the Hungarian algorithm (`scipy.optimize.linear_sum_assignment` on `-J`).
+*Since the Hungarian algorithm minimizes the cost over a matrix, and since the matrix `J` has higher values where cluster overlap is higher, the matrix needs to be made negative (`-J`) before optimization can be applied*
 4. Compute the penalised score:
 
 ```
@@ -64,6 +67,8 @@ score = sum(J[matched pairs]) / (k_prior + α × max(0, k − k_prior))
 ```
 
 where `k` is the number of clusters at the current resolution and `α = OVERCLUSTERING_PENALTY = 0.8`. When the partition has more clusters than cell types, the denominator grows, penalising over-clustering. When `k ≤ k_prior`, the denominator is simply `k_prior`.
+
+There is no explicit underclustering penalty. When `k < k_prior`, the Hungarian algorithm can match at most `k` reference types, leaving `k_prior − k` types unmatched with a Jaccard contribution of zero. The denominator remains `k_prior`, so the score is naturally suppressed by the smaller numerator. Thus, underclustering is penalised implicitly.
 
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §5.2.
 
