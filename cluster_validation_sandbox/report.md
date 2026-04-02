@@ -1,4 +1,6 @@
-# 0. Report summary
+# Introduction
+
+## Report summary
 
 This report documents the cluster label optimisation pipeline applied to three lung datasets drawn from the scBaseCount human scRNA-seq collection (snapshot: 2026-01-12), sampled at the 75th, 50th, and 25th percentile of number of cells to probe how the method behaves across different dataset scales.
 
@@ -18,23 +20,21 @@ The pipeline is run independently on each dataset (`FILE_IDX` 0, 1, 2) from `dat
 
 Filtering is not discussed in this report but all the filtering and QC steps are outlined in `clust_val_analysis.ipynb`.
 
----
 
-# 1. Deliverables
+## Deliverables
 
 The deliverables I set out to ship were
 - Build a clustering pipeline for a few sample datasets
     - Simple scanpy pipeline built in `clust_val_analysis.ipynb`, derisked for 3 datasets
 - Develop a biologically informed method to optimize clustering resolutions
-    - Method was developed. See §2.
+    - Method was developed. See §**Methods at a glance**.
 - Do not use a composite index
     - I do not consider the Jaccard index a composite index.
 
-See §Appendix for a breakdown on the parameters I used.
+See §**Appendix** for a breakdown on the parameters I used.
 
----
 
-# 2. Methods at a glance
+## Methods at a glance
 
 - Sweep Leiden resolution (0.2–2.0) to generate a range of candidate partitions
 - Build a Jaccard similarity matrix between each predicted cluster and every reference cell type
@@ -44,13 +44,15 @@ See §Appendix for a breakdown on the parameters I used.
 
 ---
 
-# 3. Resolution selection
+# Methods
 
-## 3.1 Leiden sweep
+## Resolution selection
+
+### Leiden sweep
 
 Leiden clustering (igraph flavour) is run at ten resolutions: 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, and 2.0. Each partition is stored as a separate `obs` column (`leiden_{r}`). The number of clusters grows roughly monotonically with resolution.
 
-## 3.2 Jaccard matrix construction and Hungarian scoring
+### Jaccard matrix construction and Hungarian scoring
 
 For each resolution, the quality of the partition is assessed relative to the `cell_type` prior using the following procedure:
 
@@ -72,11 +74,11 @@ There is no explicit underclustering penalty. When `k < k_prior`, the Hungarian 
 
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §5.2.
 
----
 
-# 4. RF-based cluster merging
 
-## 4.1 Confusion-based merging
+## RF-based cluster merging
+
+### Confusion-based merging
 
 Even at the best resolution, some clusters may be transcriptomically indistinguishable. In other words, they may share similar gene-expression profiles and only separate due to resolution artifacts. A `RandomForestClassifier` trained on HVG expression with stratified K-fold out-of-fold (OOF) CV identifies these pairs: if the row-normalised OOF confusion between two clusters exceeds `MERGE_THRESHOLD = 0.30`, they are candidates for merging.
 
@@ -91,7 +93,7 @@ A union-find structure propagates merges transitively: if cluster A is confused 
 **25% dataset (file2)**
 ![](.figs/rf_confusion_file2.svg)
 
-## 5.2 Final partition
+### Final partition
 
 The merged partition (`leiden_merged`) is compared to both the original selected Leiden partition and the `cell_type` reference in the three-panel UMAPs below. The composition bar charts show the relative cell proportions across merged clusters and cell types, confirming whether the merge has moved the partition closer to the biological groupings.
 
