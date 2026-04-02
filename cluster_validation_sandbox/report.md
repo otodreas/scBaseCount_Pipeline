@@ -71,7 +71,16 @@ where `k` is the number of clusters at the current resolution and `α = OVERCLUS
 
 There is no explicit underclustering penalty. When `k < k_prior`, the Hungarian algorithm can match at most `k` reference types, leaving `k_prior − k` types unmatched with a Jaccard contribution of zero. The denominator remains `k_prior`, so the score is naturally suppressed by the smaller numerator. Thus, underclustering is penalised implicitly.
 
-The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §5.2.
+The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §**Final partition**.
+
+**75% dataset (file0)**
+![](.figs/resolution_sweep_file0.svg)
+
+**50% dataset (file1)**
+![](.figs/resolution_sweep_file1.svg)
+
+**25% dataset (file2)**
+![](.figs/resolution_sweep_file2.svg)
 
 
 
