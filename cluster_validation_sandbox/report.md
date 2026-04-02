@@ -109,6 +109,14 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 ![](.figs/composition_bars_file2.svg)
 
 
+# Conclusions
+
+## Key takeaways
+
+- The method using matrix building &rarr; matrix cost minimization &rarr; select lowest cost resolution &rarr; penalize excessive overclustering &rarr; merge clusters does not rely on composite indices and is biologically informed
+- The cluster resolution optimization produced a similar number of clusters to the number of cell types for each datasets
+- For the 75% and 50% datasets, the method split up the largest cluster (see red and blue bar graphs) and did not merge them back together
+
 # Appendix: Key parameters
 
 
