@@ -1,18 +1,52 @@
 # 0. Report summary
 
-This report documents the cluster label optimisation pipeline applied to three lung datasets drawn from the scBaseCount human scRNA-seq collection (snapshot: 2026-01-12), sampled at the 75th, 50th, and 25th percentile of file size to probe how the method behaves across different dataset scales.
+This report documents the cluster label optimisation pipeline applied to three lung datasets drawn from the scBaseCount human scRNA-seq collection (snapshot: 2026-01-12), sampled at the 75th, 50th, and 25th percentile of number of cells to probe how the method behaves across different dataset scales.
+
+**Datasets**
+
+
+| SRX         | *n* cells post filter | *n* cells percentile (%) |
+| ----------- | --------------------- | ------------------------ |
+| SRX22996378 | 3,333                 | 25                       |
+| SRX17412841 | 4,757                 | 50                       |
+| SRX13198730 | 8,972                 | 75                       |
+
 
 The goal is to identify the Leiden resolution whose partition best recovers the `cell_type` weak prior, then to reduce over-clustering by merging transcriptomically indistinguishable clusters using a random forest. The selection criterion is **Jaccard-based matching via the Hungarian algorithm**.
 
 The pipeline is run independently on each dataset (`FILE_IDX` 0, 1, 2) from `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`. After cell-type rare-type filtering, QC, and preprocessing, Leiden clustering is swept across ten resolutions (0.2–2.0). The resolution with the highest penalised Jaccard score is selected, and a random forest merging step collapses clusters that the classifier cannot distinguish.
 
-Filtering is not discussed in this report but can be seen in `clust_val_analysis.ipynb`.
+Filtering is not discussed in this report but all the filtering and QC steps are outlined in `clust_val_analysis.ipynb`.
 
 ---
 
-# 1. Resolution selection
+# 1. Deliverables
 
-## 2.1 Leiden sweep
+The deliverables I set out to ship were
+- Build a clustering pipeline for a few sample datasets
+    - Simple scanpy pipeline built in `clust_val_analysis.ipynb`, derisked for 3 datasets
+- Develop a biologically informed method to optimize clustering resolutions
+    - Method was developed. See §2.
+- Do not use a composite index
+    - I do not consider the Jaccard index a composite index.
+
+See §Appendix for a breakdown on the parameters I used.
+
+---
+
+# 2. Methods at a glance
+
+- Sweep Leiden resolution (0.2–2.0) to generate a range of candidate partitions
+- Build a Jaccard similarity matrix between each predicted cluster and every reference cell type
+- Apply the Hungarian algorithm to find the optimal one-to-one assignment between clusters and reference types, maximising total matched Jaccard
+- Scale the summed Jaccard score by a denominator that grows when predicted cluster count exceeds the reference type count, penalising excessove over-clustering
+- Train a `RandomForestClassifier` on per-cell HVG expression profiles labelled by cluster; merge pairs whose out-of-fold confusion exceeds a fixed threshold
+
+---
+
+# 3. Resolution selection
+
+## 3.1 Leiden sweep
 
 Leiden clustering (igraph flavour) is run at ten resolutions: 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, and 2.0. Each partition is stored as a separate `obs` column (`leiden_{r}`). The number of clusters grows roughly monotonically with resolution.
 
@@ -33,20 +67,15 @@ where `k` is the number of clusters at the current resolution and `α = OVERCLUS
 
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §5.2.
 
-
-![](.figs/resolution_sweep_file0.svg)
-![](.figs/resolution_sweep_file1.svg)
-![](.figs/resolution_sweep_file2.svg)
-
 ---
 
-# 5. RF-based cluster merging
+# 4. RF-based cluster merging
 
-## 5.1 Confusion-based merging
+## 4.1 Confusion-based merging
 
-Even at the best resolution, some clusters may be transcriptomically indistinguishable — they share similar gene-expression profiles and only separate due to resolution artefacts. A `RandomForestClassifier` trained on HVG expression with stratified K-fold out-of-fold (OOF) CV identifies these pairs: if the row-normalised OOF confusion between two clusters exceeds `MERGE_THRESHOLD = 0.30`, they are candidates for merging.
+Even at the best resolution, some clusters may be transcriptomically indistinguishable. In other words, they may share similar gene-expression profiles and only separate due to resolution artifacts. A `RandomForestClassifier` trained on HVG expression with stratified K-fold out-of-fold (OOF) CV identifies these pairs: if the row-normalised OOF confusion between two clusters exceeds `MERGE_THRESHOLD = 0.30`, they are candidates for merging.
 
-A union-find structure propagates merges transitively: if cluster A is confused with B and B is confused with C, all three collapse into a single cluster. This step is optional — if the selected partition already aligns well with `k_prior`, no merges may occur.
+A union-find structure propagates merges transitively: if cluster A is confused with B and B is confused with C, all three collapse into a single cluster.
 
 **75% dataset (file0)**
 ![](.figs/rf_confusion_file0.svg)
@@ -77,12 +106,15 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 
 # Appendix: Key parameters
 
-| Parameter              | Value                               | Description                                            |
-| ---------------------- | ----------------------------------- | ------------------------------------------------------ |
-| `FILE_SIZE`            | `{0: "75%", 1: "50%", 2: "25%"}`   | Dataset size quantile label for each `FILE_IDX`        |
-| `MIN_CELLS_PER_TYPE`   | 20                                  | Minimum cells per `cell_type` label to retain          |
-| `N_TOP_GENES`          | 2000                                | Number of highly variable genes selected               |
-| `N_PCS`                | 40                                  | PCs used for neighbour graph construction              |
-| `RESOLUTIONS`          | 0.2, 0.4, …, 2.0 (step 0.2)        | Leiden resolutions swept                               |
-| `OVERCLUSTERING_PENALTY` (α) | 0.8                           | Penalty weight for `k > k_prior` in Jaccard denominator |
-| `MERGE_THRESHOLD`      | 0.30                                | OOF confusion threshold above which clusters are merged |
+
+| Parameter                    | Value                            | Description                                             |
+| ---------------------------- | -------------------------------- | ------------------------------------------------------- |
+| `FILE_SIZE`                  | `{0: "75%", 1: "50%", 2: "25%"}` | Dataset size quantile label for each `FILE_IDX`         |
+| `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain           |
+| `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                |
+| `N_PCS`                      | 40                               | PCs used for neighbour graph construction               |
+| `RESOLUTIONS`                | 0.2, 0.4, …, 2.0 (step 0.2)      | Leiden resolutions swept                                |
+| `OVERCLUSTERING_PENALTY` (α) | 0.8                              | Penalty weight for `k > k_prior` in Jaccard denominator. For this data I found that this parameter was necessary |
+| `MERGE_THRESHOLD`            | 0.30                             | OOF confusion threshold above which clusters are merged |
+
+
