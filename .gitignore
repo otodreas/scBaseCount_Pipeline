@@ -7,10 +7,6 @@ data/
 # Personal notes
 DailyNotes.md
 
-# Resources for Lund University
-docs/resources/project_plan/*
-!docs/resources/project_plan/v2/Project_Plan.tex
-
 # Cursor
 .cursor/
-cluster_validation_sandbox/cursor_plans/
+cursor_plans/
