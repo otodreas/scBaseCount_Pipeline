@@ -41,6 +41,7 @@ See §**Appendix** for a breakdown on the parameters I used.
 - Sweep Leiden resolution (0.2–2.0) to generate a range of candidate partitions
 - Build a Jaccard similarity matrix between each predicted cluster and every reference cell type
 - Apply the Hungarian algorithm to find the jointly optimal one-to-one assignment between clusters and reference types that maximises the total summed Jaccard across all matched pairs
+    - Note that overclustering penalty was removed after `c1c55ba` because it was ineffective and relied only on cluster count
 - Scale the summed Jaccard score by a denominator that grows when predicted cluster count exceeds the reference type count, penalising excessove over-clustering
 - Train a `RandomForestClassifier` on per-cell HVG expression profiles labelled by cluster; merge pairs whose out-of-fold confusion exceeds a fixed threshold
 
@@ -66,12 +67,8 @@ For each resolution, the quality of the partition is assessed relative to the `c
 4. Compute the penalised score:
 
 ```
-score = sum(J[matched pairs]) / (k_prior + α × max(0, k − k_prior))
+score = sum(J[matched pairs])
 ```
-
-where `k` is the number of clusters at the current resolution and `α = OVERCLUSTERING_PENALTY = 0.8`. When the partition has more clusters than cell types, the denominator grows, penalising over-clustering. When `k ≤ k_prior`, the denominator is simply `k_prior`.
-
-There is no explicit underclustering penalty. When `k < k_prior`, the Hungarian algorithm can match at most `k` reference types, leaving `k_prior − k` types unmatched with a Jaccard contribution of zero. The denominator remains `k_prior`, so the score is naturally suppressed by the smaller numerator. Thus, underclustering is penalised implicitly.
 
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §**Final partition**.
 
@@ -124,7 +121,7 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 
 ## Key takeaways
 
-- The method using matrix building &rarr; matrix cost minimization &rarr; select lowest cost resolution &rarr; penalize excessive overclustering &rarr; merge clusters does not rely on composite indices and is biologically informed
+- The method using matrix building &rarr; matrix cost minimization &rarr; select lowest cost resolution &rarr; merge clusters does not rely on composite indices and is biologically informed
 - The cluster resolution optimization produced a similar number of clusters to the number of cell types for each datasets
 - For the 75% and 50% datasets, the method split up the largest cluster (see red and blue bar graphs) and did not merge them back together
 
@@ -138,7 +135,6 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 | `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                |
 | `N_PCS`                      | 40                               | PCs used for neighbour graph construction               |
 | `RESOLUTIONS`                | 0.2, 0.4, …, 2.0 (step 0.2)      | Leiden resolutions swept                                |
-| `OVERCLUSTERING_PENALTY` (α) | 0.8                              | Penalty weight for `k > k_prior` in Jaccard denominator. For this data I found that this parameter was necessary |
 | `MERGE_THRESHOLD`            | 0.30                             | OOF confusion threshold above which clusters are merged |
 
 
