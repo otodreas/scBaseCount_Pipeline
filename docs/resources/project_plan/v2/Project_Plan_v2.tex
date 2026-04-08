@@ -12,7 +12,7 @@
 
 \geometry{margin=2.5cm}
 
-\addbibresource{../../report/references.bib}
+\addbibresource{../../../report/references.bib}
 
 \hypersetup{
     colorlinks=true,
@@ -40,26 +40,28 @@
     \textbf{Start–end date:}    & March 23, 2026–August 28, 2026 \\
 \end{tabular}
 
+\noindent\textbf{Publication.} The host company has approved open publication of project outcomes on GitHub (see host specification §3.3). Repository: \url{https://github.com/otodreas/scBaseCount_Pipeline}.
+
 \section*{Abstract}
 
-Disease-focused single-cell atlases will be built from scBaseCount, a large standardized scRNA-seq resource that currently lacks systematic clustering and annotation. Disease priorities will be informed by a structured survey of CELLxGENE Census metadata. The work implements a reproducible pipeline (AnnData, scVI, scanpy, CyteType, GitHub) to curate 2–3 disease areas, process datasets individually over an extended per-dataset phase, integrate batches, and benchmark scVI, scanpy, and scGPT embeddings against STATE (Arc Institute) annotation workflows. Evaluation combines concordance metrics with documented edge cases for manuscript-ready comparison.
+Disease-focused single-cell atlases will be built from scBaseCount, a large standardized scRNA-seq resource that currently lacks systematic clustering and annotation. Subsets follow CELLxGENE-aligned data that include expert-curated author cell-type labels; these labels are the primary quantitative reference for scoring annotation quality per cell type, not only whether methods disagree with each other. Disease priorities will be informed by a structured survey of CELLxGENE Census metadata. The comparison is anchored in whether embedding choice affects resolution of clinically relevant states (e.g.\ T cell exhaustion, regulatory populations, polarized macrophages), so a null result---for example, foundation embeddings not improving disease-relevant separation over standard PCA---is scientifically meaningful. CyteType assigns types from differential-expression markers and LLM interpretation with tissue context, not from embedding coordinates directly, while STATE (Arc Institute) supplies an embedding-independent external benchmark. The falsifiable claim is that agreement with author labels is robust to embedding choice for well-characterized populations but may diverge for rare or transitional states. Quantitative evaluation uses adjusted Rand index, normalized mutual information, and per-cell-type F1 against author annotations; annotated populations are further checked against literature-defined marker programs (cytotoxicity, exhaustion, polarization) without wet-lab work. The work implements a reproducible pipeline (AnnData, scVI, scanpy, CyteType, GitHub) to curate two disease areas (a third only if schedule allows), process datasets individually over an extended per-dataset phase, integrate batches, and benchmark scVI, scanpy, and scGPT as inputs to CyteType alongside STATE workflows. Documented edge cases complement these metrics for a manuscript-ready comparison.
 
 \section*{Project Plan}
 
 \subsection*{Introduction}
 
-Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{wolfSCANPYLargescaleSinglecell2018}. scBaseCount standardizes single cell data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison \cite{youngblutScBaseCountAIAgentcurated2025}. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy) \cite{wolfSCANPYLargescaleSinglecell2018}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{ahujaMultiagentAIEnables2025}. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of 2–3 priorities aligned with the company's therapeutic focus.
+Aggregating many scRNA-seq studies requires consistent preprocessing, batch integration, and interpretable cell typing \cite{wolfSCANPYLargescaleSinglecell2018}. scBaseCount standardizes single cell data at scale but does not yet provide systematic clustering and annotation, limiting cross-cohort disease comparison \cite{youngblutScBaseCountAIAgentcurated2025}. Nygen's CyteType delivers evidence-traced, ontology-linked annotations suitable for auditing at scale. How variational integration (scVI) \cite{lopezDeepGenerativeModeling2018}, linear reductions with batch correction (scanpy) \cite{wolfSCANPYLargescaleSinglecell2018}, and foundation embeddings (scGPT) \cite{cuiScGPTBuildingFoundation2024} interact with CyteType on this resource is an open, testable question \cite{ahujaMultiagentAIEnables2025}. CELLxGENE-derived atlas subsets retain author annotations, which serve as the primary reference for partition- and label-level metrics; when pipelines conflict, outcomes are scored against those labels, with STATE as an additional embedding-independent check. CyteType operates on clusters: differential expression yields marker genes that are interpreted through large language models with tissue context, so the question is whether different embeddings shift cluster boundaries enough to change marker signatures and biological calls rather than reading labels from coordinates directly. Candidate disease areas will be evaluated using CELLxGENE Census metadata (tissues, dataset counts, cells, available fields) before joint selection of two priority areas aligned with the company's therapeutic focus, with a third only if timelines permit.
 
 \subsection*{Hypothesis and Specific Aims}
 
-\textbf{Hypothesis:} scVI, scanpy, and scGPT integration will produce CyteType label assignments that differ from STATE annotations from the Arc Institute in a pattern measurable by concordance metrics for one or more datasets.
+\textbf{Hypothesis:} Annotation agreement with expert-curated author labels is largely robust to embedding choice (scVI, scanpy, scGPT) for well-characterized populations, but diverges preferentially for rare or transitional cell states. Strong agreement across embeddings and with author labels for both common and difficult populations, or instead systematic divergence for ambiguous states, are both informative.
 
 \textbf{Aims:}
 \begin{itemize}
-    \item[\textbf{(A)}] Survey CELLxGENE Census metadata; assess 5–6 candidate disease areas; jointly select 2–3 priority areas and subset scBaseCount accordingly.
+    \item[\textbf{(A)}] Survey CELLxGENE Census metadata; assess 5–6 candidate disease areas; jointly select two priority areas and subset scBaseCount accordingly, adding a third only if schedule allows.
     \item[\textbf{(B)}] Per dataset: scVI, multi-resolution clustering, subclustering as needed, CyteType, documented quality.
     \item[\textbf{(C)}] Integrate per disease area; compare integrated versus individual CyteType outputs.
-    \item[\textbf{(D)}] Benchmark scanpy and scGPT workflows against the above and STATE in a structured four-way comparison.
+    \item[\textbf{(D)}] Benchmark scanpy and scGPT workflows against scVI (Phases 2--3) and STATE in a structured four-way comparison: adjusted Rand index, normalized mutual information, and per-cell-type F1 against author labels; STATE as an embedding-independent reference; marker-program checks (e.g.\ exhaustion, cytotoxicity, macrophage polarization) on cells annotated into relevant types.
 \end{itemize}
 
 \subsection*{Methods}
@@ -71,16 +73,16 @@ Aggregating many scRNA-seq studies requires consistent preprocessing, batch inte
     \item \textbf{Phase 1:} Disease atlas curation and selection.
     \item \textbf{Phase 2:} Per-dataset scVI, clustering/subclustering, manual cluster QC, CyteType, edge-case logs.
     \item \textbf{Phase 3:} scVI integration per disease, CyteType on integrated objects, comparison to per-dataset annotations, manuscript-style notes.
-    \item \textbf{Phase 4:} scanpy and scGPT embeddings as CyteType inputs versus scVI (Phases 2–3), compared to STATE annotations (Arc Institute).
+    \item \textbf{Phase 4:} scanpy and scGPT embeddings as CyteType inputs versus scVI (Phases 2--3); compare all to author labels (ARI, NMI, per-cell-type F1), to STATE (Arc Institute) as an external reference, and via marker-program consistency on annotated groups.
 \end{itemize}
 Tools: Python, scvi-tools, scanpy, scGPT, CyteType SDK.
 
-\textbf{Evaluation:} Hypothesis is tested with (i) quantitative agreement between partitions or label vectors where cells are comparable; (ii) qualitative review of discordant clusters.
+\textbf{Evaluation:} The hypothesis is tested with (i) adjusted Rand index and normalized mutual information between predicted and author partitions where comparable; (ii) per-cell-type F1 against author labels, with ontology or naming harmonization where lineages are merged or split; (iii) embedding-independent STATE reference labels on overlapping workflows; (iv) literature-defined gene-set scores for expected programs in annotated populations; (v) qualitative review of discordant clusters.
 \begin{itemize}
-    \item \textbf{Support hypothesis:} non-random, interpretable differences across embedding sources at matched resolution.
-    \item \textbf{Refute hypothesis:} near-identical outputs across scVI, scanpy, and scGPT at chosen clustering depth.
+    \item \textbf{Support hypothesis:} systematic lower agreement with author labels (or STATE) for rare or transitional populations under specific embeddings, or a clear failure of a candidate method to recover expected marker programs despite acceptable global scores.
+    \item \textbf{Refute hypothesis:} strong agreement with author labels across scVI, scanpy, and scGPT at matched clustering depth for both common types and hard cases, with concordant marker-program profiles; embedding choice does not materially change biological calls for the chosen disease contexts.
 \end{itemize}
-The pipeline serves these biological comparisons; success is defined by quantitative metrics and documented interpretation, not by tool deployment alone.
+The pipeline serves these biological comparisons; success is defined by quantitative metrics, marker-consistency checks, and documented interpretation, not by tool deployment alone.
 
 \subsection*{Time Plan}
 
@@ -90,10 +92,10 @@ The pipeline serves these biological comparisons; success is defined by quantita
 \toprule
 Weeks & Phase & Activities \\
 \midrule
-1–3  & Phase 1 & Literature; CELLxGENE Census metadata survey; structured assessment of 5–6 candidate disease areas (tissues, dataset counts, cells, metadata); joint selection of 2–3 priorities. \\[6pt]
+1–3  & Phase 1 & Literature; CELLxGENE Census metadata survey; structured assessment of 5–6 candidate disease areas (tissues, dataset counts, cells, metadata); joint selection of two priorities (third only if schedule permits). \\[6pt]
 4–10 & Phase 2 & Per-dataset scVI training; multi-resolution clustering and subclustering where warranted; manual cluster inspection; CyteType; document annotation quality, edge cases, and CyteType improvement areas. \\[6pt]
 11–16 & Phase 3 & scVI batch integration per disease area; CyteType on integrated data; compare with individual-dataset annotations; evaluate where integration helps or hurts; manuscript-ready documentation. \\[6pt]
-17–20 & Phase 4 & scanpy and scGPT embeddings on constructed atlases; CyteType on all clusters (scVI, scanpy, scGPT); systematic evaluations of all methods against STATE-based workflows; structured comparison for manuscript
+17–20 & Phase 4 & scanpy and scGPT embeddings on constructed atlases; CyteType on all clusters (scVI, scanpy, scGPT); ARI, NMI, and per-cell-type F1 versus author labels; STATE as external reference; marker-program checks; structured comparison for manuscript. \\[6pt]
 \bottomrule
 \end{tabular}
 \end{table}
