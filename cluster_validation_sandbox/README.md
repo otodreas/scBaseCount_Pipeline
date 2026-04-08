@@ -9,11 +9,11 @@ This report documents the cluster label optimisation pipeline applied to three l
 **Datasets**
 
 
-| SRX         | *n* cells post filter | *n* cells percentile (%) |
+| SRX         | *n* cells pre filter | *n* cells percentile (%) |
 | ----------- | --------------------- | ------------------------ |
-| SRX22996378 | 3,209                 | 25                       |
-| SRX17412841 | 4,705                 | 50                       |
-| SRX13198730 | 8,905                 | 75                       |
+| SRX22996378 | 3,413                 | 25                       |
+| SRX17412841 | 5,506                 | 50                       |
+| SRX13198730 | 9,419                 | 75                       |
 
 
 The goal is to identify the Leiden resolution whose partition best recovers the `cell_type` weak prior, then to reduce over-clustering by merging transcriptomically indistinguishable clusters using a random forest. The selection criterion is **Jaccard-based matching via the Hungarian algorithm**.
