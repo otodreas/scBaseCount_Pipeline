@@ -131,7 +131,7 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 | Parameter                    | Value                            | Description                                             |
 | ---------------------------- | -------------------------------- | ------------------------------------------------------- |
 | `FILE_SIZE`                  | `{0: "75%", 1: "50%", 2: "25%"}` | Dataset size quantile label for each `FILE_IDX`         |
-| `MIN_CELLS_PER_TYPE`         | 30                               | Minimum cells per `cell_type` label to retain           |
+| `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain           |
 | `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                |
 | `N_PCS`                      | 40                               | PCs used for neighbour graph construction               |
 | `RESOLUTIONS`                | 0.2, 0.4, …, 2.0 (step 0.2)      | Leiden resolutions swept                                |
