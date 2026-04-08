@@ -11,5 +11,8 @@ DailyNotes.md
 .cursor/
 cursor_plans/
 
+# Symlinks
+cluster_validation_sandbox/datasets_summary
+
 # Other
 docs/resources/project_plan/v2/PH_notes.md
