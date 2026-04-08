@@ -11,9 +11,9 @@ This report documents the cluster label optimisation pipeline applied to three l
 
 | SRX         | *n* cells post filter | *n* cells percentile (%) |
 | ----------- | --------------------- | ------------------------ |
-| SRX22996378 | 3,333                 | 25                       |
-| SRX17412841 | 4,757                 | 50                       |
-| SRX13198730 | 8,972                 | 75                       |
+| SRX22996378 | 3,209                 | 25                       |
+| SRX17412841 | 4,705                 | 50                       |
+| SRX13198730 | 8,905                 | 75                       |
 
 
 The goal is to identify the Leiden resolution whose partition best recovers the `cell_type` weak prior, then to reduce over-clustering by merging transcriptomically indistinguishable clusters using a random forest. The selection criterion is **Jaccard-based matching via the Hungarian algorithm**.
@@ -131,10 +131,10 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 | Parameter                    | Value                            | Description                                             |
 | ---------------------------- | -------------------------------- | ------------------------------------------------------- |
 | `FILE_SIZE`                  | `{0: "75%", 1: "50%", 2: "25%"}` | Dataset size quantile label for each `FILE_IDX`         |
-| `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain           |
+| `MIN_CELLS_PER_TYPE`         | 30                               | Minimum cells per `cell_type` label to retain           |
 | `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                |
 | `N_PCS`                      | 40                               | PCs used for neighbour graph construction               |
 | `RESOLUTIONS`                | 0.2, 0.4, …, 2.0 (step 0.2)      | Leiden resolutions swept                                |
-| `MERGE_THRESHOLD`            | 0.30                             | OOF confusion threshold above which clusters are merged |
+| `MERGE_THRESHOLD`            | 0.25                             | OOF confusion threshold above which clusters are merged |
 
 
