@@ -73,13 +73,13 @@ score = sum(J[matched pairs])
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §**Final partition**.
 
 **75% dataset (file0)**
-![](.figs/resolution_sweep_file0.svg)
+![](.figs/resolution_sweep_file0.png)
 
 **50% dataset (file1)**
-![](.figs/resolution_sweep_file1.svg)
+![](.figs/resolution_sweep_file1.png)
 
 **25% dataset (file2)**
-![](.figs/resolution_sweep_file2.svg)
+![](.figs/resolution_sweep_file2.png)
 
 
 
@@ -92,29 +92,29 @@ Even at the best resolution, some clusters may be transcriptomically indistingui
 A union-find structure propagates merges transitively: if cluster A is confused with B and B is confused with C, all three collapse into a single cluster.
 
 **75% dataset (file0)**
-![](.figs/rf_confusion_file0.svg)
+![](.figs/rf_confusion_file0.png)
 
 **50% dataset (file1)**
-![](.figs/rf_confusion_file1.svg)
+![](.figs/rf_confusion_file1.png)
 
 **25% dataset (file2)**
-![](.figs/rf_confusion_file2.svg)
+![](.figs/rf_confusion_file2.png)
 
 ### Final partition
 
 The merged partition (`leiden_merged`) is compared to both the original selected Leiden partition and the `cell_type` reference in the three-panel UMAPs below. The composition bar charts show the relative cell proportions across merged clusters and cell types, confirming whether the merge has moved the partition closer to the biological groupings.
 
 **75% dataset (file0)**
-![](.figs/umap_merged_file0.svg)
-![](.figs/composition_bars_file0.svg)
+![](.figs/umap_merged_file0.png)
+![](.figs/composition_bars_file0.png)
 
 **50% dataset (file1)**
-![](.figs/umap_merged_file1.svg)
-![](.figs/composition_bars_file1.svg)
+![](.figs/umap_merged_file1.png)
+![](.figs/composition_bars_file1.png)
 
 **25% dataset (file2)**
-![](.figs/umap_merged_file2.svg)
-![](.figs/composition_bars_file2.svg)
+![](.figs/umap_merged_file2.png)
+![](.figs/composition_bars_file2.png)
 
 
 # Conclusions
