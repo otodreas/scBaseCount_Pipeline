@@ -1,6 +1,8 @@
 # Exploratory analysis
 
-Exploratory analysis commenced in week 2, wherein I manually ran `scanpy` pipelines on 3 datasets, each of which represented a quantile of cell count in the collection of datasets I analyzed. See `datasets_summary` for an explanation on which datasets I used.# Introduction
+Exploratory analysis commenced in week 2, wherein I manually ran `scanpy` pipelines on 3 datasets, each of which represented a quantile of cell count in the collection of datasets I analyzed. See `datasets_summary` for an explanation on which datasets I used.
+
+# Introduction
 
 ## Report summary
 
@@ -139,19 +141,20 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 ## Key takeaways
 
 - The method using matrix building &rarr; matrix cost minimization &rarr; select lowest cost resolution &rarr; merge clusters does not rely on composite indices and is biologically informed
+- Filtering of data focuses on statistical viability by setting a hard cutoff for minimum cells per STATE annotation
 - The cluster resolution optimization produced a similar number of clusters to the number of cell types for each datasets
-- For the 75% and 50% datasets, the method split up the largest cluster (see red and blue bar graphs) and did not merge them back together
 
 # Appendix: Key parameters
 
 
-| Parameter                    | Value                            | Description                                             |
-| ---------------------------- | -------------------------------- | ------------------------------------------------------- |
-| `FILE_SIZE`                  | `{0: "75%", 1: "50%", 2: "25%"}` | Dataset size quantile label for each `FILE_IDX`         |
-| `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain           |
-| `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                |
-| `N_PCS`                      | 40                               | PCs used for neighbour graph construction               |
-| `RESOLUTIONS`                | 0.2, 0.4, …, 2.0 (step 0.2)      | Leiden resolutions swept                                |
-| `MERGE_THRESHOLD`            | 0.25                             | OOF confusion threshold above which clusters are merged |
+| Parameter                    | Value                            | Description                                                       |
+| ---------------------------- | -------------------------------- | -------------------------------------------------------           |
+| `FILE_SIZE`                  | `{0: "75%", 1: "50%", 2: "25%"}` | Dataset size quantile label for each `FILE_IDX`                   |
+| `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain                     |
+| `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                          |
+| `N_PCS_COMPUTE`              | 500                              | Number of PCs computed                                            |
+| `N_PCS_CUMVAR_TARGET`        | 0.9                              | Cumulative variance of PCs used in neighborhood graph computation |
+| `RESOLUTIONS`                | 0.1, 0.2, …, 2.0 (step 0.1)      | Leiden resolutions swept                                          |
+| `MERGE_THRESHOLD`            | 0.2                              | OOF confusion threshold above which clusters are merged           |
 
 
