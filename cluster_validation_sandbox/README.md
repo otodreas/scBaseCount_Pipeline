@@ -48,11 +48,17 @@ See §**Appendix** for a breakdown on the parameters I used.
 
 # Methods
 
+## Dimensionality reduction & neighborhood graph construction
+
+We run PCA with 500 components (`scanpy.tl.pca`), well above the common default of 50, so the variance spectrum can be inspected without an artificial cap. On our test objects, roughly 300–450 PCs were needed to reach 90% cumulative explained variance. For `scanpy.pp.neighbors`, we set `n_pcs` to the smallest number of PCs whose cumulative explained variance is at least 90%. According to the scanpy docs, the maintainers of 
+scanpy do not see a significant downside to overestimating the number of PCs that should be used in the neighborhood 
+graph construction. This supports using a variance-based floor rather than an aggressive low cap.
+
 ## Resolution selection
 
 ### Leiden sweep
 
-Leiden clustering (igraph flavour) is run at ten resolutions: 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, and 2.0. Each partition is stored as a separate `obs` column (`leiden_{r}`). The number of clusters grows roughly monotonically with resolution.
+Leiden clustering (igraph flavour) is run at ten resolutions: 0.1 through 2.0, at intervals of 0.1. Each partition is stored as a separate `obs` column (`leiden_{r}`). The number of clusters grows roughly monotonically with resolution.
 
 ### Jaccard matrix construction and Hungarian scoring
 
@@ -81,7 +87,18 @@ The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. T
 **25% dataset (file2)**
 ![](.figs/resolution_sweep_file2.png)
 
+## Comparison with silhouette score
 
+Silhouette scores are computed at each clustering resolution before merging. The score generally decreases as resolution increases. On our datasets, the resolution chosen by the scoring procedure is never the one that maximises silhouette. That is unsurprising: silhouette rewards compact, well-separated clusters, whereas larger clusters often contain finer biological structure (for example in STATE annotations). Merging that structure into a single cluster tends to lower silhouette.
+
+**75% dataset (file0)**
+![](.figs/silhouette_vs_resolution_file0.png)
+
+**50% dataset (file1)**
+![](.figs/silhouette_vs_resolution_file1.png)
+
+**25% dataset (file2)**
+![](.figs/silhouette_vs_resolution_file2.png)
 
 ## RF-based cluster merging
 
