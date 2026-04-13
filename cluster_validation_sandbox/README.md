@@ -56,6 +56,16 @@ See §**Appendix** for a breakdown on the parameters I used.
 
 We run PCA with 500 components (`scanpy.tl.pca`), well above the common default of 50, so the variance spectrum can be inspected without an artificial cap. On our test objects, roughly 300–450 PCs were needed to reach 90% cumulative explained variance. For `scanpy.pp.neighbors`, we set `n_pcs` to the smallest number of PCs whose cumulative explained variance is at least 90%. According to the scanpy docs, the maintainers of scanpy do not see a significant downside to overestimating the number of PCs that should be used in the neighborhood graph construction. This supports using a variance-based floor rather than an aggressive low cap.
 
+![](<.figs/pca_cumvar_SRX22996378.png>)
+
+![](<.figs/pca_cumvar_SRX12366723.png>)
+
+![](<.figs/pca_cumvar_SRX17412841.png>)
+
+![](<.figs/pca_cumvar_SRX24313469.png>)
+
+![](<.figs/pca_cumvar_SRX13198730.png>)
+
 ## Resolution selection
 
 ### Leiden sweep
@@ -80,38 +90,28 @@ score = sum(J[matched pairs])
 
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §**Final partition**.
 
-**SRX22996378 (quantile=0.25)**
 ![](.figs/resolution_sweep_SRX22996378.png)
 
-**SRX12366723 (quantile=0.33)**
 ![](.figs/resolution_sweep_SRX12366723.png)
 
-**SRX17412841 (quantile=0.50)**
 ![](.figs/resolution_sweep_SRX17412841.png)
 
-**SRX24313469 (quantile=0.67)**
 ![](.figs/resolution_sweep_SRX24313469.png)
 
-**SRX13198730 (quantile=0.75)**
 ![](.figs/resolution_sweep_SRX13198730.png)
 
 ## Comparison with silhouette score
 
 Silhouette scores are computed at each clustering resolution before merging. The score generally decreases as resolution increases. On our datasets, the resolution chosen by the scoring procedure is never the one that maximises silhouette. That is unsurprising: silhouette rewards compact, well-separated clusters, whereas larger clusters often contain finer biological structure (for example in STATE annotations). Merging that structure into a single cluster tends to lower silhouette.
 
-**SRX22996378 (quantile=0.25)**
 ![](.figs/silhouette_vs_resolution_SRX22996378.png)
 
-**SRX12366723 (quantile=0.33)**
 ![](.figs/silhouette_vs_resolution_SRX12366723.png)
 
-**SRX17412841 (quantile=0.50)**
 ![](.figs/silhouette_vs_resolution_SRX17412841.png)
 
-**SRX24313469 (quantile=0.67)**
 ![](.figs/silhouette_vs_resolution_SRX24313469.png)
 
-**SRX13198730 (quantile=0.75)**
 ![](.figs/silhouette_vs_resolution_SRX13198730.png)
 
 ## RF-based cluster merging
@@ -122,42 +122,32 @@ Even at the best resolution, some clusters may be transcriptomically indistingui
 
 A union-find structure propagates merges transitively: if cluster A is confused with B and B is confused with C, all three collapse into a single cluster.
 
-**SRX22996378 (quantile=0.25)**
 ![](.figs/rf_confusion_SRX22996378.png)
 
-**SRX12366723 (quantile=0.33)**
 ![](.figs/rf_confusion_SRX12366723.png)
 
-**SRX17412841 (quantile=0.50)**
 ![](.figs/rf_confusion_SRX17412841.png)
 
-**SRX24313469 (quantile=0.67)**
 ![](.figs/rf_confusion_SRX24313469.png)
 
-**SRX13198730 (quantile=0.75)**
 ![](.figs/rf_confusion_SRX13198730.png)
 
 ### Final partition
 
 The merged partition (`leiden_merged`) is compared to both the original selected Leiden partition and the `cell_type` reference in the three-panel UMAPs below. The composition bar charts show the relative cell proportions across merged clusters and cell types, confirming whether the merge has moved the partition closer to the biological groupings.
 
-**SRX22996378 (quantile=0.25)**
 ![](.figs/umap_merged_SRX22996378.png)
 ![](.figs/composition_bars_SRX22996378.png)
 
-**SRX12366723 (quantile=0.33)**
 ![](.figs/umap_merged_SRX12366723.png)
 ![](.figs/composition_bars_SRX12366723.png)
 
-**SRX17412841 (quantile=0.50)**
 ![](.figs/umap_merged_SRX17412841.png)
 ![](.figs/composition_bars_SRX17412841.png)
 
-**SRX24313469 (quantile=0.67)**
 ![](.figs/umap_merged_SRX24313469.png)
 ![](.figs/composition_bars_SRX24313469.png)
 
-**SRX13198730 (quantile=0.75)**
 ![](.figs/umap_merged_SRX13198730.png)
 ![](.figs/composition_bars_SRX13198730.png)
 
