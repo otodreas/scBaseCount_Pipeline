@@ -168,8 +168,8 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 | `SRX_ACCESSION` / `DATASET_INDEX` | `None` / `0`                | Select dataset by accession string or row index into `datasets_summary` |
 | `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain                     |
 | `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                          |
-| `N_PCS_COMPUTE`              | 500                              | Number of PCs computed                                            |
-| `N_PCS_CUMVAR_TARGET`        | 0.9                              | Cumulative variance of PCs used in neighborhood graph computation |
+| `N_PCS_COMPUTE`              | 50                              | Number of PCs computed                                            |
+| `N_PCS_CUMVAR_TARGET`        | 0.5                              | Cumulative variance of PCs used in neighborhood graph computation |
 | `RESOLUTIONS`                | 0.1, 0.2, …, 2.0 (step 0.1)      | Leiden resolutions swept                                          |
 | `MERGE_THRESHOLD`            | 0.2                              | OOF confusion threshold above which clusters are merged           |
 
