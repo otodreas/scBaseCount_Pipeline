@@ -6,21 +6,23 @@ Exploratory analysis commenced in week 2, wherein I manually ran `scanpy` pipeli
 
 ## Report summary
 
-This report documents the cluster label optimisation pipeline applied to three lung datasets drawn from the scBaseCount human scRNA-seq collection (snapshot: 2026-01-12), sampled at the 75th, 50th, and 25th percentile of number of cells to probe how the method behaves across different dataset scales.
+This report documents the cluster label optimisation pipeline applied to five lung datasets drawn from the scBaseCount human scRNA-seq collection (snapshot: 2026-01-12), sampled at the 25th, 33rd, 50th, 67th, and 75th percentile of number of cells to probe how the method behaves across different dataset scales.
 
 **Datasets**
 
 
-| SRX         | *n* cells pre filter | *n* cells percentile (%) |
-| ----------- | --------------------- | ------------------------ |
-| SRX22996378 | 3,413                 | 25                       |
-| SRX17412841 | 5,506                 | 50                       |
-| SRX13198730 | 9,419                 | 75                       |
+| SRX         | *n* cells pre filter | quantile |
+| ----------- | --------------------- | -------- |
+| SRX22996378 | 3,413                 | 0.25     |
+| SRX12366723 | 4,032                 | 0.33     |
+| SRX17412841 | 5,506                 | 0.50     |
+| SRX24313469 | 7,656                 | 0.67     |
+| SRX13198730 | 9,419                 | 0.75     |
 
 
 The goal is to identify the Leiden resolution whose partition best recovers the `cell_type` weak prior, then to reduce over-clustering by merging transcriptomically indistinguishable clusters using a random forest. The selection criterion is **Jaccard-based matching via the Hungarian algorithm**.
 
-The pipeline is run independently on each dataset (`FILE_IDX` 0, 1, 2) from `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`. After cell-type rare-type filtering, QC, and preprocessing, Leiden clustering is swept across ten resolutions (0.2–2.0). The resolution with the highest penalised Jaccard score is selected, and a random forest merging step collapses clusters that the classifier cannot distinguish.
+The pipeline is run independently on each dataset (selected via `SRX_ACCESSION` or `DATASET_INDEX`) from `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`. After cell-type rare-type filtering, QC, and preprocessing, Leiden clustering is swept across ten resolutions (0.1–2.0). The resolution with the highest penalised Jaccard score is selected, and a random forest merging step collapses clusters that the classifier cannot distinguish.
 
 Filtering is not discussed in this report but all the filtering and QC steps are outlined in `clust_val_analysis.ipynb`.
 
@@ -40,7 +42,7 @@ See §**Appendix** for a breakdown on the parameters I used.
 
 ## Methods at a glance
 
-- Sweep Leiden resolution (0.2–2.0) to generate a range of candidate partitions
+- Sweep Leiden resolution (0.1–2.0) to generate a range of candidate partitions
 - Build a Jaccard similarity matrix between each predicted cluster and every reference cell type
 - Apply the Hungarian algorithm to find the jointly optimal one-to-one assignment between clusters and reference types that maximises the total summed Jaccard across all matched pairs
     - Note that overclustering penalty was removed after `c1c55ba` because it was ineffective and relied only on cluster count
@@ -52,9 +54,7 @@ See §**Appendix** for a breakdown on the parameters I used.
 
 ## Dimensionality reduction & neighborhood graph construction
 
-We run PCA with 500 components (`scanpy.tl.pca`), well above the common default of 50, so the variance spectrum can be inspected without an artificial cap. On our test objects, roughly 300–450 PCs were needed to reach 90% cumulative explained variance. For `scanpy.pp.neighbors`, we set `n_pcs` to the smallest number of PCs whose cumulative explained variance is at least 90%. According to the scanpy docs, the maintainers of 
-scanpy do not see a significant downside to overestimating the number of PCs that should be used in the neighborhood 
-graph construction. This supports using a variance-based floor rather than an aggressive low cap.
+We run PCA with 500 components (`scanpy.tl.pca`), well above the common default of 50, so the variance spectrum can be inspected without an artificial cap. On our test objects, roughly 300–450 PCs were needed to reach 90% cumulative explained variance. For `scanpy.pp.neighbors`, we set `n_pcs` to the smallest number of PCs whose cumulative explained variance is at least 90%. According to the scanpy docs, the maintainers of scanpy do not see a significant downside to overestimating the number of PCs that should be used in the neighborhood graph construction. This supports using a variance-based floor rather than an aggressive low cap.
 
 ## Resolution selection
 
@@ -80,27 +80,39 @@ score = sum(J[matched pairs])
 
 The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §**Final partition**.
 
-**75% dataset (file0)**
-![](.figs/resolution_sweep_file0.png)
+**SRX22996378 (quantile=0.25)**
+![](.figs/resolution_sweep_SRX22996378.png)
 
-**50% dataset (file1)**
-![](.figs/resolution_sweep_file1.png)
+**SRX12366723 (quantile=0.33)**
+![](.figs/resolution_sweep_SRX12366723.png)
 
-**25% dataset (file2)**
-![](.figs/resolution_sweep_file2.png)
+**SRX17412841 (quantile=0.50)**
+![](.figs/resolution_sweep_SRX17412841.png)
+
+**SRX24313469 (quantile=0.67)**
+![](.figs/resolution_sweep_SRX24313469.png)
+
+**SRX13198730 (quantile=0.75)**
+![](.figs/resolution_sweep_SRX13198730.png)
 
 ## Comparison with silhouette score
 
 Silhouette scores are computed at each clustering resolution before merging. The score generally decreases as resolution increases. On our datasets, the resolution chosen by the scoring procedure is never the one that maximises silhouette. That is unsurprising: silhouette rewards compact, well-separated clusters, whereas larger clusters often contain finer biological structure (for example in STATE annotations). Merging that structure into a single cluster tends to lower silhouette.
 
-**75% dataset (file0)**
-![](.figs/silhouette_vs_resolution_file0.png)
+**SRX22996378 (quantile=0.25)**
+![](.figs/silhouette_vs_resolution_SRX22996378.png)
 
-**50% dataset (file1)**
-![](.figs/silhouette_vs_resolution_file1.png)
+**SRX12366723 (quantile=0.33)**
+![](.figs/silhouette_vs_resolution_SRX12366723.png)
 
-**25% dataset (file2)**
-![](.figs/silhouette_vs_resolution_file2.png)
+**SRX17412841 (quantile=0.50)**
+![](.figs/silhouette_vs_resolution_SRX17412841.png)
+
+**SRX24313469 (quantile=0.67)**
+![](.figs/silhouette_vs_resolution_SRX24313469.png)
+
+**SRX13198730 (quantile=0.75)**
+![](.figs/silhouette_vs_resolution_SRX13198730.png)
 
 ## RF-based cluster merging
 
@@ -110,30 +122,44 @@ Even at the best resolution, some clusters may be transcriptomically indistingui
 
 A union-find structure propagates merges transitively: if cluster A is confused with B and B is confused with C, all three collapse into a single cluster.
 
-**75% dataset (file0)**
-![](.figs/rf_confusion_file0.png)
+**SRX22996378 (quantile=0.25)**
+![](.figs/rf_confusion_SRX22996378.png)
 
-**50% dataset (file1)**
-![](.figs/rf_confusion_file1.png)
+**SRX12366723 (quantile=0.33)**
+![](.figs/rf_confusion_SRX12366723.png)
 
-**25% dataset (file2)**
-![](.figs/rf_confusion_file2.png)
+**SRX17412841 (quantile=0.50)**
+![](.figs/rf_confusion_SRX17412841.png)
+
+**SRX24313469 (quantile=0.67)**
+![](.figs/rf_confusion_SRX24313469.png)
+
+**SRX13198730 (quantile=0.75)**
+![](.figs/rf_confusion_SRX13198730.png)
 
 ### Final partition
 
 The merged partition (`leiden_merged`) is compared to both the original selected Leiden partition and the `cell_type` reference in the three-panel UMAPs below. The composition bar charts show the relative cell proportions across merged clusters and cell types, confirming whether the merge has moved the partition closer to the biological groupings.
 
-**75% dataset (file0)**
-![](.figs/umap_merged_file0.png)
-![](.figs/composition_bars_file0.png)
+**SRX22996378 (quantile=0.25)**
+![](.figs/umap_merged_SRX22996378.png)
+![](.figs/composition_bars_SRX22996378.png)
 
-**50% dataset (file1)**
-![](.figs/umap_merged_file1.png)
-![](.figs/composition_bars_file1.png)
+**SRX12366723 (quantile=0.33)**
+![](.figs/umap_merged_SRX12366723.png)
+![](.figs/composition_bars_SRX12366723.png)
 
-**25% dataset (file2)**
-![](.figs/umap_merged_file2.png)
-![](.figs/composition_bars_file2.png)
+**SRX17412841 (quantile=0.50)**
+![](.figs/umap_merged_SRX17412841.png)
+![](.figs/composition_bars_SRX17412841.png)
+
+**SRX24313469 (quantile=0.67)**
+![](.figs/umap_merged_SRX24313469.png)
+![](.figs/composition_bars_SRX24313469.png)
+
+**SRX13198730 (quantile=0.75)**
+![](.figs/umap_merged_SRX13198730.png)
+![](.figs/composition_bars_SRX13198730.png)
 
 
 # Conclusions
@@ -149,7 +175,7 @@ The merged partition (`leiden_merged`) is compared to both the original selected
 
 | Parameter                    | Value                            | Description                                                       |
 | ---------------------------- | -------------------------------- | -------------------------------------------------------           |
-| `FILE_SIZE`                  | `{0: "75%", 1: "50%", 2: "25%"}` | Dataset size quantile label for each `FILE_IDX`                   |
+| `SRX_ACCESSION` / `DATASET_INDEX` | `None` / `0`                | Select dataset by accession string or row index into `datasets_summary` |
 | `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain                     |
 | `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                          |
 | `N_PCS_COMPUTE`              | 500                              | Number of PCs computed                                            |
