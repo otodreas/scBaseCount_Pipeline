@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+import re
 import xml.etree.ElementTree as ET
 
 from ena_context.ena_client import curl_get
-from ena_context.models import BiologicalContext, ExperimentContext, TechnicalContext
+from ena_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 
 PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
 BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
@@ -16,6 +17,10 @@ def _str(val: str | None) -> str | None:
     return val.strip()
 
 
+def _parse_pubmed_ids(tag: str) -> list[str]:
+    return re.findall(r"xref:PubMed:(\d+)", tag)
+
+
 def _parse_sample_attributes(xml_text: str) -> dict[str, str]:
     root = ET.fromstring(xml_text)
     attrs: dict[str, str] = {}
@@ -25,6 +30,32 @@ def _parse_sample_attributes(xml_text: str) -> dict[str, str]:
         if tag_el is not None and tag_el.text:
             attrs[tag_el.text] = val_el.text.strip() if val_el is not None and val_el.text else ""
     return attrs
+
+
+def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyContext | None:
+    url = (
+        f"{PORTAL_BASE}/filereport"
+        f"?accession={study_accession}&result=study&fields=all&format=json"
+    )
+    try:
+        raw = curl_get(url)
+        records: list[dict[str, str]] = json.loads(raw)
+    except Exception as exc:
+        warnings.append(f"study_api_failed:{exc}")
+        return None
+
+    if not records:
+        warnings.append(f"study_api_empty_response:{study_accession}")
+        return None
+
+    r = records[0]
+    return StudyContext(
+        studyAccession=study_accession,
+        studyTitle=_str(r.get("study_title")),
+        studyDescription=_str(r.get("study_description")),
+        geoAccession=_str(r.get("geo_accession")),
+        pubmedIds=_parse_pubmed_ids(r.get("tag", "")),
+    )
 
 
 def fetch_experiment_context(accession: str) -> ExperimentContext:
@@ -79,14 +110,16 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
         except Exception as exc:
             warnings.append(f"sample_xml_failed:{exc}")
 
+    study_accession = _str(first.get("study_accession"))
+    study = _fetch_study_context(study_accession, warnings) if study_accession else None
+
     return ExperimentContext(
         accession=accession,
-        studyAccession=_str(first.get("study_accession")),
-        studyTitle=_str(first.get("study_title")),
         experimentTitle=_str(first.get("experiment_title")),
         sampleAccession=sample_accession,
         runAccessions=run_accessions,
         technical=technical,
         biological=biological,
+        study=study,
         warnings=warnings,
     )
