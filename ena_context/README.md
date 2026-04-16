@@ -2,7 +2,9 @@
 
 Standalone utility that fetches structured experiment context from EBI ENA and NCBI PubMed for a given SRX or ERX accession. Returns a typed Pydantic model ready for downstream use or LLM consumption.
 
-Library selection protocol, study context, and study abstract can be extracted from the output as strings and fed into CyteType
+Library selection protocol, study context, and study abstract can be extracted from the output and stored in a json file, from which text strings can be fed into CyteType.
+
+I've generated the file `../output/contexts.jsonl` with `../main.py` at commit `6c01a0b`.
 
 ## Usage
 
@@ -61,6 +63,18 @@ Make a file called `.env` with a line that says
 ```h
 NCBI_API_KEY=your_key_here
 ```
+
+## Inspecting the output
+
+`metadata_analysis/contexts_inspection.ipynb` is a validation notebook for reviewing the contents of a serialised `contexts.jsonl` file. It covers:
+
+| Section | What it checks |
+|---------|----------------|
+| **Load & basic counts** | Records loaded vs source CSV; flags missing, extra, or duplicate accessions |
+| **Field coverage** | Fill-rate table for key text fields: `studyDescription`, `pubmedAbstract`, `tissueType`, `cellType`, `sampleAttributes`, `libraryStrategy`, `libraryConstructionProtocol` |
+| **Warnings** | Count and type breakdown of non-fatal fetch failures; lists affected accessions |
+| **Distributions** | Value counts for `libraryStrategy`, `scientificName`, `tissueType` |
+| **Spot checks** | Prints a summary of the first 3 records; separately lists all records missing `pubmedAbstract` so they can be investigated or re-fetched |
 
 ## Output model
 
