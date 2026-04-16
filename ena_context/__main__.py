@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 
-from ena_context.fetch import fetch_experiment_context
+from ena_context.pipeline import pipeline_for_accession_list
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    results = [fetch_experiment_context(acc) for acc in args.accessions]
+    results = pipeline_for_accession_list(args.accessions)
     payload = [r.model_dump(mode="json") for r in results]
     json.dump(payload, sys.stdout, indent=2)
     sys.stdout.write("\n")

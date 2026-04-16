@@ -59,6 +59,7 @@ def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyCont
 
 
 def fetch_experiment_context(accession: str) -> ExperimentContext:
+    print(f"[DEBUG] Fetching experiment context for accession: {accession}")
     warnings: list[str] = []
 
     url = (

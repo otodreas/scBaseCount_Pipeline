@@ -1,4 +1,11 @@
-from ena_context.fetch import fetch_experiment_context
-from ena_context.models import ExperimentContext, StudyContext
+from ena_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
+from ena_context.pipeline import pipeline_for_accession, pipeline_for_accession_list
 
-__all__ = ["fetch_experiment_context", "ExperimentContext", "StudyContext"]
+__all__ = [
+    "pipeline_for_accession",
+    "pipeline_for_accession_list",
+    "ExperimentContext",
+    "StudyContext",
+    "TechnicalContext",
+    "BiologicalContext",
+]
