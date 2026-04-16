@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ena_context.fetch import fetch_experiment_context
-from ena_context.models import BiologicalContext, ExperimentContext, PubmedArticle, StudyContext, TechnicalContext
+from ena_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 
 
 def pipeline_for_accession(accession: str) -> ExperimentContext:
@@ -17,7 +17,6 @@ __all__ = [
     "pipeline_for_accession_list",
     "ExperimentContext",
     "StudyContext",
-    "PubmedArticle",
     "TechnicalContext",
     "BiologicalContext",
 ]

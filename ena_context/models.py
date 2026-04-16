@@ -28,16 +28,6 @@ class BiologicalContext(BaseModel):
     sampleAttributes: dict[str, str] = Field(default_factory=dict)
 
 
-class PubmedArticle(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    pmid: str
-    title: str | None = None
-    abstract: str | None = None
-    journal: str | None = None
-    year: int | None = None
-
-
 class StudyContext(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -46,7 +36,7 @@ class StudyContext(BaseModel):
     studyDescription: str | None = None
     geoAccession: str | None = None
     pubmedIds: list[str] = Field(default_factory=list)
-    articles: list[PubmedArticle] = Field(default_factory=list)
+    pubmedAbstract: str | None = None
 
 
 class ExperimentContext(BaseModel):
