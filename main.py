@@ -27,10 +27,10 @@ else:
             f.write(ctx.model_dump_json() + "\n")
 
 
-descriptions = [ctx.study.studyDescription for ctx in contexts]
+# descriptions = [ctx.study.studyDescription for ctx in contexts]
 
-data = pd.DataFrame({"srx_accession": accessions, "study_description": descriptions})
-data.to_csv("output/datasets_with_study_description.csv", index=False)
+# data = pd.DataFrame({"srx_accession": accessions, "study_description": descriptions})
+# data.to_csv("output/datasets_with_study_description.csv", index=False)
 
 # missing_descriptions = []
 # for ctx in contexts:
