@@ -1,16 +1,27 @@
+import json
+from pathlib import Path
 import pandas as pd
-from ena_context import pipeline_for_accession, pipeline_for_accession_list
+from ena_context import ExperimentContext, pipeline_for_accession_list
 
-SAMPLE_SIZE = 0
+output_path = Path("output/contexts.jsonl")
 
-data = pd.read_csv("metadata_analysis/v2_lung/datasets.csv")
-if SAMPLE_SIZE:
-    data = data.sample(n=SAMPLE_SIZE, random_state=42)
+if output_path.exists():
+    with open(output_path) as f:
+        contexts = [ExperimentContext.model_validate_json(line) for line in f]
+else:
+    SAMPLE_SIZE = 0
+    data = pd.read_csv("metadata_analysis/v2_lung/datasets.csv")
+    if SAMPLE_SIZE:
+        data = data.sample(n=SAMPLE_SIZE, random_state=42)
+    accessions = data["srx_accession"].tolist()
+    contexts = pipeline_for_accession_list(accessions)
+    with open(output_path, "w") as f:
+        for ctx in contexts:
+            f.write(ctx.model_dump_json() + "\n")
 
-accessions = data["srx_accession"].tolist()
 
-contexts = pipeline_for_accession_list(accessions)
 descriptions = [ctx.study.studyDescription for ctx in contexts]
+
 data = pd.DataFrame({"srx_accession": accessions, "study_description": descriptions})
 data.to_csv("output/datasets_with_study_description.csv", index=False)
 

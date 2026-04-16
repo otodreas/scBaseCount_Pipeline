@@ -2,10 +2,27 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
+import time
 import xml.etree.ElementTree as ET
 
-from ena_context.ena_client import curl_get
 from ena_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
+
+
+def _curl_get(url: str, *, retries: int = 3, timeout_s: int = 30) -> str:
+    last_stderr = ""
+    for attempt in range(retries + 1):
+        result = subprocess.run(
+            ["curl", "-sf", "--max-time", str(timeout_s), url],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            return result.stdout
+        last_stderr = result.stderr.strip()
+        if attempt < retries:
+            time.sleep(2 ** attempt)
+    raise RuntimeError(f"curl failed for {url!r} (exit {result.returncode}): {last_stderr}")
 
 PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
 BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
@@ -38,7 +55,7 @@ def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyCont
         f"?accession={study_accession}&result=study&fields=all&format=json"
     )
     try:
-        raw = curl_get(url)
+        raw = _curl_get(url)
         records: list[dict[str, str]] = json.loads(raw)
     except Exception as exc:
         warnings.append(f"study_api_failed:{exc}")
@@ -67,7 +84,7 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
         f"?accession={accession}&result=read_experiment&fields=all&format=json"
     )
     try:
-        raw = curl_get(url)
+        raw = _curl_get(url)
         records: list[dict[str, str]] = json.loads(raw)
     except Exception as exc:
         warnings.append(f"portal_api_failed:{exc}")
@@ -104,7 +121,7 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
 
     if sample_accession:
         try:
-            xml_text = curl_get(f"{BROWSER_BASE}/xml/{sample_accession}")
+            xml_text = _curl_get(f"{BROWSER_BASE}/xml/{sample_accession}")
             biological = biological.model_copy(
                 update={"sampleAttributes": _parse_sample_attributes(xml_text)}
             )
