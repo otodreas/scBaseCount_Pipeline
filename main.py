@@ -1,15 +1,22 @@
 import json
 from pathlib import Path
+
 import pandas as pd
+from dotenv import load_dotenv
+
 from ena_context import ExperimentContext, pipeline_for_accession_list
+
+load_dotenv()
 
 output_path = Path("output/contexts.jsonl")
 
-if output_path.exists():
+READ_FROM_CACHE = True
+
+if READ_FROM_CACHE and output_path.exists():
     with open(output_path) as f:
         contexts = [ExperimentContext.model_validate_json(line) for line in f]
 else:
-    SAMPLE_SIZE = 0
+    SAMPLE_SIZE = 10
     data = pd.read_csv("metadata_analysis/v2_lung/datasets.csv")
     if SAMPLE_SIZE:
         data = data.sample(n=SAMPLE_SIZE, random_state=42)

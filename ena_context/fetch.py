@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import time
 import xml.etree.ElementTree as ET
 
-from ena_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
+from ena_context.models import BiologicalContext, ExperimentContext, PubmedArticle, StudyContext, TechnicalContext
+
+NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 
 
 def _curl_get(url: str, *, retries: int = 3, timeout_s: int = 30) -> str:
@@ -49,6 +52,55 @@ def _parse_sample_attributes(xml_text: str) -> dict[str, str]:
     return attrs
 
 
+def _fetch_pubmed_articles(pmids: list[str], warnings: list[str]) -> list[PubmedArticle]:
+    if not pmids:
+        return []
+
+    print(f"[DEBUG] Fetching PubMed abstracts for PMIDs: {pmids}")
+    api_key = os.environ.get("NCBI_API_KEY", "")
+    key_param = f"&api_key={api_key}" if api_key else ""
+    url = (
+        f"{NCBI_EUTILS_BASE}/efetch.fcgi"
+        f"?db=pubmed&id={','.join(pmids)}&rettype=xml&retmode=xml{key_param}"
+    )
+    try:
+        xml_text = _curl_get(url)
+        root = ET.fromstring(xml_text)
+    except Exception as exc:
+        warnings.append(f"pubmed_fetch_failed:{exc}")
+        return []
+
+    articles: list[PubmedArticle] = []
+    for article_el in root.iter("PubmedArticle"):
+        pmid_el = article_el.find(".//PMID")
+        title_el = article_el.find(".//ArticleTitle")
+        abstract_el = article_el.find(".//AbstractText")
+        journal_el = article_el.find(".//Journal/Title")
+        year_el = article_el.find(".//PubDate/Year")
+
+        pmid_val = pmid_el.text.strip() if pmid_el is not None and pmid_el.text else ""
+        if not pmid_val:
+            continue
+
+        abstract_text: str | None = None
+        if abstract_el is not None:
+            abstract_text = "".join(abstract_el.itertext()).strip() or None
+
+        year_val: int | None = None
+        if year_el is not None and year_el.text and year_el.text.strip().isdigit():
+            year_val = int(year_el.text.strip())
+
+        articles.append(PubmedArticle(
+            pmid=pmid_val,
+            title=_str(title_el.text if title_el is not None else None),
+            abstract=abstract_text,
+            journal=_str(journal_el.text if journal_el is not None else None),
+            year=year_val,
+        ))
+
+    return articles
+
+
 def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyContext | None:
     url = (
         f"{PORTAL_BASE}/filereport"
@@ -66,12 +118,16 @@ def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyCont
         return None
 
     r = records[0]
+    pubmed_ids = _parse_pubmed_ids(r.get("tag", ""))
+    articles = _fetch_pubmed_articles(pubmed_ids, warnings)
+
     return StudyContext(
         studyAccession=study_accession,
         studyTitle=_str(r.get("study_title")),
         studyDescription=_str(r.get("study_description")),
         geoAccession=_str(r.get("geo_accession")),
-        pubmedIds=_parse_pubmed_ids(r.get("tag", "")),
+        pubmedIds=pubmed_ids,
+        articles=articles,
     )
 
 
