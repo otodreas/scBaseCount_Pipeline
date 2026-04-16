@@ -10,13 +10,13 @@ load_dotenv()
 
 output_path = Path("output/contexts.jsonl")
 
-READ_FROM_CACHE = True
+READ_FROM_CACHE = False
 
 if READ_FROM_CACHE and output_path.exists():
     with open(output_path) as f:
         contexts = [ExperimentContext.model_validate_json(line) for line in f]
 else:
-    SAMPLE_SIZE = 10
+    SAMPLE_SIZE = False
     data = pd.read_csv("metadata_analysis/v2_lung/datasets.csv")
     if SAMPLE_SIZE:
         data = data.sample(n=SAMPLE_SIZE, random_state=42)
