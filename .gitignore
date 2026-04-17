@@ -8,8 +8,13 @@ __pycache__/
 # Data
 data/
 
-# Runs
+# Background run logs
 nohup.out
+
+# CyteType
+obs.duckdb
+query.json
+vars.h5
 
 # Personal notes
 DailyNotes.md
