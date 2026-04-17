@@ -20,4 +20,5 @@ dependencies = [
     "pyarrow>=23.0.1",
     "scanpy[leiden]>=1.12",
     "python-dotenv>=1.2.2",
+    "cytetype>=0.19.4",
 ]
