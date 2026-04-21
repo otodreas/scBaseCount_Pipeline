@@ -9,7 +9,7 @@ Uses the Arc Institute's [Virtual Cell Atlas](https://console.cloud.google.com/s
 ### Requirements
 
 **Essential requirements**
-- Python >= 3.12
+- Python >= 3.12.12
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
 
 **Optional**
