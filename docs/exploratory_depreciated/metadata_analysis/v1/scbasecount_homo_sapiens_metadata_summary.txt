@@ -1,0 +1,64 @@
+scBaseCount Homo sapiens metadata run summary
+written 2026-03-26 13:08:17 UTC
+DATA_ROOT: /Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/data/scbasecount/2026-01-12
+---
+Excluded 12,735 SRX rows with missing or unknown-like disease (from 35,266 loaded)
+SRX rows (sample_metadata): 22,531
+Unique srx_accession: 22,531
+Sum of obs_count (cells, from sample table): 180,529,353
+obs_metadata parquet row count: 302,277,013
+disease: 0 nulls, 5,604 distinct strings
+tissue:  0 nulls, 5,864 distinct strings
+Cancer-like disease label: 9,309 SRX rows, 1,577 distinct disease strings, 80,240,424 cells (obs_count sum)
+IO keyword hit (any column): 1,742 SRX rows, 12,569,121 cells
+By column (rows can overlap):
+  perturbation: 1,607 SRX, 11,651,752 cells, 758 distinct perturbation strings
+  disease: 208 SRX, 1,532,319 cells, 80 distinct disease strings
+  tissue: 87 SRX, 852,035 cells, 51 distinct tissue strings
+IO + cancer-like disease or tissue: 1,386 SRX, 9,753,666 cells
+example IO study card (largest obs_count): SRX=SRX15016115, cells=146,884
+IO∩theme overview 'hematologic': 502 SRX, 4,232,776 cells, 93 distinct disease strings
+IO∩theme overview 'head_and_neck': 185 SRX, 1,051,736 cells, 14 distinct disease strings
+IO∩theme overview 'melanoma': 174 SRX, 973,031 cells, 31 distinct disease strings
+IO∩theme overview 'lung': 98 SRX, 870,336 cells, 43 distinct disease strings
+IO∩theme overview 'cns': 96 SRX, 632,732 cells, 50 distinct disease strings
+IO∩theme overview 'endometrial': 98 SRX, 623,612 cells, 24 distinct disease strings
+IO∩theme overview 'hepatobiliary': 64 SRX, 402,593 cells, 12 distinct disease strings
+IO∩theme overview 'breast': 43 SRX, 215,312 cells, 15 distinct disease strings
+IO∩theme overview 'ovarian_cervical': 26 SRX, 122,455 cells, 7 distinct disease strings
+IO∩theme overview 'genitourinary': 7 SRX, 96,339 cells, 3 distinct disease strings
+IO∩theme overview 'sarcoma': 12 SRX, 87,085 cells, 4 distinct disease strings
+IO∩theme overview 'skin_non_melanoma': 15 SRX, 45,695 cells, 2 distinct disease strings
+IO∩theme overview 'gi': 7 SRX, 42,867 cells, 7 distinct disease strings
+IO+cancer outside any DISEASE_THEMES (disease/tissue): 117 SRX rows, 866,067 cells of 1,386 SRX / 9,753,666 cells in io_cancer
+How many theme patterns match each SRX row (disease OR tissue text): 0 themes -> 11,876 SRX rows; 1 themes -> 10,457 SRX rows; 2 themes -> 193 SRX rows; 3 themes -> 4 SRX rows; 4 themes -> 1 SRX rows
+full-sample theme 'hematologic': 4,036 SRX, 45,755,145 cells
+full-sample theme 'lung': 1,859 SRX, 11,309,348 cells
+full-sample theme 'breast': 1,047 SRX, 7,721,470 cells
+full-sample theme 'gi': 1,069 SRX, 6,579,864 cells
+full-sample theme 'cns': 601 SRX, 3,718,503 cells
+full-sample theme 'ovarian_cervical': 459 SRX, 2,681,664 cells
+full-sample theme 'hepatobiliary': 332 SRX, 2,404,831 cells
+full-sample theme 'genitourinary': 291 SRX, 2,246,084 cells
+full-sample theme 'melanoma': 388 SRX, 2,172,391 cells
+full-sample theme 'head_and_neck': 387 SRX, 2,003,300 cells
+full-sample theme 'endometrial': 192 SRX, 1,504,004 cells
+full-sample theme 'sarcoma': 149 SRX, 1,018,376 cells
+full-sample theme 'skin_non_melanoma': 49 SRX, 373,540 cells
+IO∩theme 'hematologic': 502 SRX, 4,232,776 cells, 93 distinct disease strings
+IO∩theme 'head_and_neck': 185 SRX, 1,051,736 cells, 14 distinct disease strings
+IO∩theme 'melanoma': 174 SRX, 973,031 cells, 31 distinct disease strings
+IO∩theme 'lung': 98 SRX, 870,336 cells, 43 distinct disease strings
+IO∩theme 'cns': 96 SRX, 632,732 cells, 50 distinct disease strings
+IO∩theme 'endometrial': 98 SRX, 623,612 cells, 24 distinct disease strings
+IO∩theme 'hepatobiliary': 64 SRX, 402,593 cells, 12 distinct disease strings
+IO∩theme 'breast': 43 SRX, 215,312 cells, 15 distinct disease strings
+IO∩theme 'ovarian_cervical': 26 SRX, 122,455 cells, 7 distinct disease strings
+IO∩theme 'genitourinary': 7 SRX, 96,339 cells, 3 distinct disease strings
+IO∩theme 'sarcoma': 12 SRX, 87,085 cells, 4 distinct disease strings
+IO∩theme 'skin_non_melanoma': 15 SRX, 45,695 cells, 2 distinct disease strings
+IO∩theme 'gi': 7 SRX, 42,867 cells, 7 distinct disease strings
+Optional disease-text buckets for theme 'breast': triple_negative=90,728, HER2_mentioned=21,646
+Column -> rows with stage-like tokens:
+  (none)
+Loaded 583,840 cell rows across 5 SRX accessions

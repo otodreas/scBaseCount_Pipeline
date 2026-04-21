@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from cluster_validation import ClusterValidationConfig, run_cluster_validation
 from cluster_validation.viz import plot_all
-from ena_context import ExperimentContext, pipeline_for_accession_list
+from study_context import ExperimentContext, pipeline_for_accession_list
 
 load_dotenv()
 

@@ -1,0 +1,176 @@
+# Exploratory analysis
+
+Exploratory analysis commenced in week 2, wherein I manually ran `scanpy` pipelines on 3 datasets, each of which represented a quantile of cell count in the collection of datasets I analyzed. See `datasets_summary` for an explanation on which datasets I used.
+
+# Introduction
+
+## Report summary
+
+This report documents the cluster label optimisation pipeline applied to five lung datasets drawn from the scBaseCount human scRNA-seq collection (snapshot: 2026-01-12), sampled at the 25th, 33rd, 50th, 67th, and 75th percentile of number of cells to probe how the method behaves across different dataset scales.
+
+**Datasets**
+
+
+| SRX         | *n* cells pre filter | quantile |
+| ----------- | --------------------- | -------- |
+| SRX22996378 | 3,413                 | 0.25     |
+| SRX12366723 | 4,032                 | 0.33     |
+| SRX17412841 | 5,506                 | 0.50     |
+| SRX24313469 | 7,656                 | 0.67     |
+| SRX13198730 | 9,419                 | 0.75     |
+
+
+The goal is to identify the Leiden resolution whose partition best recovers the `cell_type` weak prior, then to reduce over-clustering by merging transcriptomically indistinguishable clusters using a random forest. The selection criterion is **Jaccard-based matching via the Hungarian algorithm**.
+
+The pipeline is run independently on each dataset (selected via `SRX_ACCESSION` or `DATASET_INDEX`) from `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`. After cell-type rare-type filtering, QC, and preprocessing, Leiden clustering is swept across ten resolutions (0.1–2.0). The resolution with the highest penalised Jaccard score is selected, and a random forest merging step collapses clusters that the classifier cannot distinguish.
+
+Filtering is not discussed in this report but all the filtering and QC steps are outlined in `clust_val_analysis.ipynb`.
+
+
+## Deliverables
+
+The deliverables I set out to ship were
+- Build a clustering pipeline for a few sample datasets
+    - Simple scanpy pipeline built in `clust_val_analysis.ipynb`, derisked for 3 datasets
+- Develop a biologically informed method to optimize clustering resolutions
+    - Method was developed. See §**Methods at a glance**.
+- Do not use a composite index
+    - I do not consider the Jaccard index a composite index.
+
+See §**Appendix** for a breakdown on the parameters I used.
+
+
+## Methods at a glance
+
+- Sweep Leiden resolution (0.1–2.0) to generate a range of candidate partitions
+- Build a Jaccard similarity matrix between each predicted cluster and every reference cell type
+- Apply the Hungarian algorithm to find the jointly optimal one-to-one assignment between clusters and reference types that maximises the total summed Jaccard across all matched pairs
+    - Note that overclustering penalty was removed after `c1c55ba` because it was ineffective and relied only on cluster count
+- Scale the summed Jaccard score by a denominator that grows when predicted cluster count exceeds the reference type count, penalising excessove over-clustering
+- Train a `RandomForestClassifier` on per-cell HVG expression profiles labelled by cluster; merge pairs whose out-of-fold confusion exceeds a fixed threshold
+
+
+# Methods
+
+## Dimensionality reduction & neighborhood graph construction
+
+We run PCA with 500 components (`scanpy.tl.pca`), well above the common default of 50, so the variance spectrum can be inspected without an artificial cap. On our test objects, roughly 300–450 PCs were needed to reach 90% cumulative explained variance. For `scanpy.pp.neighbors`, we set `n_pcs` to the smallest number of PCs whose cumulative explained variance is at least 90%. According to the scanpy docs, the maintainers of scanpy do not see a significant downside to overestimating the number of PCs that should be used in the neighborhood graph construction. This supports using a variance-based floor rather than an aggressive low cap.
+
+![](<.figs/pca_cumvar_SRX22996378.png>)
+
+![](<.figs/pca_cumvar_SRX12366723.png>)
+
+![](<.figs/pca_cumvar_SRX17412841.png>)
+
+![](<.figs/pca_cumvar_SRX24313469.png>)
+
+![](<.figs/pca_cumvar_SRX13198730.png>)
+
+## Resolution selection
+
+### Leiden sweep
+
+Leiden clustering (igraph flavour) is run at ten resolutions: 0.1 through 2.0, at intervals of 0.1. Each partition is stored as a separate `obs` column (`leiden_{r}`). The number of clusters grows roughly monotonically with resolution.
+
+### Jaccard matrix construction and Hungarian scoring
+
+For each resolution, the quality of the partition is assessed relative to the `cell_type` prior using the following procedure:
+
+1. Build a contingency table between the Leiden clusters and the reference cell types.
+*The contingency table is made up of (n unique clusters) rows and (n unique cell types) columns. It starts out populated with 0's, and a 1 is added for each cell in the anndata object*
+2. Convert each cell of the contingency table to an IoU (Jaccard) value: `J[i,j] = intersection / union` between cluster *i* and cell type *j*.
+*This converts raw overlap counts into a size-corrected similarity, preventing large clusters from scoring highly simply by virtue of containing more cells.*
+3. Find the optimal one-to-one assignment between clusters and cell types using the Hungarian algorithm (`scipy.optimize.linear_sum_assignment` on `-J`).
+*Since the Hungarian algorithm minimizes the cost over a matrix, and since the matrix `J` has higher values where cluster overlap is higher, the matrix needs to be made negative (`-J`) before optimization can be applied*
+4. Compute the penalised score:
+
+```
+score = sum(J[matched pairs])
+```
+
+The resolution that maximises this score is selected as `SELECTED_RESOLUTION`. The selected partition and its relationship to the `cell_type` reference can be seen as the first panel of the 3-panel UMAPs in §**Final partition**.
+
+![](.figs/resolution_sweep_SRX22996378.png)
+
+![](.figs/resolution_sweep_SRX12366723.png)
+
+![](.figs/resolution_sweep_SRX17412841.png)
+
+![](.figs/resolution_sweep_SRX24313469.png)
+
+![](.figs/resolution_sweep_SRX13198730.png)
+
+## Comparison with silhouette score
+
+Silhouette scores are computed at each clustering resolution before merging. The score generally decreases as resolution increases. On our datasets, the resolution chosen by the scoring procedure is never the one that maximises silhouette. That is unsurprising: silhouette rewards compact, well-separated clusters, whereas larger clusters often contain finer biological structure (for example in STATE annotations). Merging that structure into a single cluster tends to lower silhouette.
+
+![](.figs/silhouette_vs_resolution_SRX22996378.png)
+
+![](.figs/silhouette_vs_resolution_SRX12366723.png)
+
+![](.figs/silhouette_vs_resolution_SRX17412841.png)
+
+![](.figs/silhouette_vs_resolution_SRX24313469.png)
+
+![](.figs/silhouette_vs_resolution_SRX13198730.png)
+
+## RF-based cluster merging
+
+### Confusion-based merging
+
+Even at the best resolution, some clusters may be transcriptomically indistinguishable. In other words, they may share similar gene-expression profiles and only separate due to resolution artifacts. A `RandomForestClassifier` trained on HVG expression with stratified K-fold out-of-fold (OOF) CV identifies these pairs: if the row-normalised OOF confusion between two clusters exceeds `MERGE_THRESHOLD = 0.30`, they are candidates for merging.
+
+A union-find structure propagates merges transitively: if cluster A is confused with B and B is confused with C, all three collapse into a single cluster.
+
+![](.figs/rf_confusion_SRX22996378.png)
+
+![](.figs/rf_confusion_SRX12366723.png)
+
+![](.figs/rf_confusion_SRX17412841.png)
+
+![](.figs/rf_confusion_SRX24313469.png)
+
+![](.figs/rf_confusion_SRX13198730.png)
+
+### Final partition
+
+The merged partition (`leiden_merged`) is compared to both the original selected Leiden partition and the `cell_type` reference in the three-panel UMAPs below. The composition bar charts show the relative cell proportions across merged clusters and cell types, confirming whether the merge has moved the partition closer to the biological groupings.
+
+![](.figs/umap_merged_SRX22996378.png)
+![](.figs/composition_bars_SRX22996378.png)
+
+![](.figs/umap_merged_SRX12366723.png)
+![](.figs/composition_bars_SRX12366723.png)
+
+![](.figs/umap_merged_SRX17412841.png)
+![](.figs/composition_bars_SRX17412841.png)
+
+![](.figs/umap_merged_SRX24313469.png)
+![](.figs/composition_bars_SRX24313469.png)
+
+![](.figs/umap_merged_SRX13198730.png)
+![](.figs/composition_bars_SRX13198730.png)
+
+
+# Conclusions
+
+## Key takeaways
+
+- The method using matrix building &rarr; matrix cost minimization &rarr; select lowest cost resolution &rarr; merge clusters does not rely on composite indices and is biologically informed
+- Filtering of data focuses on statistical viability by setting a hard cutoff for minimum cells per STATE annotation
+- The cluster resolution optimization produced a similar number of clusters to the number of cell types for each datasets
+
+# Appendix: Key parameters
+
+
+| Parameter                    | Value                            | Description                                                       |
+| ---------------------------- | -------------------------------- | -------------------------------------------------------           |
+| `SRX_ACCESSION` / `DATASET_INDEX` | `None` / `0`                | Select dataset by accession string or row index into `datasets_summary` |
+| `MIN_CELLS_PER_TYPE`         | 20                               | Minimum cells per `cell_type` label to retain                     |
+| `N_TOP_GENES`                | 2000                             | Number of highly variable genes selected                          |
+| `N_PCS_COMPUTE`              | 50                              | Number of PCs computed                                            |
+| `N_PCS_CUMVAR_TARGET`        | 0.5                              | Cumulative variance of PCs used in neighborhood graph computation |
+| `RESOLUTIONS`                | 0.1, 0.2, …, 2.0 (step 0.1)      | Leiden resolutions swept                                          |
+| `MERGE_THRESHOLD`            | 0.2                              | OOF confusion threshold above which clusters are merged           |
+
+
