@@ -1,20 +1,20 @@
 from __future__ import annotations
 
+import datetime
 import json
 import logging
 import os
 import re
-import subprocess
 import time
-import datetime
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+import httpx
 
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 
 NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
-PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
-BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
 _LOG_PATH = Path(__file__).parents[2] / "logs" / "study_context.log"
 _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -29,22 +29,24 @@ logging.basicConfig(
 )
 _log = logging.getLogger(__name__)
 
+_http = httpx.Client(timeout=30.0, follow_redirects=True)
 
-def _curl_get(url: str, *, retries: int = 3, timeout_s: int = 30) -> str:
-    last_stderr = ""
+PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
+BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
+
+
+def _http_get(url: str, *, retries: int = 3) -> str:
+    last_exc: Exception | None = None
     for attempt in range(retries + 1):
-        result = subprocess.run(
-            ["curl", "-sf", "--max-time", str(timeout_s), url],
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode == 0:
-            return result.stdout
-        last_stderr = result.stderr.strip()
-        if attempt < retries:
-            time.sleep(2 ** attempt)
-    raise RuntimeError(f"curl failed for {url!r} (exit {result.returncode}): {last_stderr}")
-
+        try:
+            r = _http.get(url)
+            r.raise_for_status()
+            return r.text
+        except Exception as exc:
+            last_exc = exc
+            if attempt < retries:
+                time.sleep(2 ** attempt)
+    raise RuntimeError(f"HTTP GET failed for {url!r}: {last_exc}")
 
 
 def _str(val: str | None) -> str | None:
@@ -81,7 +83,7 @@ def _fetch_pubmed_abstract(pmids: list[str], warnings: list[str]) -> str | None:
         f"?db=pubmed&id={','.join(pmids)}&rettype=xml&retmode=xml{key_param}"
     )
     try:
-        xml_text = _curl_get(url)
+        xml_text = _http_get(url)
         root = ET.fromstring(xml_text)
     except Exception as exc:
         warnings.append(f"pubmed_fetch_failed:{exc}")
@@ -99,7 +101,7 @@ def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyCont
         f"?accession={study_accession}&result=study&fields=all&format=json"
     )
     try:
-        raw = _curl_get(url)
+        raw = _http_get(url)
         records: list[dict[str, str]] = json.loads(raw)
     except Exception as exc:
         warnings.append(f"study_api_failed:{exc}")
@@ -133,7 +135,7 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
         f"?accession={accession}&result=read_experiment&fields=all&format=json"
     )
     try:
-        raw = _curl_get(url)
+        raw = _http_get(url)
         records: list[dict[str, str]] = json.loads(raw)
     except Exception as exc:
         warnings.append(f"portal_api_failed:{exc}")
@@ -168,17 +170,28 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
         sampleDescription=_str(first.get("sample_description")),
     )
 
-    if sample_accession:
-        try:
-            xml_text = _curl_get(f"{BROWSER_BASE}/xml/{sample_accession}")
-            biological = biological.model_copy(
-                update={"sampleAttributes": _parse_sample_attributes(xml_text)}
-            )
-        except Exception as exc:
-            warnings.append(f"sample_xml_failed:{exc}")
-
     study_accession = _str(first.get("study_accession"))
-    study = _fetch_study_context(study_accession, warnings) if study_accession else None
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        xml_fut = (
+            pool.submit(_http_get, f"{BROWSER_BASE}/xml/{sample_accession}")
+            if sample_accession else None
+        )
+        study_fut = (
+            pool.submit(_fetch_study_context, study_accession, warnings)
+            if study_accession else None
+        )
+
+        if xml_fut is not None:
+            try:
+                xml_text = xml_fut.result()
+                biological = biological.model_copy(
+                    update={"sampleAttributes": _parse_sample_attributes(xml_text)}
+                )
+            except Exception as exc:
+                warnings.append(f"sample_xml_failed:{exc}")
+
+        study = study_fut.result() if study_fut is not None else None
 
     return ExperimentContext(
         accession=accession,

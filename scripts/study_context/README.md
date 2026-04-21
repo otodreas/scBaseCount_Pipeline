@@ -6,6 +6,8 @@ Library selection protocol, study context, and study abstract can be extracted f
 
 I've generated the file `../output/contexts.jsonl` with `../main.py` at commit `6c01a0b`.
 
+Search "New context acquisition run" in `logs/study_context.log` to see the logs for a new run
+
 ## Usage
 
 ```python
