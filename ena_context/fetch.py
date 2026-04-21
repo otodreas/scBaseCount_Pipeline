@@ -1,15 +1,31 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import subprocess
 import time
+import datetime
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from ena_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 
 NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
+
+_LOG_PATH = Path(__file__).parents[1] / "logs" / "ena_context.log"
+_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.FileHandler(_LOG_PATH, mode="a", encoding="utf-8"),
+    ],
+)
+_log = logging.getLogger(__name__)
 
 
 def _curl_get(url: str, *, retries: int = 3, timeout_s: int = 30) -> str:
@@ -56,7 +72,8 @@ def _fetch_pubmed_abstract(pmids: list[str], warnings: list[str]) -> str | None:
     if not pmids:
         return None
 
-    print(f"[DEBUG] Fetching PubMed abstracts for PMIDs: {pmids}")
+    print(f"[{datetime.datetime.now().replace(microsecond=0)}] Fetching PubMed abstracts for PMIDs: {pmids}")
+    _log.info("Fetching PubMed abstracts for PMIDs: %s", pmids)
     api_key = os.environ.get("NCBI_API_KEY", "")
     key_param = f"&api_key={api_key}" if api_key else ""
     url = (
@@ -107,7 +124,8 @@ def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyCont
 
 
 def fetch_experiment_context(accession: str) -> ExperimentContext:
-    print(f"[DEBUG] Fetching experiment context for accession: {accession}")
+    print(f"[{datetime.datetime.now().replace(microsecond=0)}] Fetching experiment context for accession: {accession}")
+    _log.info("Fetching experiment context for accession: %s", accession)
     warnings: list[str] = []
 
     url = (

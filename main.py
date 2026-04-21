@@ -4,6 +4,8 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
+from cluster_validation import ClusterValidationConfig, run_cluster_validation
+from cluster_validation.viz import plot_all
 from ena_context import ExperimentContext, pipeline_for_accession_list
 
 load_dotenv()
@@ -42,3 +44,13 @@ else:
 #         print(accession)
 # else:
 #     print("All accessions have descriptions")
+
+
+# # --- Cluster validation ---
+
+# cfg = ClusterValidationConfig(
+#     srxAccession="SRX17412841",
+#     outputDir=Path("data/other"),
+# )
+# adata, result = run_cluster_validation(cfg)
+# plot_all(adata, result, figs_dir=Path("output/figs"))

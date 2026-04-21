@@ -40,7 +40,7 @@ with open("contexts.jsonl") as f:
 
 ## Pipeline
 
-![Flow diagram](ena_context_flow.png)
+![Flow diagram](../docs/misc/ena_context_flow.png)
 
 Each accession triggers four sequential API calls:
 
