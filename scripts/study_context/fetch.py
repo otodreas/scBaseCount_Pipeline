@@ -13,6 +13,8 @@ from pathlib import Path
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 
 NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
+PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
+BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
 _LOG_PATH = Path(__file__).parents[2] / "logs" / "study_context.log"
 _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -43,8 +45,6 @@ def _curl_get(url: str, *, retries: int = 3, timeout_s: int = 30) -> str:
             time.sleep(2 ** attempt)
     raise RuntimeError(f"curl failed for {url!r} (exit {result.returncode}): {last_stderr}")
 
-PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
-BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
 
 def _str(val: str | None) -> str | None:
