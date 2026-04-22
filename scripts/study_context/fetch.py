@@ -15,6 +15,8 @@ import httpx
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 
 NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
+PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
+BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
 _LOG_PATH = Path(__file__).parents[2] / "logs" / "study_context.log"
 _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -31,8 +33,6 @@ _log = logging.getLogger(__name__)
 
 _http = httpx.Client(timeout=30.0, follow_redirects=True)
 
-PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
-BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
 
 def _http_get(url: str, *, retries: int = 3) -> str:

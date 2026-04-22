@@ -297,3 +297,4 @@ def plot_all(
     plot_composition_bars(adata, result, figs_dir)
     plot_silhouette(result, figs_dir)
     plot_metrics(result, figs_dir)
+    plt.close("all")
