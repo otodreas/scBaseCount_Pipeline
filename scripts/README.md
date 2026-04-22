@@ -8,7 +8,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 |---------|-------------|--------|
 | [`metadata/`](metadata/) | `filter_lung(sample, cfg)` | `output/metadata/datasets.csv`, `quantiles_datasets.csv`, figures |
 | [`study_context/`](study_context/) | `pipeline_for_accession_list(accessions)` | `output/contexts.jsonl` |
-| [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `data/clustered/final_adata_{srx}.h5ad`, figures |
+| [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `output/clustering/data/{srx}_clustered.h5ad`, figures |
 
 Each package has its own `README.md` with usage examples, config reference, and output model.
 

@@ -19,7 +19,7 @@ adata, result = run_cluster_validation(cfg)
 plot_all(adata, result, figs_dir=Path("output/figs") / cfg.srxAccession)
 ```
 
-The pipeline writes the final `AnnData` to `outputDir/final_adata_{srx}.h5ad` and returns a `ClusterValidationResult` with all per-resolution metrics.
+The pipeline writes the final `AnnData` to `output/data/clustering/{srx}_clustered.h5ad` and returns a `ClusterValidationResult` with all per-resolution metrics.
 
 ## Pipeline steps
 
@@ -56,7 +56,7 @@ A `RandomForestClassifier` is trained on HVG expression with stratified K-fold o
 | `datasetIndex` | `2` | Select dataset by row index in catalog (used when `srxAccession` is `None`) |
 | `summaryPath` | `cluster_validation_sandbox/datasets_summary` | Path to catalog CSV with `srx_accession`, `file_path`, `quantile` columns |
 | `localH5adRoot` | `data/scbasecount/...` | Directory of local h5ad files; takes priority over `file_path` in catalog |
-| `outputDir` | `data/other` | Directory where `final_adata_{srx}.h5ad` is written |
+| `outputDir` | `output/clustering/data` | Directory where `{srx}_clustered.h5ad` is written |
 | `minCellsPerType` | `20` | Minimum cells per `cell_type` label; rarer types are dropped before clustering |
 | `nTopGenes` | `2000` | Number of highly variable genes |
 | `nPcsCompute` | `50` | Number of PCs computed |

@@ -46,7 +46,7 @@ def run_cluster_validation(
     metric_arrays = compute_metrics(adata, cfg, sel, merge_info)
 
     cfg.outputDir.mkdir(parents=True, exist_ok=True)
-    adata_path = cfg.outputDir / f"final_adata_{srx}.h5ad"
+    adata_path = cfg.outputDir / f"{srx}_clustered.h5ad"
     adata.write(str(adata_path))
 
     result = ClusterValidationResult(

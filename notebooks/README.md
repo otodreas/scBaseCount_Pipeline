@@ -8,8 +8,8 @@ Analysis notebooks for the scBaseCount pipeline. Run them in order — each stag
 |---|----------|----------|----------|
 | 1 | [`metadata.ipynb`](metadata.ipynb) | scBaseCount metadata Parquet files | `output/metadata/datasets.csv`, `output/metadata/quantiles_datasets.csv`, figures |
 | 2 | [`study_context.ipynb`](study_context.ipynb) | `output/metadata/datasets.csv` | `output/contexts.jsonl` |
-| 3 | [`clustering.ipynb`](clustering.ipynb) | `output/metadata/quantiles_datasets.csv`, h5ad files | `data/clustered/final_adata_{srx}.h5ad`, figures |
-| 4 | [`cytetype.ipynb`](cytetype.ipynb) | `data/clustered/final_adata_{srx}.h5ad`, `output/contexts.jsonl` | `data/other/{srx}_cytetype_annotated.h5ad` |
+| 3 | [`clustering.ipynb`](clustering.ipynb) | `output/metadata/quantiles_datasets.csv`, h5ad files | `output/clustering/data/{srx}_clustered.h5ad`, figures |
+| 4 | [`cytetype.ipynb`](cytetype.ipynb) | `output/clustering/data/{srx}_clustered.h5ad`, `output/contexts.jsonl` | `data/other/{srx}_cytetype_annotated.h5ad` |
 
 ## Notebooks
 
