@@ -17,6 +17,10 @@ obs.duckdb
 query.json
 vars.h5
 
+# CyteOnto
+output/cyteonto/response/
+output/cyteonto/runs
+
 # Personal notes
 DailyNotes.md
 
