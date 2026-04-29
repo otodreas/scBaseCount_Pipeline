@@ -8,6 +8,12 @@ import httpx
 import pandas as pd
 
 
+def get_status(run_id: str, base_url: str) -> dict:
+    resp = httpx.get(f"{base_url}/status/{run_id}", timeout=30)
+    resp.raise_for_status()
+    return resp.json()
+
+
 def submit(payload: dict, base_url: str, log: logging.Logger) -> str:
     resp = httpx.post(f"{base_url}/compare", json=payload, timeout=30)
     resp.raise_for_status()

@@ -5,7 +5,7 @@ Submits cell type annotation labels to the [CyteOnto API](https://cyteonto.nygen
 ## Usage
 
 ```python
-from cyteonto import CyteOntoConfig, run_cyteonto
+from cyteonto import CyteOntoConfig, run_cyteonto, check_pending_runs
 from pathlib import Path
 
 cfg = CyteOntoConfig(
@@ -16,6 +16,28 @@ similarities = run_cyteonto(cfg)
 ```
 
 `run_cyteonto` returns a `pandas.DataFrame` with one row per `(algorithm, cell)` pair. The CSV is also written to `output/cyteonto/runs/{run_id}.csv` and every step is appended to `logs/cyteonto.log`.
+
+### Interrupting a run
+
+Runs can take a long time. You can safely interrupt the polling loop (e.g. shut down the IDE) without losing the run -- the job continues on the server. On interrupt, a message is written to the log and `run_cyteonto` returns `None`:
+
+```
+2026-04-29 14:31:00 INFO polling stopped  runId=run-<uuid>  (run continues on server; call check_pending_runs() to resume)
+```
+
+The `run_id` is written to `output/cyteonto/pending_runs.json` immediately after the job is submitted, so it is never lost.
+
+### Resuming after a restart
+
+Call `check_pending_runs()` at the top of your session. It reads `pending_runs.json`, queries the status of each run, fetches any that have completed, and returns a dict of `{run_id: DataFrame}`:
+
+```python
+from cyteonto import check_pending_runs
+
+results = check_pending_runs()
+# results is a dict[run_id, pd.DataFrame] for every run that completed
+# pending_runs.json is updated in place -- completed and failed runs are removed
+```
 
 ## Input conventions
 
@@ -44,6 +66,7 @@ The pipeline reads two fixed columns from `adata.obs`:
 | `h5adPath` | required | Path to the annotated h5ad file |
 | `payloadDir` | `output/cyteonto/payloads` | Directory for the payload JSON |
 | `resultsDir` | `output/cyteonto/runs` | Directory for the fetched CSV |
+| `pendingRunsPath` | `output/cyteonto/pending_runs.json` | File tracking in-flight run IDs across sessions |
 | `baseUrl` | `https://cyteonto.nygen.io` | CyteOnto service base URL |
 | `pollIntervalS` | `10` | Seconds between status polls |
 | `pollTimeoutS` | `3600` | Total seconds before a `TimeoutError` is raised |
@@ -79,4 +102,12 @@ Every run appends to `logs/cyteonto.log`:
 2026-04-24 18:26:01 INFO completed  runId=run-<uuid>  rows=12847
 2026-04-24 18:26:02 INFO fetched   runId=run-<uuid>  path=output/cyteonto/runs/run-<uuid>.csv
 2026-04-24 18:26:02 INFO done  saved=output/cyteonto/runs/run-<uuid>.csv
+```
+
+To manually check on the status of a run, search for `status` in `logs/cyteonto.log`, get the run id and run in your terminal
+
+```sh
+export CYTEONTO_URL="https://cyteonto.nygen.io"
+export RUN_ID="run-<uuid>"
+curl -sS "$CYTEONTO_URL/status/$RUN_ID" | jq
 ```
