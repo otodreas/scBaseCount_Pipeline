@@ -7,11 +7,11 @@ __pycache__/
 
 # Data
 data/
-logs/
 tmp/
 output/
 
-# Background run logs
+# Logs
+logs/
 nohup.out
 
 # CyteType
