@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from study_context.fetch import fetch_experiment_context
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
+from study_context.utils import experiment_context_summary
 
 _log = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ def pipeline_for_accession_list(
 
 __all__ = [
     "pipeline_for_accession_list",
+    "experiment_context_summary",
     "ExperimentContext",
     "StudyContext",
     "TechnicalContext",

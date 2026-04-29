@@ -8,7 +8,11 @@ __pycache__/
 # Data
 data/
 tmp/
-output/
+
+# Large outputs
+output/clustering/
+output/cytetype/
+output/cyteonto/
 
 # Logs
 logs/

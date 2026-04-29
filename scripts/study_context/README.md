@@ -16,6 +16,19 @@ from study_context import pipeline_for_accession_list
 contexts = pipeline_for_accession_list(accessions)
 ```
 
+### Generating a context summary
+
+`experiment_context_summary` takes an `ExperimentContext` and returns a single string joining the available descriptive fields. Useful for feeding context into an LLM prompt.
+
+```python
+from study_context import experiment_context_summary
+
+summary = experiment_context_summary(ctx)
+# "Tissue: lung. Library strategy: RNA-Seq. Abstract: ..."
+```
+
+Fields included (in order, only if populated): tissue type, library strategy, library construction protocol, study description, PubMed abstract.
+
 ### Accessing fields
 
 ```python
