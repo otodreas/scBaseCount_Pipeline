@@ -113,9 +113,11 @@ def check_pending_runs(
     runs = _load_pending(pending_dir)
     if not runs:
         _log.info("check_pending_runs: no pending runs")
+        print("[cyteonto] no pending runs")
         return {}
 
     _log.info("check_pending_runs: checking %d run(s)", len(runs))
+    print(f"[cyteonto] checking {len(runs)} pending run(s)")
 
     completed: dict[str, pd.DataFrame] = {}
 
@@ -125,6 +127,7 @@ def check_pending_runs(
         status = get_status(run_id, base_url)
         state = status["state"]
         _log.info("check  runId=%s  h5adStem=%s  state=%s", run_id, h5ad_stem, state)
+        print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  {state}")
 
         if state == "completed":
             out_path = completed_dir / f"{run_id}.csv"
@@ -145,4 +148,5 @@ def check_pending_runs(
         len(completed),
         still_pending,
     )
+    print(f"[cyteonto] done  completed={len(completed)}  still_pending={still_pending}")
     return completed
