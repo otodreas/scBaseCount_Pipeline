@@ -63,9 +63,11 @@ def _load_pending(pending_dir: Path) -> list[dict]:
 
 def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     _log.info("start  input=%s", cfg.h5adPath)
+    print(f"[cyteonto] input     {cfg.h5adPath.name}")
 
     adata = sc.read_h5ad(cfg.h5adPath)
     _log.info("loaded %d cells  %d genes", adata.n_obs, adata.n_vars)
+    print(f"[cyteonto] loaded    {adata.n_obs} cells  {adata.n_vars} genes")
 
     payload = build_payload(adata)
     _log.info(
@@ -79,6 +81,7 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     _log.info("payload written  path=%s", payload_path)
 
     run_id = submit(payload, cfg.baseUrl, _log)
+    print(f"[cyteonto] submitted  {run_id}")
     _add_pending_run(run_id, cfg.h5adPath.stem, cfg.pendingDir)
     _log.info("pending stub written  runId=%s  dir=%s", run_id, cfg.pendingDir)
 
@@ -89,6 +92,7 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
             "polling stopped  runId=%s  (run continues on server; call check_pending_runs() to resume)",
             run_id,
         )
+        print(f"[cyteonto] polling stopped  {run_id}  (call check_pending_runs() to resume)")
         return None
 
     if status["state"] == "failed":
@@ -102,6 +106,7 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     df = fetch_result(run_id, cfg.baseUrl, out_path, _log)
     _remove_pending_run(run_id, cfg.pendingDir)
     _log.info("done  saved=%s", out_path)
+    print(f"[cyteonto] done      {run_id}  rows={status.get('numRows')}  saved={out_path.name}")
     return df
 
 

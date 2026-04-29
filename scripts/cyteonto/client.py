@@ -37,6 +37,7 @@ def poll(
         status = resp.json()
         if status["state"] != last_state:
             log.info("status    runId=%s  state=%s", run_id, status["state"])
+            print(f"[cyteonto] {run_id}  ->  {status['state']}")
             last_state = status["state"]
         if status["state"] in ("completed", "failed"):
             return status
