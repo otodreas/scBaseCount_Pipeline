@@ -10,8 +10,8 @@ _REPO_ROOT = Path(__file__).parents[2]
 class CyteOntoConfig(BaseModel):
     h5adPath: Path
     payloadDir: Path = _REPO_ROOT / "output" / "cyteonto" / "payloads"
-    resultsDir: Path = _REPO_ROOT / "output" / "cyteonto" / "runs"
-    pendingRunsPath: Path = _REPO_ROOT / "output" / "cyteonto" / "pending_runs.json"
+    completedDir: Path = _REPO_ROOT / "output" / "cyteonto" / "runs" / "completed"
+    pendingDir: Path = _REPO_ROOT / "output" / "cyteonto" / "runs" / "pending"
     baseUrl: str = "https://cyteonto.nygen.io"
     pollIntervalS: int = 10
     pollTimeoutS: int = 3600

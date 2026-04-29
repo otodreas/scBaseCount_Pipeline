@@ -25,7 +25,7 @@ Runs can take a long time. You can safely interrupt the polling loop (e.g. shut 
 2026-04-29 14:31:00 INFO polling stopped  runId=run-<uuid>  (run continues on server; call check_pending_runs() to resume)
 ```
 
-The `run_id` is written to `output/cyteonto/pending_runs.json` immediately after the job is submitted, so it is never lost.
+A stub file `output/cyteonto/runs/pending/{run_id}.json` is written immediately after the job is submitted, so it is never lost. Completed CSVs land in `output/cyteonto/runs/completed/`.
 
 ### Resuming after a restart
 
@@ -65,8 +65,8 @@ The pipeline reads two fixed columns from `adata.obs`:
 |-------|---------|-------------|
 | `h5adPath` | required | Path to the annotated h5ad file |
 | `payloadDir` | `output/cyteonto/payloads` | Directory for the payload JSON |
-| `resultsDir` | `output/cyteonto/runs` | Directory for the fetched CSV |
-| `pendingRunsPath` | `output/cyteonto/pending_runs.json` | File tracking in-flight run IDs across sessions |
+| `completedDir` | `output/cyteonto/runs/completed` | Directory for fetched CSVs |
+| `pendingDir` | `output/cyteonto/runs/pending` | Directory for in-flight run stubs (one JSON per run) |
 | `baseUrl` | `https://cyteonto.nygen.io` | CyteOnto service base URL |
 | `pollIntervalS` | `10` | Seconds between status polls |
 | `pollTimeoutS` | `3600` | Total seconds before a `TimeoutError` is raised |

@@ -27,38 +27,36 @@ logging.basicConfig(
 _log = logging.getLogger(__name__)
 
 _DEFAULT_BASE_URL = "https://cyteonto.nygen.io"
-_DEFAULT_RESULTS_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs"
-_DEFAULT_PENDING_PATH = _REPO_ROOT / "output" / "cyteonto" / "pending_runs.json"
+_DEFAULT_COMPLETED_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs" / "completed"
+_DEFAULT_PENDING_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs" / "pending"
 
 
-# --- pending-run helpers ---
+# --- pending-run helpers (one JSON stub per run in runs/pending/) ---
 
-def _load_pending(path: Path) -> list[dict]:
-    if not path.exists():
-        return []
-    return json.loads(path.read_text())
+def _pending_stub_path(run_id: str, pending_dir: Path) -> Path:
+    return pending_dir / f"{run_id}.json"
 
 
-def _save_pending(runs: list[dict], path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(runs, indent=2))
-
-
-def _add_pending_run(run_id: str, h5ad_stem: str, path: Path) -> None:
-    runs = _load_pending(path)
-    runs.append({
+def _add_pending_run(run_id: str, h5ad_stem: str, pending_dir: Path) -> None:
+    pending_dir.mkdir(parents=True, exist_ok=True)
+    stub = {
         "runId": run_id,
         "h5adStem": h5ad_stem,
         "submittedAt": datetime.datetime.now().isoformat(timespec="seconds"),
-    })
-    _save_pending(runs, path)
+    }
+    _pending_stub_path(run_id, pending_dir).write_text(json.dumps(stub, indent=2))
 
 
-def _remove_pending_run(run_id: str, path: Path) -> None:
-    _save_pending(
-        [r for r in _load_pending(path) if r["runId"] != run_id],
-        path,
-    )
+def _remove_pending_run(run_id: str, pending_dir: Path) -> None:
+    stub = _pending_stub_path(run_id, pending_dir)
+    if stub.exists():
+        stub.unlink()
+
+
+def _load_pending(pending_dir: Path) -> list[dict]:
+    if not pending_dir.exists():
+        return []
+    return [json.loads(p.read_text()) for p in sorted(pending_dir.glob("*.json"))]
 
 
 # --- public API ---
@@ -81,8 +79,8 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     _log.info("payload written  path=%s", payload_path)
 
     run_id = submit(payload, cfg.baseUrl, _log)
-    _add_pending_run(run_id, cfg.h5adPath.stem, cfg.pendingRunsPath)
-    _log.info("pending saved  runId=%s  path=%s", run_id, cfg.pendingRunsPath)
+    _add_pending_run(run_id, cfg.h5adPath.stem, cfg.pendingDir)
+    _log.info("pending stub written  runId=%s  dir=%s", run_id, cfg.pendingDir)
 
     try:
         status = poll(run_id, cfg.baseUrl, cfg.pollIntervalS, cfg.pollTimeoutS, _log)
@@ -94,25 +92,25 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
         return None
 
     if status["state"] == "failed":
-        _remove_pending_run(run_id, cfg.pendingRunsPath)
+        _remove_pending_run(run_id, cfg.pendingDir)
         _log.error("failed  runId=%s  error=%s", run_id, status.get("error"))
         raise RuntimeError(f"CyteOnto run failed: {status.get('error')}")
 
     _log.info("completed  runId=%s  rows=%s", run_id, status.get("numRows"))
 
-    out_path = cfg.resultsDir / f"{run_id}.csv"
+    out_path = cfg.completedDir / f"{run_id}.csv"
     df = fetch_result(run_id, cfg.baseUrl, out_path, _log)
-    _remove_pending_run(run_id, cfg.pendingRunsPath)
+    _remove_pending_run(run_id, cfg.pendingDir)
     _log.info("done  saved=%s", out_path)
     return df
 
 
 def check_pending_runs(
     base_url: str = _DEFAULT_BASE_URL,
-    results_dir: Path = _DEFAULT_RESULTS_DIR,
-    pending_runs_path: Path = _DEFAULT_PENDING_PATH,
+    completed_dir: Path = _DEFAULT_COMPLETED_DIR,
+    pending_dir: Path = _DEFAULT_PENDING_DIR,
 ) -> dict[str, pd.DataFrame]:
-    runs = _load_pending(pending_runs_path)
+    runs = _load_pending(pending_dir)
     if not runs:
         _log.info("check_pending_runs: no pending runs")
         return {}
@@ -120,7 +118,6 @@ def check_pending_runs(
     _log.info("check_pending_runs: checking %d run(s)", len(runs))
 
     completed: dict[str, pd.DataFrame] = {}
-    remaining: list[dict] = []
 
     for entry in runs:
         run_id = entry["runId"]
@@ -130,8 +127,9 @@ def check_pending_runs(
         _log.info("check  runId=%s  h5adStem=%s  state=%s", run_id, h5ad_stem, state)
 
         if state == "completed":
-            out_path = results_dir / f"{run_id}.csv"
+            out_path = completed_dir / f"{run_id}.csv"
             completed[run_id] = fetch_result(run_id, base_url, out_path, _log)
+            _remove_pending_run(run_id, pending_dir)
         elif state == "failed":
             _log.error(
                 "failed  runId=%s  h5adStem=%s  error=%s",
@@ -139,13 +137,12 @@ def check_pending_runs(
                 h5ad_stem,
                 status.get("error"),
             )
-        else:
-            remaining.append(entry)
+            _remove_pending_run(run_id, pending_dir)
 
-    _save_pending(remaining, pending_runs_path)
+    still_pending = len(_load_pending(pending_dir))
     _log.info(
         "check_pending_runs: completed=%d  still_pending=%d",
         len(completed),
-        len(remaining),
+        still_pending,
     )
     return completed
