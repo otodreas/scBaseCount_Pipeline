@@ -27,7 +27,7 @@ def get_status(run_id: str, base_url: str) -> dict:
 def submit(payload: dict, base_url: str, log: logging.Logger) -> str:
     resp = httpx.post(
         f"{base_url}/compare",
-        content=orjson.dumps(payload),
+        content=orjson.dumps(payload),#, option=orjson.OPT_SERIALIZE_NUMPY),
         headers={"Content-Type": "application/json"},
         timeout=30,
     )

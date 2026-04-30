@@ -11,13 +11,13 @@ _ALGO_COL = "cytetype_annotation_leiden_merged"
 
 def build_payload(adata: sc.AnnData) -> dict:
     return {
-        "authorLabels": adata.obs[_AUTHOR_COL].values,
+        "authorLabels": adata.obs[_AUTHOR_COL].to_list(),
         "algorithms": {
-            "algo1": adata.obs[_ALGO_COL].values,
+            "algo1": adata.obs[_ALGO_COL].to_list(),
         },
     }
 
 
 def write_payload(payload: dict, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(orjson.dumps(payload))
+    path.write_bytes(orjson.dumps(payload))#, option=orjson.OPT_SERIALIZE_NUMPY))
