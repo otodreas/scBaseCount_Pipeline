@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 
 import httpx
+import orjson
 import pandas as pd
 
 
@@ -24,7 +25,12 @@ def get_status(run_id: str, base_url: str) -> dict:
 
 
 def submit(payload: dict, base_url: str, log: logging.Logger) -> str:
-    resp = httpx.post(f"{base_url}/compare", json=payload, timeout=30)
+    resp = httpx.post(
+        f"{base_url}/compare",
+        content=orjson.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        timeout=30,
+    )
     _check_response(resp, "submit")
     data = resp.json()
     log.info("submitted  runId=%s  state=%s", data["runId"], data["state"])

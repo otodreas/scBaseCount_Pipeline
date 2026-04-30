@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
+import orjson
 import scanpy as sc
 
 _AUTHOR_COL = "cell_type"
@@ -11,14 +11,13 @@ _ALGO_COL = "cytetype_annotation_leiden_merged"
 
 def build_payload(adata: sc.AnnData) -> dict:
     return {
-        "authorLabels": adata.obs[_AUTHOR_COL].tolist(),
+        "authorLabels": adata.obs[_AUTHOR_COL].values,
         "algorithms": {
-            "algo1": adata.obs[_ALGO_COL].tolist(),
+            "algo1": adata.obs[_ALGO_COL].values,
         },
     }
 
 
 def write_payload(payload: dict, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    path.write_bytes(orjson.dumps(payload))

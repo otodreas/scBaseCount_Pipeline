@@ -22,4 +22,5 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "cytetype>=0.19.4",
     "umap-learn==0.5.11",  # pin: minor updates change embedding layout
+    "orjson>=3.11.8",
 ]
