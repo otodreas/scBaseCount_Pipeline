@@ -13,7 +13,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`h5ad_extractor/`](h5ad_extractor/) | `extract_annotation_columns(cfg)` | `output/h5ad_extract/{stem}_{obs\|var}_columns.{parquet\|csv}` |
 | [`shared/`](shared/) | `REPO_ROOT`, `configure_file_logger(...)` | — (utilities only) |
 
-Each pipeline package has its own `README.md` with usage examples, config reference, and output model. `shared` is an internal utility package used by the other packages; it is not called directly from notebooks.
+Each pipeline package has its own `README.md` with usage examples, config reference, and output model. `shared` is an internal utility package; it is not called directly from notebooks.
 
 ## Pipeline order
 
@@ -21,4 +21,4 @@ Each pipeline package has its own `README.md` with usage examples, config refere
 metadata  →  study_context  →  cluster_validation  →  cytetype  →  cyteonto
 ```
 
-`metadata` produces the dataset catalog and accession list that both `study_context` and `cluster_validation` consume. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cyteonto` submits CyteType-annotated h5ad files to the CyteOnto API and returns ontology-aware similarity scores.
+`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cyteonto` submits CyteType-annotated h5ad files to the CyteOnto API and returns ontology-aware similarity scores.
