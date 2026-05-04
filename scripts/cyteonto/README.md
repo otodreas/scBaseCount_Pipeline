@@ -25,18 +25,18 @@ Runs can take a long time. You can safely interrupt the polling loop (e.g. shut 
 2026-04-29 14:31:00 INFO polling stopped  runId=run-<uuid>  (run continues on server; call check_pending_runs() to resume)
 ```
 
-A stub file `output/cyteonto/runs/pending/{run_id}.json` is written immediately after the job is submitted, so it is never lost. Completed CSVs land in `output/cyteonto/runs/completed/`.
+A stub file `output/cyteonto/runs/{run_id}.json` is written immediately after the job is submitted with `completedAt` set to `null`, so it is never lost. When the run finishes the same file is updated in place with a `completedAt` timestamp, and the result CSV lands alongside it at `output/cyteonto/runs/{run_id}.csv`.
 
 ### Resuming after a restart
 
-Call `check_pending_runs()` at the top of your session. It reads `pending_runs.json`, queries the status of each run, fetches any that have completed, and returns a dict of `{run_id: DataFrame}`:
+Call `check_pending_runs()` at the top of your session. It scans `output/cyteonto/runs/` for any stub whose `completedAt` is `null`, queries the server status of each, fetches any that have completed, and returns a dict of `{run_id: DataFrame}`:
 
 ```python
 from cyteonto import check_pending_runs
 
 results = check_pending_runs()
 # results is a dict[run_id, pd.DataFrame] for every run that completed
-# pending_runs.json is updated in place -- completed and failed runs are removed
+# each run stub is updated in place -- completedAt is stamped on completion
 ```
 
 ## Input conventions
@@ -65,11 +65,12 @@ The pipeline reads two fixed columns from `adata.obs`:
 |-------|---------|-------------|
 | `h5adPath` | required | Path to the annotated h5ad file |
 | `payloadDir` | `output/cyteonto/payloads` | Directory for the payload JSON |
-| `completedDir` | `output/cyteonto/runs/completed` | Directory for fetched CSVs |
-| `pendingDir` | `output/cyteonto/runs/pending` | Directory for in-flight run stubs (one JSON per run) |
+| `runsDir` | `output/cyteonto/runs` | Directory for run stubs (JSON) and result CSVs |
 | `baseUrl` | `https://cyteonto.nygen.io` | CyteOnto service base URL |
 | `pollIntervalS` | `10` | Seconds between status polls |
 | `pollTimeoutS` | `3600` | Total seconds before a `TimeoutError` is raised |
+
+All default paths are relative to the repo root.
 
 ## Output DataFrame columns
 

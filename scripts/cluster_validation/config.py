@@ -6,11 +6,24 @@ import numpy as np
 from pydantic import BaseModel, Field
 
 
+def _find_repo_root(start: Path) -> Path:
+    for directory in [start, *start.parents]:
+        if (directory / ".venv").exists() or (directory / ".git").exists():
+            return directory
+    raise RuntimeError(
+        f"Could not locate repo root from {start}. "
+        "No .venv or .git directory found in any parent."
+    )
+
+
+_REPO_ROOT = _find_repo_root(Path(__file__).resolve())
+
+
 class ClusterValidationConfig(BaseModel):
     srxAccession: str | None = None
     datasetIndex: int = 2
-    summaryPath: Path = Path("cluster_validation_sandbox/datasets_summary")
-    localH5adRoot: Path = Path("data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens")
+    summaryPath: Path = _REPO_ROOT / "cluster_validation_sandbox" / "datasets_summary"
+    localH5adRoot: Path = _REPO_ROOT / "data" / "scbasecount" / "2026-01-12" / "h5ad" / "GeneFull" / "Homo_sapiens"
     minCellsPerType: int = 20
     nTopGenes: int = 2000
     nPcsCompute: int = 50
@@ -21,4 +34,4 @@ class ClusterValidationConfig(BaseModel):
     )
     mergeThreshold: float = 0.2
     rfBalanceWeakPrior: bool = False
-    outputDir: Path = Path("data/other")
+    outputDir: Path = _REPO_ROOT / "data" / "other"

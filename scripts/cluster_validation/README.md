@@ -66,6 +66,8 @@ A `RandomForestClassifier` is trained on HVG expression with stratified K-fold o
 | `mergeThreshold` | `0.2` | OOF confusion threshold above which two clusters are merged |
 | `rfBalanceWeakPrior` | `False` | Balance class weights in the RF by `cell_type` frequency |
 
+All default paths are relative to the repo root.
+
 ## Output model
 
 ```

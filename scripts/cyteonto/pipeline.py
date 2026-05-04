@@ -12,7 +12,7 @@ from cyteonto.client import fetch_result, get_status, poll, submit
 from cyteonto.config import CyteOntoConfig, _REPO_ROOT
 from cyteonto.payload import build_payload, write_payload
 
-_LOG_PATH = Path(__file__).parents[2] / "logs" / "cyteonto.log"
+_LOG_PATH = _REPO_ROOT / "logs" / "cyteonto.log"
 _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -27,36 +27,41 @@ logging.basicConfig(
 _log = logging.getLogger(__name__)
 
 _DEFAULT_BASE_URL = "https://cyteonto.nygen.io"
-_DEFAULT_COMPLETED_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs" / "completed"
-_DEFAULT_PENDING_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs" / "pending"
+_DEFAULT_RUNS_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs"
 
 
-# --- pending-run helpers (one JSON stub per run in runs/pending/) ---
+# --- run stub helpers (one JSON per run in runs/, completedAt null until done) ---
 
-def _pending_stub_path(run_id: str, pending_dir: Path) -> Path:
-    return pending_dir / f"{run_id}.json"
+def _stub_path(run_id: str, runs_dir: Path) -> Path:
+    return runs_dir / f"{run_id}.json"
 
 
-def _add_pending_run(run_id: str, h5ad_stem: str, pending_dir: Path) -> None:
-    pending_dir.mkdir(parents=True, exist_ok=True)
+def _write_run_stub(run_id: str, h5ad_stem: str, payload_path: Path, runs_dir: Path) -> None:
+    runs_dir.mkdir(parents=True, exist_ok=True)
     stub = {
         "runId": run_id,
         "h5adStem": h5ad_stem,
+        "payloadPath": str(payload_path.relative_to(_REPO_ROOT)),
         "submittedAt": datetime.datetime.now().isoformat(timespec="seconds"),
+        "completedAt": None,
     }
-    _pending_stub_path(run_id, pending_dir).write_text(json.dumps(stub, indent=2))
+    _stub_path(run_id, runs_dir).write_text(json.dumps(stub, indent=2))
 
 
-def _remove_pending_run(run_id: str, pending_dir: Path) -> None:
-    stub = _pending_stub_path(run_id, pending_dir)
-    if stub.exists():
-        stub.unlink()
+def _mark_completed(run_id: str, runs_dir: Path) -> None:
+    path = _stub_path(run_id, runs_dir)
+    if not path.exists():
+        return
+    stub = json.loads(path.read_text())
+    stub["completedAt"] = datetime.datetime.now().isoformat(timespec="seconds")
+    path.write_text(json.dumps(stub, indent=2))
 
 
-def _load_pending(pending_dir: Path) -> list[dict]:
-    if not pending_dir.exists():
+def _load_pending(runs_dir: Path) -> list[dict]:
+    if not runs_dir.exists():
         return []
-    return [json.loads(p.read_text()) for p in sorted(pending_dir.glob("*.json"))]
+    stubs = [json.loads(p.read_text()) for p in sorted(runs_dir.glob("*.json"))]
+    return [s for s in stubs if s.get("completedAt") is None]
 
 
 # --- public API ---
@@ -82,8 +87,8 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
 
     run_id = submit(payload, cfg.baseUrl, _log)
     print(f"[cyteonto] submitted  {run_id}")
-    _add_pending_run(run_id, cfg.h5adPath.stem, cfg.pendingDir)
-    _log.info("pending stub written  runId=%s  dir=%s", run_id, cfg.pendingDir)
+    _write_run_stub(run_id, cfg.h5adPath.stem, payload_path, cfg.runsDir)
+    _log.info("run stub written  runId=%s  dir=%s", run_id, cfg.runsDir)
 
     try:
         status = poll(run_id, cfg.baseUrl, cfg.pollIntervalS, cfg.pollTimeoutS, _log)
@@ -96,15 +101,15 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
         return None
 
     if status["state"] == "failed":
-        _remove_pending_run(run_id, cfg.pendingDir)
+        _mark_completed(run_id, cfg.runsDir)
         _log.error("failed  runId=%s  error=%s", run_id, status.get("error"))
         raise RuntimeError(f"CyteOnto run failed: {status.get('error')}")
 
     _log.info("completed  runId=%s  rows=%s", run_id, status.get("numRows"))
 
-    out_path = cfg.completedDir / f"{run_id}.csv"
+    out_path = cfg.runsDir / f"{run_id}.csv"
     df = fetch_result(run_id, cfg.baseUrl, out_path, _log)
-    _remove_pending_run(run_id, cfg.pendingDir)
+    _mark_completed(run_id, cfg.runsDir)
     _log.info("done  saved=%s", out_path)
     print(f"[cyteonto] done      {run_id}  rows={status.get('numRows')}  saved={out_path.name}")
     return df
@@ -112,10 +117,9 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
 
 def check_pending_runs(
     base_url: str = _DEFAULT_BASE_URL,
-    completed_dir: Path = _DEFAULT_COMPLETED_DIR,
-    pending_dir: Path = _DEFAULT_PENDING_DIR,
+    runs_dir: Path = _DEFAULT_RUNS_DIR,
 ) -> dict[str, pd.DataFrame]:
-    runs = _load_pending(pending_dir)
+    runs = _load_pending(runs_dir)
     if not runs:
         _log.info("check_pending_runs: no pending runs")
         print("[cyteonto] no pending runs")
@@ -135,9 +139,9 @@ def check_pending_runs(
         print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  {state}")
 
         if state == "completed":
-            out_path = completed_dir / f"{run_id}.csv"
+            out_path = runs_dir / f"{run_id}.csv"
             completed[run_id] = fetch_result(run_id, base_url, out_path, _log)
-            _remove_pending_run(run_id, pending_dir)
+            _mark_completed(run_id, runs_dir)
         elif state == "failed":
             _log.error(
                 "failed  runId=%s  h5adStem=%s  error=%s",
@@ -145,9 +149,9 @@ def check_pending_runs(
                 h5ad_stem,
                 status.get("error"),
             )
-            _remove_pending_run(run_id, pending_dir)
+            _mark_completed(run_id, runs_dir)
 
-    still_pending = len(_load_pending(pending_dir))
+    still_pending = len(_load_pending(runs_dir))
     _log.info(
         "check_pending_runs: completed=%d  still_pending=%d",
         len(completed),

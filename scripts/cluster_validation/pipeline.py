@@ -7,7 +7,7 @@ from pathlib import Path
 import scanpy as sc
 
 from cluster_validation.clustering import sweep_leiden
-from cluster_validation.config import ClusterValidationConfig
+from cluster_validation.config import ClusterValidationConfig, _REPO_ROOT
 from cluster_validation.data import load_dataset
 from cluster_validation.embedding import embed_dataset
 from cluster_validation.merge import merge_clusters
@@ -16,7 +16,7 @@ from cluster_validation.models import ClusterValidationResult
 from cluster_validation.preprocess import preprocess
 from cluster_validation.resolution import select_resolution
 
-_LOG_PATH = Path(__file__).parents[2] / "logs" / "cluster_validation.log"
+_LOG_PATH = _REPO_ROOT / "logs" / "cluster_validation.log"
 _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(

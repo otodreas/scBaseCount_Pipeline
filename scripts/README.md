@@ -9,7 +9,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`metadata/`](metadata/) | `filter_lung(sample, cfg)` | `output/metadata/datasets.csv`, `quantiles_datasets.csv`, figures |
 | [`study_context/`](study_context/) | `pipeline_for_accession_list(accessions)` | `output/contexts.jsonl` |
 | [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `output/clustering/data/{srx}_clustered.h5ad`, figures |
-| [`cyteonto/`](cyteonto/) | `run_cyteonto(cfg)` | `output/cyteonto/runs/completed/{run_id}.csv` |
+| [`cyteonto/`](cyteonto/) | `run_cyteonto(cfg)` | `output/cyteonto/runs/{run_id}.csv` |
 
 Each package has its own `README.md` with usage examples, config reference, and output model.
 

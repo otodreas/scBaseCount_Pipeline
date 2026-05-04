@@ -67,6 +67,8 @@ The intersection is used as the primary set because the union contains off-targe
 | `minObsCount` | `1000` | Minimum cells per sample; samples below this are dropped before any other filtering |
 | `outputDir` | `output/metadata` | Directory for `datasets.csv`, `quantiles_datasets.csv`, and figures |
 
+All default paths are relative to the repo root.
+
 ## Outputs
 
 | File | Description |

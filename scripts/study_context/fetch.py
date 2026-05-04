@@ -18,7 +18,19 @@ NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
 BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
-_LOG_PATH = Path(__file__).parents[2] / "logs" / "study_context.log"
+
+def _find_repo_root(start: Path) -> Path:
+    for directory in [start, *start.parents]:
+        if (directory / ".venv").exists() or (directory / ".git").exists():
+            return directory
+    raise RuntimeError(
+        f"Could not locate repo root from {start}. "
+        "No .venv or .git directory found in any parent."
+    )
+
+
+_REPO_ROOT = _find_repo_root(Path(__file__).resolve())
+_LOG_PATH = _REPO_ROOT / "logs" / "study_context.log"
 _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
