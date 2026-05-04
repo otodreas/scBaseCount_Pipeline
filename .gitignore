@@ -13,6 +13,7 @@ tmp/
 output/clustering/
 output/cytetype/
 output/cyteonto/
+output/h5ad_extract/
 
 # Logs
 logs/
