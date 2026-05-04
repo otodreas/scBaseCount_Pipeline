@@ -10,8 +10,10 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`study_context/`](study_context/) | `pipeline_for_accession_list(accessions)` | `output/contexts.jsonl` |
 | [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `output/clustering/data/{srx}_clustered.h5ad`, figures |
 | [`cyteonto/`](cyteonto/) | `run_cyteonto(cfg)` | `output/cyteonto/runs/{run_id}.csv` |
+| [`h5ad_extractor/`](h5ad_extractor/) | `extract_annotation_columns(cfg)` | `output/h5ad_extract/{stem}_{obs\|var}_columns.{parquet\|csv}` |
+| [`shared/`](shared/) | `REPO_ROOT`, `configure_file_logger(...)` | — (utilities only) |
 
-Each package has its own `README.md` with usage examples, config reference, and output model.
+Each pipeline package has its own `README.md` with usage examples, config reference, and output model. `shared` is an internal utility package used by the other packages; it is not called directly from notebooks.
 
 ## Pipeline order
 
