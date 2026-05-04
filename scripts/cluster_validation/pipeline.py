@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import datetime
-import logging
 from pathlib import Path
 
 import scanpy as sc
 
 from cluster_validation.clustering import sweep_leiden
-from cluster_validation.config import ClusterValidationConfig, _REPO_ROOT
+from cluster_validation.config import ClusterValidationConfig
 from cluster_validation.data import load_dataset
 from cluster_validation.embedding import embed_dataset
 from cluster_validation.merge import merge_clusters
@@ -15,20 +14,9 @@ from cluster_validation.metrics import compute_metrics
 from cluster_validation.models import ClusterValidationResult
 from cluster_validation.preprocess import preprocess
 from cluster_validation.resolution import select_resolution
+from shared.logger import configure_file_logger
 
-_LOG_PATH = _REPO_ROOT / "logs" / "cluster_validation.log"
-_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.FileHandler(_LOG_PATH, mode="a", encoding="utf-8"),
-    ],
-)
-
-_log = logging.getLogger(__name__)
+_log = configure_file_logger("cluster_validation.log", __name__)
 
 _log.info("New cluster validation run started")
 

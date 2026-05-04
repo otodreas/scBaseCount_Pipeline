@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import datetime
 import json
-import logging
 from pathlib import Path
 
 import pandas as pd
@@ -11,20 +10,9 @@ import scanpy as sc
 from cyteonto.client import fetch_result, get_status, poll, submit
 from cyteonto.config import CyteOntoConfig, _REPO_ROOT
 from cyteonto.payload import build_payload, write_payload
+from shared.logger import configure_file_logger
 
-_LOG_PATH = _REPO_ROOT / "logs" / "cyteonto.log"
-_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.FileHandler(_LOG_PATH, mode="a", encoding="utf-8"),
-    ],
-)
-
-_log = logging.getLogger(__name__)
+_log = configure_file_logger("cyteonto.log", __name__)
 
 _DEFAULT_BASE_URL = "https://cyteonto.nygen.io"
 _DEFAULT_RUNS_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs"

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import datetime
 import json
-import logging
 import os
 import re
 import time
@@ -13,35 +12,13 @@ from pathlib import Path
 import httpx
 
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
+from shared.logger import configure_file_logger
 
 NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
 BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 
-
-def _find_repo_root(start: Path) -> Path:
-    for directory in [start, *start.parents]:
-        if (directory / ".venv").exists() or (directory / ".git").exists():
-            return directory
-    raise RuntimeError(
-        f"Could not locate repo root from {start}. "
-        "No .venv or .git directory found in any parent."
-    )
-
-
-_REPO_ROOT = _find_repo_root(Path(__file__).resolve())
-_LOG_PATH = _REPO_ROOT / "logs" / "study_context.log"
-_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.FileHandler(_LOG_PATH, mode="a", encoding="utf-8"),
-    ],
-)
-_log = logging.getLogger(__name__)
+_log = configure_file_logger("study_context.log", __name__)
 
 _http = httpx.Client(timeout=30.0, follow_redirects=True)
 
