@@ -11,7 +11,7 @@ from shared.repo import REPO_ROOT as _REPO_ROOT
 class ClusterValidationConfig(BaseModel):
     srxAccession: str | None = None
     datasetIndex: int = 2
-    summaryPath: Path = _REPO_ROOT / "cluster_validation_sandbox" / "datasets_summary"
+    summaryPath: Path = _REPO_ROOT / "output" / "metadata" / "quantiles_datasets.csv"
     localH5adRoot: Path = _REPO_ROOT / "data" / "scbasecount" / "2026-01-12" / "h5ad" / "GeneFull" / "Homo_sapiens"
     minCellsPerType: int = 20
     nTopGenes: int = 2000
@@ -23,4 +23,4 @@ class ClusterValidationConfig(BaseModel):
     )
     mergeThreshold: float = 0.2
     rfBalanceWeakPrior: bool = False
-    outputDir: Path = _REPO_ROOT / "data" / "other"
+    outputDir: Path = _REPO_ROOT / "output" / "clustering" / "data"

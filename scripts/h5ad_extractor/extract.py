@@ -40,10 +40,11 @@ def extract_annotation_columns(cfg: H5adExtractConfig) -> Path:
                 f"Missing {cfg.annotationAxis} column(s) {missing!r} in {h5ad_path}. "
                 f"Available: {sorted(available)!r}"
             )
-        df = ann.loc[:, list(cfg.columnNames)].copy()
+        df = ann[cfg.columnNames].copy()
         out_path.parent.mkdir(parents=True, exist_ok=True)
+        # Note that when brought back into pandas, some columns data types may be coerced differently between parquet vs csv
         if cfg.outputFormat == "parquet":
-            df.to_parquet(out_path, engine="pyarrow")
+            df.to_parquet(out_path, index=False)
         else:
             df.to_csv(out_path, index=False)
         return out_path
