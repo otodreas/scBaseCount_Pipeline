@@ -29,9 +29,16 @@ uv sync
 
 ## Google Cloud
 
-I use [Google Cloud](https://docs.cloud.google.com/sdk/docs/install-sdk) to access the dataset. Some helpful variables
+I use the [Google Cloud SDK](https://docs.cloud.google.com/sdk/docs/install-sdk) to access the dataset. Some helpful variables
 
 ```sh
-export META_PATH="gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/"  # metadata path
-export H5AD_PATH="gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/"      # h5ad path
+export META_PATH="gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens"  # metadata path
+export H5AD_PATH="gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens"      # h5ad path
+```
+
+Use `gcloud storage` followed by normal shell programs
+
+```sh
+gcloud storage ls "$META_PATH"                       # list files in the metadata directory
+gcloud storage cp "$H5AD_PATH"/SRX123456.h5ad data/  # download an h5ad into data directory
 ```
