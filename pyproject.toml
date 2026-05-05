@@ -9,7 +9,10 @@ packages = [
     "scripts/cluster_validation",
     "scripts/metadata",
     "scripts/cyteonto",
-    "scripts/h5ad_extractor"
+    "scripts/h5ad_extractor",
+    "scripts/r2",
+    "scripts/gcs",
+    "scripts/cytetype_runner",
 ]
 
 [project]
