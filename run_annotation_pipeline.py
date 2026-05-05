@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import csv
+import argparse
 import logging
 import os
 import sys
@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import boto3
+import pandas as pd
 import scanpy as sc
 from cytetype import CyteType, rank_genes_groups_backed
 from dotenv import load_dotenv
@@ -20,10 +21,11 @@ from study_context import ExperimentContext, experiment_context_summary
 
 load_dotenv()
 
-DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
-CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
-CYTETYPE_OUTPUT_DIR = REPO_ROOT / "output" / "cytetype" / "data"
+_DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
+_DEFAULT_CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
+CYTETYPE_OUTPUT_DIR = REPO_ROOT / "output" / "cytetype" / "data"  # TODO: determine if this can be removed
 
+# File prefix for R2 storage
 R2_PREFIX = "cytetype"
 
 GROUP_KEY_FALLBACK = "leiden_merged"
@@ -54,17 +56,16 @@ def fetch_uploaded_r2_keys() -> set[str]:
     return keys
 
 
-def read_datasets() -> list[dict[str, str]]:
-    with open(DATASETS_CSV, newline="") as fh:
-        return list(csv.DictReader(fh))
+def read_datasets(path: Path) -> list[dict]:
+    return pd.read_csv(path).to_dict("records")
 
 
-def load_contexts() -> dict[str, ExperimentContext]:
-    if not CONTEXTS_JSONL.exists():
-        log.warning("contexts.jsonl not found at %s; study context will be empty for all samples", CONTEXTS_JSONL)
+def load_contexts(path: Path) -> dict[str, ExperimentContext]:
+    if not path.exists():
+        log.warning("contexts.jsonl not found at %s; study context will be empty for all samples", path)
         return {}
     contexts: dict[str, ExperimentContext] = {}
-    with open(CONTEXTS_JSONL) as fh:
+    with open(path) as fh:
         for line in fh:
             line = line.strip()
             if not line:
@@ -152,12 +153,33 @@ def process_accession(
         _safe_delete(cytetype_h5ad)
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the CyteType annotation pipeline.")
+    parser.add_argument(
+        "--datasets",
+        type=Path,
+        default=_DEFAULT_DATASETS_CSV,
+        metavar="PATH",
+        help=f"Path to datasets CSV (default: {_DEFAULT_DATASETS_CSV})",
+    )
+    parser.add_argument(
+        "--contexts",
+        type=Path,
+        default=_DEFAULT_CONTEXTS_JSONL,
+        metavar="PATH",
+        help=f"Path to contexts JSONL (default: {_DEFAULT_CONTEXTS_JSONL})",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
-    datasets = read_datasets()
-    log.info("Loaded %d accession(s) from datasets.csv", len(datasets))
+    args = _parse_args()
+
+    datasets = read_datasets(args.datasets)
+    log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
 
     uploaded = fetch_uploaded_r2_keys()
-    contexts = load_contexts()
+    contexts = load_contexts(args.contexts)
 
     skipped = 0
     for row in datasets:
