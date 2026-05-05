@@ -18,12 +18,12 @@ from shared.logger import configure_file_logger
 
 _log = configure_file_logger("cluster_validation.log", __name__)
 
-_log.info("New cluster validation run started")
 
 def run_cluster_validation(
     cfg: ClusterValidationConfig,
 ) -> tuple[sc.AnnData, ClusterValidationResult]:
     adata, srx, title_suffix = load_dataset(cfg)
+    _log.info("New cluster validation run started")
     print(f"[{datetime.datetime.now().replace(microsecond=0)}] Starting cluster validation for {srx}")
     _log.info("starting  %s", srx)
     adata, prep_stats = preprocess(adata, cfg)
