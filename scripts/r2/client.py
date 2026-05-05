@@ -37,14 +37,15 @@ def upload_to_r2(local_path: Path, r2_key: str) -> None:
     _r2_client().upload_file(str(local_path), bucket, r2_key)
 
 
-def verify_upload(r2_key: str) -> None:
+def verify_upload(r2_key: str) -> bool:
     bucket = os.environ["BUCKET"]
     client = _r2_client()
     try:
         client.head_object(Bucket=bucket, Key=r2_key)
         _log.info("Upload verified: r2://%s/%s", bucket, r2_key)
+        return True
     except client.exceptions.ClientError as exc:
         if exc.response["Error"]["Code"] == "404":
             _log.warning("Upload verification failed: r2://%s/%s not found", bucket, r2_key)
-        else:
-            raise
+            return False
+        raise

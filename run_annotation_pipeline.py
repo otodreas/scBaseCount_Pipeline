@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import logging
 import sys
 from pathlib import Path
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 
 from cluster_validation import ClusterValidationConfig, run_cluster_validation
 from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
-from gcs import download_from_gcs
+from gcs import download_from_gcs, gcs_local_path, verify_download
 from r2 import fetch_uploaded_r2_keys, upload_to_r2, verify_upload
 from shared.logger import configure_file_logger
 from shared.repo import REPO_ROOT
@@ -20,6 +21,7 @@ load_dotenv()
 
 _DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
 _DEFAULT_CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
+GCS_LOCAL_ROOT = REPO_ROOT / "data"
 
 # File prefix for R2 storage
 R2_PREFIX = "cytetype"
@@ -59,22 +61,24 @@ def _safe_delete(path: Path) -> None:
 def process_accession(
     srx: str,
     gs_uri: str,
+    r2_key: str,
     contexts: dict[str, ExperimentContext],
     datasets_path: Path,
-) -> None:
+) -> bool:
     cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
     cytetype_cfg = CyteTypeRunnerConfig(srxAccession=srx)
-    raw_h5ad = cfg.localH5adRoot / f"{srx}.h5ad"
+    raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
     cytetype_h5ad = cytetype_cfg.outputDir / f"{srx}_cytetype_annotated.h5ad"
-    r2_key = f"{R2_PREFIX}/{srx}_cytetype_annotated.h5ad"
 
     downloaded = False
     try:
         if raw_h5ad.exists():
             log.info("%s: found local h5ad at %s, skipping GCS download", srx, raw_h5ad)
         else:
-            download_from_gcs(gs_uri, raw_h5ad)
+            download_from_gcs(gs_uri, GCS_LOCAL_ROOT)
             downloaded = True
+            if not verify_download(gs_uri, GCS_LOCAL_ROOT):
+                raise RuntimeError(f"Download verification failed for {srx}: file not found at {raw_h5ad}")
 
         _, result = run_cluster_validation(cfg)
         if downloaded:
@@ -89,16 +93,18 @@ def process_accession(
         _safe_delete(result.adataPath)
 
         upload_to_r2(cytetype_h5ad, r2_key)
-        _safe_delete(cytetype_h5ad)
         verify_upload(r2_key)
+        _safe_delete(cytetype_h5ad)
         log.info("%s: done", srx)
+        return True
 
     except Exception:
-        log.exception("%s: pipeline failed, skipping", srx)
+        log.exception("%s: pipeline failed", srx)
         if downloaded:
             _safe_delete(raw_h5ad)
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
         _safe_delete(cytetype_h5ad)
+        return False
 
 
 def _parse_args() -> argparse.Namespace:
@@ -125,12 +131,12 @@ def main() -> None:
 
     datasets = read_datasets(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
-
+    datasets = datasets.sort_values("obs_count").iloc[0:1]  # TODO: remove this
     uploaded = fetch_uploaded_r2_keys()
     contexts = load_contexts(args.contexts)
 
     skipped = 0
-    for _, row in datasets.iterrows():
+    for i, row in datasets.iterrows():
         srx = row["srx_accession"]
         gs_uri = row["file_path"]
         r2_key = f"{R2_PREFIX}/{srx}_cytetype_annotated.h5ad"
@@ -140,8 +146,12 @@ def main() -> None:
             skipped += 1
             continue
 
-        log.info("%s: starting", srx)
-        process_accession(srx, gs_uri, contexts, args.datasets)
+        log.info("%s (%d/%d): starting", srx, i+1, len(datasets))
+        success = process_accession(srx, gs_uri, r2_key, contexts, args.datasets)
+        if not success:
+            log.warning("%s: skipped at %s", srx, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            skipped += 1
+            continue
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
