@@ -28,7 +28,6 @@ CYTETYPE_OUTPUT_DIR = REPO_ROOT / "output" / "cytetype" / "data"  # TODO: determ
 # File prefix for R2 storage
 R2_PREFIX = "cytetype"
 
-GROUP_KEY_FALLBACK = "leiden_merged"
 N_TOP_GENES = 100
 
 log = configure_file_logger("annotation_pipeline.log", __name__)
@@ -57,7 +56,7 @@ def fetch_uploaded_r2_keys() -> set[str]:
 
 
 def read_datasets(path: Path) -> list[dict]:
-    return pd.read_csv(path).to_dict("records")
+    return pd.read_csv(path)
 
 
 def load_contexts(path: Path) -> dict[str, ExperimentContext]:
@@ -120,35 +119,42 @@ def process_accession(
     srx: str,
     gs_uri: str,
     contexts: dict[str, ExperimentContext],
+    datasets_path: Path,
 ) -> None:
-    cfg = ClusterValidationConfig(srxAccession=srx)
+    cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
     raw_h5ad = cfg.localH5adRoot / f"{srx}.h5ad"
     cytetype_h5ad = CYTETYPE_OUTPUT_DIR / f"{srx}_cytetype_annotated.h5ad"
     r2_key = f"{R2_PREFIX}/{srx}_cytetype_annotated.h5ad"
 
+    downloaded = False
     try:
-        download_from_gcs(gs_uri, raw_h5ad)
+        if raw_h5ad.exists():
+            log.info("%s: found local h5ad at %s, skipping GCS download", srx, raw_h5ad)
+        else:
+            download_from_gcs(gs_uri, raw_h5ad)
+            downloaded = True
 
         _, result = run_cluster_validation(cfg)
-        _safe_delete(raw_h5ad)
+        if downloaded:
+            _safe_delete(raw_h5ad)
 
         ctx = contexts.get(srx)
         study_context = experiment_context_summary(ctx) if ctx else ""
         if not ctx:
             log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
 
-        group_key = result.clusterKey or GROUP_KEY_FALLBACK
-        run_cytetype_step(result.adataPath, group_key, study_context, cytetype_h5ad)
-        _safe_delete(result.adataPath)
+        run_cytetype_step(result.adataPath, result.mergedKey, study_context, cytetype_h5ad)
+        # _safe_delete(result.adataPath)
 
         upload_to_r2(cytetype_h5ad, r2_key)
-        _safe_delete(cytetype_h5ad)
-
+        # _safe_delete(cytetype_h5ad)
+        # TODO: run check on if the object exists in r2
         log.info("%s: done", srx)
 
     except Exception:
         log.exception("%s: pipeline failed, skipping", srx)
-        _safe_delete(raw_h5ad)
+        if downloaded:
+            _safe_delete(raw_h5ad)
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
         _safe_delete(cytetype_h5ad)
 
@@ -182,7 +188,7 @@ def main() -> None:
     contexts = load_contexts(args.contexts)
 
     skipped = 0
-    for row in datasets:
+    for _, row in datasets.iterrows():
         srx = row["srx_accession"]
         gs_uri = row["file_path"]
         r2_key = f"{R2_PREFIX}/{srx}_cytetype_annotated.h5ad"
@@ -193,7 +199,7 @@ def main() -> None:
             continue
 
         log.info("%s: starting", srx)
-        process_accession(srx, gs_uri, contexts)
+        process_accession(srx, gs_uri, contexts, args.datasets)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
