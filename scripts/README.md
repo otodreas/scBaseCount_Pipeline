@@ -9,8 +9,11 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`metadata/`](metadata/) | `filter_lung(sample, cfg)` | `output/metadata/datasets.csv`, `quantiles_datasets.csv`, figures |
 | [`study_context/`](study_context/) | `pipeline_for_accession_list(accessions)` | `output/contexts.jsonl` |
 | [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `output/clustering/data/{srx}_clustered.h5ad`, figures |
+| [`cytetype_runner/`](cytetype_runner/) | `run_cytetype(cfg, ...)` | `output/cytetype/data/{srx}_cytetype_annotated.h5ad`, `output/cytetype/job_details/{srx}_cytetype_jobDetails.json` |
 | [`cyteonto/`](cyteonto/) | `run_cyteonto(cfg)` | `output/cyteonto/runs/{run_id}.csv` |
 | [`h5ad_extractor/`](h5ad_extractor/) | `extract_annotation_columns(cfg)` | `output/h5ad_extract/{stem}_{obs\|var}_columns.{parquet\|csv}` |
+| [`gcs/`](gcs/) | `download_from_gcs(gs_uri, local_root)` | local mirror of GCS path under `data/` |
+| [`r2/`](r2/) | `upload_to_r2(local_path, r2_key)` | — (side effect: uploads to R2) |
 | [`shared/`](shared/) | `REPO_ROOT`, `configure_file_logger(...)` | — (utilities only) |
 
 Each pipeline package has its own `README.md` with usage examples, config reference, and output model. `shared` is an internal utility package; it is not called directly from notebooks.
@@ -18,7 +21,10 @@ Each pipeline package has its own `README.md` with usage examples, config refere
 ## Pipeline order
 
 ```
-metadata  →  study_context  →  cluster_validation  →  cytetype  →  cyteonto
+metadata  →  study_context  →  cluster_validation  →  cytetype_runner  →  cyteonto
+                                                              |
+                                                         gcs (download)
+                                                         r2  (upload)
 ```
 
-`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cyteonto` submits CyteType-annotated h5ad files to the CyteOnto API and returns ontology-aware similarity scores.
+`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cytetype_runner` wraps the CyteType annotation step and persists the annotated h5ad and job details. `gcs` and `r2` handle file transfer to and from cloud storage. `cyteonto` submits CyteType-annotated h5ad files to the CyteOnto API and returns ontology-aware similarity scores.
