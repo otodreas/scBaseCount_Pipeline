@@ -27,9 +27,9 @@ vars.h5
 # Personal notes
 DailyNotes.md
 
-# Cursor
+# IDE
 .cursor/
-cursor_plans/
+.vscode/
 
 # Symlinks
 cluster_validation_sandbox/datasets_summary
