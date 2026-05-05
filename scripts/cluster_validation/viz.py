@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -8,6 +9,10 @@ import seaborn as sns
 import scanpy as sc
 
 from cluster_validation.models import ClusterValidationResult
+
+
+def _now() -> str:
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _save(fig: plt.Figure, figs_dir: Path | None, name: str) -> None:
@@ -27,7 +32,7 @@ def plot_pca_cumvar(
     cumvar_target = adata.uns.get("_cv_cumvar_target", None)
 
     fig, ax = plt.subplots()
-    ax.set_title(f"Cumulative Variance by PCs\nDataset: {result.datasetTitleSuffix}")
+    ax.set_title(f"Cumulative Variance by PCs\nDataset: {result.datasetTitleSuffix}\n{_now()}")
     ax.plot(
         range(1, len(var_ratio) + 1),
         np.cumsum(var_ratio) * 100,
@@ -74,7 +79,7 @@ def plot_resolution_sweep(
 
     plt.suptitle(
         f"Dataset: {result.datasetTitleSuffix}\nResolution selection\n"
-        f"selected = {sel}  (k = {k_arr[best_idx]},  k_filtered = {result.kFiltered})"
+        f"selected = {sel}  (k = {k_arr[best_idx]},  k_filtered = {result.kFiltered})\n{_now()}"
     )
     plt.tight_layout()
     _save(fig, figs_dir, f"resolution_sweep_{result.srxAccession}.png")
@@ -100,6 +105,7 @@ def plot_umap_selected(
         ],
         show=False,
     )
+    plt.suptitle(f"Dataset: {result.datasetTitleSuffix}\n{_now()}", y=1.02)
     if figs_dir is not None:
         figs_dir.mkdir(parents=True, exist_ok=True)
         plt.savefig(figs_dir / f"umap_selected_{result.srxAccession}.png", bbox_inches="tight")
@@ -129,7 +135,7 @@ def plot_rf_confusion(
     ax.set_ylabel("True cluster")
     ax.set_title(
         f"Dataset: {result.datasetTitleSuffix}\n"
-        f"RF out-of-fold confusion  ({result.clusterKey}, {len(classes)} clusters)"
+        f"RF out-of-fold confusion  ({result.clusterKey}, {len(classes)} clusters)\n{_now()}"
     )
     plt.tight_layout()
     _save(fig, figs_dir, f"rf_confusion_{result.srxAccession}.png")
@@ -171,7 +177,7 @@ def plot_umap_merged(
     )
     if fig is not None:
         fig.suptitle(
-            f"Dataset: {result.datasetTitleSuffix}\nRF-based cluster merging summary",
+            f"Dataset: {result.datasetTitleSuffix}\nRF-based cluster merging summary\n{_now()}",
             fontsize=16,
             y=1.03,
         )
@@ -207,7 +213,7 @@ def plot_composition_bars(
     axes[1].set_xticklabels([str(lbl)[:4] for lbl in celltype_counts.index], rotation=90)
 
     fig.suptitle(
-        f"Dataset: {result.datasetTitleSuffix}\nCluster composition", fontsize=16, y=1.03
+        f"Dataset: {result.datasetTitleSuffix}\nCluster composition\n{_now()}", fontsize=16, y=1.03
     )
     plt.tight_layout()
     _save(fig, figs_dir, f"composition_bars_{result.srxAccession}.png")
@@ -239,7 +245,7 @@ def plot_silhouette(
 
     ax.set_xlabel("Leiden resolution")
     ax.set_ylabel("Silhouette score")
-    ax.set_title("Silhouette vs resolution (PCA embedding)")
+    ax.set_title(f"Silhouette vs resolution (PCA embedding)\n{_now()}")
     ax.legend(loc="best", fontsize=8)
     fig.tight_layout()
     _save(fig, figs_dir, f"silhouette_vs_resolution_{result.srxAccession}.png")
@@ -278,7 +284,7 @@ def plot_metrics(
     if len(metrics) < len(axs):
         axs[-1].set_visible(False)
 
-    fig.suptitle("Cluster similarity metrics vs resolution (relative to merged clusters)")
+    fig.suptitle(f"Cluster similarity metrics vs resolution (relative to merged clusters)\n{_now()}")
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
     _save(fig, figs_dir, f"homogeneity_completeness_nmi_vscore_ari_vs_resolution_{result.srxAccession}.png")
     return fig
