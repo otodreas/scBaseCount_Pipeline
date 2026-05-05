@@ -14,20 +14,10 @@ See [`notebooks/README.md`](notebooks/README.md) for the analysis notebooks and 
 # Data access
 
 ## Google Cloud
-A Google Cloud account and project is required to download data programmatically. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in `uv.lock`).
-
-```sh
-export META_PATH="gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens"
-export H5AD_PATH="gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens"
-```
-
-```sh
-gcloud storage ls "$META_PATH"                       # list files in the metadata directory
-gcloud storage cp "$H5AD_PATH"/SRX123456.h5ad data/  # download an h5ad into data directory
-```
+A Google Cloud account and project is required to download data programmatically. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in [`uv.lock`](uv.lock)).
 
 ## Cloudflare R2
-Processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see `.env.example`).
+Processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see [`.env.example`](.env.example)).
 
 ## Optional API keys
 NCBI and CyteType API keys reduce rate limiting when fetching study metadata and running annotations.
