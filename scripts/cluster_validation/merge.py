@@ -14,6 +14,9 @@ from cluster_validation.config import ClusterValidationConfig
 from cluster_validation.resolution import ResolutionSelection
 
 
+MERGED_CLUSTER_KEY = "leiden_merged"
+
+
 @dataclass
 class MergeInfo:
     conf: NDArray[np.float64]
@@ -22,6 +25,7 @@ class MergeInfo:
     mergedGroups: dict[str, list[str]]
     nClustersPreMerge: int
     nClustersPostMerge: int
+    mergedKey: str = MERGED_CLUSTER_KEY
 
 
 def merge_clusters(
@@ -43,7 +47,7 @@ def merge_clusters(
     merged_labels, label_map = _merge_by_confusion(
         adata.obs[sel.clusterKey].values, conf, classes, cfg.mergeThreshold
     )
-    adata.obs["leiden_merged"] = pd.Categorical(merged_labels)
+    adata.obs[MERGED_CLUSTER_KEY] = pd.Categorical(merged_labels)
 
     merged_groups: dict[str, list[str]] = {}
     for original, merged in label_map.items():
@@ -55,7 +59,7 @@ def merge_clusters(
         labelMap={str(k): str(v) for k, v in label_map.items()},
         mergedGroups=merged_groups,
         nClustersPreMerge=len(classes),
-        nClustersPostMerge=int(adata.obs["leiden_merged"].nunique()),
+        nClustersPostMerge=int(adata.obs[MERGED_CLUSTER_KEY].nunique()),
     )
 
 

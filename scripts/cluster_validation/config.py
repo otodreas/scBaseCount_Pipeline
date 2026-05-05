@@ -24,3 +24,4 @@ class ClusterValidationConfig(BaseModel):
     mergeThreshold: float = 0.2
     rfBalanceWeakPrior: bool = False
     outputDir: Path = _REPO_ROOT / "output" / "clustering" / "data"
+    figsDir: Path = _REPO_ROOT / "output" / "clustering" / "figs"

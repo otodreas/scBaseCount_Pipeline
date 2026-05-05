@@ -10,6 +10,7 @@ class ClusterValidationResult(BaseModel):
     datasetTitleSuffix: str
     selectedResolution: float
     clusterKey: str
+    mergedKey: str
     nPcs: int
     cumvar: float
     kPrior: int

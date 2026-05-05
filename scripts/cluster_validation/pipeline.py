@@ -14,6 +14,7 @@ from cluster_validation.metrics import compute_metrics
 from cluster_validation.models import ClusterValidationResult
 from cluster_validation.preprocess import preprocess
 from cluster_validation.resolution import select_resolution
+from cluster_validation.viz import plot_all
 from shared.logger import configure_file_logger
 
 _log = configure_file_logger("cluster_validation.log", __name__)
@@ -42,6 +43,7 @@ def run_cluster_validation(
         datasetTitleSuffix=title_suffix,
         selectedResolution=sel.selectedResolution,
         clusterKey=sel.clusterKey,
+        mergedKey=merge_info.mergedKey,
         nPcs=n_pcs,
         cumvar=cumvar,
         kPrior=prep_stats.kPrior,
@@ -64,6 +66,8 @@ def run_cluster_validation(
         confMatrix=merge_info.conf.tolist(),
         confClasses=[str(c) for c in merge_info.classes],
     )
+
+    plot_all(adata, result, figs_dir=cfg.figsDir / srx)
 
     print(f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters and {result.nPcs} PCs")
     _log.info(
