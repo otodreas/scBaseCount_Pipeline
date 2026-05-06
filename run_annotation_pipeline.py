@@ -51,7 +51,7 @@ def load_contexts(path: Path) -> dict[str, ExperimentContext]:
 
 
 def _write_run_metadata(
-    summary_path: Path,
+    metadata_path: Path,
     args: argparse.Namespace,
     run_ts: str,
 ) -> None:
@@ -63,9 +63,7 @@ def _write_run_metadata(
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
-    meta_path = summary_path.with_suffix(".json")
-    meta_path.write_text(json.dumps(payload, indent=2))
-    log.info("Wrote run metadata to %s", meta_path)
+    metadata_path.write_text(json.dumps(payload, indent=2))
 
 
 def _append_summary_row(
@@ -178,17 +176,23 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
 
+    for handler in log.handlers:
+        if isinstance(handler, logging.FileHandler):
+            handler.stream.write("\n")
+    log.info("new annotation pipeline run started (r2 prefix: %s)", args.r2_prefix)
+
     datasets = read_datasets(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
     datasets = datasets.sort_values("obs_count").iloc[0:1]  # TODO: remove this
     uploaded = fetch_uploaded_r2_keys()
     contexts = load_contexts(args.contexts)
 
-    RUN_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    summary_path = RUN_OUTPUT_DIR / f"run_{args.r2_prefix}.csv"
-    log.info("Writing run summary to %s", summary_path)
-
-    _write_run_metadata(summary_path, args, RUN_TIMESTAMP)
+    run_dir = RUN_OUTPUT_DIR / RUN_TIMESTAMP
+    run_dir.mkdir(parents=True, exist_ok=True)
+    csv_summary_path = run_dir / "run.csv"
+    metadata_path = run_dir / "metadata.json"
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
+    log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)
     skipped = 0
@@ -200,7 +204,7 @@ def main() -> None:
 
         if r2_key in uploaded:
             log.info("%s: already uploaded, skipping", srx)
-            _append_summary_row(summary_path, srx, "skipped", position, r2_key)
+            _append_summary_row(csv_summary_path, srx, "skipped", position, r2_key)
             skipped += 1
             continue
 
@@ -208,10 +212,10 @@ def main() -> None:
         exc = process_accession(srx, gs_uri, r2_key, contexts, args.datasets)
         if exc is not None:
             log.warning("%s: failed, skipping", srx)
-            _append_summary_row(summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
+            _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
             skipped += 1
         else:
-            _append_summary_row(summary_path, srx, "success", position, r2_key)
+            _append_summary_row(csv_summary_path, srx, "success", position, r2_key)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
