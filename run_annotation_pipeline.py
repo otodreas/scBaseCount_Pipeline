@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime
+import json
 import logging
 import sys
 from pathlib import Path
@@ -47,6 +48,24 @@ def load_contexts(path: Path) -> dict[str, ExperimentContext]:
             ctx = ExperimentContext.model_validate_json(line)
             contexts[ctx.accession] = ctx
     return contexts
+
+
+def _write_run_metadata(
+    summary_path: Path,
+    args: argparse.Namespace,
+    run_ts: str,
+) -> None:
+    payload: dict = {
+        "run_timestamp": run_ts,
+        "r2_prefix": args.r2_prefix,
+        "datasets_path": str(args.datasets),
+        "contexts_path": str(args.contexts),
+    }
+    if args.metadata is not None:
+        payload["notes"] = args.metadata
+    meta_path = summary_path.with_suffix(".json")
+    meta_path.write_text(json.dumps(payload, indent=2))
+    log.info("Wrote run metadata to %s", meta_path)
 
 
 def _append_summary_row(
@@ -146,6 +165,13 @@ def _parse_args() -> argparse.Namespace:
         metavar="PREFIX",
         help=f"R2 prefix (default: {f"annotation_pipeline_{RUN_TIMESTAMP}"})",
     )
+    parser.add_argument(
+        "--metadata",
+        type=str,
+        default=None,
+        metavar="TEXT",
+        help="Write a metadata JSON file next to the run CSV with this note.",
+    )
     return parser.parse_args()
 
 
@@ -161,6 +187,8 @@ def main() -> None:
     RUN_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     summary_path = RUN_OUTPUT_DIR / f"run_{args.r2_prefix}.csv"
     log.info("Writing run summary to %s", summary_path)
+
+    _write_run_metadata(summary_path, args, RUN_TIMESTAMP)
 
     total = len(datasets)
     skipped = 0
