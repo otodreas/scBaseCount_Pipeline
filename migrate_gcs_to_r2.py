@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import datetime
 import logging
 import sys
@@ -13,6 +12,7 @@ from dotenv import load_dotenv
 from gcs import download_from_gcs, gcs_blob_md5, gcs_local_path
 from r2 import gcs_uri_to_r2_raw_key, r2_raw_matches_gcs, upload_to_r2
 from r2.client import _MD5_METADATA_KEY, _local_md5_b64
+from shared.csv_writer import append_csv_row
 from shared.logger import configure_file_logger
 from shared.repo import REPO_ROOT
 
@@ -26,6 +26,9 @@ log = configure_file_logger("migrate_gcs_to_r2.log", __name__)
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+_CSV_COLUMNS = ["position", "srx", "status", "gs_uri", "r2_key", "md5", "timestamp", "error"]
+
+
 def _append_summary_row(
     summary_path: Path,
     srx: str,
@@ -36,16 +39,11 @@ def _append_summary_row(
     md5: str = "",
     error: str = "",
 ) -> None:
-    write_header = not summary_path.exists()
-    with open(summary_path, "a", newline="") as fh:
-        writer = csv.writer(fh)
-        if write_header:
-            writer.writerow(["position", "srx", "status", "gs_uri", "r2_key", "md5", "timestamp", "error"])
-        writer.writerow([
-            position, srx, status, gs_uri, r2_key, md5,
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            error,
-        ])
+    append_csv_row(
+        summary_path,
+        _CSV_COLUMNS,
+        [position, srx, status, gs_uri, r2_key, md5, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error],
+    )
 
 
 def _parse_args() -> argparse.Namespace:
@@ -109,9 +107,12 @@ def main() -> None:
         local_path = gcs_local_path(gs_uri, REPO_ROOT / "data")
         downloaded = False
         try:
-            log.info("%s (%s): downloading from GCS", srx, position)
-            download_from_gcs(gs_uri, REPO_ROOT / "data")
-            downloaded = True
+            if local_path.exists():
+                log.info("%s (%s): found local file at %s, skipping GCS download", srx, position, local_path)
+            else:
+                log.info("%s (%s): downloading from GCS", srx, position)
+                download_from_gcs(gs_uri, REPO_ROOT / "data")
+                downloaded = True
 
             local_md5 = _local_md5_b64(local_path)
             if local_md5 != gcs_md5:
@@ -122,6 +123,9 @@ def main() -> None:
 
             log.info("%s (%s): uploading to R2 at %s", srx, position, r2_key)
             upload_to_r2(local_path, r2_key, extra_metadata={_MD5_METADATA_KEY: gcs_md5})
+            if not r2_raw_matches_gcs(r2_key, gcs_md5):
+                raise RuntimeError(f"Post-upload metadata check failed: R2 object at {r2_key} does not reflect expected MD5")
+            log.info("%s (%s): post-upload metadata verified", srx, position)
             _append_summary_row(csv_summary_path, srx, "uploaded", position, gs_uri, r2_key, gcs_md5)
             log.info("%s (%s): done", srx, position)
         except Exception as exc:

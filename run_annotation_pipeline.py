@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import datetime
 import json
 import logging
@@ -16,6 +15,7 @@ from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
 from gcs import download_from_gcs, gcs_local_path, verify_download
 from r2 import download_from_r2, fetch_uploaded_r2_keys, gcs_uri_to_r2_raw_key, r2_key_exists, r2_object_md5, upload_to_r2, verify_upload
 from r2.client import _local_md5_b64
+from shared.csv_writer import append_csv_row
 from shared.logger import configure_file_logger
 from shared.repo import REPO_ROOT
 from study_context import ExperimentContext, experiment_context_summary
@@ -67,6 +67,9 @@ def _write_run_metadata(
     metadata_path.write_text(json.dumps(payload, indent=2))
 
 
+_CSV_COLUMNS = ["position", "srx", "status", "r2_file", "timestamp", "error"]
+
+
 def _append_summary_row(
     summary_path: Path,
     srx: str,
@@ -75,12 +78,11 @@ def _append_summary_row(
     r2_key: str = "",
     error: str = "",
 ) -> None:
-    write_header = not summary_path.exists()
-    with open(summary_path, "a", newline="") as fh:
-        writer = csv.writer(fh)
-        if write_header:
-            writer.writerow(["position", "srx", "status", "r2_file", "timestamp", "error"])
-        writer.writerow([position, srx, status, r2_key, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error])
+    append_csv_row(
+        summary_path,
+        _CSV_COLUMNS,
+        [position, srx, status, r2_key, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error],
+    )
 
 
 def _safe_delete(path: Path) -> None:

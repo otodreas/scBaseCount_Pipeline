@@ -1,0 +1,7 @@
+{
+  "run_timestamp": "20260506_161504",
+  "r2_prefix": "annotation_pipeline_20260506_161504",
+  "datasets_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/output/metadata/datasets_test2.csv",
+  "contexts_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/output/context/contexts.jsonl",
+  "notes": "run from 'run_annotation_pipeline (test dataset)' debug config (.vscode/launch.json)"
+}
