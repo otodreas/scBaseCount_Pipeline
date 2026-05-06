@@ -1,0 +1,6 @@
+{
+  "run_timestamp": "20260506_165522",
+  "r2_prefix": "annotation_pipeline_20260506_165522",
+  "datasets_path": "/home/inf-33-2025/Nygen_Project/output/metadata/datasets.csv",
+  "contexts_path": "/home/inf-33-2025/Nygen_Project/output/context/contexts.jsonl"
+}
