@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime
 import logging
 import sys
@@ -21,10 +22,9 @@ load_dotenv()
 
 _DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
 _DEFAULT_CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
+RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 GCS_LOCAL_ROOT = REPO_ROOT / "data"
-
-# File prefix for R2 storage
-R2_PREFIX = "cytetype"
+RUN_OUTPUT_DIR = REPO_ROOT / "output" / "annotation_pipeline"
 
 log = configure_file_logger("annotation_pipeline.log", __name__)
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -49,6 +49,22 @@ def load_contexts(path: Path) -> dict[str, ExperimentContext]:
     return contexts
 
 
+def _append_summary_row(
+    summary_path: Path,
+    srx: str,
+    status: str,
+    position: str = "",
+    r2_key: str = "",
+    error: str = "",
+) -> None:
+    write_header = not summary_path.exists()
+    with open(summary_path, "a", newline="") as fh:
+        writer = csv.writer(fh)
+        if write_header:
+            writer.writerow(["position", "srx", "status", "r2_file", "timestamp", "error"])
+        writer.writerow([position, srx, status, r2_key, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error])
+
+
 def _safe_delete(path: Path) -> None:
     try:
         if path.exists():
@@ -64,7 +80,7 @@ def process_accession(
     r2_key: str,
     contexts: dict[str, ExperimentContext],
     datasets_path: Path,
-) -> bool:
+) -> Exception | None:
     cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
     cytetype_cfg = CyteTypeRunnerConfig(srxAccession=srx)
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
@@ -96,15 +112,15 @@ def process_accession(
         verify_upload(r2_key)
         _safe_delete(cytetype_h5ad)
         log.info("%s: done", srx)
-        return True
+        return None
 
-    except Exception:
+    except Exception as exc:
         log.exception("%s: pipeline failed", srx)
         if downloaded:
             _safe_delete(raw_h5ad)
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
         _safe_delete(cytetype_h5ad)
-        return False
+        return exc
 
 
 def _parse_args() -> argparse.Namespace:
@@ -123,6 +139,13 @@ def _parse_args() -> argparse.Namespace:
         metavar="PATH",
         help=f"Path to contexts JSONL (default: {_DEFAULT_CONTEXTS_JSONL})",
     )
+    parser.add_argument(
+        "--r2-prefix",
+        type=str,
+        default=f"annotation_pipeline_{RUN_TIMESTAMP}",
+        metavar="PREFIX",
+        help=f"R2 prefix (default: {f"annotation_pipeline_{RUN_TIMESTAMP}"})",
+    )
     return parser.parse_args()
 
 
@@ -135,23 +158,32 @@ def main() -> None:
     uploaded = fetch_uploaded_r2_keys()
     contexts = load_contexts(args.contexts)
 
+    RUN_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    summary_path = RUN_OUTPUT_DIR / f"run_{args.r2_prefix}.csv"
+    log.info("Writing run summary to %s", summary_path)
+
+    total = len(datasets)
     skipped = 0
-    for i, row in datasets.iterrows():
+    for n, (_, row) in enumerate(datasets.iterrows(), start=1):
         srx = row["srx_accession"]
         gs_uri = row["file_path"]
-        r2_key = f"{R2_PREFIX}/{srx}_cytetype_annotated.h5ad"
+        r2_key = f"{args.r2_prefix}/{srx}_annotated.h5ad"
+        position = f"{n}/{total}"
 
         if r2_key in uploaded:
             log.info("%s: already uploaded, skipping", srx)
+            _append_summary_row(summary_path, srx, "skipped", position, r2_key)
             skipped += 1
             continue
 
-        log.info("%s (%d/%d): starting", srx, i+1, len(datasets))
-        success = process_accession(srx, gs_uri, r2_key, contexts, args.datasets)
-        if not success:
-            log.warning("%s: skipped at %s", srx, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        log.info("%s (%s): starting", srx, position)
+        exc = process_accession(srx, gs_uri, r2_key, contexts, args.datasets)
+        if exc is not None:
+            log.warning("%s: failed, skipping", srx)
+            _append_summary_row(summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
             skipped += 1
-            continue
+        else:
+            _append_summary_row(summary_path, srx, "success", position, r2_key)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
