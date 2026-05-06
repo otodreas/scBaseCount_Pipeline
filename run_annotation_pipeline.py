@@ -14,7 +14,8 @@ from dotenv import load_dotenv
 from cluster_validation import ClusterValidationConfig, run_cluster_validation
 from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
 from gcs import download_from_gcs, gcs_local_path, verify_download
-from r2 import fetch_uploaded_r2_keys, upload_to_r2, verify_upload
+from r2 import download_from_r2, fetch_uploaded_r2_keys, gcs_uri_to_r2_raw_key, r2_key_exists, r2_object_md5, upload_to_r2, verify_upload
+from r2.client import _local_md5_b64
 from shared.logger import configure_file_logger
 from shared.repo import REPO_ROOT
 from study_context import ExperimentContext, experiment_context_summary
@@ -91,6 +92,26 @@ def _safe_delete(path: Path) -> None:
         log.warning("Could not delete %s: %s", path, exc)
 
 
+def _fetch_raw_h5ad(srx: str, gs_uri: str, raw_h5ad: Path) -> None:
+    r2_raw_key = gcs_uri_to_r2_raw_key(gs_uri)
+    if r2_key_exists(r2_raw_key):
+        log.info("%s: downloading raw h5ad from R2 (%s)", srx, r2_raw_key)
+        download_from_r2(r2_raw_key, raw_h5ad)
+        stored_md5 = r2_object_md5(r2_raw_key)
+        if stored_md5:
+            local_md5 = _local_md5_b64(raw_h5ad)
+            if local_md5 != stored_md5:
+                raise RuntimeError(
+                    f"{srx}: R2 download integrity check failed: local MD5 {local_md5} != stored MD5 {stored_md5}"
+                )
+            log.info("%s: R2 download MD5 verified (%s)", srx, local_md5)
+        return
+    log.info("%s: raw h5ad not in R2, falling back to GCS", srx)
+    download_from_gcs(gs_uri, GCS_LOCAL_ROOT)
+    if not verify_download(gs_uri, GCS_LOCAL_ROOT):
+        raise RuntimeError(f"Download verification failed for {srx}: file not found at {raw_h5ad}")
+
+
 def process_accession(
     srx: str,
     gs_uri: str,
@@ -106,12 +127,10 @@ def process_accession(
     downloaded = False
     try:
         if raw_h5ad.exists():
-            log.info("%s: found local h5ad at %s, skipping GCS download", srx, raw_h5ad)
+            log.info("%s: found local h5ad at %s, skipping download", srx, raw_h5ad)
         else:
-            download_from_gcs(gs_uri, GCS_LOCAL_ROOT)
+            _fetch_raw_h5ad(srx, gs_uri, raw_h5ad)
             downloaded = True
-            if not verify_download(gs_uri, GCS_LOCAL_ROOT):
-                raise RuntimeError(f"Download verification failed for {srx}: file not found at {raw_h5ad}")
 
         _, result = run_cluster_validation(cfg)
         if downloaded:
