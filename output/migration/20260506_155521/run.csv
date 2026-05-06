@@ -1,0 +1,2 @@
+position,srx,status,gs_uri,r2_key,md5,timestamp,error
+1/1,SRX22996378,failed,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22996378.h5ad,arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22996378.h5ad,Dc8yDEOdABgmLulfivZEsA==,2026-05-06 15:59:27,PermissionError: [Errno 13] Permission denied: '/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22996378.h5ad'
