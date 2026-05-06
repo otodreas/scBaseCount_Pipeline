@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import datetime
 import logging
 import sys
 from pathlib import Path
@@ -17,9 +19,33 @@ from shared.repo import REPO_ROOT
 load_dotenv()
 
 _DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
+RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+RUN_OUTPUT_DIR = REPO_ROOT / "output" / "migration"
 
 log = configure_file_logger("migrate_gcs_to_r2.log", __name__)
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+
+def _append_summary_row(
+    summary_path: Path,
+    srx: str,
+    status: str,
+    position: str = "",
+    gs_uri: str = "",
+    r2_key: str = "",
+    md5: str = "",
+    error: str = "",
+) -> None:
+    write_header = not summary_path.exists()
+    with open(summary_path, "a", newline="") as fh:
+        writer = csv.writer(fh)
+        if write_header:
+            writer.writerow(["position", "srx", "status", "gs_uri", "r2_key", "md5", "timestamp", "error"])
+        writer.writerow([
+            position, srx, status, gs_uri, r2_key, md5,
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            error,
+        ])
 
 
 def _parse_args() -> argparse.Namespace:
@@ -49,6 +75,11 @@ def main() -> None:
             handler.stream.write("\n")
     log.info("new migration run started (datasets: %s)", args.datasets)
 
+    run_dir = RUN_OUTPUT_DIR / RUN_TIMESTAMP
+    run_dir.mkdir(parents=True, exist_ok=True)
+    csv_summary_path = run_dir / "run.csv"
+    log.info("run summary output directory: %s", run_dir)
+
     datasets = pd.read_csv(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
 
@@ -66,11 +97,13 @@ def main() -> None:
 
         if r2_raw_matches_gcs(r2_key, gcs_md5):
             log.info("%s (%s): already in R2 with matching MD5, skipping", srx, position)
+            _append_summary_row(csv_summary_path, srx, "skipped", position, gs_uri, r2_key, gcs_md5)
             skipped += 1
             continue
 
         if args.dry_run:
             log.info("%s (%s): would upload %s -> %s", srx, position, gs_uri, r2_key)
+            _append_summary_row(csv_summary_path, srx, "dry_run", position, gs_uri, r2_key, gcs_md5)
             continue
 
         local_path = gcs_local_path(gs_uri, REPO_ROOT / "data")
@@ -89,9 +122,11 @@ def main() -> None:
 
             log.info("%s (%s): uploading to R2 at %s", srx, position, r2_key)
             upload_to_r2(local_path, r2_key, extra_metadata={_MD5_METADATA_KEY: gcs_md5})
+            _append_summary_row(csv_summary_path, srx, "uploaded", position, gs_uri, r2_key, gcs_md5)
             log.info("%s (%s): done", srx, position)
-        except Exception:
+        except Exception as exc:
             log.exception("%s (%s): failed", srx, position)
+            _append_summary_row(csv_summary_path, srx, "failed", position, gs_uri, r2_key, gcs_md5, error=f"{type(exc).__name__}: {exc}")
             failed += 1
         finally:
             if downloaded and local_path.exists():
