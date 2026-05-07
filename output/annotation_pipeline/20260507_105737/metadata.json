@@ -1,0 +1,8 @@
+{
+  "run_timestamp": "20260507_105737",
+  "r2_prefix": "annotation_pipeline_20260507_105737",
+  "datasets_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/tests/datasets_test2.csv",
+  "contexts_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/output/context/contexts.jsonl",
+  "skip_cytetype": true,
+  "notes": "run from 'run_annotation_pipeline (test dataset) - skip cytetype' debug config (.vscode/launch.json)"
+}

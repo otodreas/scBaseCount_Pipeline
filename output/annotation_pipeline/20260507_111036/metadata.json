@@ -1,0 +1,8 @@
+{
+  "run_timestamp": "20260507_111036",
+  "r2_prefix": "cluster-validation-2",
+  "datasets_path": "tests/datasets_sample10.csv",
+  "contexts_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/output/context/contexts.jsonl",
+  "skip_cytetype": true,
+  "notes": "testing 10 random datasets, only clustering. will evaluate plots after to see how it looks. safe to delete files with cluster-validation-2 prefix from r2 later"
+}

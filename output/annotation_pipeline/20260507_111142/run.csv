@@ -1,0 +1,11 @@
+position,srx,status,r2_file,timestamp,error
+1/10,ERX11662369,success,cluster-validation-2/ERX11662369_clustered.h5ad,2026-05-07 11:13:54,
+2/10,SRX19886039,success,cluster-validation-2/SRX19886039_clustered.h5ad,2026-05-07 11:16:14,
+3/10,SRX22996309,success,cluster-validation-2/SRX22996309_clustered.h5ad,2026-05-07 11:16:40,
+4/10,SRX14495312,success,cluster-validation-2/SRX14495312_clustered.h5ad,2026-05-07 11:17:02,
+5/10,SRX20098024,success,cluster-validation-2/SRX20098024_clustered.h5ad,2026-05-07 11:18:52,
+6/10,ERX11662365,success,cluster-validation-2/ERX11662365_clustered.h5ad,2026-05-07 11:26:25,
+7/10,SRX9246194,success,cluster-validation-2/SRX9246194_clustered.h5ad,2026-05-07 11:27:49,
+8/10,SRX19704150,skipped,cluster-validation-2/SRX19704150_clustered.h5ad,2026-05-07 11:27:49,
+9/10,SRX9078407,success,cluster-validation-2/SRX9078407_clustered.h5ad,2026-05-07 11:28:41,
+10/10,SRX27208878,success,cluster-validation-2/SRX27208878_clustered.h5ad,2026-05-07 11:28:45,

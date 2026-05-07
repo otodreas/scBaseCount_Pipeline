@@ -61,6 +61,7 @@ def _write_run_metadata(
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
         "contexts_path": str(args.contexts),
+        "skip_cytetype": args.skip_cytetype,
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
@@ -120,13 +121,13 @@ def process_accession(
     r2_key: str,
     contexts: dict[str, ExperimentContext],
     datasets_path: Path,
+    skip_cytetype: bool = False,
 ) -> Exception | None:
     cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
-    cytetype_cfg = CyteTypeRunnerConfig(srxAccession=srx)
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
-    cytetype_h5ad = cytetype_cfg.outputDir / f"{srx}_cytetype_annotated.h5ad"
 
     downloaded = False
+    cytetype_h5ad: Path | None = None
     try:
         if raw_h5ad.exists():
             log.info("%s: found local h5ad at %s, skipping download", srx, raw_h5ad)
@@ -138,17 +139,22 @@ def process_accession(
         if downloaded:
             _safe_delete(raw_h5ad)
 
-        ctx = contexts.get(srx)
-        study_context = experiment_context_summary(ctx) if ctx else ""
-        if not ctx:
-            log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
+        if skip_cytetype:
+            upload_to_r2(result.adataPath, r2_key)
+            verify_upload(r2_key)
+            _safe_delete(result.adataPath)
+        else:
+            cytetype_cfg = CyteTypeRunnerConfig(srxAccession=srx)
+            ctx = contexts.get(srx)
+            study_context = experiment_context_summary(ctx) if ctx else ""
+            if not ctx:
+                log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
+            cytetype_h5ad = run_cytetype(cytetype_cfg, result.adataPath, result.mergedKey, study_context)
+            _safe_delete(result.adataPath)
+            upload_to_r2(cytetype_h5ad, r2_key)
+            verify_upload(r2_key)
+            _safe_delete(cytetype_h5ad)
 
-        cytetype_h5ad = run_cytetype(cytetype_cfg, result.adataPath, result.mergedKey, study_context)
-        _safe_delete(result.adataPath)
-
-        upload_to_r2(cytetype_h5ad, r2_key)
-        verify_upload(r2_key)
-        _safe_delete(cytetype_h5ad)
         log.info("%s: done", srx)
         return None
 
@@ -157,7 +163,8 @@ def process_accession(
         if downloaded:
             _safe_delete(raw_h5ad)
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
-        _safe_delete(cytetype_h5ad)
+        if cytetype_h5ad is not None:
+            _safe_delete(cytetype_h5ad)
         return exc
 
 
@@ -191,6 +198,12 @@ def _parse_args() -> argparse.Namespace:
         metavar="TEXT",
         help="Write a metadata JSON file next to the run CSV with this note.",
     )
+    parser.add_argument(
+        "--skip-cytetype",
+        action="store_true",
+        default=False,
+        help="Skip the CyteType step and upload the clustering output directly.",
+    )
     return parser.parse_args()
 
 
@@ -204,7 +217,7 @@ def main() -> None:
 
     datasets = read_datasets(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
-    datasets = datasets.sort_values("obs_count").iloc[0:1]  # TODO: remove this
+    # datasets = datasets.sort_values("obs_count").iloc[0:1]  # TODO: remove this
     uploaded = fetch_uploaded_r2_keys()
     contexts = load_contexts(args.contexts)
 
@@ -220,7 +233,8 @@ def main() -> None:
     for n, (_, row) in enumerate(datasets.iterrows(), start=1):
         srx = row["srx_accession"]
         gs_uri = row["file_path"]
-        r2_key = f"{args.r2_prefix}/{srx}_annotated.h5ad"
+        r2_suffix = "_clustered.h5ad" if args.skip_cytetype else "_annotated.h5ad"
+        r2_key = f"{args.r2_prefix}/{srx}{r2_suffix}"
         position = f"{n}/{total}"
 
         if r2_key in uploaded:
@@ -230,7 +244,7 @@ def main() -> None:
             continue
 
         log.info("%s (%s): starting", srx, position)
-        exc = process_accession(srx, gs_uri, r2_key, contexts, args.datasets)
+        exc = process_accession(srx, gs_uri, r2_key, contexts, args.datasets, skip_cytetype=args.skip_cytetype)
         if exc is not None:
             log.warning("%s: failed, skipping", srx)
             _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
