@@ -7,6 +7,10 @@ import scanpy as sc
 from cluster_validation.config import ClusterValidationConfig
 
 
+class InsufficientCellsError(Exception):
+    pass
+
+
 @dataclass
 class PreprocessStats:
     nCellsOriginal: int
@@ -40,6 +44,11 @@ def preprocess(
 
     k_filtered = adata.obs["cell_type"].nunique()
     n_dropped = n_cells_original - adata.n_obs
+
+    if adata.n_obs < cfg.minCellsTotal:
+        raise InsufficientCellsError(
+            f"{adata.n_obs} cells remaining after filtering (threshold: {cfg.minCellsTotal})"
+        )
 
     return adata, PreprocessStats(
         nCellsOriginal=n_cells_original,

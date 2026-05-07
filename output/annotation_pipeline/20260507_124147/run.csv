@@ -1,0 +1,2 @@
+position,srx,status,r2_file,timestamp,error
+1/1,SRX27208878,failed,,2026-05-07 12:42:51,InsufficientCellsError: 65 cells remaining after filtering (threshold: 200)

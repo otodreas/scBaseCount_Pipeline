@@ -160,8 +160,7 @@ def process_accession(
 
     except Exception as exc:
         log.exception("%s: pipeline failed", srx)
-        if downloaded:
-            _safe_delete(raw_h5ad)
+        _safe_delete(raw_h5ad)
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
         if cytetype_h5ad is not None:
             _safe_delete(cytetype_h5ad)
