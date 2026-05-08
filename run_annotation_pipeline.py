@@ -5,17 +5,18 @@ import datetime
 import json
 import logging
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
 from dotenv import load_dotenv
 
-from cluster_validation import ClusterValidationConfig, run_cluster_validation
+from cluster_validation import ClusterValidationConfig, compute_cell_type_entropy_row, run_cluster_validation
 from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
 from gcs import download_from_gcs, gcs_local_path, verify_download
 from r2 import download_from_r2, fetch_uploaded_r2_keys, gcs_uri_to_r2_raw_key, r2_key_exists, r2_object_md5, upload_to_r2, verify_upload
 from r2.client import _local_md5_b64
-from shared.csv_writer import append_csv_row
+from shared.csv_writer import append_csv_row, append_jsonl_row
 from shared.logger import configure_file_logger
 from shared.repo import REPO_ROOT
 from study_context import ExperimentContext, experiment_context_summary
@@ -122,7 +123,7 @@ def process_accession(
     contexts: dict[str, ExperimentContext],
     datasets_path: Path,
     skip_cytetype: bool = False,
-) -> Exception | None:
+) -> tuple[dict[str, float] | None, Exception | None]:
     cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
 
@@ -135,7 +136,8 @@ def process_accession(
             _fetch_raw_h5ad(srx, gs_uri, raw_h5ad)
             downloaded = True
 
-        _, result = run_cluster_validation(cfg)
+        adata, result = run_cluster_validation(cfg)
+        entropy_row = compute_cell_type_entropy_row(adata, result.mergedKey)
         if downloaded:
             _safe_delete(raw_h5ad)
 
@@ -156,7 +158,7 @@ def process_accession(
             _safe_delete(cytetype_h5ad)
 
         log.info("%s: done", srx)
-        return None
+        return entropy_row, None
 
     except Exception as exc:
         log.exception("%s: pipeline failed", srx)
@@ -164,7 +166,7 @@ def process_accession(
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
         if cytetype_h5ad is not None:
             _safe_delete(cytetype_h5ad)
-        return exc
+        return None, exc
 
 
 def _parse_args() -> argparse.Namespace:
@@ -203,6 +205,13 @@ def _parse_args() -> argparse.Namespace:
         default=False,
         help="Skip the CyteType step and upload the clustering output directly.",
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        metavar="N",
+        help="Number of accessions to process in parallel (default: 1)",
+    )
     return parser.parse_args()
 
 
@@ -224,34 +233,54 @@ def main() -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
+    entropy_jsonl_path = run_dir / "entropy_matrix.jsonl"
     _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
     log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)
     skipped = 0
+    r2_suffix = "_clustered.h5ad" if args.skip_cytetype else "_annotated.h5ad"
+
+    work_items: list[tuple[str, str, str, str]] = []
     for n, (_, row) in enumerate(datasets.iterrows(), start=1):
         srx = row["srx_accession"]
         gs_uri = row["file_path"]
-        r2_suffix = "_clustered.h5ad" if args.skip_cytetype else "_annotated.h5ad"
         r2_key = f"{args.r2_prefix}/{srx}{r2_suffix}"
         position = f"{n}/{total}"
-
         if r2_key in uploaded:
             log.info("%s: already uploaded, skipping", srx)
             _append_summary_row(csv_summary_path, srx, "skipped", position, r2_key)
             skipped += 1
             continue
+        work_items.append((srx, gs_uri, r2_key, position))
 
-        log.info("%s (%s): starting", srx, position)
-        exc = process_accession(srx, gs_uri, r2_key, contexts, args.datasets, skip_cytetype=args.skip_cytetype)
-        if exc is not None:
-            log.warning("%s: failed, skipping", srx)
-            _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
-            skipped += 1
-        else:
-            _append_summary_row(csv_summary_path, srx, "success", position, r2_key)
+    log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
+    with ProcessPoolExecutor(max_workers=args.workers) as pool:
+        futures = {
+            pool.submit(process_accession, srx, gs_uri, r2_key, contexts, args.datasets, args.skip_cytetype): (srx, r2_key, position)
+            for srx, gs_uri, r2_key, position in work_items
+        }
+        for future in as_completed(futures):
+            srx, r2_key, position = futures[future]
+            entropy_row, exc = future.result()
+            if exc is not None:
+                log.warning("%s: failed", srx)
+                _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
+                skipped += 1
+            else:
+                append_jsonl_row(entropy_jsonl_path, {"srx": srx, "cell_types": entropy_row})
+                _append_summary_row(csv_summary_path, srx, "success", position, r2_key)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
+
+    if entropy_jsonl_path.exists():
+        rows = [json.loads(line) for line in entropy_jsonl_path.read_text().splitlines() if line.strip()]
+        entropy_df = pd.DataFrame({r["srx"]: r["cell_types"] for r in rows}).T
+        entropy_csv_path = run_dir / "entropy_matrix.csv"
+        entropy_df.to_csv(entropy_csv_path)
+        log.info("Entropy matrix written to %s", entropy_csv_path)
+        entropy_jsonl_path.unlink()
+        log.debug("Deleted %s", entropy_jsonl_path)
 
 
 if __name__ == "__main__":
