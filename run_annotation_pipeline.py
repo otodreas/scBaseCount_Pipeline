@@ -276,6 +276,7 @@ def main() -> None:
     if entropy_jsonl_path.exists():
         rows = [json.loads(line) for line in entropy_jsonl_path.read_text().splitlines() if line.strip()]
         entropy_df = pd.DataFrame({r["srx"]: r["cell_types"] for r in rows}).T
+        entropy_df.index.name = "srx"
         entropy_csv_path = run_dir / "entropy_matrix.csv"
         entropy_df.to_csv(entropy_csv_path)
         log.info("Entropy matrix written to %s", entropy_csv_path)

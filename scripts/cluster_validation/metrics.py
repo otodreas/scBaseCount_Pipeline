@@ -66,6 +66,9 @@ def compute_metrics(
 
 
 def _normalized_cluster_entropy(series: pd.Series) -> float:
+    """
+    Compute the normalized Shannon entropy of a series.
+    """
     counts = series.value_counts(normalize=True)
     counts = counts[counts > 0]
     H = -np.sum(counts * np.log2(counts))
