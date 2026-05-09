@@ -1,0 +1,4 @@
+position,srx,status,r2_file,timestamp,error
+2/3,SRX12366723,success,annotation_pipeline_20260509_210520/SRX12366723_clustered.h5ad,2026-05-09 21:05:55,
+3/3,SRX17412841,success,annotation_pipeline_20260509_210520/SRX17412841_clustered.h5ad,2026-05-09 21:05:59,
+1/3,SRX13198730,success,annotation_pipeline_20260509_210520/SRX13198730_clustered.h5ad,2026-05-09 21:06:31,

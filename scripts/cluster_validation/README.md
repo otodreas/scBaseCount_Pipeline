@@ -32,6 +32,7 @@ The pipeline writes the final `AnnData` to `output/data/clustering/{srx}_cluster
 | Select resolution | `resolution.py` | Jaccard matrix + Hungarian assignment; pick resolution maximising matched Jaccard sum |
 | Merge | `merge.py` | RF OOF confusion on HVG matrix; union-find merges pairs above `mergeThreshold`; writes `leiden_merged` |
 | Metrics | `metrics.py` | Silhouette, homogeneity, completeness, NMI, V-score, ARI across all resolutions |
+| Cell type metrics | `cell_type_metrics.py` | Normalized Shannon entropy and KL divergence per cell type across datasets |
 
 ## Methods
 
@@ -67,6 +68,31 @@ A `RandomForestClassifier` is trained on HVG expression with stratified K-fold o
 | `rfBalanceWeakPrior` | `False` | Balance class weights in the RF by `cell_type` frequency |
 
 All default paths are relative to the repo root.
+
+## Cell type metrics
+
+`cell_type_metrics.py` exposes three functions used by the annotation pipeline after clustering is complete.
+
+### `compute_nse_kld_row(adata, merged_key)`
+
+Computes two scalars per cell type from a single dataset:
+
+- **Normalized Shannon entropy (NSE)**: how fragmented the cell type is across Leiden clusters. `0` = all cells in one cluster; `1` = maximally spread across all clusters it occupies.
+- **KL divergence (KLD)**: `KL(p || q)` where `p` is the cluster distribution of the cell type and `q` is the global cluster distribution of all cells. A high value means the cell type is concentrated in clusters that differ from the background, indicating coherence. Near `0` means the cell type mirrors the global distribution.
+
+Returns `(nse_row, kld_row)`, each a `dict[str, float]` keyed by cell type name.
+
+### `build_metric_dataframes(rows)`
+
+Takes a list of dicts parsed from `metrics_matrix.jsonl` (one per accession, with keys `srx`, `nse`, `kld`) and returns three DataFrames:
+
+- `nse_df`: accessions x cell types, normalized Shannon entropy values.
+- `kld_df`: accessions x cell types, KL divergence values.
+- `summary_df`: cell types x metrics, with columns `n_datasets`, `normalized_shannon_entropy_mean`, `kl_divergence_mean`.
+
+### `save_metric_plot(summary_df, output_path, ...)`
+
+Saves a two-panel horizontal bar chart to `output_path` (PNG). Left panel shows mean NSE per cell type; right panel shows mean KLD. Cell types are sorted by NSE ascending.
 
 ## Output model
 

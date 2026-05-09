@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
-import numpy as np
-import pandas as pd
-import scanpy as sc
 from sklearn.metrics import (
     adjusted_rand_score,
     completeness_score,
@@ -30,7 +28,7 @@ class MetricArrays:
 
 
 def compute_metrics(
-    adata: sc.AnnData,
+    adata: Any,
     cfg: ClusterValidationConfig,
     sel: ResolutionSelection,
     merge_info: MergeInfo,
@@ -65,19 +63,3 @@ def compute_metrics(
     )
 
 
-def _normalized_cluster_entropy(series: pd.Series) -> float:
-    """
-    Compute the normalized Shannon entropy of a series.
-    """
-    counts = series.value_counts(normalize=True)
-    counts = counts[counts > 0]
-    H = -np.sum(counts * np.log2(counts))
-    return H / np.log2(len(counts)) if len(counts) > 1 else 0.0
-
-
-def compute_cell_type_entropy_row(adata: sc.AnnData, merged_key: str) -> dict[str, float]:
-    row: dict[str, float] = {}
-    for cell_type in adata.obs["cell_type"].unique():
-        labels = adata.obs[adata.obs["cell_type"] == cell_type][merged_key]
-        row[cell_type] = _normalized_cluster_entropy(labels)
-    return row

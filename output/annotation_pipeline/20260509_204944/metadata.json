@@ -1,0 +1,8 @@
+{
+  "run_timestamp": "20260509_204944",
+  "r2_prefix": "annotation_pipeline_20260509_204944",
+  "datasets_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/tests/datasets_state_matrix.csv",
+  "contexts_path": "/Users/otodreas/Desktop/Work/Nygen/scBaseCount_Pipeline/output/context/contexts.jsonl",
+  "skip_cytetype": true,
+  "notes": "run from 'test_state_matrix' debug config (.vscode/launch.json). expect same output as in notebooks/dataset-state-matrix.ipynb"
+}

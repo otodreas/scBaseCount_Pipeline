@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
-from cluster_validation import ClusterValidationConfig, compute_cell_type_entropy_row, run_cluster_validation
+from cluster_validation import ClusterValidationConfig, build_metric_dataframes, compute_nse_kld_row, run_cluster_validation, save_metric_plot
 from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
 from gcs import download_from_gcs, gcs_local_path, verify_download
 from r2 import download_from_r2, fetch_uploaded_r2_keys, gcs_uri_to_r2_raw_key, r2_key_exists, r2_object_md5, upload_to_r2, verify_upload
@@ -123,7 +123,7 @@ def process_accession(
     contexts: dict[str, ExperimentContext],
     datasets_path: Path,
     skip_cytetype: bool = False,
-) -> tuple[dict[str, float] | None, Exception | None]:
+) -> tuple[dict[str, float] | None, dict[str, float] | None, Exception | None]:
     cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
 
@@ -137,7 +137,8 @@ def process_accession(
             downloaded = True
 
         adata, result = run_cluster_validation(cfg)
-        entropy_row = compute_cell_type_entropy_row(adata, result.mergedKey)
+        nse_row, kld_row = compute_nse_kld_row(adata, result.mergedKey)
+
         if downloaded:
             _safe_delete(raw_h5ad)
 
@@ -158,7 +159,7 @@ def process_accession(
             _safe_delete(cytetype_h5ad)
 
         log.info("%s: done", srx)
-        return entropy_row, None
+        return nse_row, kld_row, None
 
     except Exception as exc:
         log.exception("%s: pipeline failed", srx)
@@ -166,7 +167,7 @@ def process_accession(
         _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
         if cytetype_h5ad is not None:
             _safe_delete(cytetype_h5ad)
-        return None, exc
+        return None, None, exc
 
 
 def _parse_args() -> argparse.Namespace:
@@ -181,9 +182,9 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--contexts",
         type=Path,
-        default=_DEFAULT_CONTEXTS_JSONL,
+        default=None,
         metavar="PATH",
-        help=f"Path to contexts JSONL (default: {_DEFAULT_CONTEXTS_JSONL})",
+        help=f"Path to contexts JSONL (default: {_DEFAULT_CONTEXTS_JSONL}). Ignored when --skip-cytetype is set.",
     )
     parser.add_argument(
         "--r2-prefix",
@@ -227,13 +228,17 @@ def main() -> None:
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
     # datasets = datasets.sort_values("obs_count").iloc[0:1]  # TODO: remove this
     uploaded = fetch_uploaded_r2_keys()
-    contexts = load_contexts(args.contexts)
+    if args.skip_cytetype:
+        contexts: dict[str, ExperimentContext] = {}
+    else:
+        contexts_path = args.contexts if args.contexts is not None else _DEFAULT_CONTEXTS_JSONL
+        contexts = load_contexts(contexts_path)
 
     run_dir = RUN_OUTPUT_DIR / RUN_TIMESTAMP
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
-    entropy_jsonl_path = run_dir / "entropy_matrix.jsonl"
+    metrics_jsonl_path = run_dir / "metrics_matrix.jsonl"
     _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
     log.info("run summary output directory: %s", run_dir)
 
@@ -262,26 +267,36 @@ def main() -> None:
         }
         for future in as_completed(futures):
             srx, r2_key, position = futures[future]
-            entropy_row, exc = future.result()
+            nse_row, kld_row, exc = future.result()
             if exc is not None:
                 log.warning("%s: failed", srx)
                 _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
                 skipped += 1
             else:
-                append_jsonl_row(entropy_jsonl_path, {"srx": srx, "cell_types": entropy_row})
+                append_jsonl_row(metrics_jsonl_path, {"srx": srx, "nse": nse_row, "kld": kld_row})
                 _append_summary_row(csv_summary_path, srx, "success", position, r2_key)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
-    if entropy_jsonl_path.exists():
-        rows = [json.loads(line) for line in entropy_jsonl_path.read_text().splitlines() if line.strip()]
-        entropy_df = pd.DataFrame({r["srx"]: r["cell_types"] for r in rows}).T
-        entropy_df.index.name = "srx"
-        entropy_csv_path = run_dir / "entropy_matrix.csv"
-        entropy_df.to_csv(entropy_csv_path)
-        log.info("Entropy matrix written to %s", entropy_csv_path)
-        entropy_jsonl_path.unlink()
-        log.debug("Deleted %s", entropy_jsonl_path)
+    if metrics_jsonl_path.exists():
+        rows = [json.loads(line) for line in metrics_jsonl_path.read_text().splitlines() if line.strip()]
+        nse_df, kld_df, summary_df = build_metric_dataframes(rows)
+
+        nse_df.to_csv(run_dir / "nse_matrix.csv")
+        log.info("NSE matrix written to %s", run_dir / "nse_matrix.csv")
+
+        kld_df.to_csv(run_dir / "kld_matrix.csv")
+        log.info("KLD matrix written to %s", run_dir / "kld_matrix.csv")
+
+        summary_df.to_csv(run_dir / "cell_type_summary.csv")
+        log.info("Cell type summary written to %s", run_dir / "cell_type_summary.csv")
+
+        metrics_jsonl_path.unlink()
+        log.debug("Deleted %s", metrics_jsonl_path)
+
+        plot_path = run_dir / "cell_type_metrics.png"
+        save_metric_plot(summary_df, plot_path)
+        log.info("Cell type metrics plot saved to %s", plot_path)
 
 
 if __name__ == "__main__":
