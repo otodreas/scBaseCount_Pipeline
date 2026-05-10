@@ -1,0 +1,8 @@
+{
+  "run_timestamp": "20260509_214237",
+  "r2_prefix": "clustered_20260509",
+  "datasets_path": "/home/inf-33-2025/Nygen_Project/output/metadata/datasets.csv",
+  "contexts_path": "None",
+  "skip_cytetype": true,
+  "notes": "this run was executed on the bioinf server on commit 6cc332b822c3a9bb17b79ffb0ab33fa7b8a91802. the intention was to cluster all datasets so that they can be annotated later, saving some metrics (normalized shannon entropy and kl divergence) for each STATE annotation and accession to get a sense for which STATE cell types have high/low overlap with my clusters"
+}
