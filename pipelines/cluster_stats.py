@@ -22,7 +22,6 @@ load_dotenv()
 
 RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "output" / "cluster_stats"
-DOWNLOAD_ROOT = REPO_ROOT / "data" / "cluster_stats"
 CLUSTERED_SUFFIX = "_clustered.h5ad"
 
 log = configure_file_logger("cluster_stats.log", __name__)
@@ -156,7 +155,8 @@ def main() -> None:
 
     output_dir = args.output_dir if args.output_dir is not None else DEFAULT_OUTPUT_ROOT / args.r2_prefix
     output_dir.mkdir(parents=True, exist_ok=True)
-    DOWNLOAD_ROOT.mkdir(parents=True, exist_ok=True)
+    download_dir = output_dir / "data"
+    download_dir.mkdir(parents=True, exist_ok=True)
 
     csv_summary_path = output_dir / "run.csv"
     metadata_path = output_dir / "metadata.json"
@@ -193,7 +193,7 @@ def main() -> None:
     log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process_accession, srx, key, DOWNLOAD_ROOT): (srx, key, position)
+            pool.submit(process_accession, srx, key, download_dir): (srx, key, position)
             for srx, key, position in work_items
         }
         for future in as_completed(futures):
@@ -221,6 +221,12 @@ def main() -> None:
                 n_cell_types=len(count_matrix),
                 n_clusters=n_clusters,
             )
+
+    try:
+        download_dir.rmdir()
+        log.debug("Removed empty download directory %s", download_dir)
+    except OSError:
+        log.warning("Could not remove download directory %s (may contain leftover files)", download_dir)
 
     cluster_stats_json_path.write_text(json.dumps(nested, indent=2, sort_keys=True))
     log.info("cluster stats JSON written to %s (%d srx)", cluster_stats_json_path, len(nested))
