@@ -85,7 +85,7 @@
             ]
         },
         {
-            "name": "cluster_stats (test prefix)",
+            "name": "cluster_stats (clustered_20260509)",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/pipelines/cluster_stats.py",
@@ -94,9 +94,11 @@
             "justMyCode": false,
             "args": [
                 "--r2-prefix",
-                "clustering_pipeline_REPLACE_ME",
+                "clustered_20260509",
+                "--workers",
+                "4",
                 "--metadata",
-                "run from 'cluster_stats (test prefix)' debug config (.vscode/launch.json)"
+                "run from 'cluster_stats (clustered_20260509)'--generate stats on clustered h5ad files on r2 with the prefix 'clustered_20260509' debug config (.vscode/launch.json)"
             ]
         },
         {
