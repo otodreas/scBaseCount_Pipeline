@@ -29,7 +29,7 @@ DailyNotes.md
 
 # IDE
 .cursor/
-.vscode/
+# .vscode/
 
 # Symlinks
 cluster_validation_sandbox/datasets_summary

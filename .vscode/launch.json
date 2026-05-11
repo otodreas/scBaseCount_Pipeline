@@ -1,0 +1,92 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test_state_matrix",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/tests/datasets_state_matrix.csv",
+                "--contexts",
+                "${workspaceFolder}/output/context/contexts.jsonl",
+                "--metadata",
+                "run from 'test_state_matrix' debug config (.vscode/launch.json). expect same output as in notebooks/dataset-state-matrix.ipynb",
+                "--skip-cytetype",
+                "--workers",
+                "3"
+            ]
+        },
+        {
+            "name": "skip cytetype, 2 workers",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/tests/datasets_sample2.csv",
+                "--contexts",
+                "${workspaceFolder}/output/context/contexts.jsonl",
+                "--metadata",
+                "run from 'skip cytetype, 2 workers' debug config (.vscode/launch.json)",
+                "--skip-cytetype",
+                "--workers",
+                "2"
+            ]
+        },
+        {
+            "name": "skip cytetype",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run_annotation_pipeline.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/tests/datasets_sample10.csv",
+                "--contexts",
+                "${workspaceFolder}/output/context/contexts.jsonl",
+                "--metadata",
+                "run from 'run_annotation_pipeline (test dataset) - skip cytetype' debug config (.vscode/launch.json)",
+                "--skip-cytetype"
+            ]
+        },
+        {
+            "name": "gcs_to_r2 (test dataset)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/migrate_gcs_to_r2.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/output/metadata/datasets_test.csv",
+            ]
+        },
+        {
+            "name": "run_annotation_pipeline (test dataset)",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "program": "${workspaceFolder}/run_annotation_pipeline.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/output/metadata/datasets_test2.csv", // datasets_test.csv
+                "--contexts",
+                "${workspaceFolder}/output/context/contexts.jsonl",
+                "--metadata",
+                "run from 'run_annotation_pipeline (test dataset)' debug config (.vscode/launch.json)"
+            ]
+        }
+    ]
+}
