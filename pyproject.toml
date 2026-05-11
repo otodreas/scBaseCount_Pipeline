@@ -37,3 +37,9 @@ dependencies = [
     "boto3>=1.43.2",
     "pandas>=2.3.3",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.12"
+extraPaths = ["scripts"]
