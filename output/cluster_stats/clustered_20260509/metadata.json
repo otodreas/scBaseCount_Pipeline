@@ -1,0 +1,7 @@
+{
+  "run_timestamp": "20260511_182511",
+  "r2_prefix": "clustered_20260509",
+  "n_files_matched": 765,
+  "output_dir": "/home/inf-33-2025/Nygen_Project/output/cluster_stats/clustered_20260509",
+  "notes": "construct count matrix (number of cells for each STATE x leiden cluster combination across accessions)"
+}
