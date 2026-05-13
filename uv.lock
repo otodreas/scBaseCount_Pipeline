@@ -1971,6 +1971,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "scanpy", extra = ["leiden"] },
+    { name = "statsmodels" },
     { name = "umap-learn" },
     { name = "xarray" },
 ]
@@ -1990,6 +1991,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.10.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "scanpy", extras = ["leiden"], specifier = ">=1.12" },
+    { name = "statsmodels", specifier = ">=0.14.6" },
     { name = "umap-learn", specifier = "==0.5.11" },
     { name = "xarray", specifier = ">=2026.4.0" },
 ]
