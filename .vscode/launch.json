@@ -12,80 +12,105 @@
             "args": [
                 "--datasets",
                 "${workspaceFolder}/tests/datasets_state_matrix.csv",
-                "--contexts",
-                "${workspaceFolder}/output/context/contexts.jsonl",
                 "--metadata",
                 "run from 'test_state_matrix' debug config (.vscode/launch.json). expect same output as in notebooks/dataset-state-matrix.ipynb",
-                "--skip-cytetype",
                 "--workers",
                 "3"
             ]
         },
         {
-            "name": "skip cytetype, 2 workers",
+            "name": "clustering, 2 workers",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceFolder}/pipelines/run_clustering_pipeline.py",
             "console": "integratedTerminal",
             "envFile": "${workspaceFolder}/.env",
             "justMyCode": false,
             "args": [
                 "--datasets",
                 "${workspaceFolder}/tests/datasets_sample2.csv",
-                "--contexts",
-                "${workspaceFolder}/output/context/contexts.jsonl",
                 "--metadata",
-                "run from 'skip cytetype, 2 workers' debug config (.vscode/launch.json)",
-                "--skip-cytetype",
+                "run from 'clustering, 2 workers' debug config (.vscode/launch.json)",
                 "--workers",
                 "2"
             ]
         },
         {
-            "name": "skip cytetype",
+            "name": "run_clustering_pipeline (test dataset)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/run_annotation_pipeline.py",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "program": "${workspaceFolder}/pipelines/run_clustering_pipeline.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/output/metadata/datasets_test2.csv",
+                "--metadata",
+                "run from 'run_clustering_pipeline (test dataset)' debug config (.vscode/launch.json)"
+            ]
+        },
+        {
+            "name": "run_clustering_pipeline (sample 10)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pipelines/run_clustering_pipeline.py",
             "console": "integratedTerminal",
             "envFile": "${workspaceFolder}/.env",
             "justMyCode": false,
             "args": [
                 "--datasets",
                 "${workspaceFolder}/tests/datasets_sample10.csv",
+                "--metadata",
+                "run from 'run_clustering_pipeline (sample 10)' debug config (.vscode/launch.json)"
+            ]
+        },
+        {
+            "name": "run_cytetype_pipeline (test dataset)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pipelines/run_cytetype_pipeline.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--datasets",
+                "${workspaceFolder}/output/metadata/datasets_test2.csv",
                 "--contexts",
                 "${workspaceFolder}/output/context/contexts.jsonl",
+                "--clustering-prefix",
+                "clustering_pipeline_REPLACE_ME",
                 "--metadata",
-                "run from 'run_annotation_pipeline (test dataset) - skip cytetype' debug config (.vscode/launch.json)",
-                "--skip-cytetype"
+                "run from 'run_cytetype_pipeline (test dataset)' debug config (.vscode/launch.json)"
+            ]
+        },
+        {
+            "name": "cluster_stats (clustered_20260509)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pipelines/cluster_stats.py",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--r2-prefix",
+                "clustered_20260509",
+                "--workers",
+                "4",
+                "--metadata",
+                "run from 'cluster_stats (clustered_20260509)'--generate stats on clustered h5ad files on r2 with the prefix 'clustered_20260509' debug config (.vscode/launch.json)"
             ]
         },
         {
             "name": "gcs_to_r2 (test dataset)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/migrate_gcs_to_r2.py",
+            "program": "${workspaceFolder}/pipelines/migrate_gcs_to_r2.py",
             "console": "integratedTerminal",
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "--datasets",
                 "${workspaceFolder}/output/metadata/datasets_test.csv",
-            ]
-        },
-        {
-            "name": "run_annotation_pipeline (test dataset)",
-            "type": "debugpy",
-            "request": "launch",
-            "python": "${workspaceFolder}/.venv/bin/python",
-            "program": "${workspaceFolder}/run_annotation_pipeline.py",
-            "console": "integratedTerminal",
-            "envFile": "${workspaceFolder}/.env",
-            "args": [
-                "--datasets",
-                "${workspaceFolder}/output/metadata/datasets_test2.csv", // datasets_test.csv
-                "--contexts",
-                "${workspaceFolder}/output/context/contexts.jsonl",
-                "--metadata",
-                "run from 'run_annotation_pipeline (test dataset)' debug config (.vscode/launch.json)"
             ]
         }
     ]

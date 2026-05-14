@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 
 from shared.repo import REPO_ROOT
 
@@ -18,3 +19,15 @@ def configure_file_logger(log_filename: str, logger_name: str) -> logging.Logger
         logger.addHandler(handler)
 
     return logger
+
+
+def add_stdout_handler() -> None:
+    root = logging.getLogger()
+    if not any(isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) is sys.stdout for h in root.handlers):
+        root.addHandler(logging.StreamHandler(sys.stdout))
+
+
+def log_run_separator(logger: logging.Logger) -> None:
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            handler.stream.write("\n")

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import argparse
 import datetime
-import logging
-import sys
 from pathlib import Path
 
 import pandas as pd
@@ -13,7 +11,7 @@ from gcs import download_from_gcs, gcs_blob_md5, gcs_local_path
 from r2 import gcs_uri_to_r2_raw_key, r2_raw_matches_gcs, upload_to_r2
 from r2.client import _MD5_METADATA_KEY, _local_md5_b64
 from shared.csv_writer import append_csv_row
-from shared.logger import configure_file_logger
+from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT
 
 load_dotenv()
@@ -23,7 +21,7 @@ RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 RUN_OUTPUT_DIR = REPO_ROOT / "output" / "migration"
 
 log = configure_file_logger("migrate_gcs_to_r2.log", __name__)
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+add_stdout_handler()
 
 
 _CSV_COLUMNS = ["position", "srx", "status", "gs_uri", "r2_key", "md5", "timestamp", "error"]
@@ -68,9 +66,7 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
 
-    for handler in log.handlers:
-        if isinstance(handler, logging.FileHandler):
-            handler.stream.write("\n")
+    log_run_separator(log)
     log.info("new migration run started (datasets: %s)", args.datasets)
 
     run_dir = RUN_OUTPUT_DIR / RUN_TIMESTAMP

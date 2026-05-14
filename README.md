@@ -4,7 +4,7 @@ Master's thesis, 30 hp, Lund University
 
 A pipeline for large-scale scRNA-seq cluster labeling assessment, built on the Arc Institute's [Virtual Cell Atlas](https://console.cloud.google.com/storage/browser/arc-institute-virtual-cell-atlas?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))).
 
-See [`notebooks/README.md`](notebooks/README.md) for the analysis notebooks and [`scripts/README.md`](scripts/README.md) for the Python packages.
+See [`pipelines/`](pipelines/) for the runner scripts (clustering, CyteType annotation, cluster stats, and GCS-to-R2 migration), [`notebooks/README.md`](notebooks/README.md) for the analysis notebooks, and [`scripts/README.md`](scripts/README.md) for the Python packages they share.
 
 # Requirements
 

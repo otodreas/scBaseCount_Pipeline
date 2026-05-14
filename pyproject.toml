@@ -36,6 +36,8 @@ dependencies = [
     "google-cloud-storage>=3.10.1",
     "boto3>=1.43.2",
     "pandas>=2.3.3",
+    "xarray>=2026.4.0",
+    "statsmodels>=0.14.6",
 ]
 
 [tool.pyright]

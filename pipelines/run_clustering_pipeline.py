@@ -3,53 +3,34 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
-import logging
-import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
 from dotenv import load_dotenv
 
-from cluster_validation import ClusterValidationConfig, build_metric_dataframes, compute_nse_kld_row, run_cluster_validation, save_metric_plot
-from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
+from cluster_validation import ClusterValidationConfig, run_cluster_validation
 from gcs import download_from_gcs, gcs_local_path, verify_download
 from r2 import download_from_r2, fetch_uploaded_r2_keys, gcs_uri_to_r2_raw_key, r2_key_exists, r2_object_md5, upload_to_r2, verify_upload
 from r2.client import _local_md5_b64
-from shared.csv_writer import append_csv_row, append_jsonl_row
-from shared.logger import configure_file_logger
+from shared.csv_writer import append_csv_row
+from shared.files import safe_delete
+from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT
-from study_context import ExperimentContext, experiment_context_summary
 
 load_dotenv()
 
 _DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
-_DEFAULT_CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
 RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 GCS_LOCAL_ROOT = REPO_ROOT / "data"
-RUN_OUTPUT_DIR = REPO_ROOT / "output" / "annotation_pipeline"
+RUN_OUTPUT_DIR = REPO_ROOT / "output" / "clustering_pipeline"
 
-log = configure_file_logger("annotation_pipeline.log", __name__)
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+log = configure_file_logger("clustering_pipeline.log", __name__)
+add_stdout_handler()
 
 
-def read_datasets(path: Path) -> list[dict]:
+def read_datasets(path: Path) -> pd.DataFrame:
     return pd.read_csv(path)
-
-
-def load_contexts(path: Path) -> dict[str, ExperimentContext]:
-    if not path.exists():
-        log.warning("contexts.jsonl not found at %s; study context will be empty for all samples", path)
-        return {}
-    contexts: dict[str, ExperimentContext] = {}
-    with open(path) as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            ctx = ExperimentContext.model_validate_json(line)
-            contexts[ctx.accession] = ctx
-    return contexts
 
 
 def _write_run_metadata(
@@ -61,8 +42,6 @@ def _write_run_metadata(
         "run_timestamp": run_ts,
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
-        "contexts_path": str(args.contexts),
-        "skip_cytetype": args.skip_cytetype,
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
@@ -85,15 +64,6 @@ def _append_summary_row(
         _CSV_COLUMNS,
         [position, srx, status, r2_key, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error],
     )
-
-
-def _safe_delete(path: Path) -> None:
-    try:
-        if path.exists():
-            path.unlink()
-            log.debug("Deleted %s", path)
-    except OSError as exc:
-        log.warning("Could not delete %s: %s", path, exc)
 
 
 def _fetch_raw_h5ad(srx: str, gs_uri: str, raw_h5ad: Path) -> None:
@@ -120,15 +90,12 @@ def process_accession(
     srx: str,
     gs_uri: str,
     r2_key: str,
-    contexts: dict[str, ExperimentContext],
     datasets_path: Path,
-    skip_cytetype: bool = False,
-) -> tuple[dict[str, float] | None, dict[str, float] | None, Exception | None]:
+) -> Exception | None:
     cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
 
     downloaded = False
-    cytetype_h5ad: Path | None = None
     try:
         if raw_h5ad.exists():
             log.info("%s: found local h5ad at %s, skipping download", srx, raw_h5ad)
@@ -136,42 +103,27 @@ def process_accession(
             _fetch_raw_h5ad(srx, gs_uri, raw_h5ad)
             downloaded = True
 
-        adata, result = run_cluster_validation(cfg)
-        nse_row, kld_row = compute_nse_kld_row(adata, result.mergedKey)
+        _, result = run_cluster_validation(cfg)
 
         if downloaded:
-            _safe_delete(raw_h5ad)
+            safe_delete(raw_h5ad, log)
 
-        if skip_cytetype:
-            upload_to_r2(result.adataPath, r2_key)
-            verify_upload(r2_key)
-            _safe_delete(result.adataPath)
-        else:
-            cytetype_cfg = CyteTypeRunnerConfig(srxAccession=srx)
-            ctx = contexts.get(srx)
-            study_context = experiment_context_summary(ctx) if ctx else ""
-            if not ctx:
-                log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
-            cytetype_h5ad = run_cytetype(cytetype_cfg, result.adataPath, result.mergedKey, study_context)
-            _safe_delete(result.adataPath)
-            upload_to_r2(cytetype_h5ad, r2_key)
-            verify_upload(r2_key)
-            _safe_delete(cytetype_h5ad)
+        upload_to_r2(result.adataPath, r2_key)
+        verify_upload(r2_key)
+        safe_delete(result.adataPath, log)
 
         log.info("%s: done", srx)
-        return nse_row, kld_row, None
+        return None
 
     except Exception as exc:
         log.exception("%s: pipeline failed", srx)
-        _safe_delete(raw_h5ad)
-        _safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad")
-        if cytetype_h5ad is not None:
-            _safe_delete(cytetype_h5ad)
-        return None, None, exc
+        safe_delete(raw_h5ad, log)
+        safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad", log)
+        return exc
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the CyteType annotation pipeline.")
+    parser = argparse.ArgumentParser(description="Run the clustering pipeline (clustering only, no annotation).")
     parser.add_argument(
         "--datasets",
         type=Path,
@@ -180,18 +132,11 @@ def _parse_args() -> argparse.Namespace:
         help=f"Path to datasets CSV (default: {_DEFAULT_DATASETS_CSV})",
     )
     parser.add_argument(
-        "--contexts",
-        type=Path,
-        default=None,
-        metavar="PATH",
-        help=f"Path to contexts JSONL (default: {_DEFAULT_CONTEXTS_JSONL}). Ignored when --skip-cytetype is set.",
-    )
-    parser.add_argument(
         "--r2-prefix",
         type=str,
-        default=f"annotation_pipeline_{RUN_TIMESTAMP}",
+        default=f"clustering_pipeline_{RUN_TIMESTAMP}",
         metavar="PREFIX",
-        help=f"R2 prefix (default: {f"annotation_pipeline_{RUN_TIMESTAMP}"})",
+        help=f"R2 prefix (default: clustering_pipeline_{{RUN_TIMESTAMP}})",
     )
     parser.add_argument(
         "--metadata",
@@ -199,12 +144,6 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         metavar="TEXT",
         help="Write a metadata JSON file next to the run CSV with this note.",
-    )
-    parser.add_argument(
-        "--skip-cytetype",
-        action="store_true",
-        default=False,
-        help="Skip the CyteType step and upload the clustering output directly.",
     )
     parser.add_argument(
         "--workers",
@@ -219,32 +158,23 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
 
-    for handler in log.handlers:
-        if isinstance(handler, logging.FileHandler):
-            handler.stream.write("\n")
-    log.info("new annotation pipeline run started (r2 prefix: %s)", args.r2_prefix)
+    log_run_separator(log)
+    log.info("new clustering pipeline run started (r2 prefix: %s)", args.r2_prefix)
 
     datasets = read_datasets(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
-    # datasets = datasets.sort_values("obs_count").iloc[0:1]  # TODO: remove this
     uploaded = fetch_uploaded_r2_keys()
-    if args.skip_cytetype:
-        contexts: dict[str, ExperimentContext] = {}
-    else:
-        contexts_path = args.contexts if args.contexts is not None else _DEFAULT_CONTEXTS_JSONL
-        contexts = load_contexts(contexts_path)
 
     run_dir = RUN_OUTPUT_DIR / RUN_TIMESTAMP
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
-    metrics_jsonl_path = run_dir / "metrics_matrix.jsonl"
     _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
     log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)
     skipped = 0
-    r2_suffix = "_clustered.h5ad" if args.skip_cytetype else "_annotated.h5ad"
+    r2_suffix = "_clustered.h5ad"
 
     work_items: list[tuple[str, str, str, str]] = []
     for n, (_, row) in enumerate(datasets.iterrows(), start=1):
@@ -262,41 +192,20 @@ def main() -> None:
     log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process_accession, srx, gs_uri, r2_key, contexts, args.datasets, args.skip_cytetype): (srx, r2_key, position)
+            pool.submit(process_accession, srx, gs_uri, r2_key, args.datasets): (srx, r2_key, position)
             for srx, gs_uri, r2_key, position in work_items
         }
         for future in as_completed(futures):
             srx, r2_key, position = futures[future]
-            nse_row, kld_row, exc = future.result()
+            exc = future.result()
             if exc is not None:
                 log.warning("%s: failed", srx)
                 _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
                 skipped += 1
             else:
-                append_jsonl_row(metrics_jsonl_path, {"srx": srx, "nse": nse_row, "kld": kld_row})
                 _append_summary_row(csv_summary_path, srx, "success", position, r2_key)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
-
-    if metrics_jsonl_path.exists():
-        rows = [json.loads(line) for line in metrics_jsonl_path.read_text().splitlines() if line.strip()]
-        nse_df, kld_df, summary_df = build_metric_dataframes(rows)
-
-        nse_df.to_csv(run_dir / "nse_matrix.csv")
-        log.info("NSE matrix written to %s", run_dir / "nse_matrix.csv")
-
-        kld_df.to_csv(run_dir / "kld_matrix.csv")
-        log.info("KLD matrix written to %s", run_dir / "kld_matrix.csv")
-
-        summary_df.to_csv(run_dir / "cell_type_summary.csv")
-        log.info("Cell type summary written to %s", run_dir / "cell_type_summary.csv")
-
-        metrics_jsonl_path.unlink()
-        log.debug("Deleted %s", metrics_jsonl_path)
-
-        plot_path = run_dir / "cell_type_metrics.png"
-        save_metric_plot(summary_df, plot_path)
-        log.info("Cell type metrics plot saved to %s", plot_path)
 
 
 if __name__ == "__main__":
