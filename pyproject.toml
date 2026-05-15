@@ -40,6 +40,11 @@ dependencies = [
     "statsmodels>=0.14.6",
 ]
 
+[dependency-groups]
+dev = [
+    "nbstripout>=0.7",
+]
+
 [tool.pyright]
 venvPath = "."
 venv = ".venv"

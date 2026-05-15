@@ -27,5 +27,8 @@ NCBI and CyteType API keys reduce rate limiting when fetching study metadata and
 ```sh
 git clone git@github.com:otodreas/scBaseCount_Pipeline.git
 cd scBaseCount_Pipeline
-uv sync
+uv sync --group dev
+uv run nbstripout --install
 ```
+
+The `nbstripout --install` step registers a local git clean filter so notebook outputs are stripped before commit. Required once per clone.
