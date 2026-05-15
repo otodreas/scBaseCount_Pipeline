@@ -15,6 +15,7 @@ class ClusterValidationConfig(BaseModel):
     minCellsPerType: int = 20
     # Minimum number of cells to keep after filtering
     minCellsTotal: int = 500
+    # Default to 2000 HVGs (highly variable genes). see "curse of dimensionality"
     nTopGenes: int = 2000
     nPcsCompute: int = 50
     nPcsMin: int = 15
