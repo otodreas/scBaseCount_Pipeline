@@ -7,11 +7,18 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
-from dotenv import load_dotenv
-
 from cluster_validation import ClusterValidationConfig, run_cluster_validation
+from dotenv import load_dotenv
 from gcs import download_from_gcs, gcs_local_path, verify_download
-from r2 import download_from_r2, fetch_uploaded_r2_keys, gcs_uri_to_r2_raw_key, r2_key_exists, r2_object_md5, upload_to_r2, verify_upload
+from r2 import (
+    download_from_r2,
+    fetch_uploaded_r2_keys,
+    gcs_uri_to_r2_raw_key,
+    r2_key_exists,
+    r2_object_md5,
+    upload_to_r2,
+    verify_upload,
+)
 from r2.client import _local_md5_b64
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
@@ -136,7 +143,7 @@ def _parse_args() -> argparse.Namespace:
         type=str,
         default=f"clustering_pipeline_{RUN_TIMESTAMP}",
         metavar="PREFIX",
-        help=f"R2 prefix (default: clustering_pipeline_{{RUN_TIMESTAMP}})",
+        help="R2 prefix (default: clustering_pipeline_{RUN_TIMESTAMP})",
     )
     parser.add_argument(
         "--metadata",

@@ -7,7 +7,7 @@ from cluster_validation.config import ClusterValidationConfig
 
 
 def load_dataset(cfg: ClusterValidationConfig) -> tuple[sc.AnnData, str, str]:
-    catalog = pd.read_csv(cfg.summaryPath)#.sort_values("quantile").reset_index(drop=True)
+    catalog = pd.read_csv(cfg.summaryPath)  # .sort_values("quantile").reset_index(drop=True)
     quantile_present = "quantile" in catalog.columns
     row = _select_row(catalog, cfg)
     srx = str(row["srx_accession"])
@@ -32,7 +32,5 @@ def _select_row(df: pd.DataFrame, cfg: ClusterValidationConfig) -> pd.Series:
         return hit.iloc[0]
     idx = int(cfg.datasetIndex)
     if idx < 0 or idx >= len(df):
-        raise IndexError(
-            f"datasetIndex {idx} out of range for {len(df)} rows in {cfg.summaryPath}"
-        )
+        raise IndexError(f"datasetIndex {idx} out of range for {len(df)} rows in {cfg.summaryPath}")
     return df.iloc[idx]

@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pandas as pd
 from dotenv import load_dotenv
-
 from gcs import download_from_gcs, gcs_blob_md5, gcs_local_path
 from r2 import gcs_uri_to_r2_raw_key, r2_raw_matches_gcs, upload_to_r2
 from r2.client import _MD5_METADATA_KEY, _local_md5_b64
@@ -112,21 +111,23 @@ def main() -> None:
 
             local_md5 = _local_md5_b64(local_path)
             if local_md5 != gcs_md5:
-                raise RuntimeError(
-                    f"Download integrity check failed: local MD5 {local_md5} != GCS MD5 {gcs_md5}"
-                )
+                raise RuntimeError(f"Download integrity check failed: local MD5 {local_md5} != GCS MD5 {gcs_md5}")
             log.info("%s (%s): MD5 verified (%s)", srx, position, local_md5)
 
             log.info("%s (%s): uploading to R2 at %s", srx, position, r2_key)
             upload_to_r2(local_path, r2_key, extra_metadata={_MD5_METADATA_KEY: gcs_md5})
             if not r2_raw_matches_gcs(r2_key, gcs_md5):
-                raise RuntimeError(f"Post-upload metadata check failed: R2 object at {r2_key} does not reflect expected MD5")
+                raise RuntimeError(
+                    f"Post-upload metadata check failed: R2 object at {r2_key} does not reflect expected MD5"
+                )
             log.info("%s (%s): post-upload metadata verified", srx, position)
             _append_summary_row(csv_summary_path, srx, "uploaded", position, gs_uri, r2_key, gcs_md5)
             log.info("%s (%s): done", srx, position)
         except Exception as exc:
             log.exception("%s (%s): failed", srx, position)
-            _append_summary_row(csv_summary_path, srx, "failed", position, gs_uri, r2_key, gcs_md5, error=f"{type(exc).__name__}: {exc}")
+            _append_summary_row(
+                csv_summary_path, srx, "failed", position, gs_uri, r2_key, gcs_md5, error=f"{type(exc).__name__}: {exc}"
+            )
             failed += 1
         finally:
             if downloaded and local_path.exists():

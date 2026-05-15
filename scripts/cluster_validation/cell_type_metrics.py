@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,11 +48,7 @@ def compute_nse_kld_row(
         labels = adata.obs[adata.obs["cell_type"] == cell_type][merged_key]
         counts = labels.value_counts(normalize=True)
         counts = counts[counts > 0]
-        nse_row[cell_type] = (
-            float(scipy_entropy(counts, base=2) / np.log2(len(counts)))
-            if len(counts) > 1
-            else 0.0
-        )
+        nse_row[cell_type] = float(scipy_entropy(counts, base=2) / np.log2(len(counts))) if len(counts) > 1 else 0.0
         p = labels.value_counts(normalize=True).reindex(all_clusters, fill_value=0)
         kld_row[cell_type] = float(scipy_entropy(p, q, base=2))
     return nse_row, kld_row
@@ -84,11 +81,13 @@ def build_metric_dataframes(
     kld_df = pd.DataFrame({r["srx"]: r["kld"] for r in rows}).T
     kld_df.index.name = "srx"
 
-    summary_df = pd.DataFrame({
-        "n_datasets": nse_df.notna().sum(),
-        "normalized_shannon_entropy_mean": nse_df.mean(),
-        "kl_divergence_mean": kld_df.mean(),
-    })
+    summary_df = pd.DataFrame(
+        {
+            "n_datasets": nse_df.notna().sum(),
+            "normalized_shannon_entropy_mean": nse_df.mean(),
+            "kl_divergence_mean": kld_df.mean(),
+        }
+    )
     summary_df.index.name = "cell_type"
 
     return nse_df, kld_df, summary_df

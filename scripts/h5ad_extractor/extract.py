@@ -14,7 +14,7 @@ def _resolved_repo_path(p: Path) -> Path:
     return (REPO_ROOT / p).resolve()
 
 
-def _h5ad_stem(p: Path) -> str: 
+def _h5ad_stem(p: Path) -> str:
     return p.stem
 
 
@@ -37,8 +37,7 @@ def extract_annotation_columns(cfg: H5adExtractConfig) -> Path:
         missing = [c for c in cfg.columnNames if c not in available]
         if missing:
             raise ValueError(
-                f"Missing {cfg.annotationAxis} column(s) {missing!r} in {h5ad_path}. "
-                f"Available: {sorted(available)!r}"
+                f"Missing {cfg.annotationAxis} column(s) {missing!r} in {h5ad_path}. Available: {sorted(available)!r}"
             )
         df = ann[cfg.columnNames].copy()
         out_path.parent.mkdir(parents=True, exist_ok=True)

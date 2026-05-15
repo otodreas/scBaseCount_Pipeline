@@ -6,9 +6,7 @@ import scanpy as sc
 from cluster_validation.config import ClusterValidationConfig
 
 
-def embed_dataset(
-    adata: sc.AnnData, cfg: ClusterValidationConfig
-) -> tuple[sc.AnnData, int, float]:
+def embed_dataset(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, int, float]:
     sc.tl.pca(adata, n_comps=cfg.nPcsCompute, svd_solver="arpack")
     n_pcs, cumvar = _pick_n_pcs(adata, cfg)
     sc.pp.neighbors(adata, n_pcs=n_pcs)

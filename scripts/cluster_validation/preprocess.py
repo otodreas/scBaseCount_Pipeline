@@ -19,9 +19,7 @@ class PreprocessStats:
     kFiltered: int
 
 
-def preprocess(
-    adata: sc.AnnData, cfg: ClusterValidationConfig
-) -> tuple[sc.AnnData, PreprocessStats]:
+def preprocess(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, PreprocessStats]:
     n_cells_original = adata.n_obs
     k_prior = adata.obs["cell_type"].nunique()
 
@@ -46,9 +44,7 @@ def preprocess(
     n_dropped = n_cells_original - adata.n_obs
 
     if adata.n_obs < cfg.minCellsTotal:
-        raise InsufficientCellsError(
-            f"{adata.n_obs} cells remaining after filtering (threshold: {cfg.minCellsTotal})"
-        )
+        raise InsufficientCellsError(f"{adata.n_obs} cells remaining after filtering (threshold: {cfg.minCellsTotal})")
 
     return adata, PreprocessStats(
         nCellsOriginal=n_cells_original,

@@ -61,5 +61,3 @@ def compute_metrics(
         vscoreArr=vscore,
         ariArr=ari,
     )
-
-

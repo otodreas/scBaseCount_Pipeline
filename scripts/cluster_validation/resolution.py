@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
+import scanpy as sc
 from numpy.typing import NDArray
 from scipy.optimize import linear_sum_assignment
-import scanpy as sc
 
 from cluster_validation.config import ClusterValidationConfig
 

@@ -13,9 +13,7 @@ def _check_response(resp: httpx.Response, context: str) -> None:
     if resp.is_success:
         return
     body = resp.text[:300].strip() if resp.text else "(empty body)"
-    raise RuntimeError(
-        f"CyteOnto API error [{context}]: HTTP {resp.status_code}  {body}"
-    )
+    raise RuntimeError(f"CyteOnto API error [{context}]: HTTP {resp.status_code}  {body}")
 
 
 def get_status(run_id: str, base_url: str) -> dict:
@@ -27,7 +25,7 @@ def get_status(run_id: str, base_url: str) -> dict:
 def submit(payload: dict, base_url: str, log: logging.Logger) -> str:
     resp = httpx.post(
         f"{base_url}/compare",
-        content=orjson.dumps(payload),#, option=orjson.OPT_SERIALIZE_NUMPY),
+        content=orjson.dumps(payload),  # , option=orjson.OPT_SERIALIZE_NUMPY),
         headers={"Content-Type": "application/json"},
         timeout=30,
     )

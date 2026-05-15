@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 
 import boto3
 from botocore.exceptions import ClientError
-
 from shared.logger import configure_file_logger
 
 _log = configure_file_logger("r2.log", __name__)

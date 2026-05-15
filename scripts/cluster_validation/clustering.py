@@ -5,9 +5,7 @@ import scanpy as sc
 from cluster_validation.config import ClusterValidationConfig
 
 
-def sweep_leiden(
-    adata: sc.AnnData, cfg: ClusterValidationConfig
-) -> tuple[sc.AnnData, dict[float, int]]:
+def sweep_leiden(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, dict[float, int]]:
     for r in cfg.resolutions:
         sc.tl.leiden(
             adata,

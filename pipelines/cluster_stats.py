@@ -8,10 +8,9 @@ from pathlib import Path
 
 import pandas as pd
 import scanpy as sc
-from dotenv import load_dotenv
-
 from cluster_validation import build_metric_dataframes, compute_nse_kld_row, save_metric_plot
 from cluster_validation.merge import MERGED_CLUSTER_KEY
+from dotenv import load_dotenv
 from r2 import download_from_r2, fetch_uploaded_r2_keys
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
@@ -62,7 +61,9 @@ def _write_run_metadata(metadata_path: Path, args: argparse.Namespace, run_ts: s
         "run_timestamp": run_ts,
         "r2_prefix": args.r2_prefix,
         "n_files_matched": n_files,
-        "output_dir": str(args.output_dir) if args.output_dir is not None else str(DEFAULT_OUTPUT_ROOT / args.r2_prefix),
+        "output_dir": str(args.output_dir)
+        if args.output_dir is not None
+        else str(DEFAULT_OUTPUT_ROOT / args.r2_prefix),
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
@@ -103,7 +104,9 @@ def process_accession(
                 pass
 
         safe_delete(local_path, log)
-        log.info("%s: done (%d cell types, %d clusters)", srx, len(count_matrix), len(next(iter(count_matrix.values()), {})))
+        log.info(
+            "%s: done (%d cell types, %d clusters)", srx, len(count_matrix), len(next(iter(count_matrix.values()), {}))
+        )
         return count_matrix, nse_row, kld_row, None
 
     except Exception as exc:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import datetime
-from pathlib import Path
 
 import scanpy as sc
+from shared.logger import configure_file_logger
 
 from cluster_validation.clustering import sweep_leiden
 from cluster_validation.config import ClusterValidationConfig
@@ -15,7 +15,6 @@ from cluster_validation.models import ClusterValidationResult
 from cluster_validation.preprocess import preprocess
 from cluster_validation.resolution import select_resolution
 from cluster_validation.viz import plot_all
-from shared.logger import configure_file_logger
 
 _log = configure_file_logger("cluster_validation.log", __name__)
 
@@ -69,7 +68,9 @@ def run_cluster_validation(
 
     plot_all(adata, result, figs_dir=cfg.figsDir / srx)
 
-    print(f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters and {result.nPcs} PCs")
+    print(
+        f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters and {result.nPcs} PCs"
+    )
     _log.info(
         "done      %s  resolution=%.1f  clusters=%d  pcs=%d",
         srx,

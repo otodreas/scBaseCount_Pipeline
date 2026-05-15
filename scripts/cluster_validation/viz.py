@@ -5,8 +5,8 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 import scanpy as sc
+import seaborn as sns
 
 from cluster_validation.models import ClusterValidationResult
 
@@ -60,7 +60,10 @@ def plot_resolution_sweep(
 
     axes[0].plot(resolutions, k_arr, marker="o", ms=4, color="steelblue")
     axes[0].axhline(
-        result.kFiltered, color="gray", linestyle="--", linewidth=1,
+        result.kFiltered,
+        color="gray",
+        linestyle="--",
+        linewidth=1,
         label=f"k_filtered = {result.kFiltered}",
     )
     axes[0].axvline(sel, color="red", linestyle="--", label=f"selected = {sel}")
@@ -117,9 +120,7 @@ def plot_rf_confusion(
 ) -> plt.Figure:
     conf = np.array(result.confMatrix)
     classes = result.confClasses
-    fig, ax = plt.subplots(
-        figsize=(max(8, len(classes) * 0.5), max(6, len(classes) * 0.45))
-    )
+    fig, ax = plt.subplots(figsize=(max(8, len(classes) * 0.5), max(6, len(classes) * 0.45)))
     sns.heatmap(
         conf,
         xticklabels=classes,
@@ -150,13 +151,8 @@ def plot_umap_merged(
     merged_groups = result.mergedGroups
     multi = {m: g for m, g in merged_groups.items() if len(g) > 1}
     if multi:
-        merged_str = "; ".join(
-            f"[{', '.join(g)}] -> {m}" for m, g in multi.items()
-        )
-        umap_merged_title = (
-            f"RF-merged  ({result.nClustersPostMerge} clusters)\n"
-            f"Merged groups: {merged_str}"
-        )
+        merged_str = "; ".join(f"[{', '.join(g)}] -> {m}" for m, g in multi.items())
+        umap_merged_title = f"RF-merged  ({result.nClustersPostMerge} clusters)\nMerged groups: {merged_str}"
     else:
         umap_merged_title = f"RF-merged  ({result.nClustersPostMerge} clusters)\n(no merges)"
 
@@ -191,12 +187,8 @@ def plot_composition_bars(
     result: ClusterValidationResult,
     figs_dir: Path | None = None,
 ) -> plt.Figure:
-    merged_counts = (
-        adata.obs["leiden_merged"].value_counts(normalize=True).sort_values(ascending=False) * 100
-    )
-    celltype_counts = (
-        adata.obs["cell_type"].value_counts(normalize=True).sort_values(ascending=False) * 100
-    )
+    merged_counts = adata.obs["leiden_merged"].value_counts(normalize=True).sort_values(ascending=False) * 100
+    celltype_counts = adata.obs["cell_type"].value_counts(normalize=True).sort_values(ascending=False) * 100
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
     merged_counts.plot(kind="bar", ax=axes[0], color="steelblue")
@@ -212,9 +204,7 @@ def plot_composition_bars(
     axes[1].set_xticks(range(len(celltype_counts)))
     axes[1].set_xticklabels([str(lbl)[:4] for lbl in celltype_counts.index], rotation=90)
 
-    fig.suptitle(
-        f"Dataset: {result.datasetTitleSuffix}\nCluster composition\n{_now()}", fontsize=16, y=1.03
-    )
+    fig.suptitle(f"Dataset: {result.datasetTitleSuffix}\nCluster composition\n{_now()}", fontsize=16, y=1.03)
     plt.tight_layout()
     _save(fig, figs_dir, f"composition_bars_{result.srxAccession}.png")
     return fig
@@ -271,9 +261,7 @@ def plot_metrics(
     for idx, (label, arr) in enumerate(metrics):
         if arr.size > 0:
             axs[idx].plot(arr[:, 0], arr[:, 1], marker="o")
-            axs[idx].axvline(
-                sel, color="red", linestyle="--", linewidth=1, label=f"selected = {sel}"
-            )
+            axs[idx].axvline(sel, color="red", linestyle="--", linewidth=1, label=f"selected = {sel}")
             axs[idx].set_title(label)
             axs[idx].set_xlabel("Leiden resolution")
             axs[idx].set_ylabel(label)

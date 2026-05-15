@@ -59,13 +59,13 @@ CANCER_RE = re.compile(
 )
 
 DISEASE_MAP: list[tuple[str, re.Pattern[str]]] = [
-    ("IPF / Pulmonary Fibrosis",    re.compile(r"pulmonary fibrosis|IPF|idiopathic pulmonary fibrosis", re.IGNORECASE)),
-    ("COVID-19 / SARS-CoV-2",       re.compile(r"COVID|SARS.CoV", re.IGNORECASE)),
-    ("Lung Adenocarcinoma (LUAD)",   re.compile(r"lung adenocarcinoma|LUAD", re.IGNORECASE)),
-    ("NSCLC",                        re.compile(r"NSCLC|non.small.cell lung|non.small.cell carcinoma|carcinoma non.small", re.IGNORECASE)),
+    ("IPF / Pulmonary Fibrosis", re.compile(r"pulmonary fibrosis|IPF|idiopathic pulmonary fibrosis", re.IGNORECASE)),
+    ("COVID-19 / SARS-CoV-2", re.compile(r"COVID|SARS.CoV", re.IGNORECASE)),
+    ("Lung Adenocarcinoma (LUAD)", re.compile(r"lung adenocarcinoma|LUAD", re.IGNORECASE)),
+    ("NSCLC", re.compile(r"NSCLC|non.small.cell lung|non.small.cell carcinoma|carcinoma non.small", re.IGNORECASE)),
     ("Lung Squamous Cell Carcinoma", re.compile(r"squamous cell carcinoma of the lung|lung squamous", re.IGNORECASE)),
-    ("COPD",                         re.compile(r"\bCOPD\b", re.IGNORECASE)),
-    ("Lung Cancer (general)",        re.compile(r"lung cancer|lung carcinoma|MPLC|KRAS.mutant lung|SCLC", re.IGNORECASE)),
-    ("Cystic Fibrosis",              re.compile(r"cystic fibrosis", re.IGNORECASE)),
-    ("Interstitial Lung Disease",    re.compile(r"interstitial lung|ILD|SSc", re.IGNORECASE)),
+    ("COPD", re.compile(r"\bCOPD\b", re.IGNORECASE)),
+    ("Lung Cancer (general)", re.compile(r"lung cancer|lung carcinoma|MPLC|KRAS.mutant lung|SCLC", re.IGNORECASE)),
+    ("Cystic Fibrosis", re.compile(r"cystic fibrosis", re.IGNORECASE)),
+    ("Interstitial Lung Disease", re.compile(r"interstitial lung|ILD|SSc", re.IGNORECASE)),
 ]

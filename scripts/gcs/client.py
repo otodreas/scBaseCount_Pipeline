@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 
 from google.auth.credentials import AnonymousCredentials
 from google.cloud import storage as gcs
-
 from shared.logger import configure_file_logger
 
 _log = configure_file_logger("gcs.log", __name__)

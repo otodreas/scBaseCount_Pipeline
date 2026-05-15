@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pandas as pd
 import scanpy as sc
+from shared.logger import configure_file_logger
 
 from cyteonto.client import fetch_result, get_status, poll, submit
-from cyteonto.config import CyteOntoConfig, _REPO_ROOT
+from cyteonto.config import _REPO_ROOT, CyteOntoConfig
 from cyteonto.payload import build_payload, write_payload
-from shared.logger import configure_file_logger
 
 _log = configure_file_logger("cyteonto.log", __name__)
 
@@ -19,6 +19,7 @@ _DEFAULT_RUNS_DIR = _REPO_ROOT / "output" / "cyteonto" / "runs"
 
 
 # --- run stub helpers (one JSON per run in runs/, completedAt null until done) ---
+
 
 def _stub_path(run_id: str, runs_dir: Path) -> Path:
     return runs_dir / f"{run_id}.json"
@@ -53,6 +54,7 @@ def _load_pending(runs_dir: Path) -> list[dict]:
 
 
 # --- public API ---
+
 
 def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     _log.info("start  input=%s", cfg.h5adPath)

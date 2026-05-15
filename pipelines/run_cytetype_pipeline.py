@@ -7,10 +7,9 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
-from dotenv import load_dotenv
-
 from cluster_validation.merge import MERGED_CLUSTER_KEY
 from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
+from dotenv import load_dotenv
 from r2 import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists, upload_to_r2, verify_upload
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
@@ -81,7 +80,15 @@ def _append_summary_row(
     append_csv_row(
         summary_path,
         _CSV_COLUMNS,
-        [position, srx, status, input_r2_key, output_r2_key, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error],
+        [
+            position,
+            srx,
+            status,
+            input_r2_key,
+            output_r2_key,
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            error,
+        ],
     )
 
 
@@ -125,7 +132,9 @@ def process_accession(
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run CyteType annotation on clustered h5ads stored under an R2 prefix.")
+    parser = argparse.ArgumentParser(
+        description="Run CyteType annotation on clustered h5ads stored under an R2 prefix."
+    )
     parser.add_argument(
         "--datasets",
         type=Path,
@@ -152,7 +161,7 @@ def _parse_args() -> argparse.Namespace:
         type=str,
         default=f"cytetype_pipeline_{RUN_TIMESTAMP}",
         metavar="PREFIX",
-        help=f"R2 prefix for annotated outputs (default: cytetype_pipeline_{{RUN_TIMESTAMP}})",
+        help="R2 prefix for annotated outputs (default: cytetype_pipeline_{RUN_TIMESTAMP})",
     )
     parser.add_argument(
         "--metadata",
@@ -227,7 +236,12 @@ def main() -> None:
     log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process_accession, srx, input_r2_key, output_r2_key, contexts): (srx, input_r2_key, output_r2_key, position)
+            pool.submit(process_accession, srx, input_r2_key, output_r2_key, contexts): (
+                srx,
+                input_r2_key,
+                output_r2_key,
+                position,
+            )
             for srx, input_r2_key, output_r2_key, position in work_items
         }
         for future in as_completed(futures):

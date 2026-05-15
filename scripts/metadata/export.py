@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pandas as pd
-
 from metadata.config import MetadataConfig
 from metadata.filter import FilterResult
 
@@ -20,10 +18,7 @@ def export_datasets(result: FilterResult, cfg: MetadataConfig) -> tuple[Path, Pa
     quantiles_path = cfg.outputDir / "quantiles_datasets.csv"
     q_values = df["obs_count"].quantile(_QUANTILES)
     quantiles_df = (
-        df[df["obs_count"].isin(q_values)]
-        [["srx_accession", "file_path", "obs_count"]]
-        .sort_values("obs_count")
-        .copy()
+        df[df["obs_count"].isin(q_values)][["srx_accession", "file_path", "obs_count"]].sort_values("obs_count").copy()
     )
     quantiles_df["quantile"] = _QUANTILES
     quantiles_df.to_csv(quantiles_path, index=False)

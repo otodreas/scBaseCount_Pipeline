@@ -4,15 +4,14 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+import scanpy as sc
 from numpy.typing import NDArray
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
-import scanpy as sc
 
 from cluster_validation.config import ClusterValidationConfig
 from cluster_validation.resolution import ResolutionSelection
-
 
 MERGED_CLUSTER_KEY = "leiden_merged"
 
@@ -44,9 +43,7 @@ def merge_clusters(
         weak_prior_labels=weak_prior,
     )
 
-    merged_labels, label_map = _merge_by_confusion(
-        adata.obs[sel.clusterKey].values, conf, classes, cfg.mergeThreshold
-    )
+    merged_labels, label_map = _merge_by_confusion(adata.obs[sel.clusterKey].values, conf, classes, cfg.mergeThreshold)
     adata.obs[MERGED_CLUSTER_KEY] = pd.Categorical(merged_labels)
 
     merged_groups: dict[str, list[str]] = {}
@@ -89,9 +86,7 @@ def _rf_pairwise_confusion(
     oof_preds = np.zeros(len(y), dtype=int)
 
     for train_idx, test_idx in skf.split(X, y):
-        rf = RandomForestClassifier(
-            n_estimators=n_estimators, n_jobs=-1, random_state=random_state
-        )
+        rf = RandomForestClassifier(n_estimators=n_estimators, n_jobs=-1, random_state=random_state)
         if w_full is None:
             rf.fit(X[train_idx], y[train_idx])
         else:

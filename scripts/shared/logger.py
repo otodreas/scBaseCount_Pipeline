@@ -13,7 +13,9 @@ def configure_file_logger(log_filename: str, logger_name: str) -> logging.Logger
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.INFO)
 
-    if not any(isinstance(h, logging.FileHandler) and h.baseFilename == str(log_path.resolve()) for h in logger.handlers):
+    if not any(
+        isinstance(h, logging.FileHandler) and h.baseFilename == str(log_path.resolve()) for h in logger.handlers
+    ):
         handler = logging.FileHandler(log_path, mode="a", encoding="utf-8")
         handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
         logger.addHandler(handler)
@@ -23,7 +25,9 @@ def configure_file_logger(log_filename: str, logger_name: str) -> logging.Logger
 
 def add_stdout_handler() -> None:
     root = logging.getLogger()
-    if not any(isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) is sys.stdout for h in root.handlers):
+    if not any(
+        isinstance(h, logging.StreamHandler) and getattr(h, "stream", None) is sys.stdout for h in root.handlers
+    ):
         root.addHandler(logging.StreamHandler(sys.stdout))
 
 

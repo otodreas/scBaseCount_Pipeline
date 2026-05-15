@@ -20,4 +20,4 @@ def build_payload(adata: sc.AnnData) -> dict:
 
 def write_payload(payload: dict, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(orjson.dumps(payload))#, option=orjson.OPT_SERIALIZE_NUMPY))
+    path.write_bytes(orjson.dumps(payload))  # , option=orjson.OPT_SERIALIZE_NUMPY))

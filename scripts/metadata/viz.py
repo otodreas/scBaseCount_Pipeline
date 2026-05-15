@@ -10,8 +10,14 @@ from metadata.filter import FilterResult
 from metadata.regexes import DISEASE_MAP
 
 _TABLEAU10 = [
-    "#4e79a7", "#f28e2b", "#e15759", "#76b7b2",
-    "#59a14f", "#edc948", "#b07aa1", "#ff9da7",
+    "#4e79a7",
+    "#f28e2b",
+    "#e15759",
+    "#76b7b2",
+    "#59a14f",
+    "#edc948",
+    "#b07aa1",
+    "#ff9da7",
     "#9c755f",
 ]
 
@@ -23,14 +29,14 @@ def plot_sample_breakdown(
 ) -> None:
     figs_dir.mkdir(parents=True, exist_ok=True)
 
-    n_total       = len(sample)
-    n_discarded   = n_total - len(result.sampleKnown)
+    n_total = len(sample)
+    n_discarded = n_total - len(result.sampleKnown)
     n_lung_cancer = len(result.lungIntersectionCancer)
-    n_lung_other  = len(result.lungIntersection) - n_lung_cancer
-    n_not_lung    = len(result.sampleKnown) - len(result.lungIntersection)
+    n_lung_other = len(result.lungIntersection) - n_lung_cancer
+    n_not_lung = len(result.sampleKnown) - len(result.lungIntersection)
 
     labels = ["Discarded\n(unknown/healthy)", "Lung (cancer)", "Lung (other)", "Non-lung"]
-    sizes  = [n_discarded, n_lung_cancer, n_lung_other, n_not_lung]
+    sizes = [n_discarded, n_lung_cancer, n_lung_other, n_not_lung]
     colors = ["#d3d3d3", "#e05c5c", "#f4a261", "#5b8db8"]
 
     fig, ax = plt.subplots(figsize=(7, 7))
@@ -65,10 +71,10 @@ def plot_disease_breakdown(result: FilterResult, figs_dir: Path) -> None:
         return "Other"
 
     disease_cats = result.lungIntersection["disease"].map(_categorize)
-    cat_counts   = disease_cats.value_counts()
-    total_lung   = cat_counts.sum()
+    cat_counts = disease_cats.value_counts()
+    total_lung = cat_counts.sum()
 
-    large     = cat_counts[cat_counts / total_lung >= 0.02]
+    large = cat_counts[cat_counts / total_lung >= 0.02]
     small_sum = total_lung - large.sum()
     if small_sum > 0:
         large = pd.concat([large, pd.Series({"Other": small_sum})])
@@ -108,15 +114,12 @@ def plot_disease_breakdown(result: FilterResult, figs_dir: Path) -> None:
 def plot_cell_count_distribution(result: FilterResult, figs_dir: Path) -> None:
     figs_dir.mkdir(parents=True, exist_ok=True)
 
-    counts  = result.lungIntersection["obs_count"]
-    n_srx   = len(counts)
+    counts = result.lungIntersection["obs_count"]
+    n_srx = len(counts)
     n_cells = int(np.sum(counts))
 
     plt.hist(counts / 1000, log=True)
-    plt.title(
-        f"Distribution of Number of Cells per Lung SRX (log scale)\n"
-        f"(n={n_cells:,} cells across {n_srx:,} SRX)"
-    )
+    plt.title(f"Distribution of Number of Cells per Lung SRX (log scale)\n(n={n_cells:,} cells across {n_srx:,} SRX)")
     plt.xlabel("Number of Cells per SRX (thousands)")
     plt.ylabel("Frequency")
     plt.tight_layout()

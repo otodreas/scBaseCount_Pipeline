@@ -6,9 +6,9 @@ from pathlib import Path
 import orjson
 import scanpy as sc
 from cytetype import CyteType, rank_genes_groups_backed
-
-from cytetype_runner.config import CyteTypeRunnerConfig, N_TOP_GENES
 from shared.logger import configure_file_logger
+
+from cytetype_runner.config import N_TOP_GENES, CyteTypeRunnerConfig
 
 _log = configure_file_logger("cytetype_runner.log", __name__)
 

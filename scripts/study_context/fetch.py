@@ -7,12 +7,11 @@ import re
 import time
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 
 import httpx
+from shared.logger import configure_file_logger
 
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
-from shared.logger import configure_file_logger
 
 NCBI_EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 PORTAL_BASE = "https://www.ebi.ac.uk/ena/portal/api"
@@ -21,7 +20,6 @@ BROWSER_BASE = "https://www.ebi.ac.uk/ena/browser/api"
 _log = configure_file_logger("study_context.log", __name__)
 
 _http = httpx.Client(timeout=30.0, follow_redirects=True)
-
 
 
 def _http_get(url: str, *, retries: int = 3) -> str:
@@ -34,7 +32,7 @@ def _http_get(url: str, *, retries: int = 3) -> str:
         except Exception as exc:
             last_exc = exc
             if attempt < retries:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
     raise RuntimeError(f"HTTP GET failed for {url!r}: {last_exc}")
 
 
@@ -67,10 +65,7 @@ def _fetch_pubmed_abstract(pmids: list[str], warnings: list[str]) -> str | None:
     _log.info("Fetching PubMed abstracts for PMIDs: %s", pmids)
     api_key = os.environ.get("NCBI_API_KEY", "")
     key_param = f"&api_key={api_key}" if api_key else ""
-    url = (
-        f"{NCBI_EUTILS_BASE}/efetch.fcgi"
-        f"?db=pubmed&id={','.join(pmids)}&rettype=xml&retmode=xml{key_param}"
-    )
+    url = f"{NCBI_EUTILS_BASE}/efetch.fcgi?db=pubmed&id={','.join(pmids)}&rettype=xml&retmode=xml{key_param}"
     try:
         xml_text = _http_get(url)
         root = ET.fromstring(xml_text)
@@ -85,10 +80,7 @@ def _fetch_pubmed_abstract(pmids: list[str], warnings: list[str]) -> str | None:
 
 
 def _fetch_study_context(study_accession: str, warnings: list[str]) -> StudyContext | None:
-    url = (
-        f"{PORTAL_BASE}/filereport"
-        f"?accession={study_accession}&result=study&fields=all&format=json"
-    )
+    url = f"{PORTAL_BASE}/filereport?accession={study_accession}&result=study&fields=all&format=json"
     try:
         raw = _http_get(url)
         records: list[dict[str, str]] = json.loads(raw)
@@ -119,10 +111,7 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
     _log.info("Fetching experiment context for accession: %s", accession)
     warnings: list[str] = []
 
-    url = (
-        f"{PORTAL_BASE}/filereport"
-        f"?accession={accession}&result=read_experiment&fields=all&format=json"
-    )
+    url = f"{PORTAL_BASE}/filereport?accession={accession}&result=read_experiment&fields=all&format=json"
     try:
         raw = _http_get(url)
         records: list[dict[str, str]] = json.loads(raw)
@@ -162,21 +151,13 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
     study_accession = _str(first.get("study_accession"))
 
     with ThreadPoolExecutor(max_workers=2) as pool:
-        xml_fut = (
-            pool.submit(_http_get, f"{BROWSER_BASE}/xml/{sample_accession}")
-            if sample_accession else None
-        )
-        study_fut = (
-            pool.submit(_fetch_study_context, study_accession, warnings)
-            if study_accession else None
-        )
+        xml_fut = pool.submit(_http_get, f"{BROWSER_BASE}/xml/{sample_accession}") if sample_accession else None
+        study_fut = pool.submit(_fetch_study_context, study_accession, warnings) if study_accession else None
 
         if xml_fut is not None:
             try:
                 xml_text = xml_fut.result()
-                biological = biological.model_copy(
-                    update={"sampleAttributes": _parse_sample_attributes(xml_text)}
-                )
+                biological = biological.model_copy(update={"sampleAttributes": _parse_sample_attributes(xml_text)})
             except Exception as exc:
                 warnings.append(f"sample_xml_failed:{exc}")
 
