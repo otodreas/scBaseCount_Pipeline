@@ -94,7 +94,7 @@ def _rf_pairwise_confusion(
         oof_preds[test_idx] = rf.predict(X[test_idx])
 
     conf = np.zeros((n_classes, n_classes))
-    for true, pred in zip(y, oof_preds):
+    for true, pred in zip(y, oof_preds, strict=True):
         conf[true, pred] += 1
     row_sums = conf.sum(axis=1, keepdims=True)
     conf = conf / np.where(row_sums == 0, 1, row_sums)

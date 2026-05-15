@@ -40,7 +40,7 @@ def select_resolution(
         ct_idx = {t: j for j, t in enumerate(celltypes)}
 
         C = np.zeros((k, m), dtype=np.float64)
-        for cl, ct in zip(leiden_labels, ref_labels):
+        for cl, ct in zip(leiden_labels, ref_labels, strict=True):
             C[cl_idx[cl], ct_idx[ct]] += 1
 
         cl_sizes = C.sum(axis=1)

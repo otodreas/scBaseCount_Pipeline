@@ -27,9 +27,9 @@ def plot_pca_cumvar(
     figs_dir: Path | None = None,
 ) -> plt.Figure:
     var_ratio = adata.uns["pca"]["variance_ratio"]
-    n_pcs_min = result.nPcs  # floor used
+    # n_pcs_min = result.nPcs  # floor used
     n_pcs = result.nPcs
-    cumvar_target = adata.uns.get("_cv_cumvar_target", None)
+    # cumvar_target = adata.uns.get("_cv_cumvar_target", None)
 
     fig, ax = plt.subplots()
     ax.set_title(f"Cumulative Variance by PCs\nDataset: {result.datasetTitleSuffix}\n{_now()}")
