@@ -31,6 +31,10 @@ DailyNotes.md
 .cursor/
 # .vscode/
 
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+
 # Symlinks
 cluster_validation_sandbox/datasets_summary
 
