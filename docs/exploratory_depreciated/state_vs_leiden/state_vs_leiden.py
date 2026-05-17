@@ -1,4 +1,5 @@
-#%% [markdown]
+# ruff: noqa: E402, B018
+# %% [markdown]
 # # Cluster stats
 #
 # The purpose of this notebook is to analyze `STATE x leiden cluster` matrices for each accession.
@@ -10,7 +11,7 @@
 #
 # ## Imports
 
-#%%
+# %%
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -22,10 +23,10 @@ from scipy import stats
 FIGS_DIR = Path(__file__).parent / ".figs"
 FIGS_DIR.mkdir(exist_ok=True)
 
-#%% [markdown]
+# %% [markdown]
 # ## Construct `xarray.DataArray` object
 
-#%%
+# %%
 import json
 
 from shared.repo import REPO_ROOT
@@ -58,13 +59,14 @@ da = xr.DataArray(
 
 da
 
-#%% [markdown]
+# %% [markdown]
 # ## Stats
 # ### Compute metrics across leiden clusters
 # - Shannon entropy
 # - Normalized Shannon entropy = `Shannon entropy / log(n_states)`
 
-#%%
+
+# %%
 def _shannon_entropy(counts, dim):
     """Shannon entropy (bits) of a counts DataArray along `dim`."""
     totals = counts.sum(dim)
@@ -103,10 +105,10 @@ ds["n_cells_STATE"] = ds["cell_count"].sum(dim="leiden_cluster")
 ds["nse_leiden"] = _normalized_entropy(ds["cell_count"], dim="STATE")
 ds["nse_STATE"] = _normalized_entropy(ds["cell_count"], dim="leiden_cluster")
 
-#%% [markdown]
+# %% [markdown]
 # ### Confirm that the distribution of leiden cluster sizes is lognormal
 
-#%%
+# %%
 cluster_sizes = ds.n_cells_leiden.stack(point=("accession", "leiden_cluster"))
 cluster_sizes = cluster_sizes.where(cluster_sizes > 0).dropna(dim="point")
 
@@ -139,13 +141,13 @@ ax_qq.get_lines()[0].set_alpha(0.5)
 fig.savefig(FIGS_DIR / "cluster_size_lognormal_fit.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## Plotting
 #
 # ### Distribution of entropy of leiden clusters across cluster size bins
 # ANOVA on bin means reported
 
-#%%
+# %%
 paired = (
     xr.Dataset(
         {
@@ -180,7 +182,7 @@ for idx, interval in enumerate(bins.categories):
     groups.append(sub)
     labels.append(f"[{interval.left:.1f}, {interval.right:.1f}]n={mask.sum():d}")
 
-for idx, (sub, interval) in enumerate(zip(groups, bins.categories)):
+for idx, (sub, interval) in enumerate(zip(groups, bins.categories, strict=True)):
     if sub.size < 2:
         continue
     kde = stats.gaussian_kde(sub)
@@ -205,14 +207,14 @@ print(f"one-way ANOVA: F = {f_stat:.4f},  p = {p_anova:.3e}")
 fig.savefig(FIGS_DIR / "nse_leiden_kde_by_size_quartile.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ### Normalized Shannon entropy vs cluster size
 #
 # Notice how dense the points at NSE=0 are. This tells us that lots of leiden clusters contain only one STATE label.
 #
 # Linear regressor is plotted, along with a LOWESS regressor to get a sense for any potential non-linearity in the data.
 
-#%%
+# %%
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 panels = [
@@ -236,7 +238,7 @@ panels = [
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5.5), layout="constrained")
 
-for ax, p in zip(axes, panels):
+for ax, p in zip(axes, panels, strict=True):
     paired = xr.Dataset({"nse": p["nse"], "n_cells": p["n_cells"]}).stack(point=p["stack_dims"]).dropna(dim="point")
     paired = paired.where(paired["n_cells"] > 0, drop=True)
 
@@ -279,7 +281,7 @@ fig.suptitle("Does group size drive NSE?", fontsize=13)
 fig.savefig(FIGS_DIR / "nse_vs_size_hexbin.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-#%%
+# %%
 bin_names = ["low", "mid", "high"]
 
 nse_vals = ds.nse_leiden.values
@@ -302,7 +304,7 @@ palette = ["#2166ac", "#f4a582", "#b2182b"]
 
 fig, ax = plt.subplots(figsize=(6, 4), layout="constrained")
 
-for bin_idx, (name, color) in enumerate(zip(bin_names, palette)):
+for bin_idx, (name, color) in enumerate(zip(bin_names, palette, strict=True)):
     vals = ds[f"nse_STATE_{name}"].values.ravel()
     vals = vals[np.isfinite(vals)]
     n_clusters = int((ds.nse_leiden_bin == bin_idx).sum().item())
@@ -319,7 +321,7 @@ ax.legend(fontsize="small")
 
 fig.savefig(FIGS_DIR / "nse_state_kde_by_nse_leiden_bin.png", dpi=150, bbox_inches="tight")
 
-#%% [markdown]
+# %% [markdown]
 # ### Cell-weighted mean cluster NSE per STATE
 #
 # Leiden cluster labels are not aligned across accessions (cluster 3 in accession A is unrelated to
@@ -338,7 +340,7 @@ fig.savefig(FIGS_DIR / "nse_state_kde_by_nse_leiden_bin.png", dpi=150, bbox_inch
 # A low score means the cell type consistently ends up in clusters dominated by a single STATE. A
 # high score means it tends to appear in clusters shared across many STATE labels.
 
-#%%
+# %%
 counts = ds.cell_count.values  # (accession, STATE, leiden_cluster)
 nse = ds.nse_leiden.values  # (accession, leiden_cluster)
 accessions = ds.accession.values
@@ -367,13 +369,13 @@ df_per_acc = pd.DataFrame(per_acc)
 df_wmean = df_per_acc.groupby("STATE")["wmNSE"].median().reset_index().sort_values("wmNSE")
 df_wmean
 
-#%%
+# %%
 ds
 
-#%% [markdown]
+# %% [markdown]
 # ## V2: compute NSE by STATE by each quartile of leiden cluster NSE
 
-#%%
+# %%
 nse_vals = ds.nse_leiden.values
 flat = nse_vals.ravel()
 valid_mask = np.isfinite(flat)
@@ -385,7 +387,7 @@ bin_codes = xr.DataArray(
     dims=ds.nse_leiden.dims,
 )
 
-#%%
+# %%
 bin_names = ["low", "mid", "high"]
 palette = ["#2166ac", "#f4a582", "#b2182b"]
 
@@ -425,7 +427,7 @@ fig, (ax_cell, ax_clu) = plt.subplots(
 y_base = np.arange(n_states)
 
 left = np.zeros(n_states)
-for name, color in zip(bin_names, palette):
+for name, color in zip(bin_names, palette, strict=True):
     ax_cell.barh(y_base, cell_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4, label=name)
     left += cell_share[name].values
 ax_cell.set_xlim(0, 1)
@@ -434,7 +436,7 @@ ax_cell.set_title("Cell mass across NSE tertiles")
 ax_cell.legend(fontsize="small", loc="lower right", title="NSE bin")
 
 left = np.zeros(n_states)
-for name, color in zip(bin_names, palette):
+for name, color in zip(bin_names, palette, strict=True):
     ax_clu.barh(y_base, cluster_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4)
     left += cluster_share[name].values
 ax_clu.set_xlim(0, 1)
@@ -449,14 +451,14 @@ fig.suptitle("STATE behavior across leiden-cluster NSE tertiles", fontsize=12)
 fig.savefig(FIGS_DIR / "state_behavior_across_nse_tertiles.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ### Distribution of `nse_STATE` per STATE across accessions
 #
 # For each STATE, `nse_STATE` measures how spread that STATE is across leiden clusters within a
 # single accession. Plotting one point per accession gives the distribution; the violin shows
 # shape, the strip shows individual accessions.
 
-#%%
+# %%
 import seaborn as sns
 
 cell_category = {
@@ -528,7 +530,7 @@ fig.suptitle("Normalized Shannon entropy (NSE) by STATE")
 fig.savefig(FIGS_DIR / "nse_state_by_state_boxplots.png", dpi=150, bbox_inches="tight")
 plt.tight_layout()
 
-#%%
+# %%
 state = "plasma cell"
 
 state_counts = ds.n_cells_STATE.sel(STATE=state).to_pandas()
@@ -536,7 +538,7 @@ accessions = state_counts[state_counts > 0].sort_values(ascending=False)
 print(f"{len(accessions)} accessions contain {state}")
 accessions.to_frame(name="n_cells")
 
-#%%
+# %%
 accession = accessions.index[70]
 
 mat = ds.cell_count.sel(accession=accession).to_pandas()

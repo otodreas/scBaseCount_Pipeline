@@ -10,26 +10,24 @@ Analysis script: [state_vs_leiden.py](state_vs_leiden.py).
 
 Lognormal fit of leiden cluster sizes pooled across accessions, plus the KS goodness-of-fit statistic.
 
-![](.figs/cluster_size_lognormal_fit.png)
+<img src=".figs/cluster_size_lognormal_fit.png" width="600"/>
 
 KDE of STATE-mixing NSE within each cluster, split by log2(cluster size) quartile, with a one-way ANOVA across quartiles.
 
-![](.figs/nse_leiden_kde_by_size_quartile.png)
+<img src=".figs/nse_leiden_kde_by_size_quartile.png" width="500"/>
 
 NSE against log2(group size) for STATEs (left) and leiden clusters (right) with linear and LOWESS fits and Spearman rho.
 
-![](.figs/nse_vs_size_hexbin.png)
+<img src=".figs/nse_vs_size_hexbin.png" width="700"/>
 
 Distribution of `nse_STATE` conditioned on the NSE tertile of the leiden cluster it appears in.
 
-<!-- ![](.figs/nse_state_kde_by_nse_leiden_bin.png)
+<!-- <img src=".figs/nse_state_kde_by_nse_leiden_bin.png" width="500"/>
 
 Per-STATE share of cells and clusters that fall in low, mid, and high NSE leiden tertiles. STATEs sorted by share of cells in the low tertile. -->
 
-<!-- ![](.figs/state_behavior_across_nse_tertiles.png)
+<!-- <img src=".figs/state_behavior_across_nse_tertiles.png" width="700"/>
 
 Per-STATE distribution of `nse_STATE` across accessions, sorted by median (top) and variance (bottom), colored by cell category. -->
 
-![](.figs/nse_state_by_state_boxplots.png)
-
-The figures are not committed. Run `state_vs_leiden.py` (cell by cell or top to bottom) to populate `.figs/`.
+<img src=".figs/nse_state_by_state_boxplots.png" width="600"/>
