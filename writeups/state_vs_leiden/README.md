@@ -1,6 +1,6 @@
 # STATE vs leiden disagreement
 
-Exploratory analysis on `STATE x leiden_cluster` matrices produced by [`pipelines/cluster_stats.py`](../../../pipelines/cluster_stats.py), run `cluster_stats/clustered_20260509`. Source matrices live in [`output/cluster_stats/clustered_20260509/cluster_stats.json`](../../../output/cluster_stats/clustered_20260509/cluster_stats.json).
+Exploratory analysis on `STATE x leiden_cluster` matrices produced by [`pipelines/cluster_stats.py`](../../pipelines/cluster_stats.py), run `cluster_stats/clustered_20260509`. Source matrices live in [`output/cluster_stats/clustered_20260509/cluster_stats.json`](../../output/cluster_stats/clustered_20260509/cluster_stats.json).
 
 Leiden clusters from the clustering pipeline are passed to CyteType for annotation. STATE labels are treated as weak priors. The goal here is to flag cell types whose STATE labels overlap poorly with leiden clusters, since those are the ones most likely to disagree with CyteType.
 
