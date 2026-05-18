@@ -1,4 +1,4 @@
- # ruff: noqa: E402, B018
+# ruff: noqa: E402, B018
 # %% [markdown]
 # # Cluster stats
 #
