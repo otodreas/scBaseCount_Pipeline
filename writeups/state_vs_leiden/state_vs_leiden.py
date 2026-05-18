@@ -1,4 +1,4 @@
-# ruff: noqa: E402, B018
+ # ruff: noqa: E402, B018
 # %% [markdown]
 # # Cluster stats
 #
@@ -223,16 +223,16 @@ panels = [
         "n_cells": ds.n_cells_STATE,
         "stack_dims": ("accession", "STATE"),
         "title": "Per (accession, STATE)",
-        "xlabel": "nse_STATE  (spread of a STATE across leiden clusters)",
-        "ylabel": "log2(n_cells_STATE)",
+        "ylabel": "nse_STATE  (spread of a STATE across leiden clusters)",
+        "xlabel": "log2(n_cells_STATE)",
     },
     {
         "nse": ds.nse_leiden,
         "n_cells": ds.n_cells_leiden,
         "stack_dims": ("accession", "leiden_cluster"),
         "title": "Per (accession, leiden_cluster)",
-        "xlabel": "nse_leiden  (mixing of STATEs in a leiden cluster)",
-        "ylabel": "log2(n_cells_leiden)",
+        "ylabel": "nse_leiden  (mixing of STATEs in a leiden cluster)",
+        "xlabel": "log2(n_cells_leiden)",
     },
 ]
 
@@ -242,8 +242,8 @@ for ax, p in zip(axes, panels, strict=True):
     paired = xr.Dataset({"nse": p["nse"], "n_cells": p["n_cells"]}).stack(point=p["stack_dims"]).dropna(dim="point")
     paired = paired.where(paired["n_cells"] > 0, drop=True)
 
-    x = paired["nse"].values
-    y = np.log2(paired["n_cells"].values.astype(float))
+    x = np.log2(paired["n_cells"].values.astype(float))
+    y = paired["nse"].values
 
     ax.hexbin(x, y, gridsize=60, cmap="Greys", mincnt=1)
 
