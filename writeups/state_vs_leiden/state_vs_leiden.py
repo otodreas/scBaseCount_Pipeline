@@ -386,75 +386,6 @@ df_wmean
 
 # %%
 ds
-
-# %% [markdown]
-# ## STATE behavior across leiden-cluster nse_leiden quartiles
-
-# %%
-bin_names = ["q1", "q2", "q3", "q4"]
-quartile_labels = ["0–25%", "25–50%", "50–75%", "75–100%"]
-palette = ["#6a3d9a", "#e31a1c", "#ff7f00", "#ffd400"]
-
-cell_mass_per_bin = []
-for bin_idx in range(len(bin_names)):
-    mask = ds.nse_leiden_bin == bin_idx
-    cells_in_bin = ds.cell_count.where(mask, 0).sum(dim=("accession", "leiden_cluster"))
-    cell_mass_per_bin.append(cells_in_bin)
-cell_mass = xr.concat(cell_mass_per_bin, dim=pd.Index(bin_names, name="bin"))
-total_cells_per_state = ds.cell_count.sum(dim=("accession", "leiden_cluster"))
-cell_share = (cell_mass / total_cells_per_state).fillna(0).to_pandas().T
-
-has_state = ds.cell_count > 0
-clusters_per_bin = []
-for bin_idx in range(len(bin_names)):
-    mask = ds.nse_leiden_bin == bin_idx
-    present_in_bin = (has_state & mask).sum(dim=("accession", "leiden_cluster"))
-    clusters_per_bin.append(present_in_bin)
-cluster_counts = xr.concat(clusters_per_bin, dim=pd.Index(bin_names, name="bin"))
-total_clusters_per_state = has_state.sum(dim=("accession", "leiden_cluster"))
-cluster_share = (cluster_counts / total_clusters_per_state).fillna(0).to_pandas().T
-
-cell_share = cell_share.loc[cell_share.index.intersection(KEPT_STATES)]
-cluster_share = cluster_share.loc[cluster_share.index.intersection(KEPT_STATES)]
-state_order = cell_share.sort_values(bin_names[0], ascending=False).index.tolist()
-cell_share = cell_share.loc[state_order]
-cluster_share = cluster_share.loc[state_order]
-
-n_states = len(state_order)
-fig, (ax_cell, ax_clu) = plt.subplots(
-    1,
-    2,
-    figsize=(11, max(6, n_states * 0.35)),
-    layout="constrained",
-    sharey=True,
-)
-y_base = np.arange(n_states)
-
-left = np.zeros(n_states)
-for name, label, color in zip(bin_names, quartile_labels, palette, strict=True):
-    ax_cell.barh(y_base, cell_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4, label=label)
-    left += cell_share[name].values
-ax_cell.set_xlim(0, 1)
-ax_cell.set_xlabel("Fraction of STATE's cells")
-ax_cell.set_title("Cell mass across nse_leiden quartiles")
-ax_cell.legend(fontsize="small", loc="lower right", title="Quartile of\ncluster nse_leiden")
-
-left = np.zeros(n_states)
-for name, color in zip(bin_names, palette, strict=True):
-    ax_clu.barh(y_base, cluster_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4)
-    left += cluster_share[name].values
-ax_clu.set_xlim(0, 1)
-ax_clu.set_xlabel("Fraction of clusters containing STATE")
-ax_clu.set_title("Cluster presence across nse_leiden quartiles")
-
-ax_cell.set_yticks(y_base)
-ax_cell.set_yticklabels(state_order, fontsize=8)
-ax_cell.invert_yaxis()
-
-fig.suptitle("STATE behavior across leiden-cluster nse_leiden quartiles", fontsize=12)
-fig.savefig(FIGS_DIR / "state_behavior_across_nse_quartiles.png", dpi=150, bbox_inches="tight")
-plt.show()
-
 # %% [markdown]
 # ### Distribution of `nse_STATE` per STATE across accessions
 #
@@ -532,6 +463,75 @@ fig.suptitle("Normalized Shannon entropy (NSE) by STATE")
 
 fig.savefig(FIGS_DIR / "nse_state_by_state_boxplots.png", dpi=150, bbox_inches="tight")
 plt.tight_layout()
+
+# %% [markdown]
+# ## STATE behavior across leiden-cluster nse_leiden quartiles
+
+# %%
+bin_names = ["q1", "q2", "q3", "q4"]
+quartile_labels = ["0–25%", "25–50%", "50–75%", "75–100%"]
+palette = ["#6a3d9a", "#e31a1c", "#ff7f00", "#ffd400"]
+
+cell_mass_per_bin = []
+for bin_idx in range(len(bin_names)):
+    mask = ds.nse_leiden_bin == bin_idx
+    cells_in_bin = ds.cell_count.where(mask, 0).sum(dim=("accession", "leiden_cluster"))
+    cell_mass_per_bin.append(cells_in_bin)
+cell_mass = xr.concat(cell_mass_per_bin, dim=pd.Index(bin_names, name="bin"))
+total_cells_per_state = ds.cell_count.sum(dim=("accession", "leiden_cluster"))
+cell_share = (cell_mass / total_cells_per_state).fillna(0).to_pandas().T
+
+has_state = ds.cell_count > 0
+clusters_per_bin = []
+for bin_idx in range(len(bin_names)):
+    mask = ds.nse_leiden_bin == bin_idx
+    present_in_bin = (has_state & mask).sum(dim=("accession", "leiden_cluster"))
+    clusters_per_bin.append(present_in_bin)
+cluster_counts = xr.concat(clusters_per_bin, dim=pd.Index(bin_names, name="bin"))
+total_clusters_per_state = has_state.sum(dim=("accession", "leiden_cluster"))
+cluster_share = (cluster_counts / total_clusters_per_state).fillna(0).to_pandas().T
+
+cell_share = cell_share.loc[cell_share.index.intersection(KEPT_STATES)]
+cluster_share = cluster_share.loc[cluster_share.index.intersection(KEPT_STATES)]
+state_order = [s for s in order_median if s in cell_share.index]
+cell_share = cell_share.loc[state_order]
+cluster_share = cluster_share.loc[state_order]
+
+n_states = len(state_order)
+fig, (ax_cell, ax_clu) = plt.subplots(
+    1,
+    2,
+    figsize=(11, max(6, n_states * 0.35)),
+    layout="constrained",
+    sharey=True,
+)
+y_base = np.arange(n_states)
+
+left = np.zeros(n_states)
+for name, label, color in zip(bin_names, quartile_labels, palette, strict=True):
+    ax_cell.barh(y_base, cell_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4, label=label)
+    left += cell_share[name].values
+ax_cell.set_xlim(0, 1)
+ax_cell.set_xlabel("Fraction of STATE's cells")
+ax_cell.set_title("Cell mass across nse_leiden quartiles")
+ax_cell.legend(fontsize="small", loc="lower right", title="Quartile of\ncluster nse_leiden")
+
+left = np.zeros(n_states)
+for name, color in zip(bin_names, palette, strict=True):
+    ax_clu.barh(y_base, cluster_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4)
+    left += cluster_share[name].values
+ax_clu.set_xlim(0, 1)
+ax_clu.set_xlabel("Fraction of clusters containing STATE")
+ax_clu.set_title("Cluster presence across nse_leiden quartiles")
+
+ax_cell.set_yticks(y_base)
+ax_cell.set_yticklabels(state_order, fontsize=8)
+ax_cell.invert_yaxis()
+
+fig.suptitle("STATE behavior across leiden-cluster nse_leiden quartiles", fontsize=12)
+fig.savefig(FIGS_DIR / "state_behavior_across_nse_quartiles.png", dpi=150, bbox_inches="tight")
+plt.show()
+
 
 # %%
 state = "plasma cell"
