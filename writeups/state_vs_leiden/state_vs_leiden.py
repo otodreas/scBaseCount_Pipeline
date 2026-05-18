@@ -105,6 +105,21 @@ ds["n_cells_STATE"] = ds["cell_count"].sum(dim="leiden_cluster")
 ds["nse_leiden"] = _normalized_entropy(ds["cell_count"], dim="STATE")
 ds["nse_STATE"] = _normalized_entropy(ds["cell_count"], dim="leiden_cluster")
 
+# %%
+MIN_ACCESSIONS_PER_STATE = 7
+
+_state_accession_count = ds.nse_STATE.notnull().sum(dim="accession")
+KEPT_STATES = [
+    str(s)
+    for s, n in zip(
+        ds.STATE.values,
+        _state_accession_count.values,
+        strict=True,
+    )
+    if s != "" and n >= MIN_ACCESSIONS_PER_STATE
+]
+print(f"Kept {len(KEPT_STATES)} STATEs with >= {MIN_ACCESSIONS_PER_STATE} non-empty accessions")
+
 # %% [markdown]
 # ### Confirm that the distribution of leiden cluster sizes is lognormal
 
@@ -282,7 +297,9 @@ fig.savefig(FIGS_DIR / "nse_vs_size_hexbin.png", dpi=150, bbox_inches="tight")
 plt.show()
 
 # %%
-bin_names = ["low", "mid", "high"]
+bin_names = ["q1", "q2", "q3", "q4"]
+quartile_labels = ["0–25%", "25–50%", "50–75%", "75–100%"]
+palette = ["#6a3d9a", "#e31a1c", "#ff7f00", "#ffd400"]
 
 nse_vals = ds.nse_leiden.values
 flat = nse_vals.ravel()
@@ -300,26 +317,24 @@ for bin_idx, name in enumerate(bin_names):
     masked_counts = ds.cell_count.where(mask, 0)
     ds[f"nse_STATE_{name}"] = _normalized_entropy(masked_counts, dim="leiden_cluster")
 
-palette = ["#2166ac", "#f4a582", "#b2182b"]
-
 fig, ax = plt.subplots(figsize=(6, 4), layout="constrained")
 
-for bin_idx, (name, color) in enumerate(zip(bin_names, palette, strict=True)):
-    vals = ds[f"nse_STATE_{name}"].values.ravel()
+for name, label, color in zip(bin_names, quartile_labels, palette, strict=True):
+    vals = ds[f"nse_STATE_{name}"].sel(STATE=KEPT_STATES).values.ravel()
     vals = vals[np.isfinite(vals)]
-    n_clusters = int((ds.nse_leiden_bin == bin_idx).sum().item())
     if vals.size < 2:
         continue
     kde = stats.gaussian_kde(vals)
     xx = np.linspace(0, 1, 300)
-    ax.plot(xx, kde(xx), color=color, lw=2, label=f"{name} NSE clusters (n={n_clusters:,})")
+    ax.plot(xx, kde(xx), color=color, lw=2, label=f"{label}  (n={vals.size:,})")
 
-ax.set_xlabel("nse_STATE (conditioned on cluster NSE bin)")
+ax.set_xlabel("nse_STATE (conditioned on cluster nse_leiden quartile)")
 ax.set_ylabel("density")
-ax.set_title("Distribution of STATE spread across leiden clusters,\ngrouped by cluster state-mixing level")
-ax.legend(fontsize="small")
+ax.set_title("Distribution of nse_STATE\ngrouped by cluster nse_leiden quartile")
+ax.legend(fontsize="small", title="Quartile of\ncluster nse_leiden")
 
-fig.savefig(FIGS_DIR / "nse_state_kde_by_nse_leiden_bin.png", dpi=150, bbox_inches="tight")
+fig.savefig(FIGS_DIR / "nse_state_kde_by_nse_leiden_quartile.png", dpi=150, bbox_inches="tight")
+plt.show()
 
 # %% [markdown]
 # ### Cell-weighted mean cluster NSE per STATE
@@ -373,23 +388,12 @@ df_wmean
 ds
 
 # %% [markdown]
-# ## V2: compute NSE by STATE by each quartile of leiden cluster NSE
+# ## STATE behavior across leiden-cluster nse_leiden quartiles
 
 # %%
-nse_vals = ds.nse_leiden.values
-flat = nse_vals.ravel()
-valid_mask = np.isfinite(flat)
-codes = np.full(flat.shape, -1, dtype=int)
-codes[valid_mask] = pd.qcut(flat[valid_mask], q=3, labels=False)
-bin_codes = xr.DataArray(
-    codes.reshape(nse_vals.shape),
-    coords=ds.nse_leiden.coords,
-    dims=ds.nse_leiden.dims,
-)
-
-# %%
-bin_names = ["low", "mid", "high"]
-palette = ["#2166ac", "#f4a582", "#b2182b"]
+bin_names = ["q1", "q2", "q3", "q4"]
+quartile_labels = ["0–25%", "25–50%", "50–75%", "75–100%"]
+palette = ["#6a3d9a", "#e31a1c", "#ff7f00", "#ffd400"]
 
 cell_mass_per_bin = []
 for bin_idx in range(len(bin_names)):
@@ -410,9 +414,9 @@ cluster_counts = xr.concat(clusters_per_bin, dim=pd.Index(bin_names, name="bin")
 total_clusters_per_state = has_state.sum(dim=("accession", "leiden_cluster"))
 cluster_share = (cluster_counts / total_clusters_per_state).fillna(0).to_pandas().T
 
-cell_share = cell_share.loc[cell_share.index != ""]
-cluster_share = cluster_share.loc[cluster_share.index != ""]
-state_order = cell_share.sort_values("low", ascending=False).index.tolist()
+cell_share = cell_share.loc[cell_share.index.intersection(KEPT_STATES)]
+cluster_share = cluster_share.loc[cluster_share.index.intersection(KEPT_STATES)]
+state_order = cell_share.sort_values(bin_names[0], ascending=False).index.tolist()
 cell_share = cell_share.loc[state_order]
 cluster_share = cluster_share.loc[state_order]
 
@@ -427,13 +431,13 @@ fig, (ax_cell, ax_clu) = plt.subplots(
 y_base = np.arange(n_states)
 
 left = np.zeros(n_states)
-for name, color in zip(bin_names, palette, strict=True):
-    ax_cell.barh(y_base, cell_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4, label=name)
+for name, label, color in zip(bin_names, quartile_labels, palette, strict=True):
+    ax_cell.barh(y_base, cell_share[name].values, left=left, color=color, edgecolor="white", linewidth=0.4, label=label)
     left += cell_share[name].values
 ax_cell.set_xlim(0, 1)
 ax_cell.set_xlabel("Fraction of STATE's cells")
-ax_cell.set_title("Cell mass across NSE tertiles")
-ax_cell.legend(fontsize="small", loc="lower right", title="NSE bin")
+ax_cell.set_title("Cell mass across nse_leiden quartiles")
+ax_cell.legend(fontsize="small", loc="lower right", title="Quartile of\ncluster nse_leiden")
 
 left = np.zeros(n_states)
 for name, color in zip(bin_names, palette, strict=True):
@@ -441,14 +445,14 @@ for name, color in zip(bin_names, palette, strict=True):
     left += cluster_share[name].values
 ax_clu.set_xlim(0, 1)
 ax_clu.set_xlabel("Fraction of clusters containing STATE")
-ax_clu.set_title("Cluster presence across NSE tertiles")
+ax_clu.set_title("Cluster presence across nse_leiden quartiles")
 
 ax_cell.set_yticks(y_base)
 ax_cell.set_yticklabels(state_order, fontsize=8)
 ax_cell.invert_yaxis()
 
-fig.suptitle("STATE behavior across leiden-cluster NSE tertiles", fontsize=12)
-fig.savefig(FIGS_DIR / "state_behavior_across_nse_tertiles.png", dpi=150, bbox_inches="tight")
+fig.suptitle("STATE behavior across leiden-cluster nse_leiden quartiles", fontsize=12)
+fig.savefig(FIGS_DIR / "state_behavior_across_nse_quartiles.png", dpi=150, bbox_inches="tight")
 plt.show()
 
 # %% [markdown]
@@ -503,8 +507,7 @@ cell_category = {
 }
 
 data = pd.melt(ds.nse_STATE.to_pandas(), value_name="NSE").dropna()
-data = data[data["STATE"] != ""]
-data = data.groupby("STATE").filter(lambda g: len(g) >= 7)
+data = data[data["STATE"].isin(KEPT_STATES)]
 order_median = data.groupby("STATE").median().sort_values(by="NSE").index.tolist()
 order_var = data.groupby("STATE").var().sort_values(by="NSE").index.tolist()
 data["Cell category"] = data["STATE"].map(cell_category)
