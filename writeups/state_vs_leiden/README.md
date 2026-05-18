@@ -53,3 +53,10 @@ The three figures together provide that characterization:
 - Figure 3, ordered to match the top panel of Figure 2, shows where the cells of each STATE land along the `nse_leiden` axis. The absence of a vertical gradient confirms that being concentrated (low `nse_STATE`) does not imply being in clean clusters (low `nse_leiden`); the two entropies have to be checked together.
 
 In practice, the two entropies are intended to be consulted side by side when interpreting a CyteType label. If a STATE has low `nse_STATE` (Figure 2) and most of its cells fall in q1 clusters (Figure 3), CyteType is working with a Leiden cluster that is similar to the STATE prior. If either condition fails, CyteType is working with a noisier signal for that STATE, and the resulting label should be read as an independent opinion rather than as a contradicted ground truth.
+
+TODO: conclusion independent of CyteType. the biggest unknown is how do you decide the clust resolution. here we want to see 
+
+note caveats like  put leave interpretation on the x axis
+
+hand draw what we could have seen, and if so, what could we expect to see? x axis of KDE
+
