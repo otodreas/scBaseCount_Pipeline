@@ -1,6 +1,6 @@
 # STATE vs Leiden disagreement
 
-Exploratory analysis on `STATE x leiden_cluster` matrices produced by `[pipelines/cluster_stats.py](../../pipelines/cluster_stats.py)`, run `cluster_stats/clustered_20260509`. Source matrices live in `[output/cluster_stats/clustered_20260509/cluster_stats.json](../../output/cluster_stats/clustered_20260509/cluster_stats.json)`.
+Exploratory analysis on `STATE x leiden_cluster` matrices produced by [`pipelines/cluster_stats.py`](../../pipelines/cluster_stats.py), run `cluster_stats/clustered_20260509`. Source matrices live in [`output/cluster_stats/clustered_20260509/cluster_stats.json`](../../output/cluster_stats/clustered_20260509/cluster_stats.json).
 
 Leiden clusters from the clustering pipeline are passed to CyteType for annotation. STATE labels are treated as weak priors, informing which clustering resolution is selected. This report showcases the agreement between STATE clusters and STATE-informed leiden clusters on a cluster-by-cluster basis.
 
