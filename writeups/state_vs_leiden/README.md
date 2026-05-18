@@ -12,7 +12,7 @@ Analysis script: [state_vs_leiden.py](state_vs_leiden.py).
 
 ![KDE of STATE-mixing NSE by cluster-size quartile](.figs/nse_leiden_kde_by_size_quartile.png)
 
-Figure 1. KDE of within-cluster STATE-label NSE (`nse_leiden`), split by log2(Leiden cluster size) quartile.
+*Figure 1. KDE of within-cluster STATE-label NSE (`nse_leiden`), split by log2(Leiden cluster size) quartile.*
 
 The distribution of NSE is consistent across Leiden cluster quartiles, suggesting that the number of cells in a Leiden cluster does not influence the entropy of STATE labels in the cluster. Nonetheless, larger Leiden clusters appear to exhibit low STATE label entropy than small Leiden clusters, as shown by the clear separation by quartile of the KDE at low NSE. This suggests that on the whole, a large Leiden cluster may be less likely to contain evenly mixed STATE labels than a small Leiden cluster.
 
@@ -22,7 +22,7 @@ The next two figures are both organized one row per STATE, but they pivot on dif
 
 ![Per-STATE distribution of nse_STATE across accessions](.figs/nse_state_by_state_boxplots.png)
 
-Figure 2. Per-STATE distribution of `nse_STATE` (entropy across Leiden clusters within a single accession), one observation per accession, sorted by median (top) and variance (bottom) and colored by cell category. 
+*Figure 2. Per-STATE distribution of `nse_STATE` (entropy across Leiden clusters within a single accession), one observation per accession, sorted by median (top) and variance (bottom) and colored by cell category.*
 
 A STATE with low median NSE and low variance, like neutrophils or basophils, consistently concentrates in only a few Leiden clusters across accessions. That makes the STATE easy for a clustering-based annotator to "find", provided the cluster it ends up in is also dominated by it.
 
@@ -34,7 +34,7 @@ The variance panel layers a second axis on top of this: low variance means a STA
 
 ![Per-STATE cell and cluster shares across nse_leiden quartiles](.figs/state_behavior_across_nse_quartiles.png)
 
-Figure 3. Per-STATE share of cells (left) and Leiden clusters (right) across `nse_leiden` quartiles, ordered by ascending median `nse_STATE` to match Figure 2 (top).
+*Figure 3. Per-STATE share of cells (left) and Leiden clusters (right) across `nse_leiden` quartiles, ordered by ascending median `nse_STATE` to match Figure 2 (top).*
 
 Reading top to bottom, STATEs progress from concentrating within few Leiden clusters per accession to spreading across many. A STATE near the top with most of its cells in q1 sits in Leiden clusters dominated by a single STATE label, so a program like CyteType, which only sees the cluster-level expression, has a clear signal to work with. A STATE whose cells fall mostly in q3 or q4 sits in mixed clusters, and CyteType may be "blind" to it because the cluster's expression is driven by whichever STATE dominates that mix.
 
