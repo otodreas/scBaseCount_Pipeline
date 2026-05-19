@@ -23,7 +23,7 @@ from r2.client import _local_md5_b64
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
-from shared.repo import REPO_ROOT
+from shared.repo import REPO_ROOT, rel_to_repo
 
 load_dotenv()
 
@@ -31,8 +31,9 @@ _DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
 RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 GCS_LOCAL_ROOT = REPO_ROOT / "data"
 RUN_OUTPUT_DIR = REPO_ROOT / "output" / "clustering_pipeline"
+_LOG_FILENAME = "clustering_pipeline.log"
 
-log = configure_file_logger("clustering_pipeline.log", __name__)
+log = configure_file_logger(_LOG_FILENAME, __name__)
 add_stdout_handler()
 
 
@@ -44,9 +45,15 @@ def _write_run_metadata(
     metadata_path: Path,
     args: argparse.Namespace,
     run_ts: str,
+    run_dir: Path,
+    figs_dir: Path,
 ) -> None:
     payload: dict = {
         "run_timestamp": run_ts,
+        "run_dir": rel_to_repo(run_dir),
+        "run_csv": rel_to_repo(run_dir / "run.csv"),
+        "figs_dir": rel_to_repo(figs_dir),
+        "log_path": rel_to_repo(REPO_ROOT / "logs" / _LOG_FILENAME),
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
     }
@@ -223,7 +230,7 @@ def main() -> None:
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
     figs_root = run_dir / "figs"
-    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir, figs_root)
     log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)

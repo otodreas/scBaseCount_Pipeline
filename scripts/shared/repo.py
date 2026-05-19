@@ -11,3 +11,11 @@ def _find_repo_root(start: Path) -> Path:
 
 
 REPO_ROOT: Path = _find_repo_root(Path(__file__).resolve())
+
+
+def rel_to_repo(p: Path) -> str:
+    """Return p as a string relative to REPO_ROOT when possible, else the absolute path."""
+    try:
+        return str(Path(p).resolve().relative_to(REPO_ROOT))
+    except ValueError:
+        return str(Path(p).resolve())

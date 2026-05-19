@@ -15,15 +15,16 @@ from r2 import download_from_r2, fetch_uploaded_r2_keys
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
-from shared.repo import REPO_ROOT
+from shared.repo import REPO_ROOT, rel_to_repo
 
 load_dotenv()
 
 RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "output" / "cluster_stats"
 CLUSTERED_SUFFIX = "_clustered.h5ad"
+_LOG_FILENAME = "cluster_stats.log"
 
-log = configure_file_logger("cluster_stats.log", __name__)
+log = configure_file_logger(_LOG_FILENAME, __name__)
 add_stdout_handler()
 
 
@@ -56,14 +57,20 @@ def _append_summary_row(
     )
 
 
-def _write_run_metadata(metadata_path: Path, args: argparse.Namespace, run_ts: str, n_files: int) -> None:
+def _write_run_metadata(
+    metadata_path: Path,
+    args: argparse.Namespace,
+    run_ts: str,
+    n_files: int,
+    output_dir: Path,
+) -> None:
     payload: dict = {
         "run_timestamp": run_ts,
+        "run_dir": rel_to_repo(output_dir),
+        "run_csv": rel_to_repo(output_dir / "run.csv"),
+        "log_path": rel_to_repo(REPO_ROOT / "logs" / _LOG_FILENAME),
         "r2_prefix": args.r2_prefix,
         "n_files_matched": n_files,
-        "output_dir": str(args.output_dir)
-        if args.output_dir is not None
-        else str(DEFAULT_OUTPUT_ROOT / args.r2_prefix),
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
@@ -177,7 +184,7 @@ def main() -> None:
         key for key in all_keys if key.startswith(prefix_with_slash) and key.endswith(CLUSTERED_SUFFIX)
     )
     log.info("Matched %d clustered h5ad(s) under prefix %s", len(matched_keys), args.r2_prefix)
-    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, len(matched_keys))
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, len(matched_keys), output_dir)
 
     if not matched_keys:
         log.warning("No clustered h5ad files matched the prefix; nothing to do.")

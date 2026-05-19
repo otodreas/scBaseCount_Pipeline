@@ -14,7 +14,7 @@ from r2 import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists, upload_t
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
-from shared.repo import REPO_ROOT
+from shared.repo import REPO_ROOT, rel_to_repo
 from study_context import ExperimentContext, experiment_context_summary
 
 load_dotenv()
@@ -24,8 +24,9 @@ _DEFAULT_CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
 RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 CLUSTERED_DOWNLOAD_ROOT = REPO_ROOT / "data" / "clustered_h5ad"
 RUN_OUTPUT_DIR = REPO_ROOT / "output" / "cytetype_pipeline"
+_LOG_FILENAME = "cytetype_pipeline.log"
 
-log = configure_file_logger("cytetype_pipeline.log", __name__)
+log = configure_file_logger(_LOG_FILENAME, __name__)
 add_stdout_handler()
 
 
@@ -52,9 +53,13 @@ def _write_run_metadata(
     metadata_path: Path,
     args: argparse.Namespace,
     run_ts: str,
+    run_dir: Path,
 ) -> None:
     payload: dict = {
         "run_timestamp": run_ts,
+        "run_dir": rel_to_repo(run_dir),
+        "run_csv": rel_to_repo(run_dir / "run.csv"),
+        "log_path": rel_to_repo(REPO_ROOT / "logs" / _LOG_FILENAME),
         "clustering_prefix": args.clustering_prefix,
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
@@ -201,7 +206,7 @@ def main() -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
-    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir)
     log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)
