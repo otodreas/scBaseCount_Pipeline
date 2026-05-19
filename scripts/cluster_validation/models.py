@@ -16,6 +16,7 @@ class ClusterValidationResult(BaseModel):
     kPrior: int
     kFiltered: int
     nCellsDropped: int
+    nCellsFinal: int
     nClustersPreMerge: int
     nClustersPostMerge: int
     adataPath: Path

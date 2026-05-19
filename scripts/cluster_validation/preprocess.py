@@ -17,6 +17,7 @@ class PreprocessStats:
     kPrior: int
     nDropped: int
     kFiltered: int
+    nCellsFinal: int
 
 
 def preprocess(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, PreprocessStats]:
@@ -51,4 +52,5 @@ def preprocess(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnD
         kPrior=k_prior,
         nDropped=n_dropped,
         kFiltered=k_filtered,
+        nCellsFinal=adata.n_obs,
     )

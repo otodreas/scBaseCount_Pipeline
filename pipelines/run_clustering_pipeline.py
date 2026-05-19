@@ -7,7 +7,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
-from cluster_validation import ClusterValidationConfig, run_cluster_validation
+from cluster_validation import ClusterValidationConfig, ClusterValidationResult, run_cluster_validation
 from dotenv import load_dotenv
 from gcs import download_from_gcs, gcs_local_path, verify_download
 from r2 import (
@@ -55,7 +55,25 @@ def _write_run_metadata(
     metadata_path.write_text(json.dumps(payload, indent=2))
 
 
-_CSV_COLUMNS = ["position", "srx", "status", "r2_file", "timestamp", "error"]
+_CSV_COLUMNS = [
+    "position",
+    "srx",
+    "status",
+    "r2_file",
+    "timestamp",
+    "error",
+    "selectedResolution",
+    "nPcs",
+    "cumvar",
+    "nClustersPreMerge",
+    "nClustersPostMerge",
+    "nMerges",
+    "kPrior",
+    "kFiltered",
+    "nCellsDropped",
+    "nCellsFinal",
+    "jaccAtSelected",
+]
 
 
 def _append_summary_row(
@@ -65,11 +83,38 @@ def _append_summary_row(
     position: str = "",
     r2_key: str = "",
     error: str = "",
+    result: ClusterValidationResult | None = None,
 ) -> None:
+    if result is None:
+        stats_cells: list[str] = [""] * 11
+    else:
+        n_merges = result.nClustersPreMerge - result.nClustersPostMerge
+        jacc_at_selected = result.jaccArr[result.resolutions.index(result.selectedResolution)]
+        stats_cells = [
+            str(result.selectedResolution),
+            str(result.nPcs),
+            str(result.cumvar),
+            str(result.nClustersPreMerge),
+            str(result.nClustersPostMerge),
+            str(n_merges),
+            str(result.kPrior),
+            str(result.kFiltered),
+            str(result.nCellsDropped),
+            str(result.nCellsFinal),
+            str(jacc_at_selected),
+        ]
     append_csv_row(
         summary_path,
         _CSV_COLUMNS,
-        [position, srx, status, r2_key, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), error],
+        [
+            position,
+            srx,
+            status,
+            r2_key,
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            error,
+            *stats_cells,
+        ],
     )
 
 
@@ -98,8 +143,9 @@ def process_accession(
     gs_uri: str,
     r2_key: str,
     datasets_path: Path,
-) -> Exception | None:
-    cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path)
+    figs_root: Path,
+) -> tuple[ClusterValidationResult | None, Exception | None]:
+    cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path, figsDir=figs_root)
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
 
     downloaded = False
@@ -120,13 +166,13 @@ def process_accession(
         safe_delete(result.adataPath, log)
 
         log.info("%s: done", srx)
-        return None
+        return result, None
 
     except Exception as exc:
         log.exception("%s: pipeline failed", srx)
         safe_delete(raw_h5ad, log)
         safe_delete(cfg.outputDir / f"{srx}_clustered.h5ad", log)
-        return exc
+        return None, exc
 
 
 def _parse_args() -> argparse.Namespace:
@@ -176,6 +222,7 @@ def main() -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
+    figs_root = run_dir / "figs"
     _write_run_metadata(metadata_path, args, RUN_TIMESTAMP)
     log.info("run summary output directory: %s", run_dir)
 
@@ -199,18 +246,18 @@ def main() -> None:
     log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process_accession, srx, gs_uri, r2_key, args.datasets): (srx, r2_key, position)
+            pool.submit(process_accession, srx, gs_uri, r2_key, args.datasets, figs_root): (srx, r2_key, position)
             for srx, gs_uri, r2_key, position in work_items
         }
         for future in as_completed(futures):
             srx, r2_key, position = futures[future]
-            exc = future.result()
+            result, exc = future.result()
             if exc is not None:
                 log.warning("%s: failed", srx)
                 _append_summary_row(csv_summary_path, srx, "failed", position, error=f"{type(exc).__name__}: {exc}")
                 skipped += 1
             else:
-                _append_summary_row(csv_summary_path, srx, "success", position, r2_key)
+                _append_summary_row(csv_summary_path, srx, "success", position, r2_key, result=result)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 

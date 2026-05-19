@@ -48,6 +48,7 @@ def run_cluster_validation(
         kPrior=prep_stats.kPrior,
         kFiltered=prep_stats.kFiltered,
         nCellsDropped=prep_stats.nDropped,
+        nCellsFinal=prep_stats.nCellsFinal,
         nClustersPreMerge=merge_info.nClustersPreMerge,
         nClustersPostMerge=merge_info.nClustersPostMerge,
         adataPath=adata_path,
