@@ -11,6 +11,7 @@ tmp/
 
 # Large outputs
 output/clustering/
+output/clustering_pipeline/*/figs
 output/cytetype/
 output/cyteonto/
 output/h5ad_extract/
