@@ -47,12 +47,14 @@ def _write_run_metadata(
     run_ts: str,
     run_dir: Path,
     figs_dir: Path,
+    data_dir: Path,
 ) -> None:
     payload: dict = {
         "run_timestamp": run_ts,
         "run_dir": rel_to_repo(run_dir),
         "run_csv": rel_to_repo(run_dir / "run.csv"),
         "figs_dir": rel_to_repo(figs_dir),
+        "data_dir": rel_to_repo(data_dir),
         "log_path": rel_to_repo(REPO_ROOT / "logs" / _LOG_FILENAME),
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
@@ -151,8 +153,14 @@ def process_accession(
     r2_key: str,
     datasets_path: Path,
     figs_root: Path,
+    data_root: Path,
 ) -> tuple[ClusterValidationResult | None, Exception | None]:
-    cfg = ClusterValidationConfig(srxAccession=srx, summaryPath=datasets_path, figsDir=figs_root)
+    cfg = ClusterValidationConfig(
+        srxAccession=srx,
+        summaryPath=datasets_path,
+        figsDir=figs_root,
+        outputDir=data_root,
+    )
     raw_h5ad = gcs_local_path(gs_uri, GCS_LOCAL_ROOT)
 
     downloaded = False
@@ -230,7 +238,8 @@ def main() -> None:
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
     figs_root = run_dir / "figs"
-    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir, figs_root)
+    data_root = run_dir / "data"
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir, figs_root, data_root)
     log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)
@@ -253,7 +262,11 @@ def main() -> None:
     log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process_accession, srx, gs_uri, r2_key, args.datasets, figs_root): (srx, r2_key, position)
+            pool.submit(process_accession, srx, gs_uri, r2_key, args.datasets, figs_root, data_root): (
+                srx,
+                r2_key,
+                position,
+            )
             for srx, gs_uri, r2_key, position in work_items
         }
         for future in as_completed(futures):
