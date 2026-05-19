@@ -1,0 +1,11 @@
+{
+  "run_timestamp": "20260519_160627",
+  "run_dir": "output/clustering_pipeline/20260519_160627",
+  "run_csv": "output/clustering_pipeline/20260519_160627/run.csv",
+  "figs_dir": "output/clustering_pipeline/20260519_160627/figs",
+  "data_dir": "output/clustering_pipeline/20260519_160627/data",
+  "log_path": "logs/clustering_pipeline.log",
+  "r2_prefix": "designated_clustering_2",
+  "datasets_path": "/home/inf-33-2025/Nygen_Project/output/metadata/datasets.csv",
+  "notes": "clustering run on git tag 'designated_clustering_2', this time saving data such as n clusters"
+}
