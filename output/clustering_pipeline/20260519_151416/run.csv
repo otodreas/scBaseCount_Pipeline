@@ -1,0 +1,6 @@
+position,srx,status,r2_file,timestamp,error,selectedResolution,nPcs,cumvar,nClustersPreMerge,nClustersPostMerge,nMerges,kPrior,kFiltered,nCellsDropped,nCellsFinal,jaccAtSelected
+1/5,SRX22996378,skipped,deleteme/SRX22996378_clustered.h5ad,2026-05-19 15:14:18,,,,,,,,,,,,
+2/5,SRX12366723,skipped,deleteme/SRX12366723_clustered.h5ad,2026-05-19 15:14:18,,,,,,,,,,,,
+3/5,SRX17412841,skipped,deleteme/SRX17412841_clustered.h5ad,2026-05-19 15:14:18,,,,,,,,,,,,
+4/5,SRX24313469,skipped,deleteme/SRX24313469_clustered.h5ad,2026-05-19 15:14:18,,,,,,,,,,,,
+5/5,SRX13198730,skipped,deleteme/SRX13198730_clustered.h5ad,2026-05-19 15:14:18,,,,,,,,,,,,
