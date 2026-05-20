@@ -66,13 +66,19 @@ _LCC_RE = r"\bLCC\b|large[\s-]cell carcinoma|large[\s-]cell lung|lung large[\s-]
 _NSCLC_GENERIC_RE = r"\bNSCLC\b|non[\s-]small[\s-]cell lung|non[\s-]small[\s-]cell carcinoma|carcinoma non[\s-]small"
 _NSCLC_RE = "|".join([_NSCLC_GENERIC_RE, _LUAD_RE, _LUSC_RE, _LCC_RE])
 _SCLC_RE = r"\bSCLC\b|(?<!non[\s-])(?<!non)small[\s-]cell lung"
-_LUNG_CANCER_GENERIC_RE = r"lung cancer|lung carcinoma|\bMPLC\b|KRAS.mutant lung"
+_CANCER_TERMS = r"(?:cancer|carcinoma|tumou?r|malignancy|neoplasm)"
+_LUNG_CANCER_GENERIC_RE = (
+    rf"lung {_CANCER_TERMS}"
+    rf"|{_CANCER_TERMS} of the lung"
+    r"|\bMPLC\b|KRAS.mutant lung"
+)
 _LUNG_CANCER_RE = "|".join([_LUNG_CANCER_GENERIC_RE, _SCLC_RE, _NSCLC_RE])
+LUNG_CANCER_RE = re.compile(_LUNG_CANCER_RE, re.IGNORECASE)
 
 DISEASE_MAP: list[tuple[str, re.Pattern[str]]] = [
     ("IPF / Pulmonary Fibrosis", re.compile(r"pulmonary fibrosis|\bIPF\b|idiopathic pulmonary fibrosis", re.IGNORECASE)),
     ("COVID-19 / SARS-CoV-2", re.compile(r"\bCOVID\b|SARS.CoV", re.IGNORECASE)),
-    ("Lung Cancer", re.compile(_LUNG_CANCER_RE, re.IGNORECASE)),
+    ("Lung Cancer", LUNG_CANCER_RE),
     ("Small Cell Lung Cancer (SCLC)", re.compile(_SCLC_RE, re.IGNORECASE)),
     ("Non-small Cell Lung Cancer (NSCLC)", re.compile(_NSCLC_RE, re.IGNORECASE)),
     ("Lung Adenocarcinoma (LUAD)", re.compile(_LUAD_RE, re.IGNORECASE)),

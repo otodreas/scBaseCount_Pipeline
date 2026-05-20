@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import pandas as pd
 
 from metadata.config import MetadataConfig
-from metadata.regexes import CANCER_RE, DISEASE_MAP, LUNG_DISEASE_RE, LUNG_TISSUE_RE, NORMAL_HEALTHY_RE
+from metadata.regexes import DISEASE_MAP, LUNG_CANCER_RE, LUNG_DISEASE_RE, LUNG_TISSUE_RE, NORMAL_HEALTHY_RE
 
 
 @dataclass
@@ -31,7 +31,7 @@ def filter_lung(sample: pd.DataFrame, cfg: MetadataConfig) -> FilterResult:
     lung_union = sample_known.loc[lung_disease_mask | lung_tissue_mask].reset_index(drop=True)
     lung_intersection = sample_known.loc[lung_disease_mask & lung_tissue_mask].reset_index(drop=True)
 
-    cancer_mask = lung_intersection["disease"].str.contains(CANCER_RE, regex=True, na=False)
+    cancer_mask = lung_intersection["disease"].str.contains(LUNG_CANCER_RE, regex=True, na=False)
     lung_intersection_cancer = lung_intersection.loc[cancer_mask].reset_index(drop=True)
 
     return FilterResult(
