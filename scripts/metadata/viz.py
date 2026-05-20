@@ -65,7 +65,10 @@ def plot_disease_breakdown(result: FilterResult, figs_dir: Path) -> None:
     figs_dir.mkdir(parents=True, exist_ok=True)
 
     def _categorize(d: str) -> str:
-        for label, pat in DISEASE_MAP:
+        # Walk DISEASE_MAP leaves-first so a row matching both a parent and its child
+        # is attributed to the most specific bucket. Relies on DISEASE_MAP being
+        # ordered parents-before-children (see scripts/metadata/regexes.py).
+        for label, pat in reversed(DISEASE_MAP):
             if pat.search(str(d)):
                 return label
         return "Other"

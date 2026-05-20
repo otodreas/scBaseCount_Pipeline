@@ -65,7 +65,7 @@ _LUSC_RE = r"\bLUSC\b|squamous cell carcinoma of the lung|lung squamous|squamous
 _LCC_RE = r"\bLCC\b|large[\s-]cell carcinoma|large[\s-]cell lung|lung large[\s-]cell"
 _NSCLC_GENERIC_RE = r"\bNSCLC\b|non[\s-]small[\s-]cell lung|non[\s-]small[\s-]cell carcinoma|carcinoma non[\s-]small"
 _NSCLC_RE = "|".join([_NSCLC_GENERIC_RE, _LUAD_RE, _LUSC_RE, _LCC_RE])
-_SCLC_RE = r"\bSCLC\b|small[\s-]cell lung"
+_SCLC_RE = r"\bSCLC\b|(?<!non[\s-])(?<!non)small[\s-]cell lung"
 _LUNG_CANCER_GENERIC_RE = r"lung cancer|lung carcinoma|\bMPLC\b|KRAS.mutant lung"
 _LUNG_CANCER_RE = "|".join([_LUNG_CANCER_GENERIC_RE, _SCLC_RE, _NSCLC_RE])
 
