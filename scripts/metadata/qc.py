@@ -21,8 +21,8 @@ _EXPORT_COLUMNS = [
 
 
 class QcThresholds(BaseModel):
-    minMedianGenesPerCell: int
-    minMedianUmisPerCell: int
+    minMedianGenesPerCell: int | None = None
+    minMedianUmisPerCell: int | None = None
 
 
 def compute_obs_qc(srxAccessions: list[str], cfg: MetadataConfig) -> pd.DataFrame:
@@ -52,12 +52,17 @@ def compute_obs_qc(srxAccessions: list[str], cfg: MetadataConfig) -> pd.DataFram
 
 
 def apply_qc(samplesDf: pd.DataFrame, qcDf: pd.DataFrame, thresholds: QcThresholds) -> pd.DataFrame:
-    """Left-join QC metrics onto samples and return rows that meet both median thresholds."""
+    """Left-join QC metrics onto samples and return rows meeting the configured median thresholds.
+
+    A None threshold disables that metric. Rows missing a QC value for an enabled
+    metric are filtered out (NaN >= n is False).
+    """
     merged = samplesDf.merge(qcDf, on="srx_accession", how="left")
-    mask = (
-        (merged["medianGenesPerCell"] >= thresholds.minMedianGenesPerCell)
-        & (merged["medianUmisPerCell"] >= thresholds.minMedianUmisPerCell)
-    )
+    mask = pd.Series(True, index=merged.index)
+    if thresholds.minMedianGenesPerCell is not None:
+        mask &= merged["medianGenesPerCell"] >= thresholds.minMedianGenesPerCell
+    if thresholds.minMedianUmisPerCell is not None:
+        mask &= merged["medianUmisPerCell"] >= thresholds.minMedianUmisPerCell
     return merged.loc[mask].reset_index(drop=True)
 
 
