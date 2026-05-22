@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from metadata.categorize import (
+    build_accession_disease_categories,
+    disease_categories_for,
+    export_accession_disease_categories,
+)
 from metadata.config import MetadataConfig
 from metadata.export import export_datasets
 from metadata.filter import FilterResult, available_disease_labels, filter_by_disease, filter_lung
@@ -21,4 +26,7 @@ __all__ = [
     "compute_obs_qc",
     "apply_qc",
     "export_datasets_qc",
+    "disease_categories_for",
+    "build_accession_disease_categories",
+    "export_accession_disease_categories",
 ]
