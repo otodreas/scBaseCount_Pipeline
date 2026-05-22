@@ -77,7 +77,10 @@ LUNG_CANCER_RE = re.compile(_LUNG_CANCER_RE, re.IGNORECASE)
 NON_CF_RE = re.compile(r"\bnon[-\s]?CF\b|non[-\s]?cystic\s+fibrosis", re.IGNORECASE)
 
 DISEASE_MAP: list[tuple[str, re.Pattern[str]]] = [
-    ("IPF / Pulmonary Fibrosis", re.compile(r"pulmonary fibrosis|\bIPF\b|idiopathic pulmonary fibrosis", re.IGNORECASE)),
+    (
+        "IPF / Pulmonary Fibrosis",
+        re.compile(r"pulmonary fibrosis|\bIPF\b|idiopathic pulmonary fibrosis", re.IGNORECASE),
+    ),
     ("COVID-19 / SARS-CoV-2", re.compile(r"\bCOVID\b|SARS.CoV", re.IGNORECASE)),
     ("Lung Cancer", LUNG_CANCER_RE),
     ("Small Cell Lung Cancer (SCLC)", re.compile(_SCLC_RE, re.IGNORECASE)),
