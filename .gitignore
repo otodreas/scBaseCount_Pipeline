@@ -24,6 +24,7 @@ nohup.out
 obs.duckdb
 query.json
 vars.h5
+job_details.csv
 
 # Personal notes
 DailyNotes.md

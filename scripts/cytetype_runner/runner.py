@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-import orjson
 import scanpy as sc
 from cytetype import CyteType, rank_genes_groups_backed
 from shared.logger import configure_file_logger
@@ -11,15 +10,6 @@ from shared.logger import configure_file_logger
 from cytetype_runner.config import N_TOP_GENES, CyteTypeRunnerConfig, CyteTypeRunResult
 
 _log = configure_file_logger("cytetype_runner.log", __name__)
-
-
-def write_job_details(cfg: CyteTypeRunnerConfig, h5ad_path: Path) -> Path:
-    adata = sc.read_h5ad(h5ad_path, backed="r")
-    job_details_path = cfg.jobDetailsDir / f"{cfg.srxAccession}_cytetype_jobDetails.json"
-    job_details_path.parent.mkdir(parents=True, exist_ok=True)
-    job_details_path.write_bytes(orjson.dumps({cfg.srxAccession: adata.uns.get("cytetype_jobDetails")}))
-    _log.info("%s: job details written to %s", cfg.srxAccession, job_details_path)
-    return job_details_path
 
 
 def require_api_key() -> str:
@@ -56,8 +46,6 @@ def run_cytetype(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(output_path)
     _log.info("%s: annotation written to %s", cfg.srxAccession, output_path)
-
-    write_job_details(cfg, output_path)
 
     return CyteTypeRunResult(
         outputPath=output_path,
