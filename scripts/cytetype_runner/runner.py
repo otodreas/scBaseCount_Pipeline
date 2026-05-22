@@ -27,12 +27,16 @@ def run_cytetype(
     input_path: Path,
     group_key: str,
     study_context: str,
+    metadata: dict[str, str] | None = None,
 ) -> Path:
     output_path = cfg.outputDir / f"{cfg.srxAccession}_cytetype_annotated.h5ad"
     adata = sc.read_h5ad(input_path, backed="r")
     rank_genes_groups_backed(adata, groupby=group_key, use_raw=False, key_added=f"rank_genes_{group_key}")
     annotator = CyteType(adata, group_key, rank_key=f"rank_genes_{group_key}", n_top_genes=N_TOP_GENES)
-    adata = annotator.run(study_context=study_context, auth_token=os.environ["CYTETYPE_API_KEY"])
+    run_kwargs: dict = {"study_context": study_context, "auth_token": os.environ["CYTETYPE_API_KEY"]}
+    if metadata:
+        run_kwargs["metadata"] = metadata
+    adata = annotator.run(**run_kwargs)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(output_path)
     _log.info("%s: annotation written to %s", cfg.srxAccession, output_path)

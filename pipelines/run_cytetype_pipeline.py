@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
@@ -54,6 +55,7 @@ def _write_run_metadata(
     args: argparse.Namespace,
     run_ts: str,
     run_dir: Path,
+    metadata_columns: list[str],
 ) -> None:
     payload: dict = {
         "run_timestamp": run_ts,
@@ -64,6 +66,8 @@ def _write_run_metadata(
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
         "contexts_path": str(args.contexts) if args.contexts is not None else str(_DEFAULT_CONTEXTS_JSONL),
+        "timeout_seconds": args.timeout,
+        "cytetype_metadata_columns": metadata_columns,
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
@@ -97,11 +101,17 @@ def _append_summary_row(
     )
 
 
+def _row_to_metadata(row: pd.Series) -> dict[str, str]:
+    """Convert a datasets-CSV row into a CyteType metadata dict, stringifying values and skipping NaN."""
+    return {str(col): str(val) for col, val in row.items() if not pd.isna(val)}
+
+
 def process_accession(
     srx: str,
     input_r2_key: str,
     output_r2_key: str,
     contexts: dict[str, ExperimentContext],
+    metadata: dict[str, str],
 ) -> Exception | None:
     local_clustered = CLUSTERED_DOWNLOAD_ROOT / f"{srx}_clustered.h5ad"
     cytetype_h5ad: Path | None = None
@@ -118,7 +128,9 @@ def process_accession(
         if not ctx:
             log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
 
-        cytetype_h5ad = run_cytetype(cytetype_cfg, local_clustered, MERGED_CLUSTER_KEY, study_context)
+        cytetype_h5ad = run_cytetype(
+            cytetype_cfg, local_clustered, MERGED_CLUSTER_KEY, study_context, metadata=metadata
+        )
         safe_delete(local_clustered, log)
 
         upload_to_r2(cytetype_h5ad, output_r2_key)
@@ -173,7 +185,11 @@ def _parse_args() -> argparse.Namespace:
         type=str,
         default=None,
         metavar="TEXT",
-        help="Write a metadata JSON file next to the run CSV with this note.",
+        help=(
+            "Free-form note recorded as 'notes' in the run's metadata.json. "
+            "Does NOT control the per-accession metadata sent to CyteType; "
+            "that is always derived from the --datasets CSV row."
+        ),
     )
     parser.add_argument(
         "--workers",
@@ -181,6 +197,13 @@ def _parse_args() -> argparse.Namespace:
         default=1,
         metavar="N",
         help="Number of accessions to process in parallel (default: 1)",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=0,
+        metavar="SECONDS",
+        help="Seconds to sleep between accession runs. When > 0, runs are forced serial (workers is ignored).",
     )
     return parser.parse_args()
 
@@ -190,13 +213,22 @@ def main() -> None:
 
     log_run_separator(log)
     log.info(
-        "new cytetype pipeline run started (clustering prefix: %s, r2 prefix: %s)",
+        "new cytetype pipeline run started (clustering prefix: %s, r2 prefix: %s, timeout: %ds)",
         args.clustering_prefix,
         args.r2_prefix,
+        args.timeout,
     )
 
     datasets = read_datasets(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)
+    metadata_columns = [str(c) for c in datasets.columns]
+    log.info(
+        "cytetype per-accession metadata will be derived from %d CSV column(s): %s",
+        len(metadata_columns),
+        ", ".join(metadata_columns),
+    )
+    if args.metadata is not None:
+        log.info("run-level --metadata note (recorded as 'notes' in metadata.json): %s", args.metadata)
     uploaded = fetch_uploaded_r2_keys()
 
     contexts_path = args.contexts if args.contexts is not None else _DEFAULT_CONTEXTS_JSONL
@@ -206,13 +238,13 @@ def main() -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
-    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir)
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir, metadata_columns)
     log.info("run summary output directory: %s", run_dir)
 
     total = len(datasets)
     skipped = 0
 
-    work_items: list[tuple[str, str, str, str]] = []
+    work_items: list[tuple[str, str, str, str, dict[str, str]]] = []
     for n, (_, row) in enumerate(datasets.iterrows(), start=1):
         srx = row["srx_accession"]
         input_r2_key = f"{args.clustering_prefix}/{srx}_clustered.h5ad"
@@ -236,22 +268,18 @@ def main() -> None:
             )
             skipped += 1
             continue
-        work_items.append((srx, input_r2_key, output_r2_key, position))
+        work_items.append((srx, input_r2_key, output_r2_key, position, _row_to_metadata(row)))
 
-    log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
-    with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        futures = {
-            pool.submit(process_accession, srx, input_r2_key, output_r2_key, contexts): (
-                srx,
-                input_r2_key,
-                output_r2_key,
-                position,
-            )
-            for srx, input_r2_key, output_r2_key, position in work_items
-        }
-        for future in as_completed(futures):
-            srx, input_r2_key, output_r2_key, position = futures[future]
-            exc = future.result()
+    if args.timeout > 0:
+        if args.workers != 1:
+            log.info("--timeout set; forcing serial execution (ignoring --workers=%d)", args.workers)
+        log.info(
+            "Running %d accession(s) serially with %d seconds sleep between runs",
+            len(work_items),
+            args.timeout,
+        )
+        for i, (srx, input_r2_key, output_r2_key, position, metadata) in enumerate(work_items):
+            exc = process_accession(srx, input_r2_key, output_r2_key, contexts, metadata)
             if exc is not None:
                 log.warning("%s: failed", srx)
                 _append_summary_row(
@@ -266,6 +294,47 @@ def main() -> None:
                 skipped += 1
             else:
                 _append_summary_row(csv_summary_path, srx, "success", position, input_r2_key, output_r2_key)
+            if i < len(work_items) - 1:
+                next_srx = work_items[i + 1][0]
+                remaining = len(work_items) - (i + 1)
+                log.info(
+                    "Sleeping %d seconds after %s before next run (%s); %d accession(s) remaining",
+                    args.timeout,
+                    srx,
+                    next_srx,
+                    remaining,
+                )
+                time.sleep(args.timeout)
+                log.info("Resuming after %d second sleep", args.timeout)
+    else:
+        log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
+        with ProcessPoolExecutor(max_workers=args.workers) as pool:
+            futures = {
+                pool.submit(process_accession, srx, input_r2_key, output_r2_key, contexts, metadata): (
+                    srx,
+                    input_r2_key,
+                    output_r2_key,
+                    position,
+                )
+                for srx, input_r2_key, output_r2_key, position, metadata in work_items
+            }
+            for future in as_completed(futures):
+                srx, input_r2_key, output_r2_key, position = futures[future]
+                exc = future.result()
+                if exc is not None:
+                    log.warning("%s: failed", srx)
+                    _append_summary_row(
+                        csv_summary_path,
+                        srx,
+                        "failed",
+                        position,
+                        input_r2_key,
+                        output_r2_key,
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                    skipped += 1
+                else:
+                    _append_summary_row(csv_summary_path, srx, "success", position, input_r2_key, output_r2_key)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
