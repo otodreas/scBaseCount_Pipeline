@@ -69,7 +69,7 @@ def _write_run_metadata(
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
         "contexts_path": str(args.contexts) if args.contexts is not None else str(_DEFAULT_CONTEXTS_JSONL),
-        "timeout_seconds": args.timeout,
+        "min_interval_seconds": args.min_interval,
         "cytetype_metadata_columns": metadata_columns,
     }
     if args.metadata is not None:
@@ -77,7 +77,16 @@ def _write_run_metadata(
     metadata_path.write_text(json.dumps(payload, indent=2))
 
 
-_CSV_COLUMNS = ["position", "srx", "status", "input_r2_file", "output_r2_file", "timestamp", "error"]
+_CSV_COLUMNS = [
+    "position",
+    "srx",
+    "status",
+    "input_r2_file",
+    "output_r2_file",
+    "timestamp",
+    "duration_seconds",
+    "error",
+]
 _JOB_DETAILS_COLUMNS = [
     "srx",
     "status",
@@ -88,6 +97,7 @@ _JOB_DETAILS_COLUMNS = [
     "report_url",
     "api_url",
     "timestamp",
+    "duration_seconds",
     "error",
 ]
 
@@ -103,18 +113,32 @@ def _record_accession(
     job_id: str = "",
     report_url: str = "",
     api_url: str = "",
+    duration_seconds: float | None = None,
     error: str = "",
 ) -> None:
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    duration_str = "" if duration_seconds is None else f"{duration_seconds:.2f}"
     append_csv_row(
         csv_path,
         _CSV_COLUMNS,
-        [position, srx, status, input_r2_key, output_r2_key, timestamp, error],
+        [position, srx, status, input_r2_key, output_r2_key, timestamp, duration_str, error],
     )
     append_csv_row(
         job_details_path,
         _JOB_DETAILS_COLUMNS,
-        [srx, status, position, input_r2_key, output_r2_key, job_id, report_url, api_url, timestamp, error],
+        [
+            srx,
+            status,
+            position,
+            input_r2_key,
+            output_r2_key,
+            job_id,
+            report_url,
+            api_url,
+            timestamp,
+            duration_str,
+            error,
+        ],
     )
 
 
@@ -221,11 +245,15 @@ def _parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--timeout",
+        "--min-interval",
         type=int,
         default=0,
         metavar="SECONDS",
-        help="Seconds to sleep between accession runs (default: 0, no sleep). Accessions always run serially.",
+        help=(
+            "Minimum seconds between the START of consecutive accession runs "
+            "(default: 0, no spacing). If a run takes longer than this, the next run starts "
+            "immediately when it finishes. Accessions always run serially."
+        ),
     )
     parser.add_argument(
         "--dry-run",
@@ -243,11 +271,11 @@ def main() -> None:
 
     log_run_separator(log)
     log.info(
-        "new cytetype pipeline run started (dry_run=%s, clustering prefix: %s, r2 prefix: %s, timeout: %ds)",
+        "new cytetype pipeline run started (dry_run=%s, clustering prefix: %s, r2 prefix: %s, min_interval: %ds)",
         args.dry_run,
         args.clustering_prefix,
         args.r2_prefix,
-        args.timeout,
+        args.min_interval,
     )
 
     if not args.dry_run:
@@ -308,11 +336,11 @@ def main() -> None:
 
     if args.dry_run:
         log.info("Dry-run: no R2 downloads, CyteType API calls, or R2 uploads will be performed")
-        if args.timeout > 0:
+        if args.min_interval > 0:
             log.info(
-                "Would run %d accession(s) serially with %d seconds sleep between runs",
+                "Would run %d accession(s) serially with at least %d seconds between run starts",
                 len(work_items),
-                args.timeout,
+                args.min_interval,
             )
         else:
             log.info("Would run %d accession(s) serially", len(work_items))
@@ -333,19 +361,23 @@ def main() -> None:
         )
         return
 
-    if args.timeout > 0:
+    if args.min_interval > 0:
         log.info(
-            "Running %d accession(s) serially with %d seconds sleep between runs",
+            "Running %d accession(s) serially with at least %d seconds between run starts",
             len(work_items),
-            args.timeout,
+            args.min_interval,
         )
     else:
         log.info("Running %d accession(s) serially", len(work_items))
 
     for i, (srx, input_r2_key, output_r2_key, position, metadata) in enumerate(work_items):
+        run_start = time.monotonic()
+        log.info("%s (%s): run starting", srx, position)
         exc, job_id, report_url, api_url = process_accession(
             srx, input_r2_key, output_r2_key, contexts, metadata
         )
+        elapsed = time.monotonic() - run_start
+        log.info("%s (%s): run finished in %.2fs", srx, position, elapsed)
         if exc is not None:
             log.warning("%s: failed", srx)
             _record_accession(
@@ -359,6 +391,7 @@ def main() -> None:
                 job_id=job_id,
                 report_url=report_url,
                 api_url=api_url,
+                duration_seconds=elapsed,
                 error=f"{type(exc).__name__}: {exc}",
             )
             skipped += 1
@@ -374,19 +407,34 @@ def main() -> None:
                 job_id=job_id,
                 report_url=report_url,
                 api_url=api_url,
+                duration_seconds=elapsed,
             )
-        if args.timeout > 0 and i < len(work_items) - 1:
+        if args.min_interval > 0 and i < len(work_items) - 1:
             next_srx = work_items[i + 1][0]
             remaining = len(work_items) - (i + 1)
-            log.info(
-                "Sleeping %d seconds after %s before next run (%s); %d accession(s) remaining",
-                args.timeout,
-                srx,
-                next_srx,
-                remaining,
-            )
-            time.sleep(args.timeout)
-            log.info("Resuming after %d second sleep", args.timeout)
+            wait = max(0.0, args.min_interval - elapsed)
+            if wait > 0:
+                log.info(
+                    "Sleeping %.0fs before next run (%s); %s took %.0fs of %ds spacing window; %d accession(s) remaining",
+                    wait,
+                    next_srx,
+                    srx,
+                    elapsed,
+                    args.min_interval,
+                    remaining,
+                )
+                time.sleep(wait)
+                log.info("Resuming after %.0f second sleep", wait)
+            else:
+                log.info(
+                    "%s took %.0fs, exceeding %ds spacing window by %.0fs; starting next run (%s) immediately; %d accession(s) remaining",
+                    srx,
+                    elapsed,
+                    args.min_interval,
+                    elapsed - args.min_interval,
+                    next_srx,
+                    remaining,
+                )
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
