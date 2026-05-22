@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 from cluster_validation.merge import MERGED_CLUSTER_KEY
-from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
+from cytetype_runner import CyteTypeRunnerConfig, require_api_key, run_cytetype
 from dotenv import load_dotenv
 from r2 import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists, upload_to_r2, verify_upload
 from shared.csv_writer import append_csv_row
@@ -228,6 +228,9 @@ def main() -> None:
         args.r2_prefix,
         args.timeout,
     )
+
+    if not args.dry_run:
+        require_api_key()
 
     datasets = read_datasets(args.datasets)
     log.info("Loaded %d accession(s) from %s", len(datasets), args.datasets)

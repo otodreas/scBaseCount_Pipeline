@@ -22,6 +22,17 @@ def write_job_details(cfg: CyteTypeRunnerConfig, h5ad_path: Path) -> Path:
     return job_details_path
 
 
+def require_api_key() -> str:
+    """Return CYTETYPE_API_KEY from the environment, raising if missing or empty."""
+    api_key = os.environ.get("CYTETYPE_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError(
+            "CYTETYPE_API_KEY is not set or empty. "
+            "Add it to your .env file or export it in your shell before running."
+        )
+    return api_key
+
+
 def run_cytetype(
     cfg: CyteTypeRunnerConfig,
     input_path: Path,
@@ -33,7 +44,7 @@ def run_cytetype(
     adata = sc.read_h5ad(input_path, backed="r")
     rank_genes_groups_backed(adata, groupby=group_key, use_raw=False, key_added=f"rank_genes_{group_key}")
     annotator = CyteType(adata, group_key, rank_key=f"rank_genes_{group_key}", n_top_genes=N_TOP_GENES)
-    run_kwargs: dict = {"study_context": study_context, "auth_token": os.environ["CYTETYPE_API_KEY"]}
+    run_kwargs: dict = {"study_context": study_context, "auth_token": require_api_key()}
     if metadata:
         run_kwargs["metadata"] = metadata
     adata = annotator.run(**run_kwargs)
