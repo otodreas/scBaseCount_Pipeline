@@ -62,6 +62,7 @@ def _write_run_metadata(
         "run_dir": rel_to_repo(run_dir),
         "run_csv": rel_to_repo(run_dir / "run.csv"),
         "log_path": rel_to_repo(REPO_ROOT / "logs" / _LOG_FILENAME),
+        "dry_run": bool(args.dry_run),
         "clustering_prefix": args.clustering_prefix,
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
@@ -205,6 +206,14 @@ def _parse_args() -> argparse.Namespace:
         metavar="SECONDS",
         help="Seconds to sleep between accession runs. When > 0, runs are forced serial (workers is ignored).",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help=(
+            "Plan the run without performing R2 downloads, CyteType API calls, or R2 uploads. "
+            "Writes run.csv and metadata.json under output/cytetype_pipeline/dry_run_{timestamp}/."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -213,7 +222,8 @@ def main() -> None:
 
     log_run_separator(log)
     log.info(
-        "new cytetype pipeline run started (clustering prefix: %s, r2 prefix: %s, timeout: %ds)",
+        "new cytetype pipeline run started (dry_run=%s, clustering prefix: %s, r2 prefix: %s, timeout: %ds)",
+        args.dry_run,
         args.clustering_prefix,
         args.r2_prefix,
         args.timeout,
@@ -234,7 +244,7 @@ def main() -> None:
     contexts_path = args.contexts if args.contexts is not None else _DEFAULT_CONTEXTS_JSONL
     contexts = load_contexts(contexts_path)
 
-    run_dir = RUN_OUTPUT_DIR / RUN_TIMESTAMP
+    run_dir = RUN_OUTPUT_DIR / (f"dry_run_{RUN_TIMESTAMP}" if args.dry_run else RUN_TIMESTAMP)
     run_dir.mkdir(parents=True, exist_ok=True)
     csv_summary_path = run_dir / "run.csv"
     metadata_path = run_dir / "metadata.json"
@@ -269,6 +279,28 @@ def main() -> None:
             skipped += 1
             continue
         work_items.append((srx, input_r2_key, output_r2_key, position, _row_to_metadata(row)))
+
+    if args.dry_run:
+        log.info(
+            "Dry-run: would submit %d accession(s) to CyteType (no R2 downloads, API calls, or uploads performed)",
+            len(work_items),
+        )
+        for srx, input_r2_key, output_r2_key, position, _metadata in work_items:
+            log.info(
+                "%s (%s): would submit to CyteType (input=%s, output=%s)",
+                srx,
+                position,
+                input_r2_key,
+                output_r2_key,
+            )
+            _append_summary_row(csv_summary_path, srx, "dry_run", position, input_r2_key, output_r2_key)
+        log.info(
+            "Dry-run complete. %d would-run, %d skipped or missing input. Plan written to %s",
+            len(work_items),
+            skipped,
+            run_dir,
+        )
+        return
 
     if args.timeout > 0:
         if args.workers != 1:
