@@ -281,10 +281,21 @@ def main() -> None:
         work_items.append((srx, input_r2_key, output_r2_key, position, _row_to_metadata(row)))
 
     if args.dry_run:
-        log.info(
-            "Dry-run: would submit %d accession(s) to CyteType (no R2 downloads, API calls, or uploads performed)",
-            len(work_items),
-        )
+        log.info("Dry-run: no R2 downloads, CyteType API calls, or R2 uploads will be performed")
+        if args.timeout > 0:
+            if args.workers != 1:
+                log.info(
+                    "--timeout set; would force serial execution (ignoring --workers=%d)", args.workers
+                )
+            log.info(
+                "Would run %d accession(s) serially with %d seconds sleep between runs",
+                len(work_items),
+                args.timeout,
+            )
+        else:
+            log.info(
+                "Would submit %d accession(s) to %d worker(s)", len(work_items), args.workers
+            )
         for srx, input_r2_key, output_r2_key, position, _metadata in work_items:
             log.info(
                 "%s (%s): would submit to CyteType (input=%s, output=%s)",
