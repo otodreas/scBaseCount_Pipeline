@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 import pyarrow.compute as pc
 import pyarrow.dataset as ds
@@ -10,14 +8,6 @@ from pydantic import BaseModel
 from metadata.config import MetadataConfig
 
 _QC_COLUMNS = ["SRX_accession", "gene_count_Unique", "umi_count_Unique"]
-_EXPORT_COLUMNS = [
-    "srx_accession",
-    "file_path",
-    "obs_count",
-    "medianGenesPerCell",
-    "medianUmisPerCell",
-    "nCellsForQc",
-]
 
 
 class QcThresholds(BaseModel):
@@ -64,26 +54,3 @@ def apply_qc(samplesDf: pd.DataFrame, qcDf: pd.DataFrame, thresholds: QcThreshol
     if thresholds.minMedianUmisPerCell is not None:
         mask &= merged["medianUmisPerCell"] >= thresholds.minMedianUmisPerCell
     return merged.loc[mask].reset_index(drop=True)
-
-
-def export_datasets_qc(
-    filteredDf: pd.DataFrame,
-    cfg: MetadataConfig,
-    filename: str = "datasets_qc.csv",
-    outputPath: Path | None = None,
-) -> Path:
-    """Write the QC-filtered dataset CSV and return its path.
-
-    If outputPath is provided it is used verbatim; otherwise the file is written to
-    cfg.outputDir / filename. The CSV always contains srx_accession, file_path,
-    obs_count, medianGenesPerCell, medianUmisPerCell, nCellsForQc.
-    """
-    if outputPath is None:
-        cfg.outputDir.mkdir(parents=True, exist_ok=True)
-        target = cfg.outputDir / filename
-    else:
-        outputPath.parent.mkdir(parents=True, exist_ok=True)
-        target = outputPath
-
-    filteredDf[_EXPORT_COLUMNS].to_csv(target, index=False)
-    return target

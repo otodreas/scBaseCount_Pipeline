@@ -214,25 +214,33 @@
   "ERX11876750": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876751": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876752": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876753": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876754": {
@@ -294,25 +302,33 @@
   "ERX11876763": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876764": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876765": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876767": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876768": {
@@ -342,13 +358,17 @@
   "ERX11876771": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX11876772": {
     "disease": "non-small cell squamous lung carcinoma",
     "categories": [
-      "Lung Cancer"
+      "Lung Cancer",
+      "Non-small Cell Lung Cancer (NSCLC)",
+      "Lung Squamous Cell Carcinoma (LUSC)"
     ]
   },
   "ERX4409913": {
@@ -514,11 +534,15 @@
   },
   "SRX10425169": {
     "disease": "idiopathic pulmonary arterial hypertension (IPAH)",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX10425170": {
     "disease": "idiopathic pulmonary arterial hypertension (IPAH)",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX10957183": {
     "disease": "lung adenocarcinoma",
@@ -527,10 +551,6 @@
       "Non-small Cell Lung Cancer (NSCLC)",
       "Lung Adenocarcinoma (LUAD)"
     ]
-  },
-  "SRX10984882": {
-    "disease": "no disease; replicative senescence model",
-    "categories": []
   },
   "SRX11143423": {
     "disease": "lung cancer",
@@ -727,7 +747,9 @@
   },
   "SRX12509396": {
     "disease": "Pulmonary arterial hypertension",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX12571167": {
     "disease": "Acute cellular rejection (lung transplant)",
@@ -925,9 +947,7 @@
   },
   "SRX14767848": {
     "disease": "non-cystic fibrosis",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX14767851": {
     "disease": "Cystic Fibrosis",
@@ -1148,11 +1168,15 @@
   },
   "SRX16757156": {
     "disease": "pulmonary arterial hypertension (PAH)",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX16757157": {
     "disease": "pulmonary arterial hypertension (PAH)",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX17035589": {
     "disease": "NSCLC",
@@ -1659,11 +1683,15 @@
   },
   "SRX19233503": {
     "disease": "chronic thromboembolic pulmonary hypertension",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX19233504": {
     "disease": "Chronic Thromboembolic Pulmonary Hypertension (CTEPH)",
-    "categories": []
+    "categories": [
+      "Pulmonary Hypertension"
+    ]
   },
   "SRX19264641": {
     "disease": "non-small cell lung cancer",
@@ -1935,24 +1963,6 @@
     "disease": "Interstitial Pneumonia with Autoimmune Features (IPAF)",
     "categories": []
   },
-  "SRX19727425": {
-    "disease": "no COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
-  "SRX19727426": {
-    "disease": "no COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
-  "SRX19727427": {
-    "disease": "no COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
   "SRX19727428": {
     "disease": "Chronic Obstructive Pulmonary Disease (COPD)",
     "categories": [
@@ -1979,12 +1989,6 @@
   },
   "SRX19727432": {
     "disease": "moderate COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
-  "SRX19727433": {
-    "disease": "no COPD",
     "categories": [
       "COPD"
     ]
@@ -2034,19 +2038,22 @@
   "SRX19836243": {
     "disease": "pulmonary hypertension associated with pulmonary fibrosis",
     "categories": [
-      "IPF / Pulmonary Fibrosis"
+      "IPF / Pulmonary Fibrosis",
+      "Pulmonary Hypertension"
     ]
   },
   "SRX19836244": {
     "disease": "Pulmonary hypertension associated with pulmonary fibrosis (PHPF)",
     "categories": [
-      "IPF / Pulmonary Fibrosis"
+      "IPF / Pulmonary Fibrosis",
+      "Pulmonary Hypertension"
     ]
   },
   "SRX19836245": {
     "disease": "pulmonary hypertension associated with pulmonary fibrosis",
     "categories": [
-      "IPF / Pulmonary Fibrosis"
+      "IPF / Pulmonary Fibrosis",
+      "Pulmonary Hypertension"
     ]
   },
   "SRX19844818": {
@@ -3291,12 +3298,6 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX23395185": {
-    "disease": "no specific disease; study on SARS-CoV-2 response",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
   "SRX23395186": {
     "disease": "infected with SARS-CoV-2",
     "categories": [
@@ -3528,50 +3529,6 @@
       "Lung Cancer",
       "Small Cell Lung Cancer (SCLC)"
     ]
-  },
-  "SRX24073302": {
-    "disease": "Non-disease status",
-    "categories": []
-  },
-  "SRX24073303": {
-    "disease": "non-disease",
-    "categories": []
-  },
-  "SRX24073304": {
-    "disease": "non-disease",
-    "categories": []
-  },
-  "SRX24073307": {
-    "disease": "non-disease",
-    "categories": []
-  },
-  "SRX24073312": {
-    "disease": "Non-disease human lung tissue",
-    "categories": []
-  },
-  "SRX24073314": {
-    "disease": "Not indicated (non-disease)",
-    "categories": []
-  },
-  "SRX24073315": {
-    "disease": "Non-disease",
-    "categories": []
-  },
-  "SRX24073318": {
-    "disease": "non-disease",
-    "categories": []
-  },
-  "SRX24073319": {
-    "disease": "no disease",
-    "categories": []
-  },
-  "SRX24073324": {
-    "disease": "non-disease donor lungs",
-    "categories": []
-  },
-  "SRX24073325": {
-    "disease": "non-disease",
-    "categories": []
   },
   "SRX24275202": {
     "disease": "COVID-19",
@@ -4262,54 +4219,14 @@
     "disease": "Influenza virus infection",
     "categories": []
   },
-  "SRX27465233": {
-    "disease": "No disease diagnosis; donor EBV-positive, CMV-positive; cause of death anoxia (brain stem death)",
-    "categories": []
-  },
-  "SRX27465283": {
-    "disease": "No specific disease reported; donor cause of death: anoxia; EBV and CMV positive, but no diagnosed pathology",
-    "categories": []
-  },
-  "SRX27465288": {
-    "disease": "no diagnosed disease; EBV-positive and CMV-positive samples",
-    "categories": []
-  },
-  "SRX27465304": {
-    "disease": "no diagnosed disease; donor EBV+ and CMV+; brain-stem death (anoxia)",
-    "categories": []
-  },
-  "SRX27465368": {
-    "disease": "No diagnosed disease; EBV-positive, CMV-positive donor",
-    "categories": []
-  },
   "SRX27995731": {
     "disease": "Lung Cancer",
     "categories": [
       "Lung Cancer"
     ]
   },
-  "SRX28768400": {
-    "disease": "Deceased organ donors (brain-stem death due to cerebrovascular event/stroke); no disease cohort",
-    "categories": []
-  },
-  "SRX28768647": {
-    "disease": "EBV positive, CMV negative, no specific disease",
-    "categories": []
-  },
-  "SRX28768666": {
-    "disease": "No diagnosed disease; cause of death: cerebrovascular/stroke; EBV positive, CMV negative",
-    "categories": []
-  },
   "SRX28769081": {
     "disease": "pancreatic cancer",
-    "categories": []
-  },
-  "SRX28769129": {
-    "disease": "No disease; donor: EBV+, CMV+, cause of death stroke, heavy smoker, high blood sugar",
-    "categories": []
-  },
-  "SRX28769193": {
-    "disease": "no overt disease; donor positive for EBV and CMV (latent infection)",
     "categories": []
   },
   "SRX28769201": {
@@ -4495,10 +4412,6 @@
       "Non-small Cell Lung Cancer (NSCLC)"
     ]
   },
-  "SRX8008855": {
-    "disease": "no record of lung disease or smoking in donors",
-    "categories": []
-  },
   "SRX8349956": {
     "disease": "Cystic fibrosis",
     "categories": [
@@ -4653,12 +4566,6 @@
     "disease": "pancreatic ductal adenocarcinoma metastasis",
     "categories": []
   },
-  "SRX9078407": {
-    "disease": "no donor disease; experimental SARS-CoV-2 infection",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
   "SRX9127142": {
     "disease": "idiopathic pulmonary fibrosis (IPF)",
     "categories": [
@@ -4679,33 +4586,23 @@
   },
   "SRX9246190": {
     "disease": "non-cystic fibrosis (non-CF)",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX9246191": {
     "disease": "cystic fibrosis (CF) and non-CF",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX9246192": {
     "disease": "non-cystic fibrosis (non-CF)",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX9246194": {
     "disease": "cystic fibrosis (CF) and non-CF",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX9246195": {
     "disease": "non-cystic fibrosis (non-CF)",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX9246197": {
     "disease": "cystic fibrosis",
@@ -4739,9 +4636,7 @@
   },
   "SRX9246203": {
     "disease": "cystic fibrosis (CF) and non-CF",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
+    "categories": []
   },
   "SRX9246204": {
     "disease": "cystic fibrosis",

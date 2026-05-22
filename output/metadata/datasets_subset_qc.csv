@@ -1,79 +1,79 @@
 srx_accession,file_path,obs_count,disease,diseaseLabel,medianGenesPerCell,medianUmisPerCell,nCellsForQc
-SRX9276333,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276333.h5ad,4841,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1773.0,3877.0,4841
-SRX19844833,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19844833.h5ad,14577,IPF (Idiopathic Pulmonary Fibrosis),IPF / Pulmonary Fibrosis,1332.0,3218.0,14577
-SRX27113454,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27113454.h5ad,5881,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2046.0,4501.0,5881
-SRX9276322,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276322.h5ad,3846,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2075.0,5218.0,3846
-SRX10048385,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048385.h5ad,12369,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2244.0,4453.0,12369
+SRX17412823,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412823.h5ad,3908,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1365.5,3579.5,3908
+SRX6812462,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6812462.h5ad,4665,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,5833.0,23609.0,4665
+SRX19844821,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19844821.h5ad,11996,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1059.0,1725.0,11996
 SRX19844846,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19844846.h5ad,1399,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1256.0,2725.0,1399
+SRX9276336,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276336.h5ad,4175,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1026.0,2037.0,4175
+SRX27291574,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27291574.h5ad,10751,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1395.0,2416.0,10751
 SRX17412850,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412850.h5ad,5900,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1128.5,2414.5,5900
-SRX17412840,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412840.h5ad,3980,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1866.5,4620.5,3980
-SRX17412833,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412833.h5ad,1244,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1261.5,2664.5,1244
-SRX9276323,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276323.h5ad,6333,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2153.0,6026.0,6333
-SRX19704159,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704159.h5ad,18023,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1311.0,3024.0,18023
-SRX27291603,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27291603.h5ad,9198,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1976.0,2914.0,9198
-SRX17689209,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17689209.h5ad,3460,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,2084.5,5925.0,3460
-SRX27291589,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27291589.h5ad,3179,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,2575.0,4687.0,3179
-SRX19704196,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704196.h5ad,7615,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1245.0,2571.0,7615
-SRX19844825,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19844825.h5ad,1676,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1897.0,4177.5,1676
-SRX9276306,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276306.h5ad,7613,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2014.0,4795.0,7613
-SRX10048375,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048375.h5ad,11687,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2306.0,5095.0,11687
+SRX6726382,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726382.h5ad,11083,pulmonary fibrosis,IPF / Pulmonary Fibrosis,2582.0,6853.0,11083
 SRX6726383,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726383.h5ad,1815,pulmonary fibrosis,IPF / Pulmonary Fibrosis,1786.0,5407.0,1815
-SRX27291578,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27291578.h5ad,3602,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1427.0,2524.0,3602
+SRX27291623,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27291623.h5ad,7873,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1569.0,2261.0,7873
+SRX19704158,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704158.h5ad,14887,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1219.0,2662.0,14887
+SRX9276309,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276309.h5ad,2881,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1313.0,3409.0,2881
+SRX17412828,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412828.h5ad,5783,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1310.0,2974.0,5783
+SRX17412832,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412832.h5ad,4817,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1925.0,4810.0,4817
+SRX17689209,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17689209.h5ad,3460,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,2084.5,5925.0,3460
+SRX19704159,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704159.h5ad,18023,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1311.0,3024.0,18023
+SRX19844825,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19844825.h5ad,1676,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1897.0,4177.5,1676
+SRX17412848,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412848.h5ad,4625,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1612.0,3851.0,4625
 SRX27113463,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27113463.h5ad,3449,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,1419.0,2760.0,3449
+SRX9276323,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276323.h5ad,6333,idiopathic pulmonary fibrosis (IPF),IPF / Pulmonary Fibrosis,2153.0,6026.0,6333
 SRX19704188,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704188.h5ad,10103,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1047.0,2122.0,10103
 SRX17689203,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17689203.h5ad,3755,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1620.0,4412.0,3755
 SRX17689200,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17689200.h5ad,4340,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,2183.5,6478.0,4340
-SRX19844821,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19844821.h5ad,11996,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1059.0,1725.0,11996
-SRX23724123,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724123.h5ad,6524,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,3169.5,8892.5,6524
-SRX12285822,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12285822.h5ad,4377,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,3538.0,11048.0,4377
-SRX15263317,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15263317.h5ad,4433,COVID-19,COVID-19 / SARS-CoV-2,4110.0,11010.0,4433
-SRX22226492,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226492.h5ad,3967,acute respiratory distress syndrome (ARDS) from COVID-19,COVID-19 / SARS-CoV-2,2034.0,4055.0,3967
-SRX23724096,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724096.h5ad,11802,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1571.5,2837.0,11802
-SRX23724098,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724098.h5ad,11246,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1427.5,2577.0,11246
-SRX10048397,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048397.h5ad,2298,"COVID-19, ARDS, lethal infection",COVID-19 / SARS-CoV-2,1287.5,1972.5,2298
-SRX22226494,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226494.h5ad,3264,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1416.0,2586.5,3264
-SRX9078407,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9078407.h5ad,2138,no donor disease; experimental SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,6333.5,29893.0,2138
-SRX23331471,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23331471.h5ad,7637,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,5463.0,21010.0,7637
-SRX22226505,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226505.h5ad,4581,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2882.0,6850.0,4581
-SRX10048373,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048373.h5ad,13251,"COVID-19, idiopathic pulmonary fibrosis (IPF)",COVID-19 / SARS-CoV-2,1647.0,3111.0,13251
-SRX23724110,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724110.h5ad,8925,COVID-19 (SARS-CoV-2 infection),COVID-19 / SARS-CoV-2,1751.0,3352.0,8925
-SRX15263316,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15263316.h5ad,5356,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,4763.5,16285.0,5356
-SRX10048389,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048389.h5ad,10008,COVID-19,COVID-19 / SARS-CoV-2,2367.5,4941.5,10008
-SRX23724122,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724122.h5ad,4650,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1391.0,2491.5,4650
-SRX23802728,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23802728.h5ad,18972,SARS-CoV-2 infection (COVID-19),COVID-19 / SARS-CoV-2,1756.0,3239.0,18972
-SRX22226498,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226498.h5ad,3308,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1337.0,2395.5,3308
-SRX23802731,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23802731.h5ad,22441,SARS-CoV-2 infection (COVID-19 model),COVID-19 / SARS-CoV-2,1448.0,2530.0,22441
-SRX23724094,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724094.h5ad,9504,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2721.5,5811.0,9504
+SRX19704196,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704196.h5ad,7615,idiopathic pulmonary fibrosis,IPF / Pulmonary Fibrosis,1245.0,2571.0,7615
+SRX27291612,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27291612.h5ad,21984,Idiopathic Pulmonary Fibrosis (IPF),IPF / Pulmonary Fibrosis,1610.0,2512.0,21984
 SRX23724085,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724085.h5ad,4982,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,4008.0,13032.5,4982
-SRX11438987,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11438987.h5ad,1481,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1380.0,3615.0,1481
-SRX23724082,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724082.h5ad,19177,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1781.0,3050.0,19177
-SRX23802736,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23802736.h5ad,18482,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1692.0,3068.0,18482
-SRX23724124,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724124.h5ad,1953,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2601.0,6283.0,1953
-SRX17412809,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412809.h5ad,4663,COPD,COPD,1445.0,3481.0,4663
-SRX25038170,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038170.h5ad,6293,Chronic Obstructive Pulmonary Disease (COPD),COPD,1641.0,3696.0,6293
-SRX25038168,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038168.h5ad,6592,"lung cancer, COPD",COPD,1807.0,4194.5,6592
-SRX17412813,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412813.h5ad,3393,COPD (chronic obstructive pulmonary disease),COPD,1150.0,2379.0,3393
-SRX17412820,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412820.h5ad,3836,chronic obstructive pulmonary disease (COPD),COPD,1153.0,2525.0,3836
-SRX17412821,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412821.h5ad,5103,COPD,COPD,1040.0,1998.0,5103
-SRX19727427,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727427.h5ad,2183,no COPD,COPD,1253.0,2574.0,2183
-SRX19727426,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727426.h5ad,1865,no COPD,COPD,1722.0,3950.0,1865
-SRX19727435,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727435.h5ad,1465,moderate COPD,COPD,1582.0,3510.0,1465
-SRX25038163,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038163.h5ad,5676,lung cancer (patients with COPD),COPD,1830.0,4578.5,5676
-SRX19727434,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727434.h5ad,2172,moderate COPD,COPD,1313.5,2590.5,2172
-SRX24841616,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24841616.h5ad,11915,COPD explant,COPD,1478.0,3132.0,11915
-SRX17412805,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412805.h5ad,5424,COPD,COPD,1155.5,2464.5,5424
+SRX10048389,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048389.h5ad,10008,COVID-19,COVID-19 / SARS-CoV-2,2367.5,4941.5,10008
+SRX15263316,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15263316.h5ad,5356,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,4763.5,16285.0,5356
+SRX23724096,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724096.h5ad,11802,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1571.5,2837.0,11802
+SRX22226494,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226494.h5ad,3264,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1416.0,2586.5,3264
+SRX10100448,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10100448.h5ad,28784,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,3024.0,7278.5,28784
+SRX12285822,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12285822.h5ad,4377,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,3538.0,11048.0,4377
+SRX23331471,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23331471.h5ad,7637,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,5463.0,21010.0,7637
+SRX8353568,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8353568.h5ad,6819,SARS-CoV-2 (COVID-19) in vitro model,COVID-19 / SARS-CoV-2,3875.0,13546.0,6819
+SRX23724094,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724094.h5ad,9504,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2721.5,5811.0,9504
+SRX23724088,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724088.h5ad,4947,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2313.0,5182.0,4947
+SRX22226492,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226492.h5ad,3967,acute respiratory distress syndrome (ARDS) from COVID-19,COVID-19 / SARS-CoV-2,2034.0,4055.0,3967
+SRX23802731,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23802731.h5ad,22441,SARS-CoV-2 infection (COVID-19 model),COVID-19 / SARS-CoV-2,1448.0,2530.0,22441
+SRX23395191,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23395191.h5ad,2178,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1456.5,2933.0,2178
+SRX23724122,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724122.h5ad,4650,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1391.0,2491.5,4650
+SRX22226505,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226505.h5ad,4581,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2882.0,6850.0,4581
+SRX17137139,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17137139.h5ad,19000,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2710.0,6768.0,19000
+SRX11438989,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11438989.h5ad,4159,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,2183.0,5065.0,4159
+SRX23724098,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724098.h5ad,11246,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1427.5,2577.0,11246
+SRX22226500,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226500.h5ad,1989,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1941.0,3925.0,1989
+SRX22226496,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22226496.h5ad,3044,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,1133.0,1852.5,3044
+SRX23724110,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724110.h5ad,8925,COVID-19 (SARS-CoV-2 infection),COVID-19 / SARS-CoV-2,1751.0,3352.0,8925
+SRX15263317,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15263317.h5ad,4433,COVID-19,COVID-19 / SARS-CoV-2,4110.0,11010.0,4433
+SRX23802728,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23802728.h5ad,18972,SARS-CoV-2 infection (COVID-19),COVID-19 / SARS-CoV-2,1756.0,3239.0,18972
+SRX23724123,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23724123.h5ad,6524,SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,3169.5,8892.5,6524
+SRX14098306,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14098306.h5ad,10561,COPD,COPD,1493.0,2833.0,10561
 SRX24841614,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24841614.h5ad,14702,Chronic Obstructive Pulmonary Disease (COPD),COPD,1447.5,3280.0,14702
-SRX25038169,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038169.h5ad,5479,COPD,COPD,3127.0,9927.0,5479
-SRX25038161,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038161.h5ad,5061,"lung cancer, COPD",COPD,3424.0,10179.0,5061
-SRX17412815,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412815.h5ad,2251,COPD,COPD,2312.0,7523.0,2251
-SRX25038164,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038164.h5ad,3905,chronic obstructive pulmonary disease (COPD),COPD,1587.0,3156.0,3905
-SRX19727431,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727431.h5ad,2180,mild COPD,COPD,1901.0,4241.5,2180
-SRX25038165,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038165.h5ad,6500,chronic obstructive pulmonary disease (COPD),COPD,1813.5,4775.0,6500
-SRX17412814,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412814.h5ad,2886,COPD,COPD,1081.0,2432.5,2886
-SRX19727436,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727436.h5ad,1324,moderate COPD,COPD,1761.0,3848.0,1324
-SRX25038166,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038166.h5ad,5058,COPD,COPD,1191.0,2386.5,5058
+SRX25038171,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038171.h5ad,5965,COPD,COPD,3911.0,13778.0,5965
 SRX24841619,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24841619.h5ad,6104,COPD explant,COPD,2722.0,8254.0,6104
-SRX17412818,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412818.h5ad,2375,COPD,COPD,1647.0,4451.0,2375
+SRX19727434,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727434.h5ad,2172,moderate COPD,COPD,1313.5,2590.5,2172
+SRX25038164,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038164.h5ad,3905,chronic obstructive pulmonary disease (COPD),COPD,1587.0,3156.0,3905
+SRX17412815,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412815.h5ad,2251,COPD,COPD,2312.0,7523.0,2251
+SRX17412814,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412814.h5ad,2886,COPD,COPD,1081.0,2432.5,2886
+SRX24732576,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24732576.h5ad,3506,COPD,COPD,2066.0,4717.5,3506
+SRX19727435,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727435.h5ad,1465,moderate COPD,COPD,1582.0,3510.0,1465
+SRX25038172,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038172.h5ad,4774,COPD,COPD,1833.5,4300.5,4774
+SRX19727432,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727432.h5ad,3078,moderate COPD,COPD,1710.0,4349.0,3078
+SRX25038165,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038165.h5ad,6500,chronic obstructive pulmonary disease (COPD),COPD,1813.5,4775.0,6500
+SRX17412820,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412820.h5ad,3836,chronic obstructive pulmonary disease (COPD),COPD,1153.0,2525.0,3836
+SRX17412809,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412809.h5ad,4663,COPD,COPD,1445.0,3481.0,4663
+SRX19727428,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727428.h5ad,3200,Chronic Obstructive Pulmonary Disease (COPD),COPD,1643.5,4435.0,3200
+SRX24841617,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24841617.h5ad,8852,COPD (Chronic Obstructive Pulmonary Disease),COPD,1845.5,4665.5,8852
+SRX24841616,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24841616.h5ad,11915,COPD explant,COPD,1478.0,3132.0,11915
+SRX25038166,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038166.h5ad,5058,COPD,COPD,1191.0,2386.5,5058
+SRX17412813,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412813.h5ad,3393,COPD (chronic obstructive pulmonary disease),COPD,1150.0,2379.0,3393
+SRX19727429,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19727429.h5ad,4757,mild COPD,COPD,1688.0,3706.0,4757
+SRX25038162,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038162.h5ad,5239,"lung cancer, COPD",COPD,2352.0,5814.0,5239
+SRX24732577,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24732577.h5ad,2635,COPD,COPD,1904.0,4108.0,2635
+SRX17412812,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412812.h5ad,3340,COPD,COPD,1405.5,3263.0,3340
+SRX25038170,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25038170.h5ad,6293,Chronic Obstructive Pulmonary Disease (COPD),COPD,1641.0,3696.0,6293
 SRX17896691,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17896691.h5ad,3164,"interstitial lung disease, viral infection, human lung development",Interstitial Lung Disease,6080.0,25246.0,3164
 SRX9276318,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276318.h5ad,6032,systemic sclerosis-associated interstitial lung disease (SSc-ILD),Interstitial Lung Disease,2069.0,5402.5,6032
 SRX9276290,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276290.h5ad,4397,systemic sclerosis-associated interstitial lung disease (SSc-ILD),Interstitial Lung Disease,1330.0,3091.0,4397
@@ -94,28 +94,24 @@ SRX19844839,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/Ge
 SRX9276295,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276295.h5ad,6395,systemic sclerosis-associated interstitial lung disease (SSc-ILD),Interstitial Lung Disease,1020.0,2375.0,6395
 SRX9276291,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9276291.h5ad,4355,systemic sclerosis-associated interstitial lung disease (SSc-ILD),Interstitial Lung Disease,1441.0,4001.0,4355
 SRX19704194,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704194.h5ad,9500,Interstitial Lung Disease (ILD),Interstitial Lung Disease,1142.0,1759.5,9500
-SRX9246190,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246190.h5ad,10738,non-cystic fibrosis (non-CF),Cystic Fibrosis,4237.5,13586.5,10738
-SRX8349956,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349956.h5ad,1400,Cystic fibrosis,Cystic Fibrosis,1876.0,7583.5,1400
-SRX9246191,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246191.h5ad,3714,cystic fibrosis (CF) and non-CF,Cystic Fibrosis,5566.0,20851.5,3714
-SRX9246205,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246205.h5ad,2325,cystic fibrosis,Cystic Fibrosis,5029.0,18018.0,2325
 SRX17664572,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17664572.h5ad,5086,cystic fibrosis,Cystic Fibrosis,2770.0,6167.0,5086
-SRX9246203,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246203.h5ad,4431,cystic fibrosis (CF) and non-CF,Cystic Fibrosis,4420.0,14096.0,4431
-SRX9246206,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246206.h5ad,7341,cystic fibrosis,Cystic Fibrosis,3835.0,13565.0,7341
-SRX9246192,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246192.h5ad,4699,non-cystic fibrosis (non-CF),Cystic Fibrosis,5524.0,19666.0,4699
-SRX9246197,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246197.h5ad,2614,cystic fibrosis,Cystic Fibrosis,6565.5,39972.0,2614
-SRX9246199,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246199.h5ad,5871,cystic fibrosis,Cystic Fibrosis,5069.0,23755.0,5871
-SRX9246195,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246195.h5ad,5793,non-cystic fibrosis (non-CF),Cystic Fibrosis,3937.0,12667.0,5793
-SRX14767855,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767855.h5ad,5221,cystic fibrosis,Cystic Fibrosis,3942.0,12392.0,5221
-SRX14767848,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767848.h5ad,9097,non-cystic fibrosis,Cystic Fibrosis,4034.0,13730.0,9097
-SRX14767852,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767852.h5ad,6492,Cystic Fibrosis,Cystic Fibrosis,4078.5,13559.0,6492
-SRX14767854,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767854.h5ad,6036,Cystic fibrosis context,Cystic Fibrosis,3281.5,10373.0,6036
-SRX9246194,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246194.h5ad,5742,cystic fibrosis (CF) and non-CF,Cystic Fibrosis,4075.5,13813.5,5742
-SRX8349959,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349959.h5ad,2309,cystic fibrosis (dF508/dF508),Cystic Fibrosis,3312.0,8945.0,2309
-SRX14767853,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767853.h5ad,9187,Cystic Fibrosis,Cystic Fibrosis,3190.0,8588.0,9187
-SRX8349961,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349961.h5ad,1689,cystic fibrosis (ΔF508/ΔF508 genotype),Cystic Fibrosis,2195.0,6390.0,1689
 SRX8349966,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349966.h5ad,1659,cystic fibrosis (dF508/1078delT genotype),Cystic Fibrosis,2333.0,6937.0,1659
-SRX9246207,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246207.h5ad,4659,cystic fibrosis,Cystic Fibrosis,4762.0,18344.0,4659
+SRX9246205,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246205.h5ad,2325,cystic fibrosis,Cystic Fibrosis,5029.0,18018.0,2325
+SRX14767855,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767855.h5ad,5221,cystic fibrosis,Cystic Fibrosis,3942.0,12392.0,5221
+SRX9246197,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246197.h5ad,2614,cystic fibrosis,Cystic Fibrosis,6565.5,39972.0,2614
+SRX14767851,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767851.h5ad,4962,Cystic Fibrosis,Cystic Fibrosis,3770.0,14509.0,4962
+SRX9246206,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246206.h5ad,7341,cystic fibrosis,Cystic Fibrosis,3835.0,13565.0,7341
+SRX14767853,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767853.h5ad,9187,Cystic Fibrosis,Cystic Fibrosis,3190.0,8588.0,9187
+SRX8349956,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349956.h5ad,1400,Cystic fibrosis,Cystic Fibrosis,1876.0,7583.5,1400
+SRX8349959,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349959.h5ad,2309,cystic fibrosis (dF508/dF508),Cystic Fibrosis,3312.0,8945.0,2309
+SRX9246208,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246208.h5ad,5714,cystic fibrosis,Cystic Fibrosis,4074.0,15275.0,5714
+SRX14767854,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767854.h5ad,6036,Cystic fibrosis context,Cystic Fibrosis,3281.5,10373.0,6036
+SRX9246199,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246199.h5ad,5871,cystic fibrosis,Cystic Fibrosis,5069.0,23755.0,5871
 SRX8349958,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349958.h5ad,2913,cystic fibrosis (ΔF508/ΔF508 genotype),Cystic Fibrosis,2935.0,9839.0,2913
-SRX9246201,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246201.h5ad,3109,cystic fibrosis,Cystic Fibrosis,5881.0,31590.0,3109
-SRX9246202,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246202.h5ad,15930,cystic fibrosis,Cystic Fibrosis,2999.0,9086.0,15930
+SRX14767852,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767852.h5ad,6492,Cystic Fibrosis,Cystic Fibrosis,4078.5,13559.0,6492
+SRX9246207,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246207.h5ad,4659,cystic fibrosis,Cystic Fibrosis,4762.0,18344.0,4659
 SRX9246200,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246200.h5ad,3759,cystic fibrosis,Cystic Fibrosis,6181.0,32677.0,3759
+SRX9246204,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246204.h5ad,4710,cystic fibrosis,Cystic Fibrosis,4118.0,14120.0,4710
+SRX9246201,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246201.h5ad,3109,cystic fibrosis,Cystic Fibrosis,5881.0,31590.0,3109
+SRX8349961,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8349961.h5ad,1689,cystic fibrosis (ΔF508/ΔF508 genotype),Cystic Fibrosis,2195.0,6390.0,1689
+SRX9246202,gs://arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9246202.h5ad,15930,cystic fibrosis,Cystic Fibrosis,2999.0,9086.0,15930

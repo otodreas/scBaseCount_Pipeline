@@ -7,7 +7,7 @@ from typing import TypedDict
 import pandas as pd
 
 from metadata.config import MetadataConfig
-from metadata.regexes import DISEASE_MAP
+from metadata.regexes import DISEASE_MAP, NON_CF_RE
 
 
 class AccessionDiseaseCategory(TypedDict):
@@ -21,9 +21,15 @@ def disease_categories_for(diseaseValue: str) -> list[str]:
     DISEASE_MAP is a hierarchy where parents and children can both match (for example
     a LUAD string matches Lung Cancer, NSCLC, and LUAD). Labels are returned in
     DISEASE_MAP order (parent before child). Empty list when no label matches.
+
+    Strings mentioning `non-CF` / `non-cystic fibrosis` are stripped of the
+    Cystic Fibrosis label so non-CF and mixed CF/non-CF rows fall into Other.
     """
     text = str(diseaseValue)
-    return [label for label, pat in DISEASE_MAP if pat.search(text)]
+    labels = [label for label, pat in DISEASE_MAP if pat.search(text)]
+    if NON_CF_RE.search(text):
+        labels = [label for label in labels if label != "Cystic Fibrosis"]
+    return labels
 
 
 def build_accession_disease_categories(samplesDf: pd.DataFrame) -> dict[str, AccessionDiseaseCategory]:

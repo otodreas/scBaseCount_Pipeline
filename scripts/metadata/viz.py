@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from metadata.categorize import disease_categories_for
 from metadata.filter import FilterResult
-from metadata.regexes import DISEASE_MAP
 
 _TABLEAU10 = [
     "#4e79a7",
@@ -65,13 +65,8 @@ def plot_disease_breakdown(result: FilterResult, figs_dir: Path) -> None:
     figs_dir.mkdir(parents=True, exist_ok=True)
 
     def _categorize(d: str) -> str:
-        # Walk DISEASE_MAP leaves-first so a row matching both a parent and its child
-        # is attributed to the most specific bucket. Relies on DISEASE_MAP being
-        # ordered parents-before-children (see scripts/metadata/regexes.py).
-        for label, pat in reversed(DISEASE_MAP):
-            if pat.search(str(d)):
-                return label
-        return "Other"
+        cats = disease_categories_for(d)
+        return cats[-1] if cats else "Other"
 
     disease_cats = result.lungIntersection["disease"].map(_categorize)
     cat_counts = disease_cats.value_counts()
