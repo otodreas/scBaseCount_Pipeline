@@ -47,20 +47,8 @@
       "IPF / Pulmonary Fibrosis"
     ]
   },
-  "SRX19704117": {
-    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
-    "categories": [
-      "IPF / Pulmonary Fibrosis"
-    ]
-  },
   "SRX19704131": {
     "disease": "idiopathic pulmonary fibrosis",
-    "categories": [
-      "IPF / Pulmonary Fibrosis"
-    ]
-  },
-  "SRX19704139": {
-    "disease": "pulmonary fibrosis",
     "categories": [
       "IPF / Pulmonary Fibrosis"
     ]
@@ -85,12 +73,6 @@
   },
   "SRX19704164": {
     "disease": "idiopathic pulmonary fibrosis",
-    "categories": [
-      "IPF / Pulmonary Fibrosis"
-    ]
-  },
-  "SRX27113452": {
-    "disease": "idiopathic pulmonary fibrosis (IPF)",
     "categories": [
       "IPF / Pulmonary Fibrosis"
     ]
@@ -137,12 +119,6 @@
       "IPF / Pulmonary Fibrosis"
     ]
   },
-  "SRX6726375": {
-    "disease": "pulmonary fibrosis",
-    "categories": [
-      "IPF / Pulmonary Fibrosis"
-    ]
-  },
   "SRX6726386": {
     "disease": "pulmonary fibrosis",
     "categories": [
@@ -156,12 +132,6 @@
     ]
   },
   "SRX9276302": {
-    "disease": "idiopathic pulmonary fibrosis (IPF)",
-    "categories": [
-      "IPF / Pulmonary Fibrosis"
-    ]
-  },
-  "SRX9276306": {
     "disease": "idiopathic pulmonary fibrosis (IPF)",
     "categories": [
       "IPF / Pulmonary Fibrosis"
@@ -186,12 +156,6 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX10048396": {
-    "disease": "COVID-19",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
   "SRX11438990": {
     "disease": "SARS-CoV-2 infection",
     "categories": [
@@ -210,14 +174,8 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX11515828": {
-    "disease": "COVID-19 (SARS-CoV-2 infection)",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
-  "SRX12285822": {
-    "disease": "SARS-CoV-2 infection",
+  "SRX11515843": {
+    "disease": "COVID-19, ARDS, critically ill",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
@@ -234,14 +192,20 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
+  "SRX14589433": {
+    "disease": "COVID-19",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
   "SRX15263316": {
     "disease": "SARS-CoV-2 infection",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX22226496": {
-    "disease": "SARS-CoV-2 infection",
+  "SRX15263317": {
+    "disease": "COVID-19",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
@@ -252,13 +216,7 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX23331462": {
-    "disease": "SARS-CoV-2 infection",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
-  "SRX23331463": {
+  "SRX22226505": {
     "disease": "SARS-CoV-2 infection",
     "categories": [
       "COVID-19 / SARS-CoV-2"
@@ -288,6 +246,12 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
+  "SRX23395192": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
   "SRX23724081": {
     "disease": "SARS-CoV-2 infection (COVID-19 model)",
     "categories": [
@@ -300,38 +264,20 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX23724085": {
-    "disease": "SARS-CoV-2 infection",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
-  "SRX23724088": {
-    "disease": "SARS-CoV-2 infection",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
   "SRX23724090": {
     "disease": "SARS-CoV-2 infection (COVID-19)",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX23724091": {
+  "SRX23724109": {
     "disease": "SARS-CoV-2 infection (COVID-19)",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX23724105": {
-    "disease": "SARS-CoV-2 infection (COVID-19)",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
-  "SRX23724111": {
-    "disease": "SARS-CoV-2 infection (ex vivo infection model)",
+  "SRX23724122": {
+    "disease": "SARS-CoV-2 infection",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
@@ -348,14 +294,8 @@
       "COVID-19 / SARS-CoV-2"
     ]
   },
-  "SRX23802731": {
-    "disease": "SARS-CoV-2 infection (COVID-19 model)",
-    "categories": [
-      "COVID-19 / SARS-CoV-2"
-    ]
-  },
-  "SRX8353568": {
-    "disease": "SARS-CoV-2 (COVID-19) in vitro model",
+  "SRX8353571": {
+    "disease": "SARS-CoV-2 infection",
     "categories": [
       "COVID-19 / SARS-CoV-2"
     ]
@@ -390,7 +330,7 @@
       "COPD"
     ]
   },
-  "SRX17412811": {
+  "SRX17412808": {
     "disease": "COPD",
     "categories": [
       "COPD"
@@ -402,19 +342,7 @@
       "COPD"
     ]
   },
-  "SRX17412814": {
-    "disease": "COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
   "SRX17412815": {
-    "disease": "COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
-  "SRX17412818": {
     "disease": "COPD",
     "categories": [
       "COPD"
@@ -426,20 +354,8 @@
       "COPD"
     ]
   },
-  "SRX17412821": {
-    "disease": "COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
   "SRX17412822": {
     "disease": "COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
-  "SRX19727426": {
-    "disease": "no COPD",
     "categories": [
       "COPD"
     ]
@@ -456,20 +372,20 @@
       "COPD"
     ]
   },
-  "SRX19727432": {
-    "disease": "moderate COPD",
-    "categories": [
-      "COPD"
-    ]
-  },
   "SRX19727433": {
     "disease": "no COPD",
     "categories": [
       "COPD"
     ]
   },
-  "SRX19727436": {
-    "disease": "moderate COPD",
+  "SRX24732576": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX24732577": {
+    "disease": "COPD",
     "categories": [
       "COPD"
     ]
@@ -486,22 +402,15 @@
       "COPD"
     ]
   },
-  "SRX24841616": {
-    "disease": "COPD explant",
-    "categories": [
-      "COPD"
-    ]
-  },
   "SRX24841618": {
     "disease": "COPD explant",
     "categories": [
       "COPD"
     ]
   },
-  "SRX25038162": {
-    "disease": "lung cancer, COPD",
+  "SRX24841619": {
+    "disease": "COPD explant",
     "categories": [
-      "Lung Cancer",
       "COPD"
     ]
   },
@@ -512,7 +421,7 @@
       "COPD"
     ]
   },
-  "SRX25038165": {
+  "SRX25038164": {
     "disease": "chronic obstructive pulmonary disease (COPD)",
     "categories": [
       "COPD"
@@ -524,14 +433,13 @@
       "COPD"
     ]
   },
-  "SRX25038168": {
-    "disease": "lung cancer, COPD",
+  "SRX25038167": {
+    "disease": "Chronic Obstructive Pulmonary Disease (COPD)",
     "categories": [
-      "Lung Cancer",
       "COPD"
     ]
   },
-  "SRX25038169": {
+  "SRX25038171": {
     "disease": "COPD",
     "categories": [
       "COPD"
@@ -615,12 +523,6 @@
       "Interstitial Lung Disease"
     ]
   },
-  "SRX19844838": {
-    "disease": "Interstitial Lung Disease (ILD)",
-    "categories": [
-      "Interstitial Lung Disease"
-    ]
-  },
   "SRX19844839": {
     "disease": "ILD (Interstitial Lung Disease)",
     "categories": [
@@ -699,19 +601,7 @@
       "Interstitial Lung Disease"
     ]
   },
-  "SRX14767848": {
-    "disease": "non-cystic fibrosis",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
-  },
   "SRX14767851": {
-    "disease": "Cystic Fibrosis",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
-  },
-  "SRX14767852": {
     "disease": "Cystic Fibrosis",
     "categories": [
       "Cystic Fibrosis"
@@ -820,12 +710,6 @@
     ]
   },
   "SRX9246201": {
-    "disease": "cystic fibrosis",
-    "categories": [
-      "Cystic Fibrosis"
-    ]
-  },
-  "SRX9246202": {
     "disease": "cystic fibrosis",
     "categories": [
       "Cystic Fibrosis"
