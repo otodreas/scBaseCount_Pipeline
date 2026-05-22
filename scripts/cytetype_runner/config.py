@@ -12,3 +12,10 @@ class CyteTypeRunnerConfig(BaseModel):
     srxAccession: str
     outputDir: Path = _REPO_ROOT / "output" / "cytetype" / "data"
     jobDetailsDir: Path = _REPO_ROOT / "output" / "cytetype" / "job_details"
+
+
+class CyteTypeRunResult(BaseModel):
+    outputPath: Path
+    reportUrl: str = ""
+    jobId: str = ""
+    apiUrl: str = ""

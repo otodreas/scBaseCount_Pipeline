@@ -8,10 +8,11 @@ Runs the CyteType annotation step on a clustered h5ad file and writes the annota
 from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
 
 cfg = CyteTypeRunnerConfig(srxAccession="SRX12345678")
-cytetype_h5ad = run_cytetype(cfg, input_path, group_key, study_context)
+result = run_cytetype(cfg, input_path, group_key, study_context)
+print(result.outputPath, result.reportUrl)
 ```
 
-`run_cytetype` returns the path to the written annotated h5ad file. Job details are written automatically alongside it.
+`run_cytetype` returns a `CyteTypeRunResult` with `outputPath` (path to the annotated h5ad), `reportUrl`, `jobId`, and `apiUrl`. Job details are also written to disk alongside the h5ad.
 
 ### Extracting job details from an existing h5ad
 

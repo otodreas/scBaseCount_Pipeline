@@ -129,9 +129,14 @@ def process_accession(
         if not ctx:
             log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
 
-        cytetype_h5ad = run_cytetype(
+        result = run_cytetype(
             cytetype_cfg, local_clustered, MERGED_CLUSTER_KEY, study_context, metadata=metadata
         )
+        cytetype_h5ad = result.outputPath
+        if result.reportUrl:
+            log.info("%s: report URL: %s", srx, result.reportUrl)
+        else:
+            log.warning("%s: report URL not found in adata.uns['cytetype_jobDetails']", srx)
         safe_delete(local_clustered, log)
 
         upload_to_r2(cytetype_h5ad, output_r2_key)
