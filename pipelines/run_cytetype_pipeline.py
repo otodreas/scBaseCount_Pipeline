@@ -232,7 +232,7 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Plan the run without performing R2 downloads, CyteType API calls, or R2 uploads. "
-            "Writes run.csv and metadata.json under output/cytetype_pipeline/dry_run_{timestamp}/."
+            "Writes run.csv, job_details.csv, and metadata.json under output/cytetype_pipeline/dry_run_{timestamp}/."
         ),
     )
     return parser.parse_args()
