@@ -54,7 +54,7 @@ Filtering is applied in three steps:
 3. From the remaining `sampleKnown` set, build:
    - `lungUnion` — disease OR tissue matches a lung-related pattern
    - `lungIntersection` — disease AND tissue both match (primary analysis set; excludes samples with lung disease but non-lung tissue labels such as blood or PBMC)
-   - `lungIntersectionCancer` — intersection rows where disease matches `CANCER_RE`
+   - `lungIntersectionCancer` — intersection rows where disease matches `LUNG_CANCER_RE` (same definition `plot_disease_breakdown` uses for the lung-cancer subtree)
 
 The intersection is used as the primary set because the union contains off-target tissue labels (blood, liver, PBMC) that are lung-disease-associated but not lung tissue.
 
@@ -88,4 +88,4 @@ All default paths are relative to the repo root.
 | `filter.py` | `filter_lung(sample, cfg)` → `FilterResult` |
 | `export.py` | `export_datasets(result, cfg)` → `(datasets_path, quantiles_path)` |
 | `viz.py` | `plot_sample_breakdown`, `plot_disease_breakdown`, `plot_cell_count_distribution` |
-| `regexes.py` | `NORMAL_HEALTHY_RE`, `LUNG_DISEASE_RE`, `LUNG_TISSUE_RE`, `CANCER_RE`, `DISEASE_MAP` |
+| `regexes.py` | `NORMAL_HEALTHY_RE`, `LUNG_DISEASE_RE`, `LUNG_TISSUE_RE`, `LUNG_CANCER_RE`, `CANCER_RE`, `DISEASE_MAP` |

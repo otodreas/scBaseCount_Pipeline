@@ -58,14 +58,33 @@ CANCER_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Lung-cancer regex components, composed below into nested labels.
+# Hierarchy: Lung Cancer > {SCLC, NSCLC > {LUAD, LUSC, LCC}}.
+_LUAD_RE = r"\bLUAD\b|lung adenocarcinoma|adenocarcinoma of the lung"
+_LUSC_RE = r"\bLUSC\b|squamous cell carcinoma of the lung|lung squamous|squamous cell lung"
+_LCC_RE = r"\bLCC\b|large[\s-]cell carcinoma|large[\s-]cell lung|lung large[\s-]cell"
+_NSCLC_GENERIC_RE = r"\bNSCLC\b|non[\s-]small[\s-]cell lung|non[\s-]small[\s-]cell carcinoma|carcinoma non[\s-]small"
+_NSCLC_RE = "|".join([_NSCLC_GENERIC_RE, _LUAD_RE, _LUSC_RE, _LCC_RE])
+_SCLC_RE = r"\bSCLC\b|(?<!non[\s-])(?<!non)small[\s-]cell lung"
+_CANCER_TERMS = r"(?:cancer|carcinoma|tumou?r|malignancy|neoplasm)"
+_LUNG_CANCER_GENERIC_RE = (
+    rf"lung {_CANCER_TERMS}"
+    rf"|{_CANCER_TERMS} of the lung"
+    r"|\bMPLC\b|KRAS.mutant lung"
+)
+_LUNG_CANCER_RE = "|".join([_LUNG_CANCER_GENERIC_RE, _SCLC_RE, _NSCLC_RE])
+LUNG_CANCER_RE = re.compile(_LUNG_CANCER_RE, re.IGNORECASE)
+
 DISEASE_MAP: list[tuple[str, re.Pattern[str]]] = [
-    ("IPF / Pulmonary Fibrosis", re.compile(r"pulmonary fibrosis|IPF|idiopathic pulmonary fibrosis", re.IGNORECASE)),
-    ("COVID-19 / SARS-CoV-2", re.compile(r"COVID|SARS.CoV", re.IGNORECASE)),
-    ("Lung Adenocarcinoma (LUAD)", re.compile(r"lung adenocarcinoma|LUAD", re.IGNORECASE)),
-    ("NSCLC", re.compile(r"NSCLC|non.small.cell lung|non.small.cell carcinoma|carcinoma non.small", re.IGNORECASE)),
-    ("Lung Squamous Cell Carcinoma", re.compile(r"squamous cell carcinoma of the lung|lung squamous", re.IGNORECASE)),
+    ("IPF / Pulmonary Fibrosis", re.compile(r"pulmonary fibrosis|\bIPF\b|idiopathic pulmonary fibrosis", re.IGNORECASE)),
+    ("COVID-19 / SARS-CoV-2", re.compile(r"\bCOVID\b|SARS.CoV", re.IGNORECASE)),
+    ("Lung Cancer", LUNG_CANCER_RE),
+    ("Small Cell Lung Cancer (SCLC)", re.compile(_SCLC_RE, re.IGNORECASE)),
+    ("Non-small Cell Lung Cancer (NSCLC)", re.compile(_NSCLC_RE, re.IGNORECASE)),
+    ("Lung Adenocarcinoma (LUAD)", re.compile(_LUAD_RE, re.IGNORECASE)),
+    ("Lung Squamous Cell Carcinoma (LUSC)", re.compile(_LUSC_RE, re.IGNORECASE)),
+    ("Lung Large Cell Carcinoma (LCC)", re.compile(_LCC_RE, re.IGNORECASE)),
     ("COPD", re.compile(r"\bCOPD\b", re.IGNORECASE)),
-    ("Lung Cancer (general)", re.compile(r"lung cancer|lung carcinoma|MPLC|KRAS.mutant lung|SCLC", re.IGNORECASE)),
     ("Cystic Fibrosis", re.compile(r"cystic fibrosis", re.IGNORECASE)),
-    ("Interstitial Lung Disease", re.compile(r"interstitial lung|ILD|SSc", re.IGNORECASE)),
+    ("Interstitial Lung Disease", re.compile(r"interstitial lung|\bILD\b|\bSSc\b", re.IGNORECASE)),
 ]

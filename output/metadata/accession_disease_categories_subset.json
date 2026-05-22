@@ -1,0 +1,870 @@
+{
+  "SRX17412786": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412792": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412802": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412837": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412839": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412842": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412844": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX17412851": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704117": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704131": {
+    "disease": "idiopathic pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704139": {
+    "disease": "pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704142": {
+    "disease": "idiopathic pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704147": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704150": {
+    "disease": "pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX19704164": {
+    "disease": "idiopathic pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27113452": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27113453": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27291565": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27291582": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27291589": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27291603": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27291609": {
+    "disease": "Idiopathic Pulmonary Fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX27291624": {
+    "disease": "Idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX6726375": {
+    "disease": "pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX6726386": {
+    "disease": "pulmonary fibrosis",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX9127144": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX9276302": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX9276306": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX9276333": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX9276334": {
+    "disease": "idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis"
+    ]
+  },
+  "SRX10048373": {
+    "disease": "COVID-19, idiopathic pulmonary fibrosis (IPF)",
+    "categories": [
+      "IPF / Pulmonary Fibrosis",
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX10048396": {
+    "disease": "COVID-19",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX11438990": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX11438991": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX11438992": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX11515828": {
+    "disease": "COVID-19 (SARS-CoV-2 infection)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX12285822": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX12708356": {
+    "disease": "COVID-19",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX12708374": {
+    "disease": "COVID-19",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX15263316": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX22226496": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX22226500": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23331462": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23331463": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23331472": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23395179": {
+    "disease": "Infected with SARS-CoV-2",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23395184": {
+    "disease": "infected with SARS-CoV-2",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23395188": {
+    "disease": "infected with SARS-CoV-2",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724081": {
+    "disease": "SARS-CoV-2 infection (COVID-19 model)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724082": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724085": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724088": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724090": {
+    "disease": "SARS-CoV-2 infection (COVID-19)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724091": {
+    "disease": "SARS-CoV-2 infection (COVID-19)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724105": {
+    "disease": "SARS-CoV-2 infection (COVID-19)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724111": {
+    "disease": "SARS-CoV-2 infection (ex vivo infection model)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23724124": {
+    "disease": "SARS-CoV-2 infection",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23802728": {
+    "disease": "SARS-CoV-2 infection (COVID-19)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX23802731": {
+    "disease": "SARS-CoV-2 infection (COVID-19 model)",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX8353568": {
+    "disease": "SARS-CoV-2 (COVID-19) in vitro model",
+    "categories": [
+      "COVID-19 / SARS-CoV-2"
+    ]
+  },
+  "SRX14098302": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX14098306": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412805": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412806": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412807": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412811": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412813": {
+    "disease": "COPD (chronic obstructive pulmonary disease)",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412814": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412815": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412818": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412820": {
+    "disease": "chronic obstructive pulmonary disease (COPD)",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412821": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17412822": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX19727426": {
+    "disease": "no COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX19727427": {
+    "disease": "no COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX19727428": {
+    "disease": "Chronic Obstructive Pulmonary Disease (COPD)",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX19727432": {
+    "disease": "moderate COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX19727433": {
+    "disease": "no COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX19727436": {
+    "disease": "moderate COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX24841614": {
+    "disease": "Chronic Obstructive Pulmonary Disease (COPD)",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX24841615": {
+    "disease": "COPD explant",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX24841616": {
+    "disease": "COPD explant",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX24841618": {
+    "disease": "COPD explant",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX25038162": {
+    "disease": "lung cancer, COPD",
+    "categories": [
+      "Lung Cancer",
+      "COPD"
+    ]
+  },
+  "SRX25038163": {
+    "disease": "lung cancer (patients with COPD)",
+    "categories": [
+      "Lung Cancer",
+      "COPD"
+    ]
+  },
+  "SRX25038165": {
+    "disease": "chronic obstructive pulmonary disease (COPD)",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX25038166": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX25038168": {
+    "disease": "lung cancer, COPD",
+    "categories": [
+      "Lung Cancer",
+      "COPD"
+    ]
+  },
+  "SRX25038169": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX25038172": {
+    "disease": "COPD",
+    "categories": [
+      "COPD"
+    ]
+  },
+  "SRX17896691": {
+    "disease": "interstitial lung disease, viral infection, human lung development",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704118": {
+    "disease": "CTD-ILD (Interstitial Lung Disease)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704128": {
+    "disease": "Interstitial Lung Disease/Hypersensitivity Pneumonitis",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704169": {
+    "disease": "interstitial lung disease",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704170": {
+    "disease": "Interstitial Lung Disease (ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704171": {
+    "disease": "Interstitial Lung Disease (ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704193": {
+    "disease": "interstitial lung disease",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19704194": {
+    "disease": "Interstitial Lung Disease (ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19844818": {
+    "disease": "ILD (Interstitial Lung Disease)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19844819": {
+    "disease": "ILD (Interstitial Lung Disease)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19844836": {
+    "disease": "ILD (Interstitial Lung Disease)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19844837": {
+    "disease": "interstitial lung disease",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19844838": {
+    "disease": "Interstitial Lung Disease (ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX19844839": {
+    "disease": "ILD (Interstitial Lung Disease)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276289": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276290": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276291": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276292": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276293": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276294": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276295": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276315": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276316": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276318": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276319": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX9276320": {
+    "disease": "systemic sclerosis-associated interstitial lung disease (SSc-ILD)",
+    "categories": [
+      "Interstitial Lung Disease"
+    ]
+  },
+  "SRX14767848": {
+    "disease": "non-cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX14767851": {
+    "disease": "Cystic Fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX14767852": {
+    "disease": "Cystic Fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX14767853": {
+    "disease": "Cystic Fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX14767854": {
+    "disease": "Cystic fibrosis context",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX14767855": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX17664572": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX8349956": {
+    "disease": "Cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX8349958": {
+    "disease": "cystic fibrosis (\u0394F508/\u0394F508 genotype)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX8349959": {
+    "disease": "cystic fibrosis (dF508/dF508)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX8349961": {
+    "disease": "cystic fibrosis (\u0394F508/\u0394F508 genotype)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX8349966": {
+    "disease": "cystic fibrosis (dF508/1078delT genotype)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246190": {
+    "disease": "non-cystic fibrosis (non-CF)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246191": {
+    "disease": "cystic fibrosis (CF) and non-CF",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246192": {
+    "disease": "non-cystic fibrosis (non-CF)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246194": {
+    "disease": "cystic fibrosis (CF) and non-CF",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246195": {
+    "disease": "non-cystic fibrosis (non-CF)",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246197": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246199": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246200": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246201": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246202": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246203": {
+    "disease": "cystic fibrosis (CF) and non-CF",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246204": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246205": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246206": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246207": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  },
+  "SRX9246208": {
+    "disease": "cystic fibrosis",
+    "categories": [
+      "Cystic Fibrosis"
+    ]
+  }
+}
