@@ -4,7 +4,6 @@ import argparse
 import datetime
 import json
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import pandas as pd
@@ -198,18 +197,11 @@ def _parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--workers",
-        type=int,
-        default=1,
-        metavar="N",
-        help="Number of accessions to process in parallel (default: 1)",
-    )
-    parser.add_argument(
         "--timeout",
         type=int,
         default=0,
         metavar="SECONDS",
-        help="Seconds to sleep between accession runs. When > 0, runs are forced serial (workers is ignored).",
+        help="Seconds to sleep between accession runs (default: 0, no sleep). Accessions always run serially.",
     )
     parser.add_argument(
         "--dry-run",
@@ -291,19 +283,13 @@ def main() -> None:
     if args.dry_run:
         log.info("Dry-run: no R2 downloads, CyteType API calls, or R2 uploads will be performed")
         if args.timeout > 0:
-            if args.workers != 1:
-                log.info(
-                    "--timeout set; would force serial execution (ignoring --workers=%d)", args.workers
-                )
             log.info(
                 "Would run %d accession(s) serially with %d seconds sleep between runs",
                 len(work_items),
                 args.timeout,
             )
         else:
-            log.info(
-                "Would submit %d accession(s) to %d worker(s)", len(work_items), args.workers
-            )
+            log.info("Would run %d accession(s) serially", len(work_items))
         for srx, input_r2_key, output_r2_key, position, _metadata in work_items:
             log.info(
                 "%s (%s): would submit to CyteType (input=%s, output=%s)",
@@ -322,70 +308,42 @@ def main() -> None:
         return
 
     if args.timeout > 0:
-        if args.workers != 1:
-            log.info("--timeout set; forcing serial execution (ignoring --workers=%d)", args.workers)
         log.info(
             "Running %d accession(s) serially with %d seconds sleep between runs",
             len(work_items),
             args.timeout,
         )
-        for i, (srx, input_r2_key, output_r2_key, position, metadata) in enumerate(work_items):
-            exc = process_accession(srx, input_r2_key, output_r2_key, contexts, metadata)
-            if exc is not None:
-                log.warning("%s: failed", srx)
-                _append_summary_row(
-                    csv_summary_path,
-                    srx,
-                    "failed",
-                    position,
-                    input_r2_key,
-                    output_r2_key,
-                    error=f"{type(exc).__name__}: {exc}",
-                )
-                skipped += 1
-            else:
-                _append_summary_row(csv_summary_path, srx, "success", position, input_r2_key, output_r2_key)
-            if i < len(work_items) - 1:
-                next_srx = work_items[i + 1][0]
-                remaining = len(work_items) - (i + 1)
-                log.info(
-                    "Sleeping %d seconds after %s before next run (%s); %d accession(s) remaining",
-                    args.timeout,
-                    srx,
-                    next_srx,
-                    remaining,
-                )
-                time.sleep(args.timeout)
-                log.info("Resuming after %d second sleep", args.timeout)
     else:
-        log.info("Submitting %d accession(s) to %d worker(s)", len(work_items), args.workers)
-        with ProcessPoolExecutor(max_workers=args.workers) as pool:
-            futures = {
-                pool.submit(process_accession, srx, input_r2_key, output_r2_key, contexts, metadata): (
-                    srx,
-                    input_r2_key,
-                    output_r2_key,
-                    position,
-                )
-                for srx, input_r2_key, output_r2_key, position, metadata in work_items
-            }
-            for future in as_completed(futures):
-                srx, input_r2_key, output_r2_key, position = futures[future]
-                exc = future.result()
-                if exc is not None:
-                    log.warning("%s: failed", srx)
-                    _append_summary_row(
-                        csv_summary_path,
-                        srx,
-                        "failed",
-                        position,
-                        input_r2_key,
-                        output_r2_key,
-                        error=f"{type(exc).__name__}: {exc}",
-                    )
-                    skipped += 1
-                else:
-                    _append_summary_row(csv_summary_path, srx, "success", position, input_r2_key, output_r2_key)
+        log.info("Running %d accession(s) serially", len(work_items))
+
+    for i, (srx, input_r2_key, output_r2_key, position, metadata) in enumerate(work_items):
+        exc = process_accession(srx, input_r2_key, output_r2_key, contexts, metadata)
+        if exc is not None:
+            log.warning("%s: failed", srx)
+            _append_summary_row(
+                csv_summary_path,
+                srx,
+                "failed",
+                position,
+                input_r2_key,
+                output_r2_key,
+                error=f"{type(exc).__name__}: {exc}",
+            )
+            skipped += 1
+        else:
+            _append_summary_row(csv_summary_path, srx, "success", position, input_r2_key, output_r2_key)
+        if args.timeout > 0 and i < len(work_items) - 1:
+            next_srx = work_items[i + 1][0]
+            remaining = len(work_items) - (i + 1)
+            log.info(
+                "Sleeping %d seconds after %s before next run (%s); %d accession(s) remaining",
+                args.timeout,
+                srx,
+                next_srx,
+                remaining,
+            )
+            time.sleep(args.timeout)
+            log.info("Resuming after %d second sleep", args.timeout)
 
     log.info("Pipeline complete. %d skipped, %d processed.", skipped, len(datasets) - skipped)
 
