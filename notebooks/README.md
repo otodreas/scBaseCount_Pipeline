@@ -6,15 +6,15 @@ Analysis notebooks for the scBaseCount pipeline. Run them in order — each stag
 
 | # | Notebook | Consumes | Produces |
 |---|----------|----------|----------|
-| 1 | [`metadata.ipynb`](metadata.ipynb) | scBaseCount metadata Parquet files | `output/metadata/datasets.csv`, `output/metadata/quantiles_datasets.csv`, `output/metadata/accession_disease_categories.json`, `output/metadata/datasets_subset_qc.csv`, figures |
+| 1 | [`metadata.ipynb`](metadata.ipynb) | scBaseCount metadata Parquet files | `output/metadata/datasets.csv`, `output/metadata/accession_disease_categories.json`, `output/metadata/datasets_subset_qc.csv`, figures |
 | 2 | [`study_context.ipynb`](study_context.ipynb) | `output/metadata/datasets.csv` | `output/contexts.jsonl` |
-| 3 | [`clustering.ipynb`](clustering.ipynb) | `output/metadata/quantiles_datasets.csv`, h5ad files | `output/clustering/data/{srx}_clustered.h5ad`, figures |
+| 3 | [`clustering.ipynb`](clustering.ipynb) | `output/metadata/datasets.csv`, h5ad files | `output/clustering/data/{srx}_clustered.h5ad`, figures |
 | 4 | [`cytetype.ipynb`](cytetype.ipynb) | `output/clustering/data/{srx}_clustered.h5ad`, `output/contexts.jsonl` | `output/cytetype/data/{srx}_cytetype_annotated.h5ad` |
 | 5 | [`cyteonto.ipynb`](cyteonto.ipynb) | `output/cytetype/data/{srx}_cytetype_annotated.h5ad` | `output/cyteonto/runs/{run_id}.csv` |
 
 ## Notebooks
 
-**`metadata.ipynb`** — Loads sample metadata from Parquet, applies lung tissue and disease filters, and exports the artifacts used by downstream notebooks: `datasets.csv` and `quantiles_datasets.csv` for clustering, `accession_disease_categories.json` mapping every lung-intersection accession to its `DISEASE_MAP` labels, and `datasets_subset_qc.csv` (a per-cohort QC-passing sample of up to 25 accessions across IPF / COVID-19 / COPD / Interstitial Lung Disease / Cystic Fibrosis) used as input to cytetype evaluation runs. Also produces three summary figures (sample breakdown, disease breakdown, cell count distribution). See `scripts/metadata/README.md` for the regex catalogue and labelling rules.
+**`metadata.ipynb`** — Loads sample metadata from Parquet, applies lung tissue and disease filters, and exports the artifacts used by downstream notebooks: `datasets.csv` for clustering, `accession_disease_categories.json` mapping every lung-intersection accession to its `DISEASE_MAP` labels, and `datasets_subset_qc.csv` (a per-cohort QC-passing sample of up to 25 accessions across IPF / COVID-19 / COPD / Interstitial Lung Disease / Cystic Fibrosis) used as input to cytetype evaluation runs. Also produces three summary figures (sample breakdown, disease breakdown, cell count distribution). See `scripts/metadata/README.md` for the regex catalogue and labelling rules.
 
 **`clusters_to_cytetype_analysis.ipynb`** — Cost-planning notebook. Loads the clustering pipeline summary (`run.csv`) and joins it against both `accession_disease_categories.json` and `datasets_subset_qc.csv` to estimate how many CyteType clusters each disease cohort would consume. Produces inclusive (parent + child overlap counted) and disjoint (most-specific label) cluster-count tables.
 

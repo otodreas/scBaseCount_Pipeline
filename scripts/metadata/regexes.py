@@ -54,18 +54,6 @@ LUNG_TISSUE_RE = re.compile(
     re.IGNORECASE,
 )
 
-CANCER_RE = re.compile(
-    (
-        r"\b(?:"
-        r"cancer|carcinoma|adenocarcinoma|sarcoma|tumou?r|malignancy|malignant|"
-        r"neoplasm|neoplastic|leukemia|leukaemia|lymphoma|myeloma|melanoma|"
-        r"NSCLC|SCLC|mesothelioma|glioblastoma|glioma|blastoma|"
-        r"metastasis|metastatic|oncolog"
-        r")\b"
-    ),
-    re.IGNORECASE,
-)
-
 # Lung-cancer regex components, composed below into nested labels.
 # Hierarchy: Lung Cancer > {SCLC, NSCLC > {LUAD, LUSC, LCC}}.
 _LUAD_RE = r"\bLUAD\b|lung adenocarcinoma|adenocarcinoma of the lung"

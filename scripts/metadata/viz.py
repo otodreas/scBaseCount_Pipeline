@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from metadata.categorize import disease_categories_for
+from metadata.categorize import most_specific_disease_label
 from metadata.filter import FilterResult
 
 _TABLEAU10 = [
@@ -64,11 +64,7 @@ def plot_sample_breakdown(
 def plot_disease_breakdown(result: FilterResult, figs_dir: Path) -> None:
     figs_dir.mkdir(parents=True, exist_ok=True)
 
-    def _categorize(d: str) -> str:
-        cats = disease_categories_for(d)
-        return cats[-1] if cats else "Other"
-
-    disease_cats = result.lungIntersection["disease"].map(_categorize)
+    disease_cats = result.lungIntersection["disease"].map(most_specific_disease_label)
     cat_counts = disease_cats.value_counts()
     total_lung = cat_counts.sum()
 

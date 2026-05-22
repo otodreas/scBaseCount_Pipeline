@@ -55,7 +55,7 @@ A `RandomForestClassifier` is trained on HVG expression with stratified K-fold o
 |-------|---------|-------------|
 | `srxAccession` | `None` | Select dataset by SRX/ERX accession string |
 | `datasetIndex` | `2` | Select dataset by row index in catalog (used when `srxAccession` is `None`) |
-| `summaryPath` | `cluster_validation_sandbox/datasets_summary` | Path to catalog CSV with `srx_accession`, `file_path`, `quantile` columns |
+| `summaryPath` | `tests/quantiles_datasets.csv` | Path to catalog CSV with `srx_accession`, `file_path`, `obs_count` columns (and optional `quantile`) |
 | `localH5adRoot` | `data/scbasecount/...` | Directory of local h5ad files; takes priority over `file_path` in catalog |
 | `outputDir` | `output/clustering/data` | Directory where `{srx}_clustered.h5ad` is written |
 | `minCellsPerType` | `20` | Minimum cells per `cell_type` label; rarer types are dropped before clustering |

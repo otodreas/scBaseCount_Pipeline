@@ -6,7 +6,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 
 | Package | Entry point | Output |
 |---------|-------------|--------|
-| [`metadata/`](metadata/) | `filter_lung(sample, cfg)` | `output/metadata/datasets.csv`, `quantiles_datasets.csv`, figures |
+| [`metadata/`](metadata/) | `filter_lung(sample, cfg)` | `output/metadata/datasets.csv`, `accession_disease_categories.json`, `datasets_subset_qc.csv`, figures |
 | [`study_context/`](study_context/) | `pipeline_for_accession_list(accessions)` | `output/contexts.jsonl` |
 | [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `output/clustering/data/{srx}_clustered.h5ad`, figures |
 | [`cytetype_runner/`](cytetype_runner/) | `run_cytetype(cfg, ...)` | `output/cytetype/data/{srx}_cytetype_annotated.h5ad`, `output/cytetype/job_details/{srx}_cytetype_jobDetails.json` |

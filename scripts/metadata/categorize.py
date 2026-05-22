@@ -32,7 +32,13 @@ def disease_categories_for(diseaseValue: str) -> list[str]:
     return labels
 
 
-def build_accession_disease_categories(samplesDf: pd.DataFrame) -> dict[str, AccessionDiseaseCategory]:
+def most_specific_disease_label(diseaseValue: str, otherLabel: str = "Other") -> str:
+    """Return the most-specific DISEASE_MAP label for diseaseValue, or otherLabel when nothing matches."""
+    cats = disease_categories_for(diseaseValue)
+    return cats[-1] if cats else otherLabel
+
+
+def _build_accession_disease_categories(samplesDf: pd.DataFrame) -> dict[str, AccessionDiseaseCategory]:
     """Build a {srx_accession: {disease, categories}} mapping from a samples frame.
 
     samplesDf must contain srx_accession and disease columns. The categories list
@@ -62,7 +68,7 @@ def export_accession_disease_categories(
     Writes to cfg.outputDir / filename unless outputPath is provided. Accessions are
     sorted alphabetically in the output so diffs stay stable. Returns the written path.
     """
-    mapping = build_accession_disease_categories(samplesDf)
+    mapping = _build_accession_disease_categories(samplesDf)
     sortedMapping = {srx: mapping[srx] for srx in sorted(mapping)}
 
     if outputPath is None:

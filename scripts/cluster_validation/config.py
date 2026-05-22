@@ -10,7 +10,7 @@ from shared.repo import REPO_ROOT as _REPO_ROOT
 class ClusterValidationConfig(BaseModel):
     srxAccession: str | None = None
     datasetIndex: int = 2
-    summaryPath: Path = _REPO_ROOT / "output" / "metadata" / "quantiles_datasets.csv"
+    summaryPath: Path = _REPO_ROOT / "tests" / "quantiles_datasets.csv"
     localH5adRoot: Path = _REPO_ROOT / "data" / "scbasecount" / "2026-01-12" / "h5ad" / "GeneFull" / "Homo_sapiens"
     minCellsPerType: int = 20
     # Minimum number of cells to keep after filtering
