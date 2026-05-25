@@ -1,2 +1,2 @@
-notebooks/*.ipynb diff=ipynb
-tests/*.ipynb diff=ipynb
+*.ipynb filter=nbstripout
+*.ipynb diff=ipynb
