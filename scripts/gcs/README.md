@@ -31,6 +31,7 @@ The local path mirrors the GCS blob path under `local_root`: the bucket name is 
 | `gcs_local_path(gs_uri, local_root)` | `Path` | Derives the local destination path from the GCS URI without downloading |
 | `download_from_gcs(gs_uri, local_root)` | `Path` | Downloads the file, creating parent directories as needed |
 | `verify_download(gs_uri, local_root)` | `bool` | Returns `True` if the expected local file exists, `False` otherwise |
+| `gcs_blob_md5(gs_uri)` | `str \| None` | Base64 MD5 from GCS blob metadata, if present |
 
 ## Logging
 

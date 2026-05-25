@@ -2,18 +2,18 @@
 
 Standalone utility that fetches structured experiment context from EBI ENA and NCBI PubMed for a given SRX or ERX accession. Returns a typed Pydantic model ready for downstream use or LLM consumption.
 
-Library selection protocol, study context, and study abstract can be extracted from the output and stored in a json file, from which text strings can be fed into CyteType.
+Library selection protocol, study context, and study abstract can be extracted from the output and stored in JSONL, from which text strings can be fed into CyteType.
 
-I've generated the file `../output/contexts.jsonl` with `../main.py` at commit `6c01a0b`.
-
-Search "New context acquisition run" in `logs/study_context.log` to see the logs for a new run
+The canonical cache path is `CONTEXTS_JSONL_PATH` (`output/context/contexts.jsonl`). See `notebooks/study_context.ipynb`. Search `New context acquisition run` in `logs/study_context.log` for fetch logs.
 
 ## Usage
 
 ```python
-from study_context import pipeline_for_accession_list
+from study_context import CONTEXTS_JSONL_PATH, load_contexts_jsonl, pipeline_for_accession_list, write_contexts_jsonl
 
 contexts = pipeline_for_accession_list(accessions)
+write_contexts_jsonl(contexts)  # default path: CONTEXTS_JSONL_PATH
+by_accession = load_contexts_jsonl()
 ```
 
 ### Generating a context summary
@@ -38,19 +38,6 @@ ctx.biological.tissueType
 ctx.biological.sampleAttributes   # raw submitter key-values (tissue, age, genotype, …)
 ctx.technical.libraryConstructionProtocol
 ctx.warnings                 # any fetch failures, non-fatal
-```
-
-### Serialisation
-
-```python
-# save
-with open("contexts.jsonl", "w") as f:
-    for ctx in contexts:
-        f.write(ctx.model_dump_json() + "\n")
-
-# load (no re-fetch needed)
-with open("contexts.jsonl") as f:
-    contexts = [ExperimentContext.model_validate_json(line) for line in f]
 ```
 
 ## Pipeline
@@ -81,7 +68,7 @@ NCBI_API_KEY=your_key_here
 
 ## Inspecting the output
 
-`metadata_analysis/contexts_inspection.ipynb` is a validation notebook for reviewing the contents of a serialised `contexts.jsonl` file. It covers:
+`notebooks/study_context.ipynb` loads or fetches contexts and includes coverage checks on the serialised `contexts.jsonl` file. It covers:
 
 | Section | What it checks |
 |---------|----------------|

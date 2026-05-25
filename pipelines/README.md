@@ -25,7 +25,7 @@ migrate_gcs_to_r2  →  run_clustering_pipeline  →  run_cytetype_pipeline  →
 | File | Used by |
 |------|---------|
 | `output/metadata/datasets.csv` | All runners (`srx_accession`, `file_path`, …) |
-| `output/context/contexts.jsonl` | `run_cytetype_pipeline.py` (default path; overridable with `--contexts`) |
+| `output/context/contexts.jsonl` (`study_context.CONTEXTS_JSONL_PATH`) | `run_cytetype_pipeline.py` (default; overridable with `--contexts`) |
 
 Study context is produced by [`notebooks/study_context.ipynb`](../notebooks/study_context.ipynb). The cytetype runner loads summaries via `experiment_context_summary`; missing accessions proceed with empty context.
 

@@ -4,9 +4,12 @@ Runs the CyteType annotation step on a clustered h5ad file and writes the annota
 
 ## Usage
 
-```python
-from cytetype_runner import CyteTypeRunnerConfig, run_cytetype
+Requires `CYTETYPE_API_KEY` in `.env` (see `.env.example`). Call `require_api_key()` before `run_cytetype` if you want an explicit check.
 
+```python
+from cytetype_runner import CyteTypeRunnerConfig, require_api_key, run_cytetype
+
+require_api_key()
 cfg = CyteTypeRunnerConfig(srxAccession="SRX12345678")
 result = run_cytetype(cfg, input_path, group_key, study_context)
 print(result.outputPath, result.reportUrl)

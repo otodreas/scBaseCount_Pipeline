@@ -1,6 +1,6 @@
 # cyteonto
 
-Submits cell type annotation labels to the [CyteOnto API](https://cyteonto.nygen.io), polls until the run completes, fetches the result as a CSV, and returns a pandas DataFrame. Designed to be called from `notebooks/cytetype.ipynb` after CyteType has annotated the dataset.
+Submits cell type annotation labels to the [CyteOnto API](https://cyteonto.nygen.io), polls until the run completes, fetches the result as a CSV, and returns a pandas DataFrame. Designed to be called from `notebooks/cyteonto.ipynb` after CyteType has annotated the dataset.
 
 ## Usage
 
