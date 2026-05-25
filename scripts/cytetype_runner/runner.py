@@ -17,8 +17,7 @@ def require_api_key() -> str:
     api_key = os.environ.get("CYTETYPE_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError(
-            "CYTETYPE_API_KEY is not set or empty. "
-            "Add it to your .env file or export it in your shell before running."
+            "CYTETYPE_API_KEY is not set or empty. Add it to your .env file or export it in your shell before running."
         )
     return api_key
 

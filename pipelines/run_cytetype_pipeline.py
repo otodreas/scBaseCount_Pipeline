@@ -173,9 +173,7 @@ def process_accession(
         if not ctx:
             log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
 
-        result = run_cytetype(
-            cytetype_cfg, local_clustered, MERGED_CLUSTER_KEY, study_context, metadata=metadata
-        )
+        result = run_cytetype(cytetype_cfg, local_clustered, MERGED_CLUSTER_KEY, study_context, metadata=metadata)
         cytetype_h5ad = result.outputPath
         job_id = result.jobId
         report_url = result.reportUrl
@@ -373,9 +371,7 @@ def main() -> None:
     for i, (srx, input_r2_key, output_r2_key, position, metadata) in enumerate(work_items):
         run_start = time.monotonic()
         log.info("%s (%s): run starting", srx, position)
-        exc, job_id, report_url, api_url = process_accession(
-            srx, input_r2_key, output_r2_key, contexts, metadata
-        )
+        exc, job_id, report_url, api_url = process_accession(srx, input_r2_key, output_r2_key, contexts, metadata)
         elapsed = time.monotonic() - run_start
         log.info("%s (%s): run finished in %.2fs", srx, position, elapsed)
         if exc is not None:
