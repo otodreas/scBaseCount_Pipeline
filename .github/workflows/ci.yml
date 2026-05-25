@@ -23,27 +23,13 @@ jobs:
           python-version-file: .python-version
 
       - name: Install dependencies
-        run: uv sync --frozen --group dev
+        run: uv sync --locked --group dev
 
-      - name: Verify lockfile is in sync with pyproject.toml
-        run: uv lock --check
-
-      - name: Lint
-        run: uv run ruff check .
-
-      - name: Format check
-        if: always()
-        run: uv run ruff format --check .
-
-      - name: Type check
-        if: always()
-        run: uv run pyright
-        continue-on-error: true
+      - name: Lint and format
+        run: uv run ruff check . && uv run ruff format --check .
 
       - name: Tests
-        if: always()
         run: uv run pytest -q
 
       - name: Verify notebooks are stripped
-        if: always()
         run: uv run nbstripout --verify notebooks/*.ipynb
