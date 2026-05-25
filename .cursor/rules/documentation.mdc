@@ -1,0 +1,8 @@
+---
+description: Documentation and path conventions
+alwaysApply: true
+---
+
+# Documentation
+
+When producing records of where certain files reside in logs or output files, ALWAYS give paths relative to the repo root. The repo root is the directory containing the venv, the directory where uv was initialized, and the directory that contains the `.git` folder.

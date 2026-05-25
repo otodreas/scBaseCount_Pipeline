@@ -1,0 +1,11 @@
+---
+description: Git workflow rules
+alwaysApply: true
+---
+
+# Git
+
+- When on the main branch, do NOT stage or commit files automatically
+- When on the main branch, do NOT run `git add` or `git commit` without explicit user instruction
+- After completing a task, summarize changes made but wait for commit instruction
+- If asked to commit, always show the diff first and confirm scope

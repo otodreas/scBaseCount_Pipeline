@@ -30,8 +30,7 @@ job_details.csv
 DailyNotes.md
 
 # IDE
-.cursor/
-# .vscode/
+.cursor/plans
 
 # Tooling caches
 .pytest_cache/

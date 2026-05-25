@@ -1,0 +1,10 @@
+---
+description: Python coding conventions
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python
+
+- When defining functions, always typecast arguments and returns
+- When defining functions, always write a docstring. Keep it as short as possible: one sentence describing what the function does, its arguments, and its return value. For complex functions multiple sentences are ok.

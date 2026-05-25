@@ -1,0 +1,49 @@
+---
+description: Keep READMEs in sync when changing pipeline code (low-token)
+globs: scripts/**,pipelines/**,notebooks/**
+alwaysApply: false
+---
+
+# README hygiene
+
+Applies when editing under `scripts/`, `pipelines/`, or `notebooks/`. Goal: correct docs without re-reading READMEs on every file touch.
+
+## When to act
+
+Update READMEs only if you changed something user-facing:
+
+- Public entry points, CLI, config models (`*Config`), env vars, output paths or filenames
+- Package layout, pipeline order, or how notebooks call a package
+
+Skip README work for internal refactors, private helpers, tests-only edits, formatting, or changes under `docs/exploratory_depreciated/` and `output/`.
+
+## Token budget
+
+- At most **one README pass per package directory per conversation** (e.g. all edits under `scripts/metadata/` share one pass).
+- Before marking the task done, if any scoped file was edited and the pass has not run yet, do the pass once.
+- Do not re-read a README you already read this session unless you changed the public contract again after that read.
+- Prefer patching the smallest section (table row, config block, example) over rewriting whole files.
+
+## Which READMEs
+
+From the edited file path, walk up to repo root and collect each existing `README.md` on that path. Typical cases:
+
+| Edited under | Usually update |
+|--------------|----------------|
+| `scripts/<pkg>/` | `scripts/<pkg>/README.md`; if the package table or pipeline order in `scripts/README.md` is wrong, that file too |
+| `scripts/shared/` | Only if exported utilities or logging behavior changed; do not document internal helpers |
+| `pipelines/` | Root `README.md` (pipeline runner section); add `pipelines/README.md` only if you create it |
+| `notebooks/` | `notebooks/README.md` when notebook purpose or how to run it changed |
+
+## Secrets
+
+READMEs are committed and public-facing. Never put real credentials, tokens, or secret values in any README.
+
+- Document only **environment variable names** (and what they are for), not values.
+- Point readers to [`.env.example`](.env.example) for the full list; use placeholders such as `your_key_here` in examples if a value shape is needed.
+- Do not read `.env` when writing or updating READMEs.
+- Do not copy secrets from chat, tool output, notebooks, logs, or code into READMEs. If you saw a value that looks like a secret, omit it.
+
+## Style
+
+Match existing package READMEs: usage example, config reference, outputs. Keep `scripts/README.md` package table aligned with each package README entry point and output paths.
