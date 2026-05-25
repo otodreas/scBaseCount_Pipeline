@@ -1,0 +1,24 @@
+{
+  "run_timestamp": "20260522_175813",
+  "run_dir": "output/cytetype_pipeline/20260522_175813",
+  "run_csv": "output/cytetype_pipeline/20260522_175813/run.csv",
+  "job_details_csv": "output/cytetype_pipeline/20260522_175813/job_details.csv",
+  "log_path": "logs/cytetype_pipeline.log",
+  "dry_run": false,
+  "clustering_prefix": "designated_clustering_2",
+  "r2_prefix": "cytetype_pipeline_20260522_175813",
+  "datasets_path": "output/metadata/datasets_subset_qc.csv",
+  "contexts_path": "/home/inf-33-2025/Nygen_Project/output/context/contexts.jsonl",
+  "min_interval_seconds": 1800,
+  "cytetype_metadata_columns": [
+    "srx_accession",
+    "file_path",
+    "obs_count",
+    "disease",
+    "diseaseLabel",
+    "medianGenesPerCell",
+    "medianUmisPerCell",
+    "nCellsForQc"
+  ],
+  "notes": "run on subset of non-cancer samples. see git tag cytetype_subset_1"
+}
