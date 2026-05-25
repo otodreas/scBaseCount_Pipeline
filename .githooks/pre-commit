@@ -1,0 +1,34 @@
+#!/bin/sh
+set -e
+
+cd "$(git rev-parse --show-toplevel)"
+
+py_files=
+nb_files=
+
+while IFS= read -r file; do
+  [ -z "$file" ] && continue
+  case "$file" in
+    *.py) py_files="$py_files $file" ;;
+    notebooks/*.ipynb|tests/*.ipynb) nb_files="$nb_files $file" ;;
+  esac
+done <<EOF
+$(git diff --cached --name-only --diff-filter=ACM)
+EOF
+
+[ -z "$py_files$nb_files" ] && exit 0
+
+if [ -n "$py_files" ]; then
+  # shellcheck disable=SC2086
+  set -- $py_files
+  uv run ruff check --fix "$@"
+  uv run ruff format "$@"
+fi
+
+for nb in $nb_files; do
+  uv run nbstripout "$nb"
+done
+
+for file in $py_files $nb_files; do
+  git add "$file"
+done
