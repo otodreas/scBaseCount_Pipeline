@@ -4,12 +4,17 @@ Master's thesis, 30 hp, Lund University
 
 A pipeline for large-scale scRNA-seq cluster labeling assessment, built on the Arc Institute's [Virtual Cell Atlas](https://console.cloud.google.com/storage/browser/arc-institute-virtual-cell-atlas?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))).
 
-See [`pipelines/`](pipelines/) for the runner scripts (clustering, CyteType annotation, cluster stats, and GCS-to-R2 migration), [`notebooks/README.md`](notebooks/README.md) for the analysis notebooks, and [`scripts/README.md`](scripts/README.md) for the Python packages they share.
-
 # Requirements
 
 - Python >= 3.12.12
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
+
+# Repository layout
+The repo splits reusable code, batch orchestration, and interactive analysis:
+
+- **[`scripts/`](scripts/)**: Importable Python packages shared across notebooks, pipelines, and ad hoc use. See [`scripts/README.md`](scripts/README.md).
+- **[`pipelines/`](pipelines/)**: Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See [`pipelines/README.md`](pipelines/README.md).
+- **[`notebooks/`](notebooks/)**: Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See [`notebooks/README.md`](notebooks/README.md).
 
 # Data access
 
