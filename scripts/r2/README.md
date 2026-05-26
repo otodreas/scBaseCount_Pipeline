@@ -28,7 +28,7 @@ local_path = download_from_r2(r2_key, Path("data/r2_cache"))
 
 | Function | Returns | Description |
 |----------|---------|-------------|
-| `fetch_uploaded_r2_keys()` | `set[str]` | Lists all object keys currently in the bucket |
+| `fetch_uploaded_r2_keys(prefix=None)` | `set[str]` | Lists object keys in the bucket, optionally filtered by prefix |
 | `gcs_uri_to_r2_raw_key(gs_uri)` | `str` | Maps a GCS URI to the matching R2 raw key |
 | `upload_to_r2(local_path, r2_key)` | `None` | Uploads a local file to the given R2 key |
 | `download_from_r2(r2_key, local_root)` | `Path` | Downloads an R2 object under `local_root` |
