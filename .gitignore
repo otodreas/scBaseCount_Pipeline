@@ -2,8 +2,9 @@
 .venv/
 __pycache__/
 
-# Secrets and local env (template: .env.example)
+# Environment variables (template: .env.example)
 .env
+.envrc
 
 # Data
 data/
