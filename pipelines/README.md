@@ -144,7 +144,7 @@ Downloads each input from `{input_prefix}/{srx}_annotated.h5ad`, submits to the 
 | `--input-prefix` | required | R2 prefix containing annotated h5ads (e.g. from a cytetype pipeline run) |
 | `--r2-prefix` | `cyteonto_pipeline_{timestamp}` | R2 folder for CyteOnto result CSVs |
 | `--metadata` | none | Free-form note in `metadata.json` |
-| `--poll-interval-s` | `10` | Seconds between CyteOnto status polls |
+| `--poll-interval-s` | `10` | Seconds between CyteOnto result polls |
 | `--poll-timeout-s` | `3600` | Seconds before a CyteOnto run raises `TimeoutError` |
 | `--min-interval` | `0` | Minimum seconds between starting consecutive accessions |
 | `--dry-run` | off | Write plan CSVs without R2 or API calls |

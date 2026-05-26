@@ -4,11 +4,12 @@ import datetime
 import json
 from pathlib import Path
 
+import httpx
 import pandas as pd
 import scanpy as sc
 from shared.logger import configure_file_logger
 
-from cyteonto.client import fetch_result, get_status, poll, submit
+from cyteonto.client import poll_result, submit
 from cyteonto.config import _REPO_ROOT, CyteOntoConfig
 from cyteonto.payload import build_payload, write_payload
 
@@ -80,8 +81,16 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     _write_run_stub(run_id, cfg.h5adPath.stem, payload_path, cfg.runsDir)
     _log.info("run stub written  runId=%s  dir=%s", run_id, cfg.runsDir)
 
+    out_path = cfg.runsDir / f"{run_id}.csv"
     try:
-        status = poll(run_id, cfg.baseUrl, cfg.pollIntervalS, cfg.pollTimeoutS, _log)
+        df = poll_result(
+            run_id,
+            cfg.baseUrl,
+            out_path,
+            cfg.pollIntervalS,
+            cfg.pollTimeoutS,
+            _log,
+        )
     except KeyboardInterrupt:
         _log.info(
             "polling stopped  runId=%s  (run continues on server; call check_pending_runs() to resume)",
@@ -90,18 +99,10 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
         print(f"[cyteonto] polling stopped  {run_id}  (call check_pending_runs() to resume)")
         return None
 
-    if status["state"] == "failed":
-        _mark_completed(run_id, cfg.runsDir)
-        _log.error("failed  runId=%s  error=%s", run_id, status.get("error"))
-        raise RuntimeError(f"CyteOnto run failed: {status.get('error')}")
-
-    _log.info("completed  runId=%s  rows=%s", run_id, status.get("numRows"))
-
-    out_path = cfg.runsDir / f"{run_id}.csv"
-    df = fetch_result(run_id, cfg.baseUrl, out_path, _log)
+    _log.info("completed  runId=%s  rows=%d", run_id, len(df))
     _mark_completed(run_id, cfg.runsDir)
     _log.info("done  saved=%s", out_path)
-    print(f"[cyteonto] done      {run_id}  rows={status.get('numRows')}  saved={out_path.name}")
+    print(f"[cyteonto] done      {run_id}  rows={len(df)}  saved={out_path.name}")
     return df
 
 
@@ -123,23 +124,46 @@ def check_pending_runs(
     for entry in runs:
         run_id = entry["runId"]
         h5ad_stem = entry.get("h5adStem", "unknown")
-        status = get_status(run_id, base_url)
-        state = status["state"]
-        _log.info("check  runId=%s  h5adStem=%s  state=%s", run_id, h5ad_stem, state)
-        print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  {state}")
+        out_path = runs_dir / f"{run_id}.csv"
 
-        if state == "completed":
-            out_path = runs_dir / f"{run_id}.csv"
-            completed[run_id] = fetch_result(run_id, base_url, out_path, _log)
-            _mark_completed(run_id, runs_dir)
-        elif state == "failed":
-            _log.error(
-                "failed  runId=%s  h5adStem=%s  error=%s",
+        try:
+            resp = httpx.get(
+                f"{base_url}/result/{run_id}",
+                params={"format": "csv"},
+                timeout=60,
+            )
+        except httpx.RequestError as exc:
+            _log.warning(
+                "check  runId=%s  h5adStem=%s  request error  %s",
                 run_id,
                 h5ad_stem,
-                status.get("error"),
+                exc,
             )
+            print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  request error")
+            continue
+
+        if resp.status_code == 200:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_bytes(resp.content)
+            _log.info("fetched   runId=%s  path=%s", run_id, out_path)
+            df = pd.read_csv(out_path)
+            completed[run_id] = df
             _mark_completed(run_id, runs_dir)
+            _log.info("check  runId=%s  h5adStem=%s  completed  rows=%d", run_id, h5ad_stem, len(df))
+            print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  completed")
+        elif resp.status_code == 409:
+            _log.info("check  runId=%s  h5adStem=%s  still pending", run_id, h5ad_stem)
+            print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  still pending")
+        else:
+            body = resp.text[:200].strip() if resp.text else "(empty body)"
+            _log.warning(
+                "check  runId=%s  h5adStem=%s  HTTP %d  %s",
+                run_id,
+                h5ad_stem,
+                resp.status_code,
+                body,
+            )
+            print(f"[cyteonto] {run_id}  ({h5ad_stem})  ->  HTTP {resp.status_code}")
 
     still_pending = len(_load_pending(runs_dir))
     _log.info(

@@ -234,7 +234,7 @@ def _parse_args() -> argparse.Namespace:
         type=int,
         default=10,
         metavar="SECONDS",
-        help="Seconds between CyteOnto status polls (default: 10).",
+        help="Seconds between CyteOnto result polls (default: 10).",
     )
     parser.add_argument(
         "--poll-timeout-s",

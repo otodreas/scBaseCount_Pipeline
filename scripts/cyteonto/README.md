@@ -1,6 +1,6 @@
 # cyteonto
 
-Submits cell type annotation labels to the [CyteOnto API](https://cyteonto.nygen.io), polls until the run completes, fetches the result as a CSV, and returns a pandas DataFrame. Designed to be called from `notebooks/cyteonto.ipynb` after CyteType has annotated the dataset.
+Submits cell type annotation labels to the [CyteOnto API](https://cyteonto.nygen.io), polls `/result/` until the CSV is ready, and returns a pandas DataFrame. Designed to be called from `notebooks/cyteonto.ipynb` after CyteType has annotated the dataset.
 
 ## Usage
 
@@ -29,7 +29,7 @@ A stub file `output/cyteonto/runs/{run_id}.json` is written immediately after th
 
 ### Resuming after a restart
 
-Call `check_pending_runs()` at the top of your session. It scans `output/cyteonto/runs/` for any stub whose `completedAt` is `null`, queries the server status of each, fetches any that have completed, and returns a dict of `{run_id: DataFrame}`:
+Call `check_pending_runs()` at the top of your session. It scans `output/cyteonto/runs/` for any stub whose `completedAt` is `null`, probes `/result/` for each, fetches any that return HTTP 200, and returns a dict of `{run_id: DataFrame}`:
 
 ```python
 from cyteonto import check_pending_runs
@@ -56,8 +56,7 @@ The pipeline reads two fixed columns from `adata.obs`:
 | Build payload | `payload.py` | Extract the two obs columns into the API request dict |
 | Write payload | `payload.py` | Serialize to `output/cyteonto/payloads/{stem}_annotations.json` |
 | Submit | `client.py` | POST `/compare` to the CyteOnto API; receive `run_id` |
-| Poll | `client.py` | GET `/status/{run_id}` on `pollIntervalS` cadence until `completed` or `failed` |
-| Fetch | `client.py` | GET `/result/{run_id}?format=csv`; save to `output/cyteonto/runs/{run_id}.csv` |
+| Poll result | `client.py` | GET `/result/{run_id}?format=csv` on `pollIntervalS` cadence; HTTP 409 means still running, HTTP 200 saves CSV to `output/cyteonto/runs/{run_id}.csv` |
 
 ## Config reference
 
@@ -67,7 +66,7 @@ The pipeline reads two fixed columns from `adata.obs`:
 | `payloadDir` | `output/cyteonto/payloads` | Directory for the payload JSON |
 | `runsDir` | `output/cyteonto/runs` | Directory for run stubs (JSON) and result CSVs |
 | `baseUrl` | `https://cyteonto.nygen.io` | CyteOnto service base URL |
-| `pollIntervalS` | `10` | Seconds between status polls |
+| `pollIntervalS` | `10` | Seconds between result polls |
 | `pollTimeoutS` | `3600` | Total seconds before a `TimeoutError` is raised |
 
 All default paths are relative to the repo root.
@@ -98,17 +97,17 @@ Every run appends to `logs/cyteonto.log`:
 2026-04-24 18:24:03 INFO payload  author_labels=12847  algorithms=1
 2026-04-24 18:24:03 INFO payload written  path=output/cyteonto/payloads/...json
 2026-04-24 18:24:04 INFO submitted  runId=run-<uuid>  state=queued
-2026-04-24 18:24:14 INFO status    runId=run-<uuid>  state=running
-2026-04-24 18:26:01 INFO status    runId=run-<uuid>  state=completed
+2026-04-24 18:26:01 INFO fetched   runId=run-<uuid>  path=output/cyteonto/runs/run-<uuid>.csv
 2026-04-24 18:26:01 INFO completed  runId=run-<uuid>  rows=12847
-2026-04-24 18:26:02 INFO fetched   runId=run-<uuid>  path=output/cyteonto/runs/run-<uuid>.csv
 2026-04-24 18:26:02 INFO done  saved=output/cyteonto/runs/run-<uuid>.csv
 ```
 
-To manually check on the status of a run, search for `status` in `logs/cyteonto.log`, get the run id and run in your terminal
+To manually check whether a run is ready, search for `runId` in `logs/cyteonto.log`, then:
 
 ```sh
 export CYTEONTO_URL="https://cyteonto.nygen.io"
 export RUN_ID="run-<uuid>"
-curl -sS "$CYTEONTO_URL/status/$RUN_ID" | jq
+curl -sS "$CYTEONTO_URL/result/$RUN_ID?format=csv" -o /tmp/result.csv -w '%{http_code}\n'
 ```
+
+HTTP 200 means the CSV is ready; HTTP 409 means still processing.
