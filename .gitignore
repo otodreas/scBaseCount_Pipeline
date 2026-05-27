@@ -20,6 +20,7 @@ output/cyteonto_pipeline/*/results/
 
 # Logs
 logs/
+logs_server/
 nohup.out
 
 # CyteType
