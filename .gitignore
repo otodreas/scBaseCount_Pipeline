@@ -32,6 +32,9 @@ job_details.csv
 # Personal notes
 DailyNotes.md
 
+# Jupyter
+.ipynb_checkpoints/
+
 # IDE
 .cursor/plans
 
