@@ -58,15 +58,21 @@ def download_from_r2(r2_key: str, local_path: Path) -> None:
     _r2_client().download_file(bucket, r2_key, str(local_path))
 
 
-def fetch_uploaded_r2_keys() -> set[str]:
+def fetch_uploaded_r2_keys(prefix: str | None = None) -> set[str]:
     bucket = os.environ["BUCKET"]
     client = _r2_client()
     keys: set[str] = set()
     paginator = client.get_paginator("list_objects_v2")
-    for page in paginator.paginate(Bucket=bucket):
+    paginate_kwargs: dict = {"Bucket": bucket}
+    if prefix is not None:
+        paginate_kwargs["Prefix"] = prefix
+    for page in paginator.paginate(**paginate_kwargs):
         for obj in page.get("Contents") or []:
             keys.add(obj["Key"])
-    _log.info("R2 bucket contains %d existing object(s)", len(keys))
+    if prefix is None:
+        _log.info("R2 bucket contains %d existing object(s)", len(keys))
+    else:
+        _log.info("R2 prefix %r contains %d existing object(s)", prefix, len(keys))
     return keys
 
 

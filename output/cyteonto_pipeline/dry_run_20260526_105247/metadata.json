@@ -1,0 +1,13 @@
+{
+  "run_timestamp": "20260526_105247",
+  "run_dir": "output/cyteonto_pipeline/dry_run_20260526_105247",
+  "run_csv": "output/cyteonto_pipeline/dry_run_20260526_105247/run.csv",
+  "results_dir": "output/cyteonto_pipeline/dry_run_20260526_105247/results",
+  "log_path": "logs/cyteonto_pipeline.log",
+  "dry_run": true,
+  "input_prefix": "cytetype_pipeline_20260522_175813",
+  "r2_prefix": "cyteonto_pipeline_20260526_105247",
+  "poll_interval_s": 10,
+  "poll_timeout_s": 3600,
+  "min_interval_seconds": 0
+}

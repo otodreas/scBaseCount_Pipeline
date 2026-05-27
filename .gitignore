@@ -2,8 +2,9 @@
 .venv/
 __pycache__/
 
-# Secrets and local env (template: .env.example)
+# Environment variables (template: .env.example)
 .env
+.envrc
 
 # Data
 data/
@@ -11,13 +12,15 @@ tmp/
 
 # Large outputs
 output/clustering/
-output/clustering_pipeline/*/figs
+output/clustering_pipeline/*/figs/
 output/cytetype/
 output/cyteonto/
 output/h5ad_extract/
+output/cyteonto_pipeline/*/results/
 
 # Logs
 logs/
+logs_server/
 nohup.out
 
 # CyteType

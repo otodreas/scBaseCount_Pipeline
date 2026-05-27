@@ -1,0 +1,14 @@
+{
+  "run_timestamp": "20260526_112224",
+  "run_dir": "output/cyteonto_pipeline/20260526_112224",
+  "run_csv": "output/cyteonto_pipeline/20260526_112224/run.csv",
+  "results_dir": "output/cyteonto_pipeline/20260526_112224/results",
+  "log_path": "logs/cyteonto_pipeline.log",
+  "dry_run": false,
+  "input_prefix": "cytetype_pipeline_20260522_175813",
+  "r2_prefix": "cyteonto_pipeline_20260526_112224",
+  "poll_interval_s": 10,
+  "poll_timeout_s": 3600,
+  "min_interval_seconds": 0,
+  "notes": "run cyteonto on all 116 cytetype annotated h5ad files on r2. these are a sample of non-cancer diseases. see git tag 'cyteonto_subset_1'"
+}

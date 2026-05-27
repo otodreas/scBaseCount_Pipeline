@@ -1,0 +1,3 @@
+position,srx,status,input_r2_file,output_r2_file,run_id,local_csv,timestamp,duration_seconds,error
+1/116,SRX10048389,success,cytetype_pipeline_20260522_175813/SRX10048389_annotated.h5ad,cyteonto_pipeline_20260526_112224/SRX10048389_cyteonto.csv,run-a0b506b8-7851-49ac-9e6d-1f549880f38c,output/cyteonto_pipeline/20260526_112224/results/SRX10048389_cyteonto.csv,2026-05-26 11:25:07,162.51,
+2/116,SRX10100448,interrupted,cytetype_pipeline_20260522_175813/SRX10100448_annotated.h5ad,cyteonto_pipeline_20260526_112224/SRX10100448_cyteonto.csv,,,2026-05-26 11:41:31,983.61,CyteOnto polling interrupted

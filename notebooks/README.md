@@ -34,8 +34,6 @@ Not part of the main pipeline. Use these to verify connectivity or inspect h5ad 
 
 **`gcs_test.ipynb`** — Verifies that `google-cloud-storage` can authenticate and reach the scBaseCount GCS bucket. Run this first if `gcloud auth application-default login` has not been set up yet.
 
-**`r2_test.ipynb`** — Verifies that `boto3` can authenticate and reach the Cloudflare R2 bucket using the credentials in `.env`. Lists objects and confirms the bucket is reachable before uploading processed files.
-
-**`r2_inspect.ipynb`** — Explores objects already stored in R2 (listing keys and inspecting metadata) without running the main pipeline.
+**`r2_inspect.ipynb`** — Verifies that `boto3` can authenticate and reach the Cloudflare R2 bucket using the credentials in `.env`. Lists objects and confirms the bucket is reachable before uploading processed files.
 
 **`cluster_stats.ipynb`** — Loads `cluster_stats.json` produced by [`pipelines/cluster_stats.py`](../pipelines/cluster_stats.py) and builds an `xarray` tensor of cell-type by cluster counts for downstream analysis.

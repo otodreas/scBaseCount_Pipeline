@@ -13,9 +13,9 @@ Package logic lives under [`scripts/`](../scripts/README.md). Interactive explor
 ## Typical order
 
 ```
-migrate_gcs_to_r2  →  run_clustering_pipeline  →  run_cytetype_pipeline  →  cluster_stats
-        |                      |                          |
-   raw h5ad in R2      clustered h5ad in R2        annotated h5ad in R2
+migrate_gcs_to_r2  →  run_clustering_pipeline  →  run_cytetype_pipeline  →  run_cyteonto_pipeline  →  cluster_stats
+        |                      |                          |                          |
+   raw h5ad in R2      clustered h5ad in R2        annotated h5ad in R2        cyteonto CSV in R2
 ```
 
 `migrate_gcs_to_r2` is optional when raw files are already mirrored to R2. Notebooks can replace any batch step for a single accession.
@@ -36,6 +36,7 @@ Study context is produced by [`notebooks/study_context.ipynb`](../notebooks/stud
 | Raw mirror | `gcs_uri_to_r2_raw_key(gs_uri)` from `file_path` | Mirrors GCS path under the bucket |
 | Clustering run | `{r2_prefix}/{srx}_clustered.h5ad` | `clustering_pipeline_20260511_140000/SRX…_clustered.h5ad` |
 | CyteType run | `{r2_prefix}/{srx}_annotated.h5ad` | `cytetype_pipeline_20260512_090000/SRX…_annotated.h5ad` |
+| CyteOnto run | `{r2_prefix}/{srx}_cyteonto.csv` | `cyteonto_pipeline_20260513_090000/SRX…_cyteonto.csv` |
 
 `--r2-prefix` defaults to `{script_name}_{YYYYMMDD_HHMMSS}` at import time. Pass an explicit prefix when chaining runs (cytetype needs `--clustering-prefix` from the clustering run’s `metadata.json`).
 
@@ -120,6 +121,42 @@ Downloads each input from `{clustering_prefix}/{srx}_clustered.h5ad`, annotates 
 uv run python pipelines/run_cytetype_pipeline.py \
   --clustering-prefix clustering_pipeline_20260511_140000 \
   --dry-run
+```
+
+---
+
+## `run_cyteonto_pipeline.py`
+
+Runs [`cyteonto`](../scripts/cyteonto/README.md) on annotated h5ad files already in R2. Lists every `{srx}_annotated.h5ad` under `--input-prefix` and runs accessions **serially**, blocking on each CyteOnto poll loop before starting the next.
+
+Downloads each input from `{input_prefix}/{srx}_annotated.h5ad`, submits to the CyteOnto API, moves the result CSV to `results/{srx}_cyteonto.csv`, and uploads `{r2_prefix}/{srx}_cyteonto.csv`. Skips accessions whose output key already exists in R2.
+
+**Output:** `output/cyteonto_pipeline/{timestamp}/` (or `dry_run_{timestamp}/`)
+
+| File | Description |
+|------|-------------|
+| `run.csv` | Per-accession status, timing, R2 keys, `run_id`, local CSV path |
+| `results/{srx}_cyteonto.csv` | Per-accession CyteOnto similarity CSV |
+| `metadata.json` | Run config snapshot |
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--input-prefix` | required | R2 prefix containing annotated h5ads (e.g. from a cytetype pipeline run) |
+| `--r2-prefix` | `cyteonto_pipeline_{timestamp}` | R2 folder for CyteOnto result CSVs |
+| `--metadata` | none | Free-form note in `metadata.json` |
+| `--poll-interval-s` | `10` | Seconds between CyteOnto result polls |
+| `--poll-timeout-s` | `3600` | Seconds before a CyteOnto run raises `TimeoutError` |
+| `--min-interval` | `0` | Minimum seconds between starting consecutive accessions |
+| `--dry-run` | off | Write plan CSVs without R2 or API calls |
+
+**Log:** `logs/cyteonto_pipeline.log`
+
+For an in-flight accession, look up the `run_id` in `logs/cyteonto_pipeline.log` or the pending stub under `output/cyteonto/runs/`.
+
+```sh
+nohup uv run python pipelines/run_cyteonto_pipeline.py \
+  --input-prefix cytetype_pipeline_20260522_175813 \
+  > logs/cyteonto_pipeline.nohup.out 2>&1 &
 ```
 
 ---
