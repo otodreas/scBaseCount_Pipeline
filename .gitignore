@@ -9,6 +9,7 @@ __pycache__/
 # Data
 data/
 tmp/
+extra/
 
 # Large outputs
 output/clustering/
