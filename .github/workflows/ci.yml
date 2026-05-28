@@ -32,4 +32,4 @@ jobs:
         run: uv run pytest -q
 
       - name: Verify notebooks are stripped
-        run: uv run nbstripout --verify notebooks/*.ipynb
+        run: find notebooks -name '*.ipynb' -print0 | xargs -0 uv run nbstripout --verify

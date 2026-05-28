@@ -71,7 +71,7 @@ Filtering is applied in three steps:
 
 ## Disease labelling
 
-`disease_categories_for(disease)` returns the ordered list of `DISEASE_MAP` labels matched by a disease string. `most_specific_disease_label(disease)` is a thin wrapper that picks the last entry of that list (the most-specific match) and returns `"Other"` when nothing matched. Both the cohort tagging step in `notebooks/metadata.ipynb` and the disjoint partition in `notebooks/clusters_to_cytetype_analysis.ipynb` go through this helper, so the per-accession bucket assignment stays consistent across notebooks and figures. The label set is a mix of a nested lung-cancer subtree and a flat set of cohort labels:
+`disease_categories_for(disease)` returns the ordered list of `DISEASE_MAP` labels matched by a disease string. `most_specific_disease_label(disease)` is a thin wrapper that picks the last entry of that list (the most-specific match) and returns `"Other"` when nothing matched. Both the cohort tagging step in `notebooks/pipeline/metadata.ipynb` and the disjoint partition in `notebooks/analysis/clusters_to_cytetype_analysis.ipynb` go through this helper, so the per-accession bucket assignment stays consistent across notebooks and figures. The label set is a mix of a nested lung-cancer subtree and a flat set of cohort labels:
 
 ```
 Lung Cancer
@@ -89,7 +89,7 @@ Interstitial Lung Disease
 Pulmonary Hypertension
 ```
 
-`DISEASE_MAP` lists parents before children, so `most_specific_disease_label` yields the most-specific lung-cancer subtype for a cancer row. For the sibling cohort labels the tie-break is just the later entry in `DISEASE_MAP`; this affects only the ~5 comorbid rows across the lung intersection (a few `lung cancer, COPD` and one `COVID-19, IPF`) and is documented inside `notebooks/metadata.ipynb`.
+`DISEASE_MAP` lists parents before children, so `most_specific_disease_label` yields the most-specific lung-cancer subtype for a cancer row. For the sibling cohort labels the tie-break is just the later entry in `DISEASE_MAP`; this affects only the ~5 comorbid rows across the lung intersection (a few `lung cancer, COPD` and one `COVID-19, IPF`) and is documented inside `notebooks/pipeline/metadata.ipynb`.
 
 After regex matching, `disease_categories_for` drops the `Cystic Fibrosis` label from any row whose disease string matches `NON_CF_RE` (`non-CF` or `non-cystic fibrosis`). This catches both pure non-CF controls and mixed `cystic fibrosis (CF) and non-CF` datasets; both land in `Other`.
 
@@ -110,7 +110,7 @@ All default paths are relative to the repo root.
 |------|-------------|
 | `outputDir/datasets.csv` | Full lung intersection: `srx_accession`, `file_path`, `obs_count`. Consumed by `clustering.ipynb` |
 | `outputDir/accession_disease_categories.json` | `{srx_accession: {disease, categories}}` for every row in the lung intersection. `categories` is the list returned by `disease_categories_for` |
-| `outputDir/datasets_subset_qc.csv` | Per-cohort QC-passing sample of up to 25 accessions across IPF / COVID-19 / COPD / Interstitial Lung Disease / Cystic Fibrosis. Built inside `notebooks/metadata.ipynb` using `compute_obs_qc` + `apply_qc` |
+| `outputDir/datasets_subset_qc.csv` | Per-cohort QC-passing sample of up to 25 accessions across IPF / COVID-19 / COPD / Interstitial Lung Disease / Cystic Fibrosis. Built inside `notebooks/pipeline/metadata.ipynb` using `compute_obs_qc` + `apply_qc` |
 | `outputDir/figs/sample_breakdown.png` | Pie chart: discarded / lung cancer / lung other / non-lung |
 | `outputDir/figs/lung_disease_breakdown.png` | Pie chart: lung intersection by disease category (uses `most_specific_disease_label`, so categories agree with the JSON) |
 | `outputDir/figs/lung_cell_number_hist.png` | Log-scale histogram of cells per SRX |

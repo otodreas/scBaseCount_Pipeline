@@ -10,7 +10,7 @@ while IFS= read -r file; do
   [ -z "$file" ] && continue
   case "$file" in
     *.py) py_files="$py_files $file" ;;
-    notebooks/*.ipynb|tests/*.ipynb) nb_files="$nb_files $file" ;;
+    notebooks/*.ipynb|notebooks/*/*.ipynb|tests/*.ipynb) nb_files="$nb_files $file" ;;
   esac
 done <<EOF
 $(git diff --cached --name-only --diff-filter=ACM)

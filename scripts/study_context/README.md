@@ -4,7 +4,7 @@ Standalone utility that fetches structured experiment context from EBI ENA and N
 
 Library selection protocol, study context, and study abstract can be extracted from the output and stored in JSONL, from which text strings can be fed into CyteType.
 
-The canonical cache path is `CONTEXTS_JSONL_PATH` (`output/context/contexts.jsonl`). See `notebooks/study_context.ipynb`. Search `New context acquisition run` in `logs/study_context.log` for fetch logs.
+The canonical cache path is `CONTEXTS_JSONL_PATH` (`output/context/contexts.jsonl`). See `notebooks/pipeline/study_context.ipynb`. Search `New context acquisition run` in `logs/study_context.log` for fetch logs.
 
 ## Usage
 
@@ -68,7 +68,7 @@ NCBI_API_KEY=your_key_here
 
 ## Inspecting the output
 
-`notebooks/study_context.ipynb` loads or fetches contexts and includes coverage checks on the serialised `contexts.jsonl` file. It covers:
+`notebooks/pipeline/study_context.ipynb` loads or fetches contexts and includes coverage checks on the serialised `contexts.jsonl` file. It covers:
 
 | Section | What it checks |
 |---------|----------------|

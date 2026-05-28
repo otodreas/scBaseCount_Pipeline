@@ -27,7 +27,7 @@ migrate_gcs_to_r2  →  run_clustering_pipeline  →  run_cytetype_pipeline  →
 | `output/metadata/datasets.csv` | All runners (`srx_accession`, `file_path`, …) |
 | `output/context/contexts.jsonl` (`study_context.CONTEXTS_JSONL_PATH`) | `run_cytetype_pipeline.py` (default; overridable with `--contexts`) |
 
-Study context is produced by [`notebooks/study_context.ipynb`](../notebooks/study_context.ipynb). The cytetype runner loads summaries via `experiment_context_summary`; missing accessions proceed with empty context.
+Study context is produced by [`notebooks/pipeline/study_context.ipynb`](../notebooks/pipeline/study_context.ipynb). The cytetype runner loads summaries via `experiment_context_summary`; missing accessions proceed with empty context.
 
 ## R2 key layout
 
@@ -185,7 +185,7 @@ Downloads clustered h5ad files from an R2 prefix, builds per-SRX `cell_type` × 
 
 **Log:** `logs/cluster_stats.log`
 
-Downstream analysis: [`notebooks/cluster_stats.ipynb`](../notebooks/cluster_stats.ipynb).
+Downstream analysis: [`notebooks/analysis/cluster_stats.ipynb`](../notebooks/analysis/cluster_stats.ipynb).
 
 ```sh
 uv run python pipelines/cluster_stats.py \
