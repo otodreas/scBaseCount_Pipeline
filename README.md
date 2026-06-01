@@ -32,8 +32,8 @@ NCBI and CyteType API keys reduce rate limiting when fetching study metadata and
 ```sh
 git clone git@github.com:otodreas/scBaseCount_Pipeline.git
 cd scBaseCount_Pipeline
-uv sync --group dev
-git config core.hooksPath .githooks
+uv sync --locked --group dev
+git config core.hooksPath .githooks   # once per clone
 ```
 
-The `git config core.hooksPath` step enables the pre-commit hook in [`.githooks/pre-commit`](.githooks/pre-commit), which runs ruff and strips outputs from `notebooks/` and `tests/` notebooks (not `docs/`). Required once per clone.
+[`.githooks/pre-commit`](.githooks/pre-commit) is optional local help; [CI](.github/workflows/ci.yml) enforces ruff, pytest, and stripped `notebooks/` on `main`.
