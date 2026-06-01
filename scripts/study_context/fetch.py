@@ -124,7 +124,8 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
         return ExperimentContext(accession=accession, warnings=warnings)
 
     first = records[0]
-    run_accessions = [r["run_accession"] for r in records if r.get("run_accession")]
+    # Sort run accessions for reproducibility so that the same one is always passed to PubMed for abstract fetch
+    run_accessions = sorted(r["run_accession"] for r in records if r.get("run_accession"))
 
     technical = TechnicalContext(
         instrumentModel=_str(first.get("instrument_model")),

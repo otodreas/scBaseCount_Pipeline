@@ -6,6 +6,8 @@ Library selection protocol, study context, and study abstract can be extracted f
 
 The canonical cache path is `CONTEXTS_JSONL_PATH` (`output/context/contexts.jsonl`). See `notebooks/pipeline/study_context.ipynb`. Search `New context acquisition run` in `logs/study_context.log` for fetch logs.
 
+One experiment context may be cited in multiple studies. Currently, if an experiment has multiple studies, the accessions of those studies will be sorted and the first one will be selected. That study's abstract will be the one fetched. This is reproducible but could be improved. Future work may look into the possibility of reproducibly getting the most relevant abstract rather than the first. This sorted method was not implemented until after the first CyteType run at Git tag `cytetype_subset_1`, and therefore some CyteType runs may need to be rerun if [`contexts.jsonl`](../../output/context/contexts.jsonl) changes for any of the accessions used on that run.
+
 ## Usage
 
 ```python
