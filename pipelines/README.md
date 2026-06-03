@@ -192,3 +192,49 @@ uv run python pipelines/cluster_stats.py \
   --r2-prefix clustering_pipeline_20260511_140000 \
   --workers 4
 ```
+
+---
+
+## `run_annotation_inspection_pipeline.py`
+
+Inspects CyteType-annotated h5ads from R2, joins CyteOnto cytescores, and writes a pair-level summary plus optional UMAP parquet and extremes table via [`annotation_inspector`](../scripts/annotation_inspector/README.md).
+
+Downloads `{input_prefix}/{srx}_annotated.h5ad` and `{cyteonto_prefix}/{srx}_cyteonto.csv` (when present), inspects each accession, deletes local cache files, and streams outputs as workers finish.
+
+**Output:** `output/annotation_inspection_pipeline/{timestamp}/` (or `dry_run_{timestamp}/`)
+
+| File | Description |
+|------|-------------|
+| `summary.csv` | Pair-level rows: labels, confidence, cytescore, n_cells, report_url |
+| `umap_cells.parquet` | Per-cell UMAP coordinates and labels (when UMAP export enabled) |
+| `extremes.csv` | Top/bottom cytescore STATE types per CyteType label (when extremes enabled) |
+| `run.csv` | Per-accession status and timing |
+| `metadata.json` | Run config snapshot |
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--input-prefix` | required | R2 prefix containing annotated h5ads |
+| `--cyteonto-prefix` | required | R2 prefix containing `{srx}_cyteonto.csv` files |
+| `--workers` | `1` | Concurrent R2 fetch + inspect workers |
+| `--top-n` | `10` | Top/bottom STATE cell types per CyteType label for extremes |
+| `--emit-umap` / `--no-umap` | on | Write `umap_cells.parquet` during fetch pass |
+| `--emit-extremes` / `--no-extremes` | on | Write `extremes.csv` from accumulated summary |
+| `--from-summary` | none | Rebuild `extremes.csv` from an existing `summary.csv` (no R2 fetch) |
+| `--output-dir` | summary parent | Output dir for `--from-summary` |
+| `--metadata` | none | Note in `metadata.json` |
+| `--dry-run` | off | Write plan CSV without R2 or inspection |
+
+**Log:** `logs/annotation_inspection_pipeline.log`
+
+Downstream analysis: [`notebooks/analysis/annotation_inspection.ipynb`](../notebooks/analysis/annotation_inspection.ipynb).
+
+```sh
+uv run python pipelines/run_annotation_inspection_pipeline.py \
+  --input-prefix cytetype_pipeline_20260522_175813 \
+  --cyteonto-prefix cyteonto_pipeline_20260526_112224 \
+  --workers 4
+
+# Regenerate extremes only
+uv run python pipelines/run_annotation_inspection_pipeline.py \
+  --from-summary output/annotation_inspection_pipeline/20260603_120000/summary.csv
+```
