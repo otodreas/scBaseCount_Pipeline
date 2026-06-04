@@ -217,8 +217,8 @@ Downloads `{input_prefix}/{srx}_annotated.h5ad` and `{cyteonto_prefix}/{srx}_cyt
 | `--cyteonto-prefix` | required | R2 prefix containing `{srx}_cyteonto.csv` files |
 | `--workers` | `1` | Concurrent R2 fetch + inspect workers |
 | `--top-n` | `10` | Top/bottom STATE cell types per CyteType label for extremes |
-| `--emit-umap` / `--no-umap` | on | Write `umap_cells.parquet` during fetch pass |
-| `--emit-extremes` / `--no-extremes` | on | Write `extremes.csv` from accumulated summary |
+| `--no-umap` | off | Skip `umap_cells.parquet` (written by default) |
+| `--no-extremes` | off | Skip `extremes.csv` (written by default) |
 | `--from-summary` | none | Rebuild `extremes.csv` from an existing `summary.csv` (no R2 fetch) |
 | `--output-dir` | summary parent | Output dir for `--from-summary` |
 | `--metadata` | none | Note in `metadata.json` |

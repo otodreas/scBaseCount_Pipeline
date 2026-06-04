@@ -282,33 +282,17 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Plan the run without R2 downloads or inspection.",
     )
-    umap_group = parser.add_mutually_exclusive_group()
-    umap_group.add_argument(
-        "--emit-umap",
-        dest="emit_umap",
-        action="store_true",
-        default=True,
-        help="Write umap_cells.parquet during the fetch pass (default).",
-    )
-    umap_group.add_argument(
+    parser.add_argument(
         "--no-umap",
         dest="emit_umap",
         action="store_false",
-        help="Skip per-cell UMAP parquet export.",
+        help="Skip per-cell UMAP parquet export (default: write umap_cells.parquet).",
     )
-    extremes_group = parser.add_mutually_exclusive_group()
-    extremes_group.add_argument(
-        "--emit-extremes",
-        dest="emit_extremes",
-        action="store_true",
-        default=True,
-        help="Write extremes.csv from accumulated summary at end (default).",
-    )
-    extremes_group.add_argument(
+    parser.add_argument(
         "--no-extremes",
         dest="emit_extremes",
         action="store_false",
-        help="Skip extremes.csv generation.",
+        help="Skip extremes.csv generation (default: write extremes.csv from summary).",
     )
     args = parser.parse_args()
 
