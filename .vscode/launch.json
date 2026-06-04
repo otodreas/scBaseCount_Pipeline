@@ -2,17 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Current File with Arguments",
+            "name": "run_annotation_inspection_pipeline",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceFolder}/pipelines/run_annotation_inspection_pipeline.py",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
             "args": [
                 "--input-prefix", "cytetype_pipeline_20260522_175813",
                 "--cyteonto-prefix", "cyteonto_pipeline_20260526_112224",
                 "--workers", "10",
-                "--dry-run",
-                "--metadata", "dry run from 'annotation_inspection_pipeline' debug config (.vscode/launch.json)"
+                // "--dry-run",
+                "--metadata", "dry run from 'run_annotation_inspection_pipeline' debug config (.vscode/launch.json)",
+                // "--no-umap", "--no-extremes",
             ]
         },
         {
