@@ -19,6 +19,7 @@ output/cytetype/
 output/cyteonto/
 output/h5ad_extract/
 output/cyteonto_pipeline/*/results/
+output/annotation_inspection_pipeline/
 
 # Logs
 logs/
