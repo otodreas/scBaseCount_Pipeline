@@ -12,7 +12,6 @@ from pathlib import Path
 import pandas as pd
 from annotation_inspector.extremes import write_extremes_csv
 from annotation_inspector.inspect import PAIR_COLUMNS, inspect_accession
-from annotation_inspector.umap import append_umap_rows, open_umap_writer
 from dotenv import load_dotenv
 from r2 import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists
 from shared.csv_writer import append_csv_row
@@ -28,7 +27,6 @@ RUN_OUTPUT_ROOT = REPO_ROOT / "output" / "annotation_inspection_pipeline"
 _LOG_FILENAME = "annotation_inspection_pipeline.log"
 _RUN_CSV_FILENAME = "run.csv"
 _SUMMARY_FILENAME = "summary.csv"
-_UMAP_FILENAME = "umap_cells.parquet"
 _EXTREMES_FILENAME = "extremes.csv"
 _ANNOTATED_H5AD_PATTERN = re.compile(r"^(?P<srx>SRX\d+)_annotated\.h5ad$")
 
@@ -66,7 +64,6 @@ def _write_run_metadata(
         "dry_run": bool(args.dry_run),
         "workers": args.workers,
         "top_n": args.top_n,
-        "emit_umap": args.emit_umap,
         "emit_extremes": args.emit_extremes,
     }
     if args.from_summary is not None:
@@ -76,8 +73,6 @@ def _write_run_metadata(
         payload["cyteonto_prefix"] = args.cyteonto_prefix
     if args.metadata is not None:
         payload["notes"] = args.metadata
-    if args.emit_umap:
-        payload["umap_parquet"] = rel_to_repo(run_dir / _UMAP_FILENAME)
     if args.emit_extremes:
         payload["extremes_csv"] = rel_to_repo(run_dir / _EXTREMES_FILENAME)
     metadata_path.write_text(json.dumps(payload, indent=2))
@@ -154,10 +149,8 @@ def process_accession(
     srx: str,
     input_r2_key: str,
     cyteonto_prefix: str,
-    *,
-    emit_umap: bool,
-) -> tuple[pd.DataFrame | None, pd.DataFrame | None, bool, float, Exception | None]:
-    """Download, inspect, and clean up one accession; returns pair_df, cell_df, cyteonto_found, elapsed, error."""
+) -> tuple[pd.DataFrame | None, bool, float, Exception | None]:
+    """Download, inspect, and clean up one accession; returns pair_df, cyteonto_found, elapsed, error."""
     run_start = time.monotonic()
     local_h5ad = DOWNLOAD_ROOT / f"{srx}_annotated.h5ad"
     cyteonto_r2_key = f"{cyteonto_prefix}/{srx}_cyteonto.csv"
@@ -180,17 +173,12 @@ def process_accession(
         else:
             log.warning("%s: CyteOnto CSV not found at %s; cytescore will be NaN", srx, cyteonto_r2_key)
 
-        pair_df, cell_df = inspect_accession(
-            srx,
-            local_h5ad,
-            cyteonto_path,
-            emit_umap=emit_umap,
-        )
-        return pair_df, cell_df, cyteonto_found, time.monotonic() - run_start, None
+        pair_df = inspect_accession(srx, local_h5ad, cyteonto_path)
+        return pair_df, cyteonto_found, time.monotonic() - run_start, None
 
     except Exception as exc:
         log.exception("%s: inspection failed", srx)
-        return None, None, cyteonto_found, time.monotonic() - run_start, exc
+        return None, cyteonto_found, time.monotonic() - run_start, exc
 
     finally:
         safe_delete(local_h5ad, log)
@@ -225,7 +213,7 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Inspect CyteType-annotated h5ads from R2, join CyteOnto cytescores, "
-            "and emit summary, optional UMAP parquet, and optional extremes CSV."
+            "and emit summary and optional extremes CSV."
         )
     )
     parser.add_argument(
@@ -283,12 +271,6 @@ def _parse_args() -> argparse.Namespace:
         help="Plan the run without R2 downloads or inspection.",
     )
     parser.add_argument(
-        "--no-umap",
-        dest="emit_umap",
-        action="store_false",
-        help="Skip per-cell UMAP parquet export (default: write umap_cells.parquet).",
-    )
-    parser.add_argument(
         "--no-extremes",
         dest="emit_extremes",
         action="store_false",
@@ -315,12 +297,11 @@ def main() -> None:
 
     log_run_separator(log)
     log.info(
-        "new annotation inspection run (dry_run=%s, input=%s, cyteonto=%s, workers=%d, emit_umap=%s, emit_extremes=%s)",
+        "new annotation inspection run (dry_run=%s, input=%s, cyteonto=%s, workers=%d, emit_extremes=%s)",
         args.dry_run,
         args.input_prefix,
         args.cyteonto_prefix,
         args.workers,
-        args.emit_umap,
         args.emit_extremes,
     )
     if args.metadata is not None:
@@ -331,7 +312,6 @@ def main() -> None:
     run_csv_path = run_dir / _RUN_CSV_FILENAME
     summary_path = run_dir / _SUMMARY_FILENAME
     metadata_path = run_dir / "metadata.json"
-    umap_path = run_dir / _UMAP_FILENAME
     extremes_path = run_dir / _EXTREMES_FILENAME
     _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir)
     log.info("run output directory: %s", run_dir)
@@ -360,70 +340,60 @@ def main() -> None:
         return
 
     summary_lock = threading.Lock()
-    umap_lock = threading.Lock()
     summary_frames: list[pd.DataFrame] = []
     processed = 0
     failed = 0
 
-    umap_writer = open_umap_writer(umap_path) if args.emit_umap else None
-    try:
-        with ThreadPoolExecutor(max_workers=args.workers) as pool:
-            futures = {
-                pool.submit(
-                    process_accession,
-                    srx,
-                    input_r2_key,
-                    args.cyteonto_prefix,
-                    emit_umap=args.emit_umap,
-                ): (srx, input_r2_key, position)
-                for srx, input_r2_key, position in work_items
-            }
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures = {
+            pool.submit(
+                process_accession,
+                srx,
+                input_r2_key,
+                args.cyteonto_prefix,
+            ): (srx, input_r2_key, position)
+            for srx, input_r2_key, position in work_items
+        }
 
-            for future in as_completed(futures):
-                srx, input_r2_key, position = futures[future]
-                cyteonto_r2_key = f"{args.cyteonto_prefix}/{srx}_cyteonto.csv"
-                pair_df, cell_df, cyteonto_found, elapsed, exc = future.result()
+        for future in as_completed(futures):
+            srx, input_r2_key, position = futures[future]
+            cyteonto_r2_key = f"{args.cyteonto_prefix}/{srx}_cyteonto.csv"
+            pair_df, cyteonto_found, elapsed, exc = future.result()
 
-                if exc is not None:
-                    failed += 1
-                    _record_accession(
-                        run_csv_path,
-                        srx,
-                        "failed",
-                        position,
-                        input_r2_key,
-                        cyteonto_r2_key,
-                        cyteonto_found=cyteonto_found,
-                        duration_seconds=elapsed,
-                        error=f"{type(exc).__name__}: {exc}",
-                    )
-                    continue
-
-                assert pair_df is not None
-                _append_summary_rows(summary_path, pair_df, summary_lock)
-                summary_frames.append(pair_df)
-
-                if args.emit_umap and cell_df is not None and umap_writer is not None:
-                    append_umap_rows(umap_writer, cell_df, umap_lock)
-
-                n_cells = int(cell_df.shape[0]) if cell_df is not None else int(pair_df["n_cells"].sum())
+            if exc is not None:
+                failed += 1
                 _record_accession(
                     run_csv_path,
                     srx,
-                    "success",
+                    "failed",
                     position,
                     input_r2_key,
                     cyteonto_r2_key,
                     cyteonto_found=cyteonto_found,
-                    n_pairs=len(pair_df),
-                    n_cells=n_cells,
                     duration_seconds=elapsed,
+                    error=f"{type(exc).__name__}: {exc}",
                 )
-                processed += 1
-                log.info("%s (%s): done in %.2fs (%d pairs)", srx, position, elapsed, len(pair_df))
-    finally:
-        if umap_writer is not None:
-            umap_writer.close()
+                continue
+
+            assert pair_df is not None
+            _append_summary_rows(summary_path, pair_df, summary_lock)
+            summary_frames.append(pair_df)
+
+            n_cells = int(pair_df["n_cells"].sum())
+            _record_accession(
+                run_csv_path,
+                srx,
+                "success",
+                position,
+                input_r2_key,
+                cyteonto_r2_key,
+                cyteonto_found=cyteonto_found,
+                n_pairs=len(pair_df),
+                n_cells=n_cells,
+                duration_seconds=elapsed,
+            )
+            processed += 1
+            log.info("%s (%s): done in %.2fs (%d pairs)", srx, position, elapsed, len(pair_df))
 
     if args.emit_extremes and summary_frames:
         combined = pd.concat(summary_frames, ignore_index=True)

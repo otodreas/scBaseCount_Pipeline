@@ -12,5 +12,4 @@ class AnnotationInspectConfig(BaseModel):
     topN: int = 10
     downloadRoot: Path = _REPO_ROOT / "data" / "annotation_inspection"
     outputDir: Path = _REPO_ROOT / "output" / "annotation_inspection_pipeline"
-    emitUmap: bool = True
     emitExtremes: bool = True
