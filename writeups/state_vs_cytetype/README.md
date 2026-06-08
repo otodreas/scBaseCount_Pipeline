@@ -24,14 +24,31 @@ Since the clustering is informed by STATE labels, each cell will have a STATE la
 
 ***Figure 2.*** *UMAP for accession SRX23724122, colored by STATE label, CyteType annotation, CyteOnto CyteScore, and CyteType cluster confidence.*
 
-The pipeline run underlying **Figures 1** and **2** was produced without per-cell UMAP coordinates. **Figure 3** is regenerated from a locally cached annotated h5ad (`data/cytetype_annotated/SRX23724094_annotated.h5ad`) using the same CyteScore merge and confidence mapping as in [`notebooks/analysis/confidence_vs_cytescore.ipynb`](../../notebooks/analysis/confidence_vs_cytescore.ipynb). It shows how the four variables co-localize on a single dataset: STATE labels and CyteType annotations partition the UMAP into distinct regions, CyteScore varies continuously within those regions, and confidence labels (red = Low, yellow = Moderate, green = High) attach to whole Leiden clusters rather than individual cells.
+A given STATE label can appear more or less in clusters that CyteType annotates with a certain confidence level. For instance, if the STATE label "plasma cell" often appears in clusters that CyteType annotates with high confidence, it is tempting to assume that CyteType often successfully annotates cells that STATE thought were plasma cells. However, the confidence does not tell the whole story. If that high confidence cluster was annotated as a similar cell type by CyteType, such as a plasmablast, CyteType had high confidence in arriving at a similar conclusion as STATE, while if the cluster was annotated as a more different cell type, such as a basophil, CyteType had high confidence that STATE was incorrect in its annotation. A metric to quantify how similar or different these cell types are with language models is CyteOnto's CyteScore. 
 
-## Rank delta measures how much a STATE label's CyteScore standing shifts with confidence
+| | Similar label | Different label
+--- | --- | ---
+**STATE label** | B Cell | B Cell
+**CyteType annotation** | Plasmablast | Basophil
+**CyteOnto CyteScore similarity** | 0.5801 | 0.1845
+**CyteType annotation confidence** | High | High
+**Interpretation** | CyteType is confident that STATE is correct | CyteType is confident that STATE is incorrect
+
+***Table 1.*** *Hypothetical example of STATE label and CyteType annotation. These examples were chosen strictly for demonstration and are not on their own relevant to the findings of this document.*
+
+To understand which STATE labels CyteType confidently identifies as different from STATE, which it confidently identifies as the same as STATE, etc., we compute a rank delta that measures how much a STATE label's CyteScore standing shifts with confidence.
 
 ![Rank delta by CyteType confidence band](.figs/cytescore_rank_delta_by_confidence.png)
 
 ***Figure 3.*** *Rank change ("rank delta") for each STATE label across CyteType confidence bands. Orange bars show change from Low to Moderate confidence (`low → moderate`); green bars show change from Moderate to High (`moderate → high`). Bars are ordered by total rank delta (lowest to highest).*
 
+neutrophil-CyteType annotation exhibit higher CyteScores relative to the rest of STATE labels as CyteType confidence increases. This can be interpreted as when CyteType is presented with a cluster with many cells that STATE labelled as neutrophils and CyteType is not confident in its annotation, it choses to annotate a cell with a type that is quite different from neutrophil. However, when it is presented with a cluster with many cells that STATE labelled as neutrophils and CyteType is confident in its annotation, it tends to label the cluster with names that are similar to neutrophil. The opposite is true for clusters with many cells that STATE labelled as intermediate monocytes. Here, CyteType tends annotate clusters with labels that are more different from intermediate monocyte when it is more confident, and more similar when it is less confident.
+
+To put some numbers to the figure, in low confidence CyteType clusters, cells labelled neutrophils by STATE exhibit the lowest CyteScore similarity to the cluster annotation assigned by CyteType (rank 26). In moderate confidence CyteType clusters, cells labelled neutrophils by STATE exhibit the highest CyteScore similarity to the cluster annotation assigned by CyteType (rank 1). This means that the weighted mean CyteScore delta between low and moderate confidence clusters is +25. Going from moderate to high, cells labelled neutrophil by STATE drop to rank 5 in CyteScore similarity, resulting in a delta between moderate and high confidence annotations of -4.
+
+One might interpret this as a sign that STATE is "good" at identifying neutrophils and "bad" at identifying intermediate monocytes.
+
+TODO: think about how to draw bigger conclusions, not just relative ones
 
 ### How rank delta is computed
 
@@ -50,12 +67,6 @@ where the sum runs over the rows for one STATE label in one band, $s_i$ is that 
 3. **Take the rank differences between bands** for each STATE label: `rank_Low - rank_Moderate` and `rank_Moderate - rank_High`.
 
 4. **Sort STATE labels** by the sum of those two differences, so the STATE labels that go from sitting in low confidence CyteType clusters  sit at the bottom of the chart and the most volatile at the top.
-
-### How to read the plot
-
-The x-axis is a count of rank positions moved, not a change in CyteScore itself. A STATE label with total delta near zero (e.g. lung multiciliated epithelial cell, macrophage) holds roughly the same relative standing in all three confidence bands: its weighted mean CyteScore ranks similarly whether it appears in Low-, Moderate-, or High-confidence pairings. A STATE label with a large total delta (e.g. neutrophil, natural killer cell) shifts substantially: its weighted mean CyteScore ranks much higher or lower in one band than in another.
-
-The orange and green segments show which transition drives the shift. A long orange segment means the rank changed mainly between Low and Moderate; a long green segment means it changed mainly between Moderate and High.
 
 ### Caveats
 
