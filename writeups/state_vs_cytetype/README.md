@@ -24,23 +24,21 @@ CyteType assigns each Leiden cluster a confidence label (Low, Moderate, or High)
 
 ### How rank delta is computed
 
+The whole computation is four steps, applied once per confidence band (Low, Moderate, High):
+
+1. **Average CyteScore per STATE label, weighted by cell count.** Take every pair-level row in the band, weight each row's `cytescore_similarity` by its `n_cells`, and average:
+
 $$
-\bar{s}_{\text{STATE}} = \frac{\sum_i (\text{cytescore}_i \times n_{\text{cells},i})}{\sum_i n_{\text{cells},i}}
+\bar{s} = \frac{\sum_i s_i \, n_i}{\sum_i n_i}
 $$
 
-For each confidence band separately:
+where the sum runs over the rows for one STATE label in one band, $s_i$ is that row's `cytescore_similarity`, and $n_i$ is its `n_cells`. Bigger pairings count more; single-cell pairings barely move the average.
 
-1. **Weighted mean CyteScore per STATE label.** Within the band, aggregate all pair-level rows for each STATE label using an `n_cells`-weighted mean:
-   `sum(cytescore_similarity * n_cells) / sum(n_cells)`.
-   Pair rows with more cells contribute more to the mean; single-cell pairs contribute less.
+2. **Rank the STATE labels** by $\bar{s}$ within the band (rank 0 = lowest).
 
-2. **Rank STATE labels within the band.** Sort STATE labels by that weighted mean (ascending) and assign integer ranks (0 = lowest mean CyteScore in the band).
+3. **Take the rank differences between bands** for each STATE label: `|rank_Low - rank_Moderate|` and `|rank_Moderate - rank_High|`.
 
-3. **Compute rank deltas between adjacent bands.**
-   - `low -> moderate` = `|rank_Low - rank_Moderate|`
-   - `moderate -> high` = `|rank_Moderate - rank_High|`
-
-4. **Stack and sort.** The two deltas are stacked per STATE label. STATE labels are sorted by their total delta (sum of both segments).
+4. **Sort STATE labels** by the sum of those two differences, so the most stable labels sit at the bottom of the chart and the most volatile at the top.
 
 ### How to read the plot
 
