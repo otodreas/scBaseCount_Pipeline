@@ -24,6 +24,10 @@ CyteType assigns each Leiden cluster a confidence label (Low, Moderate, or High)
 
 ### How rank delta is computed
 
+$$
+\bar{s}_{\text{STATE}} = \frac{\sum_i (\text{cytescore}_i \times n_{\text{cells},i})}{\sum_i n_{\text{cells},i}}
+$$
+
 For each confidence band separately:
 
 1. **Weighted mean CyteScore per STATE label.** Within the band, aggregate all pair-level rows for each STATE label using an `n_cells`-weighted mean:
