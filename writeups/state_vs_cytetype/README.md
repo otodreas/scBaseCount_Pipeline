@@ -14,13 +14,24 @@ The findings presented below span **113** accessions and therefore **113** CyteT
 
 Each point is a pair-level observation: one STATE label matched to one CyteType annotation in one accession. A STATE label therefore appears as many boxplot points as it has distinct CyteType pairings across the dataset. STATE labels at the top of the plot (e.g. pulmonary alveolar type 2 cell, natural killer cell) tend to receive higher CyteScores from CyteOnto; STATE labels at the bottom (e.g. club cell, CD4-positive alpha-beta T cell) tend to receive lower scores. The spread within a STATE label reflects how consistently CyteOnto agrees with CyteType across the different annotations that STATE is paired with.
 
+## Examining CyteType annotation confidence using CyteScore
+
+CyteType assigns a confidence label (Low, Moderate, or High) to each Leiden cluster it annotates. The question is whether a STATE label's relative CyteScore standing is stable across those bands, or whether it moves up or down as confidence changes.
+
+Since the clustering is informed by STATE labels, each cell will have a STATE label and a CyteType annotation associated with it. Those two free text labels can be compared using CyteOnto to see how similar they are on a scale from 0 to 1. Therefore, CyteOnto can be used to compute CyteScores between STATE labels and CyteType annotations. These CyteScores can be mapped to the data on a cell level, but are effectively resolved to the STATE-CyteType label pair level. Nonetheless, cell level data are valuable to understanding how often a given STATE-CyteType label pair appears in the data. **Figure 2** illustrates this on a single dataset. 
+
+![Example accession UMAP panels](.figs/umap_example_accession.png)
+
+***Figure 2.*** *UMAP for accession SRX23724122, colored by STATE label, CyteType annotation, CyteOnto CyteScore, and CyteType cluster confidence.*
+
+The pipeline run underlying **Figures 1** and **2** was produced without per-cell UMAP coordinates. **Figure 3** is regenerated from a locally cached annotated h5ad (`data/cytetype_annotated/SRX23724094_annotated.h5ad`) using the same CyteScore merge and confidence mapping as in [`notebooks/analysis/confidence_vs_cytescore.ipynb`](../../notebooks/analysis/confidence_vs_cytescore.ipynb). It shows how the four variables co-localize on a single dataset: STATE labels and CyteType annotations partition the UMAP into distinct regions, CyteScore varies continuously within those regions, and confidence labels (red = Low, yellow = Moderate, green = High) attach to whole Leiden clusters rather than individual cells.
+
 ## Rank delta measures how much a STATE label's CyteScore standing shifts with confidence
 
 ![Rank delta by CyteType confidence band](.figs/cytescore_rank_delta_by_confidence.png)
 
-***Figure 2.*** *Per-STATE rank delta across CyteType confidence bands. Orange: `low -> moderate`; green: `moderate -> high`. Bars sorted by total delta (ascending).*
+***Figure 3.*** *Rank change ("rank delta") for each STATE label across CyteType confidence bands. Orange bars show change from Low to Moderate confidence (`low → moderate`); green bars show change from Moderate to High (`moderate → high`). Bars are ordered by total rank delta (lowest to highest).*
 
-CyteType assigns each Leiden cluster a confidence label (Low, Moderate, or High). The question is whether a STATE label's relative CyteScore standing is stable across those bands, or whether it moves up or down as confidence changes.
 
 ### How rank delta is computed
 
@@ -36,9 +47,9 @@ where the sum runs over the rows for one STATE label in one band, $s_i$ is that 
 
 2. **Rank the STATE labels** by $\bar{s}$ within the band (rank 0 = lowest).
 
-3. **Take the rank differences between bands** for each STATE label: `|rank_Low - rank_Moderate|` and `|rank_Moderate - rank_High|`.
+3. **Take the rank differences between bands** for each STATE label: `rank_Low - rank_Moderate` and `rank_Moderate - rank_High`.
 
-4. **Sort STATE labels** by the sum of those two differences, so the most stable labels sit at the bottom of the chart and the most volatile at the top.
+4. **Sort STATE labels** by the sum of those two differences, so the STATE labels that go from sitting in low confidence CyteType clusters  sit at the bottom of the chart and the most volatile at the top.
 
 ### How to read the plot
 
@@ -52,13 +63,7 @@ The orange and green segments show which transition drives the shift. A long ora
 - Weighting by `n_cells` means high-cell pairings dominate each band's mean. A STATE label represented mostly by single-cell pairs will be more sensitive to a few large-count pairings.
 - The number of pair rows differs across bands (561 Low, 4226 Moderate, 3593 High in this run), so ranks are computed over slightly different subsets of pairings.
 
-## Single-accession UMAP grounds the aggregate metrics
 
-![Example accession UMAP panels](.figs/umap_example_accession.png)
-
-***Figure 3.*** *UMAP for accession SRX23724094, colored by STATE label, CyteType annotation, CyteOnto CyteScore, and CyteType cluster confidence.*
-
-The pipeline run underlying **Figures 1** and **2** was produced without per-cell UMAP coordinates. **Figure 3** is regenerated from a locally cached annotated h5ad (`data/cytetype_annotated/SRX23724094_annotated.h5ad`) using the same CyteScore merge and confidence mapping as in [`notebooks/analysis/confidence_vs_cytescore.ipynb`](../../notebooks/analysis/confidence_vs_cytescore.ipynb). It shows how the four variables co-localize on a single dataset: STATE labels and CyteType annotations partition the UMAP into distinct regions, CyteScore varies continuously within those regions, and confidence labels (red = Low, yellow = Moderate, green = High) attach to whole Leiden clusters rather than individual cells.
 
 ## Conclusion
 
