@@ -6,12 +6,6 @@ The goal of the analysis was to determine the relationships between STATE-CyteTy
 
 The findings presented below span **113** accessions and therefore **113** CyteType reports, across which there are **868** unique CyteType annotations and **26** unique STATE labels.
 
-## Per-STATE CyteScore varies widely across STATE-CyteType pairs
-
-![Per-STATE CyteScore boxplots](.figs/cytescore_by_state_boxplot.png)
-
-***Figure 1.*** *Per-STATE distribution of CyteScore (`cytescore_similarity`) across all STATE label-CyteType annotation pairs, ordered by median CyteScore (descending).*
-
 Each point is a pair-level observation: one STATE label matched to one CyteType annotation in one accession. A STATE label therefore appears as many boxplot points as it has distinct CyteType pairings across the dataset. STATE labels at the top of the plot (e.g. pulmonary alveolar type 2 cell, natural killer cell) tend to receive higher CyteScores from CyteOnto; STATE labels at the bottom (e.g. club cell, CD4-positive alpha-beta T cell) tend to receive lower scores. The spread within a STATE label reflects how consistently CyteOnto agrees with CyteType across the different annotations that STATE is paired with.
 
 ## Examining CyteType annotation confidence using CyteScore
@@ -22,11 +16,11 @@ Since the clustering is informed by STATE labels, each cell will have a STATE la
 
 ![Example accession UMAP panels](.figs/umap_example_accession.png)
 
-***Figure 2.*** *UMAP for accession SRX23724122, colored by STATE label, CyteType annotation, CyteOnto CyteScore, and CyteType cluster confidence.*
+***Figure 1.*** *UMAP for accession SRX23724122, colored by STATE label, CyteType annotation, CyteOnto CyteScore, and CyteType cluster confidence.*
 
 A given STATE label can appear more or less in clusters that CyteType annotates with a certain confidence level. For instance, if the STATE label "plasma cell" often appears in clusters that CyteType annotates with high confidence, it is tempting to assume that CyteType often successfully annotates cells that STATE thought were plasma cells. However, the confidence does not tell the whole story. If that high confidence cluster was annotated as a similar cell type by CyteType, such as a plasmablast, CyteType had high confidence in arriving at a similar conclusion as STATE, while if the cluster was annotated as a more different cell type, such as a basophil, CyteType had high confidence that STATE was incorrect in its annotation. A metric to quantify how similar or different these cell types are with language models is CyteOnto's CyteScore. 
 
-| | Similar label | Different label
+| | Pair of similar labels | Pair of different labels
 --- | --- | ---
 **STATE label** | B Cell | B Cell
 **CyteType annotation** | Plasmablast | Basophil
@@ -36,23 +30,24 @@ A given STATE label can appear more or less in clusters that CyteType annotates 
 
 ***Table 1.*** *Hypothetical example of STATE label and CyteType annotation. These examples were chosen strictly for demonstration and are not on their own relevant to the findings of this document.*
 
-To understand which STATE labels CyteType confidently identifies as different from STATE, which it confidently identifies as the same as STATE, etc., we compute a rank delta that measures how much a STATE label's CyteScore standing shifts with confidence.
+To see how absolute CyteScore alignment changes with confidence, we plot each STATE label's cell-count-weighted mean CyteScore in each confidence band.
 
-![Rank delta by CyteType confidence band](.figs/cytescore_rank_delta_by_confidence.png)
+**A**
+![Weighted mean Cytescore delta by CyteType confidence band](.figs/cytescore_abs_delta_by_confidence.png)
+**B**
+![Weighted mean CyteScore by CyteType confidence band](.figs/cytescore_level_by_confidence.png)
 
-***Figure 3.*** *Rank change ("rank delta") for each STATE label across CyteType confidence bands. Orange bars show change from Low to Moderate confidence (`low → moderate`); green bars show change from Moderate to High (`moderate → high`). Bars are ordered by total rank delta (lowest to highest).*
+***Figure 2.*** ***A.*** *Weigted change in mean CyteScore for STATE labels across CyteType confidence bands. Each set of bars represents the change in CyteScore from one confidence band to another.* ***B.*** *Weighted mean CyteScore for  STATE labels across CyteType confidence bands. Each line is one STATE label, color-ordered by weighted mean CyteScore at High confidence. The title reports the global Spearman correlation between CyteScore and confidence across all pair-level rows ($\rho=0.01$, $p=0.23$). Over all, CyteScores increased with CyteType annotation confidence, which is to be expected. Note that not all STATE labels are shown in the figure to reduce overplotting.*
 
-neutrophil-CyteType annotation exhibit higher CyteScores relative to the rest of STATE labels as CyteType confidence increases. This can be interpreted as when CyteType is presented with a cluster with many cells that STATE labelled as neutrophils and CyteType is not confident in its annotation, it choses to annotate a cell with a type that is quite different from neutrophil. However, when it is presented with a cluster with many cells that STATE labelled as neutrophils and CyteType is confident in its annotation, it tends to label the cluster with names that are similar to neutrophil. The opposite is true for clusters with many cells that STATE labelled as intermediate monocytes. Here, CyteType tends annotate clusters with labels that are more different from intermediate monocyte when it is more confident, and more similar when it is less confident.
+Annotations of clusters with cells labelled neutrophils by STATE tend to exhibit higher CyteScores relative to the rest of STATE labels as CyteType confidence increases (**Figure 2A**). This can be interpreted as when CyteType is presented with a cluster containing cells that STATE labelled as neutrophils and CyteType is **not confident** in STATE, it choses to assign the clusters **a type that is quite different** from neutrophil. However, when it is presented with a cluster with many cells that STATE labelled as neutrophils and CyteType **is confident** in its annotation, it tends to assign the cluster a **type that is similar** to neutrophil. The opposite is true for clusters with many cells that STATE labelled as intermediate monocytes. Here, CyteType tends annotate clusters with labels that are more different from intermediate monocyte when it is more confident, and more similar when it is less confident.
 
-To put some numbers to the figure, in low confidence CyteType clusters, cells labelled neutrophils by STATE exhibit the lowest CyteScore similarity to the cluster annotation assigned by CyteType (rank 26). In moderate confidence CyteType clusters, cells labelled neutrophils by STATE exhibit the highest CyteScore similarity to the cluster annotation assigned by CyteType (rank 1). This means that the weighted mean CyteScore delta between low and moderate confidence clusters is +25. Going from moderate to high, cells labelled neutrophil by STATE drop to rank 5 in CyteScore similarity, resulting in a delta between moderate and high confidence annotations of -4.
+To put some numbers on the figure, neutrophils have weighted mean CyteScore 0.09 in low-confidence clusters, 0.68 in moderate, and 0.71 in high: a large gain from Low to Moderate (+0.59) with little change thereafter. Intermediate monocytes move in the opposite direction (0.43 → 0.38 → 0.33), with CyteScore falling as confidence rises.
 
 One might interpret this as a sign that STATE is "good" at identifying neutrophils and "bad" at identifying intermediate monocytes.
 
-TODO: think about how to draw bigger conclusions, not just relative ones
+### How weighted mean CyteScore is computed
 
-### How rank delta is computed
-
-The whole computation is four steps, applied once per confidence band (Low, Moderate, High):
+For each confidence band (Low, Moderate, High):
 
 1. **Average CyteScore per STATE label, weighted by cell count.** Take every pair-level row in the band, weight each row's `cytescore_similarity` by its `n_cells`, and average:
 
@@ -62,17 +57,13 @@ $$
 
 where the sum runs over the rows for one STATE label in one band, $s_i$ is that row's `cytescore_similarity`, and $n_i$ is its `n_cells`. Bigger pairings count more; single-cell pairings barely move the average.
 
-2. **Rank the STATE labels** by $\bar{s}$ within the band (rank 0 = lowest).
-
-3. **Take the rank differences between bands** for each STATE label: `rank_Low - rank_Moderate` and `rank_Moderate - rank_High`.
-
-4. **Sort STATE labels** by the sum of those two differences, so the STATE labels that go from sitting in low confidence CyteType clusters  sit at the bottom of the chart and the most volatile at the top.
+2. **Plot $\bar{s}$ for each band** as one point per STATE label and connect the three bands with a line.
 
 ### Caveats
 
-- Ranks are relative within each band, not absolute CyteScore values. A STATE can have a low absolute CyteScore but still rank high within a band if all other STATE labels in that band score even lower.
 - Weighting by `n_cells` means high-cell pairings dominate each band's mean. A STATE label represented mostly by single-cell pairs will be more sensitive to a few large-count pairings.
-- The number of pair rows differs across bands (561 Low, 4226 Moderate, 3593 High in this run), so ranks are computed over slightly different subsets of pairings.
+- The number of pair rows differs across bands (561 Low, 4226 Moderate, 3593 High in this run), so each band's mean is computed over a slightly different subset of pairings.
+- Lines cross between bands, so relative standing is not fixed across confidence levels even when the pooled Spearman trend is weak.
 
 
 
@@ -80,6 +71,5 @@ where the sum runs over the rows for one STATE label in one band, $s_i$ is that 
 
 The three figures address the relationship between CyteScore and CyteType confidence at different levels of aggregation:
 
-- **Figure 1** shows that STATE labels differ systematically in their CyteScore distributions, with some STATE labels consistently scoring higher against their CyteType pairings than others.
-- **Figure 2** introduces rank delta as a measure of whether a STATE label's relative CyteScore standing is stable across CyteType confidence bands. STATE labels with low total delta (e.g. lung multiciliated epithelial cell, macrophage) maintain a consistent rank regardless of confidence; STATE labels with high total delta (e.g. neutrophil, natural killer cell) shift rank substantially as confidence changes. This suggests that confidence and CyteScore alignment are not uniform across STATE labels.
-- **Figure 3** provides a single-dataset view of how STATE labels, CyteType annotations, CyteScores, and confidence labels relate spatially, complementing the pair-level aggregates in **Figures 1** and **2**.
+- **Figure 1** provides a single-dataset view of how STATE labels, CyteType annotations, CyteScores, and confidence labels relate spatially, complementing the pair-level aggregates in **Figures 1** and **2**.
+- **Figure 2** plots each STATE label's weighted mean CyteScore across CyteType confidence bands. Lines cross frequently, so relative standing is not stable across bands; labels such as neutrophil and natural killer cell gain sharply from Low to Moderate confidence, while intermediate monocyte declines. The pooled Spearman correlation is weak ($\rho \approx 0.01$), so the global trend does not summarize per-label behavior.
