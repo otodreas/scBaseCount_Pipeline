@@ -41,6 +41,9 @@ DailyNotes.md
 # IDE
 .cursor/plans
 
+# Zotero
+Zotero/
+
 # Tooling caches
 .pytest_cache/
 .ruff_cache/
