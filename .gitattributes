@@ -1,2 +1,3 @@
 notebooks/**/*.ipynb diff=ipynb
 tests/*.ipynb diff=ipynb
+writeups/**/*.ipynb diff=ipynb

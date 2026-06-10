@@ -12,6 +12,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`cytetype_runner/`](cytetype_runner/) | `run_cytetype(cfg, ...)` | `output/cytetype/data/{srx}_cytetype_annotated.h5ad` (job details embedded in `adata.uns["cytetype_jobDetails"]`) |
 | [`cyteonto/`](cyteonto/) | `run_cyteonto(cfg)` | `output/cyteonto/runs/{run_id}.csv` |
 | [`h5ad_extractor/`](h5ad_extractor/) | `extract_annotation_columns(cfg)` | `output/h5ad_extract/{stem}_{obs\|var}_columns.{parquet\|csv}` |
+| [`annotation_inspector/`](annotation_inspector/) | `inspect_accession(...)`, `write_extremes_csv(...)` | Pair-level `summary.csv`, optional `extremes.csv` |
 | [`gcs/`](gcs/) | `download_from_gcs(gs_uri, local_root)` | local mirror of GCS path under `data/` |
 | [`r2/`](r2/) | `upload_to_r2(local_path, r2_key)` | — (side effect: uploads to R2) |
 | [`shared/`](shared/) | `REPO_ROOT`, `configure_file_logger(...)` | — (utilities only) |

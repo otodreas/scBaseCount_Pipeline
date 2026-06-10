@@ -37,3 +37,5 @@ Not part of the main pipeline. Use these to verify connectivity or inspect h5ad 
 **`utility/r2_inspect.ipynb`** — Verifies that `boto3` can authenticate and reach the Cloudflare R2 bucket using the credentials in `.env`. Lists objects and confirms the bucket is reachable before uploading processed files.
 
 **`analysis/cluster_stats.ipynb`** — Loads `cluster_stats.json` produced by [`pipelines/cluster_stats.py`](../pipelines/cluster_stats.py) and builds an `xarray` tensor of cell-type by cluster counts for downstream analysis.
+
+**`analysis/annotation_inspection.ipynb`** — Loads `summary.csv` and `extremes.csv` from [`pipelines/run_annotation_inspection_pipeline.py`](../pipelines/run_annotation_inspection_pipeline.py) for pair-level groupbys and extremes review.
