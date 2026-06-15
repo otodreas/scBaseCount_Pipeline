@@ -8,11 +8,12 @@ from pydantic import BaseModel
 class ClusterValidationResult(BaseModel):
     srxAccession: str
     datasetTitleSuffix: str
+    embedding: str = "pca"
     selectedResolution: float
     clusterKey: str
     mergedKey: str
-    nPcs: int
-    cumvar: float
+    nPcs: int | None = None
+    cumvar: float | None = None
     kPrior: int
     kFiltered: int
     nCellsDropped: int

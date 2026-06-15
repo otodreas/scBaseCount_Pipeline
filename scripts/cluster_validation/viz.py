@@ -29,6 +29,8 @@ def plot_pca_cumvar(
     var_ratio = adata.uns["pca"]["variance_ratio"]
     # n_pcs_min = result.nPcs  # floor used
     n_pcs = result.nPcs
+    if n_pcs is None:
+        raise ValueError("plot_pca_cumvar requires PCA embedding (nPcs is None)")
     # cumvar_target = adata.uns.get("_cv_cumvar_target", None)
 
     fig, ax = plt.subplots()
@@ -235,7 +237,7 @@ def plot_silhouette(
 
     ax.set_xlabel("Leiden resolution")
     ax.set_ylabel("Silhouette score")
-    ax.set_title(f"Silhouette vs resolution (PCA embedding)\n{_now()}")
+    ax.set_title(f"Silhouette vs resolution ({result.embedding} embedding)\n{_now()}")
     ax.legend(loc="best", fontsize=8)
     fig.tight_layout()
     _save(fig, figs_dir, f"silhouette_vs_resolution_{result.srxAccession}.png")
@@ -283,7 +285,8 @@ def plot_all(
     result: ClusterValidationResult,
     figs_dir: Path | None = None,
 ) -> None:
-    plot_pca_cumvar(adata, result, figs_dir)
+    if "pca" in adata.uns:
+        plot_pca_cumvar(adata, result, figs_dir)
     plot_resolution_sweep(result, figs_dir)
     plot_umap_selected(adata, result, figs_dir)
     plot_rf_confusion(result, figs_dir)

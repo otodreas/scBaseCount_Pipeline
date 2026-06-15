@@ -26,7 +26,7 @@ The pipeline writes the final `AnnData` to `output/clustering/data/{srx}_cluster
 |------|--------|-------------|
 | Load | `data.py` | Read h5ad from local path or GCS fallback; look up dataset row from catalog CSV |
 | Preprocess | `preprocess.py` | Filter rare cell types (`minCellsPerType`), QC, HVG selection, normalisation |
-| Embed | `embedding.py` | PCA, select PCs by cumulative variance target, neighbors graph, UMAP |
+| Embed | `embedding.py` | PCA (default) or precomputed scGPT embedding; neighbors graph and UMAP |
 | Sweep | `clustering.py` | Leiden clustering at each resolution in `resolutions`; one `obs` column per resolution |
 | Select resolution | `resolution.py` | Jaccard matrix + Hungarian assignment; pick resolution maximising matched Jaccard sum |
 | Merge | `merge.py` | RF OOF confusion on HVG matrix; union-find merges pairs above `mergeThreshold`; writes `leiden_merged` |
@@ -66,8 +66,33 @@ A `RandomForestClassifier` is trained on HVG expression with stratified K-fold o
 | `resolutions` | `0.1, 0.2, ..., 1.9` | Leiden resolutions swept |
 | `mergeThreshold` | `0.2` | OOF confusion threshold above which two clusters are merged |
 | `rfBalanceWeakPrior` | `False` | Balance class weights in the RF by `cell_type` frequency |
+| `embedding` | `"pca"` | Embedding strategy: `"pca"` or `"scgpt"` |
+| `scgptEmbedPath` | `None` | Path to precomputed `.npz` artifact (`obs_names` + `X`); required when `embedding="scgpt"` |
+| `scgptObsmKey` | `"X_scGPT"` | `adata.obsm` key for attached scGPT vectors |
 
 All default paths are relative to the repo root.
+
+## scGPT embedding arm
+
+scGPT runs in an isolated environment under `tools/scgpt_embed/` (not imported by this package). Generate embeddings on the Lund bioinformatics server (CPU-only), then pass the artifact into cluster validation:
+
+```sh
+uv run --directory tools/scgpt_embed python embed.py \
+  --h5ad data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12366723.h5ad \
+  --model-dir models/scgpt/whole_human \
+  --out output/scgpt_embed/SRX12366723_scgpt.npz
+```
+
+```python
+cfg = ClusterValidationConfig(
+    srxAccession="SRX12366723",
+    embedding="scgpt",
+    scgptEmbedPath=Path("output/scgpt_embed/SRX12366723_scgpt.npz"),
+)
+adata, result = run_cluster_validation(cfg)
+```
+
+The `.npz` must contain `obs_names` aligned with the raw h5ad after `obs_names_make_unique()`. Embeddings are subset to filtered cells during `embed_dataset`. `embed.py` defaults to `--device cpu` because the Lund server has no GPU. See `notebooks/pipeline/scgpt_embedding.ipynb` for a PCA vs scGPT comparison workflow.
 
 ## Cell type metrics
 
@@ -99,10 +124,11 @@ Saves a two-panel horizontal bar chart to `output_path` (PNG). Left panel shows 
 ```
 ClusterValidationResult
 ├── srxAccession            str
+├── embedding               str          "pca" or "scgpt"
 ├── selectedResolution      float
 ├── clusterKey              str          obs column for the selected pre-merge partition
-├── nPcs                    int
-├── cumvar                  float        cumulative variance at nPcs
+├── nPcs                    int | None   PCs used (PCA arm only)
+├── cumvar                  float | None cumulative variance at nPcs (PCA arm only)
 ├── kPrior                  int          cells before QC filter
 ├── kFiltered               int          cells after QC filter
 ├── nCellsDropped           int

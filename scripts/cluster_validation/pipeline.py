@@ -40,6 +40,7 @@ def run_cluster_validation(
     result = ClusterValidationResult(
         srxAccession=srx,
         datasetTitleSuffix=title_suffix,
+        embedding=cfg.embedding,
         selectedResolution=sel.selectedResolution,
         clusterKey=sel.clusterKey,
         mergedKey=merge_info.mergedKey,
@@ -69,14 +70,30 @@ def run_cluster_validation(
 
     plot_all(adata, result, figs_dir=cfg.figsDir / srx)
 
-    print(
-        f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters and {result.nPcs} PCs"
-    )
-    _log.info(
-        "done      %s  resolution=%.1f  clusters=%d  pcs=%d",
-        srx,
-        result.selectedResolution,
-        result.nClustersPostMerge,
-        result.nPcs,
-    )
+    if cfg.embedding == "pca":
+        print(
+            f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} "
+            f"with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters "
+            f"and {result.nPcs} PCs"
+        )
+        _log.info(
+            "done      %s  resolution=%.1f  clusters=%d  pcs=%d",
+            srx,
+            result.selectedResolution,
+            result.nClustersPostMerge,
+            result.nPcs,
+        )
+    else:
+        print(
+            f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} "
+            f"with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters "
+            f"and {cfg.embedding} embedding"
+        )
+        _log.info(
+            "done      %s  resolution=%.1f  clusters=%d  embedding=%s",
+            srx,
+            result.selectedResolution,
+            result.nClustersPostMerge,
+            cfg.embedding,
+        )
     return adata, result

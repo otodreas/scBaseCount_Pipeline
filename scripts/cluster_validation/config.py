@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 from pydantic import BaseModel, Field
@@ -23,5 +24,8 @@ class ClusterValidationConfig(BaseModel):
     resolutions: list[float] = Field(default_factory=lambda: [round(r, 1) for r in np.arange(0.1, 2.0, 0.1).tolist()])
     mergeThreshold: float = 0.2
     rfBalanceWeakPrior: bool = False
+    embedding: Literal["pca", "scgpt"] = "pca"
+    scgptEmbedPath: Path | None = None
+    scgptObsmKey: str = "X_scGPT"
     outputDir: Path = _REPO_ROOT / "output" / "clustering" / "data"
     figsDir: Path = _REPO_ROOT / "output" / "clustering" / "figs"

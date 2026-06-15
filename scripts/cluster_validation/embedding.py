@@ -1,12 +1,62 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
+import pandas as pd
 import scanpy as sc
 
 from cluster_validation.config import ClusterValidationConfig
 
 
-def embed_dataset(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, int, float]:
+def active_rep(cfg: ClusterValidationConfig) -> str:
+    """Return the obsm key used for neighbors and silhouette scoring."""
+    if cfg.embedding == "scgpt":
+        return cfg.scgptObsmKey
+    return "X_pca"
+
+
+def embed_dataset(
+    adata: sc.AnnData,
+    cfg: ClusterValidationConfig,
+) -> tuple[sc.AnnData, int | None, float | None]:
+    if cfg.embedding == "scgpt":
+        return _embed_scgpt(adata, cfg)
+    return _embed_pca(adata, cfg)
+
+
+def _attach_scgpt_embedding(adata: sc.AnnData, cfg: ClusterValidationConfig) -> sc.AnnData:
+    if cfg.scgptEmbedPath is None:
+        raise ValueError("scgptEmbedPath is required when embedding='scgpt'")
+
+    embed_path = Path(cfg.scgptEmbedPath)
+    if not embed_path.exists():
+        raise FileNotFoundError(f"scGPT embedding artifact not found: {embed_path}")
+
+    with np.load(embed_path, allow_pickle=False) as data:
+        obs_names = data["obs_names"].astype(str)
+        x = data["X"].astype(np.float32)
+
+    embed_df = pd.DataFrame(x, index=obs_names)
+    aligned = embed_df.reindex(adata.obs_names.astype(str))
+    missing = aligned.index[aligned.isna().all(axis=1)]
+    if len(missing) > 0:
+        raise ValueError(
+            f"{len(missing)} cells in adata have no scGPT embedding (first missing: {missing[:3].tolist()})"
+        )
+
+    adata.obsm[cfg.scgptObsmKey] = aligned.to_numpy(dtype=np.float32)
+    return adata
+
+
+def _embed_scgpt(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, None, None]:
+    adata = _attach_scgpt_embedding(adata, cfg)
+    sc.pp.neighbors(adata, use_rep=cfg.scgptObsmKey)
+    sc.tl.umap(adata)
+    return adata, None, None
+
+
+def _embed_pca(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, int, float]:
     sc.tl.pca(adata, n_comps=cfg.nPcsCompute, svd_solver="arpack")
     n_pcs, cumvar = _pick_n_pcs(adata, cfg)
     sc.pp.neighbors(adata, n_pcs=n_pcs)

@@ -11,6 +11,8 @@ data/
 tmp/
 extra/
 output/r2/
+models/scgpt/
+output/scgpt_embed/
 
 # Large outputs
 output/clustering/

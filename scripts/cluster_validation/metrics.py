@@ -13,6 +13,7 @@ from sklearn.metrics import (
 )
 
 from cluster_validation.config import ClusterValidationConfig
+from cluster_validation.embedding import active_rep
 from cluster_validation.merge import MergeInfo
 from cluster_validation.resolution import ResolutionSelection
 
@@ -45,7 +46,7 @@ def compute_metrics(
         labels = adata.obs[key]
         if labels.nunique() <= 1:
             continue
-        sil = float(silhouette_score(adata.obsm["X_pca"], labels))
+        sil = float(silhouette_score(adata.obsm[active_rep(cfg)], labels))
         silhouette.append([res, sil])
         homogeneity.append([res, float(homogeneity_score(adata.obs[key], adata.obs["leiden_merged"]))])
         completeness.append([res, float(completeness_score(adata.obs[key], adata.obs["leiden_merged"]))])
