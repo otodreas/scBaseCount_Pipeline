@@ -48,16 +48,19 @@ export_accession_disease_categories(result.lungIntersection, cfg)
 # writes output/metadata/accession_disease_categories.json
 ```
 
-### Querying obs-level data for a single sample
+### Querying metadata for a single accession
 
 ```python
-from metadata import obs_rows_for_srx
+from metadata import sample_row_for_srx, obs_rows_for_srx
+
+row = sample_row_for_srx("SRX17412841", cfg)
+row["disease"], row["tissue"], row["file_path"]
 
 obs = obs_rows_for_srx("SRX17412841", cfg)
 obs["cell_type"].value_counts()
 ```
 
-The filter is pushed into the Parquet scan, so no full-file load is needed.
+Both lookups push the SRX filter into the Parquet scan, so no full-file load is needed.
 
 ## Filter logic
 
@@ -124,7 +127,7 @@ All default paths are relative to the repo root.
 | Module | Public API |
 |--------|------------|
 | `config.py` | `MetadataConfig` |
-| `load.py` | `load_sample(cfg)`, `obs_rows_for_srx(srx, cfg)` |
+| `load.py` | `load_sample(cfg)`, `sample_row_for_srx(srx, cfg)`, `obs_rows_for_srx(srx, cfg)` |
 | `filter.py` | `filter_lung(sample, cfg)` -> `FilterResult` |
 | `categorize.py` | `disease_categories_for(disease)`, `most_specific_disease_label(disease)`, `export_accession_disease_categories(samples, cfg)` |
 | `qc.py` | `QcThresholds`, `compute_obs_qc(srxAccessions, cfg)`, `apply_qc(samples, qc, thresholds)` |

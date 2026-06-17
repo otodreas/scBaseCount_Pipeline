@@ -8,7 +8,7 @@ from metadata.categorize import (
 from metadata.config import MetadataConfig
 from metadata.export import export_datasets
 from metadata.filter import FilterResult, filter_lung
-from metadata.load import load_sample, obs_rows_for_srx
+from metadata.load import load_sample, obs_rows_for_srx, sample_row_for_srx
 from metadata.qc import QcThresholds, apply_qc, compute_obs_qc
 from metadata.regexes import DISEASE_MAP
 
@@ -16,6 +16,7 @@ __all__ = [
     "MetadataConfig",
     "FilterResult",
     "load_sample",
+    "sample_row_for_srx",
     "obs_rows_for_srx",
     "filter_lung",
     "DISEASE_MAP",
