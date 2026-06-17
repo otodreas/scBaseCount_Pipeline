@@ -21,6 +21,10 @@ def _save(fig: plt.Figure, figs_dir: Path | None, name: str) -> None:
         fig.savefig(figs_dir / name, bbox_inches="tight")
 
 
+def _figure_tag(result: ClusterValidationResult) -> str:
+    return result.runTag
+
+
 def plot_pca_cumvar(
     adata: sc.AnnData,
     result: ClusterValidationResult,
@@ -42,7 +46,7 @@ def plot_pca_cumvar(
     ax.set_ylabel("Cumulative variance (%)")
     ax.legend(fontsize=8)
     fig.tight_layout()
-    _save(fig, figs_dir, f"pca_cumvar_{result.srxAccession}.png")
+    _save(fig, figs_dir, f"pca_cumvar_{_figure_tag(result)}.png")
     return fig
 
 
@@ -85,7 +89,7 @@ def plot_resolution_sweep(
         f"selected = {sel}  (k = {k_arr[best_idx]},  k_filtered = {result.kFiltered})\n{_now()}"
     )
     plt.tight_layout()
-    _save(fig, figs_dir, f"resolution_sweep_{result.srxAccession}.png")
+    _save(fig, figs_dir, f"resolution_sweep_{_figure_tag(result)}.png")
     return fig
 
 
@@ -94,24 +98,25 @@ def plot_umap_selected(
     result: ClusterValidationResult,
     figs_dir: Path | None = None,
 ) -> None:
+    prior_key = result.weakPriorKey
     n_clusters = result.nClustersPreMerge
     sc.pl.umap(
         adata,
-        color=[result.clusterKey, "cell_type"],
+        color=[result.clusterKey, prior_key],
         ncols=2,
         legend_loc="on data",
         legend_fontsize=7,
         wspace=0.4,
         title=[
             f"Leiden {result.selectedResolution}  ({n_clusters} clusters)",
-            f"cell_type filtered  ({result.kFiltered} types)",
+            f"{prior_key} filtered  ({result.kFiltered} types)",
         ],
         show=False,
     )
     plt.suptitle(f"Dataset: {result.datasetTitleSuffix}\n{_now()}", y=1.02)
     if figs_dir is not None:
         figs_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(figs_dir / f"umap_selected_{result.srxAccession}.png", bbox_inches="tight")
+        plt.savefig(figs_dir / f"umap_selected_{_figure_tag(result)}.png", bbox_inches="tight")
 
 
 def plot_rf_confusion(
@@ -139,7 +144,7 @@ def plot_rf_confusion(
         f"RF out-of-fold confusion  ({result.clusterKey}, {len(classes)} clusters)\n{_now()}"
     )
     plt.tight_layout()
-    _save(fig, figs_dir, f"rf_confusion_{result.srxAccession}.png")
+    _save(fig, figs_dir, f"rf_confusion_{_figure_tag(result)}.png")
     return fig
 
 
@@ -156,9 +161,10 @@ def plot_umap_merged(
     else:
         umap_merged_title = f"RF-merged  ({result.nClustersPostMerge} clusters)\n(no merges)"
 
+    prior_key = result.weakPriorKey
     fig = sc.pl.umap(
         adata,
-        color=[result.clusterKey, "leiden_merged", "cell_type"],
+        color=[result.clusterKey, "leiden_merged", prior_key],
         ncols=2,
         legend_loc="on data",
         legend_fontsize=7,
@@ -166,7 +172,7 @@ def plot_umap_merged(
         title=[
             f"Leiden {result.selectedResolution}  ({result.nClustersPreMerge} clusters)",
             umap_merged_title,
-            f"cell_type filtered  ({result.kFiltered} types)",
+            f"{prior_key} filtered  ({result.kFiltered} types)",
         ],
         show=False,
         return_fig=True,
@@ -179,7 +185,7 @@ def plot_umap_merged(
         )
     if figs_dir is not None:
         figs_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(figs_dir / f"umap_merged_{result.srxAccession}.png", bbox_inches="tight")
+        plt.savefig(figs_dir / f"umap_merged_{_figure_tag(result)}.png", bbox_inches="tight")
 
 
 def plot_composition_bars(
@@ -187,8 +193,9 @@ def plot_composition_bars(
     result: ClusterValidationResult,
     figs_dir: Path | None = None,
 ) -> plt.Figure:
+    prior_key = result.weakPriorKey
     merged_counts = adata.obs["leiden_merged"].value_counts(normalize=True).sort_values(ascending=False) * 100
-    celltype_counts = adata.obs["cell_type"].value_counts(normalize=True).sort_values(ascending=False) * 100
+    prior_counts = adata.obs[prior_key].value_counts(normalize=True).sort_values(ascending=False) * 100
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
     merged_counts.plot(kind="bar", ax=axes[0], color="steelblue")
@@ -198,15 +205,15 @@ def plot_composition_bars(
     axes[0].set_xticks(range(len(merged_counts)))
     axes[0].set_xticklabels([str(lbl)[:4] for lbl in merged_counts.index], rotation=90)
 
-    celltype_counts.plot(kind="bar", ax=axes[1], color="indianred")
-    axes[1].set_title("Cell Type Proportions")
+    prior_counts.plot(kind="bar", ax=axes[1], color="indianred")
+    axes[1].set_title(f"{prior_key} Proportions")
     axes[1].set_xlabel("")
-    axes[1].set_xticks(range(len(celltype_counts)))
-    axes[1].set_xticklabels([str(lbl)[:4] for lbl in celltype_counts.index], rotation=90)
+    axes[1].set_xticks(range(len(prior_counts)))
+    axes[1].set_xticklabels([str(lbl)[:4] for lbl in prior_counts.index], rotation=90)
 
     fig.suptitle(f"Dataset: {result.datasetTitleSuffix}\nCluster composition\n{_now()}", fontsize=16, y=1.03)
     plt.tight_layout()
-    _save(fig, figs_dir, f"composition_bars_{result.srxAccession}.png")
+    _save(fig, figs_dir, f"composition_bars_{_figure_tag(result)}.png")
     return fig
 
 
@@ -238,7 +245,7 @@ def plot_silhouette(
     ax.set_title(f"Silhouette vs resolution (PCA embedding)\n{_now()}")
     ax.legend(loc="best", fontsize=8)
     fig.tight_layout()
-    _save(fig, figs_dir, f"silhouette_vs_resolution_{result.srxAccession}.png")
+    _save(fig, figs_dir, f"silhouette_vs_resolution_{_figure_tag(result)}.png")
     return fig
 
 
@@ -274,7 +281,7 @@ def plot_metrics(
 
     fig.suptitle(f"Cluster similarity metrics vs resolution (relative to merged clusters)\n{_now()}")
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    _save(fig, figs_dir, f"homogeneity_completeness_nmi_vscore_ari_vs_resolution_{result.srxAccession}.png")
+    _save(fig, figs_dir, f"homogeneity_completeness_nmi_vscore_ari_vs_resolution_{_figure_tag(result)}.png")
     return fig
 
 

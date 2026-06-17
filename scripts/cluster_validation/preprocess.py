@@ -21,8 +21,11 @@ class PreprocessStats:
 
 
 def preprocess(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, PreprocessStats]:
+    if cfg.weakPriorKey not in adata.obs:
+        raise ValueError(f"weak prior column {cfg.weakPriorKey!r} not found in adata.obs")
+
     n_cells_original = adata.n_obs
-    k_prior = adata.obs["cell_type"].nunique()
+    k_prior = adata.obs[cfg.weakPriorKey].nunique()
 
     adata.var["mt"] = adata.var["gene_symbols"].str.startswith("MT-")
     adata.var["ribo"] = adata.var["gene_symbols"].str.match(r"^RP[SL]\d")
@@ -32,16 +35,16 @@ def preprocess(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnD
     sc.pp.filter_genes(adata, min_cells=3)
     adata = adata[adata.obs["pct_counts_mt"] < 20].copy()
 
-    type_counts = adata.obs["cell_type"].value_counts()
+    type_counts = adata.obs[cfg.weakPriorKey].value_counts()
     valid_types = type_counts[type_counts >= cfg.minCellsPerType].index
-    adata = adata[adata.obs["cell_type"].isin(valid_types)].copy()
+    adata = adata[adata.obs[cfg.weakPriorKey].isin(valid_types)].copy()
 
     adata.layers["counts"] = adata.X.copy()
     sc.pp.normalize_total(adata)
     sc.pp.log1p(adata)
     sc.pp.highly_variable_genes(adata, n_top_genes=cfg.nTopGenes)
 
-    k_filtered = adata.obs["cell_type"].nunique()
+    k_filtered = adata.obs[cfg.weakPriorKey].nunique()
     n_dropped = n_cells_original - adata.n_obs
 
     if adata.n_obs < cfg.minCellsTotal:

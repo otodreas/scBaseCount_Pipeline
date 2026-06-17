@@ -36,7 +36,7 @@ def merge_clusters(
     if hasattr(X_hvg, "toarray"):
         X_hvg = X_hvg.toarray()
 
-    weak_prior = adata.obs["cell_type"].values if cfg.rfBalanceWeakPrior else None
+    weak_prior = adata.obs[cfg.weakPriorKey].values if cfg.rfBalanceWeakPrior else None
     conf, classes = _rf_pairwise_confusion(
         X_hvg,
         adata.obs[sel.clusterKey].values,

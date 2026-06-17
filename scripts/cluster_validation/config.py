@@ -12,6 +12,8 @@ class ClusterValidationConfig(BaseModel):
     datasetIndex: int = 2
     summaryPath: Path = _REPO_ROOT / "tests" / "quantiles_datasets.csv"
     localH5adRoot: Path = _REPO_ROOT / "data" / "scbasecount" / "2026-01-12" / "h5ad" / "GeneFull" / "Homo_sapiens"
+    weakPriorKey: str = "cell_type"
+    runLabel: str | None = None
     minCellsPerType: int = 20
     # Minimum number of cells to keep after filtering
     minCellsTotal: int = 500
