@@ -36,4 +36,4 @@ uv sync --locked --group dev
 git config core.hooksPath .githooks   # once per clone
 ```
 
-[`.githooks/pre-commit`](.githooks/pre-commit) is optional local help; [CI](.github/workflows/ci.yml) enforces ruff, pytest, and stripped `notebooks/` on `main`.
+[`.githooks/pre-commit`](.githooks/pre-commit) runs ruff and nbstripout on staged files; [`.githooks/pre-push`](.githooks/pre-push) runs the cluster validation regression test when `scripts/cluster_validation/` changed. Both are optional local help; [CI](.github/workflows/ci.yml) enforces ruff, pytest, and stripped `notebooks/` on `main`.
