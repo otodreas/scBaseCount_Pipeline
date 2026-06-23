@@ -1,3 +1,4 @@
 notebooks/**/*.ipynb diff=ipynb
 tests/*.ipynb diff=ipynb
 writeups/**/*.ipynb diff=ipynb
+tests/pytest/data/*.h5ad binary
