@@ -8,6 +8,7 @@ __pycache__/
 
 # Data/cache
 data/
+!tests/pytest/data/
 tmp/
 extra/
 output/r2/
