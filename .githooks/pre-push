@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+
+cd "$(git rev-parse --show-toplevel)"
+
+zero=0000000000000000000000000000000000000000
+changed=""
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue
+  if [ "$remote_sha" = "$zero" ]; then
+    range="$local_sha"
+    base=$(git merge-base origin/main "$local_sha" 2>/dev/null) || base=
+    [ -n "$base" ] && range="$base..$local_sha"
+  else
+    range="$remote_sha..$local_sha"
+  fi
+  changed="$changed $(git diff --name-only "$range" -- scripts/cluster_validation/)"
+done
+
+case "$changed" in
+  *scripts/cluster_validation/*)
+    echo "[pre-push] cluster_validation changed; running regression test"
+    RUN_CLVAL_REGRESSION=1 uv run pytest tests/pytest/test_cluster_validation_regression.py -q
+    ;;
+  *)
+    echo "[pre-push] no cluster_validation changes; skipping regression test"
+    ;;
+esac
