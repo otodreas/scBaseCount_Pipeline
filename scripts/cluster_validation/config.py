@@ -23,7 +23,7 @@ class ClusterValidationConfig(BaseModel):
     nPcsMin: int = 15
     nPcsCumvarTarget: float = 0.5
     resolutions: list[float] = Field(default_factory=lambda: [round(r, 1) for r in np.arange(0.1, 2.0, 0.1).tolist()])
-    mergeThreshold: float = 0.2
+    mergeThreshold: float = 0.8
     rfBalanceWeakPrior: bool = False
     outputDir: Path = _REPO_ROOT / "output" / "clustering" / "data"
     figsDir: Path = _REPO_ROOT / "output" / "clustering" / "figs"
