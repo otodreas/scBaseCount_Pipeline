@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 class ClusterValidationResult(BaseModel):
     srxAccession: str
+    runTag: str
+    weakPriorKey: str
     datasetTitleSuffix: str
     selectedResolution: float
     clusterKey: str

@@ -56,16 +56,32 @@ A `RandomForestClassifier` is trained on HVG expression with stratified K-fold o
 | `datasetIndex` | `2` | Select dataset by row index in catalog (used when `srxAccession` is `None`) |
 | `summaryPath` | `tests/quantiles_datasets.csv` | Path to catalog CSV with `srx_accession`, `file_path`, `obs_count` columns (and optional `quantile`) |
 | `localH5adRoot` | `data/scbasecount/...` | Directory of local h5ad files; takes priority over `file_path` in catalog |
-| `outputDir` | `output/clustering/data` | Directory where `{srx}_clustered.h5ad` is written |
+| `weakPriorKey` | `cell_type` | `obs` column used as the weak prior for resolution selection, type filtering, and optional RF balancing |
+| `runLabel` | `None` | Optional suffix for output filenames and figure directories; defaults to the SRX accession |
+| `outputDir` | `output/clustering/data` | Directory where `{run_tag}_clustered.h5ad` is written |
 | `figsDir` | `output/clustering/figs` | Base directory for per-SRX figure folders (`figsDir/{srx}/`) |
-| `minCellsPerType` | `20` | Minimum cells per `cell_type` label; rarer types are dropped before clustering |
+| `minCellsPerType` | `20` | Minimum cells per weak-prior label; rarer types are dropped before clustering |
 | `nTopGenes` | `2000` | Number of highly variable genes |
 | `nPcsCompute` | `50` | Number of PCs computed |
 | `nPcsMin` | `15` | Minimum PCs to use in neighbor graph regardless of variance target |
 | `nPcsCumvarTarget` | `0.5` | Cumulative variance floor for PC selection |
 | `resolutions` | `0.1, 0.2, ..., 1.9` | Leiden resolutions swept |
 | `mergeThreshold` | `0.2` | OOF confusion threshold above which two clusters are merged |
-| `rfBalanceWeakPrior` | `False` | Balance class weights in the RF by `cell_type` frequency |
+| `rfBalanceWeakPrior` | `False` | Balance class weights in the RF by weak-prior label frequency |
+
+Run on an in-memory `AnnData` (for example after adding CellTypist predictions to `obs`):
+
+```python
+from cluster_validation import ClusterValidationConfig, run_cluster_validation_on_adata
+
+cfg = ClusterValidationConfig(
+    weakPriorKey="predicted_labels",
+    runLabel="SRX12366723_predicted_labels",
+    outputDir=Path("tmp/clustering/data"),
+    figsDir=Path("tmp/clustering/figs"),
+)
+adata, result = run_cluster_validation_on_adata(adata, cfg, srx="SRX12366723")
+```
 
 All default paths are relative to the repo root.
 
@@ -99,6 +115,8 @@ Saves a two-panel horizontal bar chart to `output_path` (PNG). Left panel shows 
 ```
 ClusterValidationResult
 ├── srxAccession            str
+├── runTag                  str          label used for output paths (runLabel or SRX)
+├── weakPriorKey            str          obs column used as the weak prior
 ├── selectedResolution      float
 ├── clusterKey              str          obs column for the selected pre-merge partition
 ├── nPcs                    int

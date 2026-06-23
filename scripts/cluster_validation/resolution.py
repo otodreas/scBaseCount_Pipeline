@@ -26,7 +26,7 @@ def select_resolution(
     k_filtered: int,
 ) -> tuple[sc.AnnData, ResolutionSelection]:
     resolutions = cfg.resolutions
-    ref_labels = adata.obs["cell_type"].values
+    ref_labels = adata.obs[cfg.weakPriorKey].values
     celltypes = np.unique(ref_labels)
     k_arr = np.array([n_clusters[r] for r in resolutions], dtype=np.int64)
     jacc_arr = np.zeros(len(resolutions))

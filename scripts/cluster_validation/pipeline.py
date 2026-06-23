@@ -19,13 +19,29 @@ from cluster_validation.viz import plot_all
 _log = configure_file_logger("cluster_validation.log", __name__)
 
 
-def run_cluster_validation(
+def _run_tag(srx: str, cfg: ClusterValidationConfig) -> str:
+    return cfg.runLabel if cfg.runLabel else srx
+
+
+def run_cluster_validation_on_adata(
+    adata: sc.AnnData,
     cfg: ClusterValidationConfig,
+    srx: str,
+    title_suffix: str | None = None,
+    *,
+    write_outputs: bool = True,
+    plot: bool = True,
 ) -> tuple[sc.AnnData, ClusterValidationResult]:
-    adata, srx, title_suffix = load_dataset(cfg)
+    """Run cluster validation on an in-memory AnnData object."""
+    adata = adata.copy()
+    adata.obs_names_make_unique()
+    run_tag = _run_tag(srx, cfg)
+    suffix = title_suffix if title_suffix is not None else f"{srx} ({cfg.weakPriorKey})"
+
     _log.info("New cluster validation run started")
-    print(f"[{datetime.datetime.now().replace(microsecond=0)}] Starting cluster validation for {srx}")
-    _log.info("starting  %s", srx)
+    print(f"[{datetime.datetime.now().replace(microsecond=0)}] Starting cluster validation for {run_tag}")
+    _log.info("starting  %s  weak_prior=%s", run_tag, cfg.weakPriorKey)
+
     adata, prep_stats = preprocess(adata, cfg)
     adata, n_pcs, cumvar = embed_dataset(adata, cfg)
     adata, n_clusters = sweep_leiden(adata, cfg)
@@ -33,13 +49,16 @@ def run_cluster_validation(
     adata, merge_info = merge_clusters(adata, cfg, sel)
     metric_arrays = compute_metrics(adata, cfg, sel, merge_info)
 
-    cfg.outputDir.mkdir(parents=True, exist_ok=True)
-    adata_path = cfg.outputDir / f"{srx}_clustered.h5ad"
-    adata.write(str(adata_path))
+    adata_path = cfg.outputDir / f"{run_tag}_clustered.h5ad"
+    if write_outputs:
+        cfg.outputDir.mkdir(parents=True, exist_ok=True)
+        adata.write(str(adata_path))
 
     result = ClusterValidationResult(
         srxAccession=srx,
-        datasetTitleSuffix=title_suffix,
+        runTag=run_tag,
+        weakPriorKey=cfg.weakPriorKey,
+        datasetTitleSuffix=suffix,
         selectedResolution=sel.selectedResolution,
         clusterKey=sel.clusterKey,
         mergedKey=merge_info.mergedKey,
@@ -67,16 +86,25 @@ def run_cluster_validation(
         confClasses=[str(c) for c in merge_info.classes],
     )
 
-    plot_all(adata, result, figs_dir=cfg.figsDir / srx)
+    if plot:
+        plot_all(adata, result, figs_dir=cfg.figsDir / run_tag)
 
     print(
-        f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {srx} with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters and {result.nPcs} PCs"
+        f"[{datetime.datetime.now().replace(microsecond=0)}] Done cluster validation for {run_tag} "
+        f"with resolution {result.selectedResolution} and {result.nClustersPostMerge} clusters and {result.nPcs} PCs"
     )
     _log.info(
         "done      %s  resolution=%.1f  clusters=%d  pcs=%d",
-        srx,
+        run_tag,
         result.selectedResolution,
         result.nClustersPostMerge,
         result.nPcs,
     )
     return adata, result
+
+
+def run_cluster_validation(
+    cfg: ClusterValidationConfig,
+) -> tuple[sc.AnnData, ClusterValidationResult]:
+    adata, srx, title_suffix = load_dataset(cfg)
+    return run_cluster_validation_on_adata(adata, cfg, srx, title_suffix)
