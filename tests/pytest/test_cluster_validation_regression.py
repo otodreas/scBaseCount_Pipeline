@@ -9,11 +9,12 @@ from typing import Any
 
 import pytest
 import scanpy as sc
-from _clval_capture import ALL_FIELDS, capture_fields
+from _clval_capture import ALL_FIELDS, capture_fields, config_snapshot
 
 SRX = "SRX12708356"
 DATA = Path(__file__).parent / "data" / f"{SRX}.h5ad"
 BASELINE = Path(__file__).parent / "baselines" / f"clval_{SRX}.json"
+CONFIG_SNAPSHOT = Path(__file__).parent / "baselines" / "clval_config_snapshot.json"
 
 _FLOAT_REL_TOL = 1e-6
 _FLOAT_ABS_TOL = 1e-9
@@ -38,6 +39,20 @@ def _matches(actual: Any, expected: Any) -> bool:
             and all(_matches(actual[k], expected[k]) for k in expected)
         )
     return actual == expected
+
+
+def test_cluster_validation_config_matches_snapshot() -> None:
+    """Assert the default ClusterValidationConfig matches the committed model_dump snapshot."""
+    from cluster_validation import ClusterValidationConfig
+
+    current = config_snapshot(ClusterValidationConfig())
+    if os.environ.get("UPDATE_CLVAL_CONFIG_SNAPSHOT"):
+        CONFIG_SNAPSHOT.write_text(json.dumps(current, indent=2, sort_keys=True) + "\n")
+        pytest.skip("snapshot regenerated")
+    expected = json.loads(CONFIG_SNAPSHOT.read_text())
+    drift = sorted(set(current) | set(expected))
+    mismatches = [k for k in drift if current.get(k) != expected.get(k)]
+    assert not mismatches, f"ClusterValidationConfig drift: {mismatches}; regen with UPDATE_CLVAL_CONFIG_SNAPSHOT=1"
 
 
 @pytest.mark.skipif(

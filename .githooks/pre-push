@@ -20,7 +20,7 @@ done
 
 case "$changed" in
   *scripts/cluster_validation/*)
-    echo "[pre-push] cluster_validation changed; running regression test"
+    echo "[pre-push] cluster_validation changed; running regression + config snapshot tests"
     RUN_CLVAL_REGRESSION=1 uv run pytest tests/pytest/test_cluster_validation_regression.py -q
     ;;
   *)
