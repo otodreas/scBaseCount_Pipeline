@@ -270,14 +270,14 @@ def _parse_args() -> argparse.Namespace:
         nargs="+",
         default=["SRX12708356"],
         metavar="ACCESSION",
-        help="One or more SRX accessions (default: SRX17412841)",
+        help="One or more SRX accessions (default: SRX12708356)",
     )
     parser.add_argument(
         "--model-name",
         type=str,
         default="Adult_COVID19_PBMC.pkl",
         metavar="MODEL",
-        help="CellTypist model name (default: Nuclei_Lung_Airway.pkl)",
+        help="CellTypist model name (default: Adult_COVID19_PBMC.pkl)",
     )
     parser.add_argument(
         "--force",
