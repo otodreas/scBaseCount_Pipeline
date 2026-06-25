@@ -1,7 +1,5 @@
 """Golden regression test for cluster_validation against a committed baseline."""
 
-from __future__ import annotations
-
 import json
 import os
 from pathlib import Path
@@ -15,6 +13,9 @@ SRX = "SRX12708356"
 DATA = Path(__file__).parent / "data" / f"{SRX}.h5ad"
 BASELINE = Path(__file__).parent / "baselines" / f"clval_{SRX}.json"
 CONFIG_SNAPSHOT = Path(__file__).parent / "baselines" / "clval_config_snapshot.json"
+
+_RUN_REGRESSION = bool(os.environ.get("RUN_CLVAL_REGRESSION"))
+_UPDATE_BASELINES = bool(os.environ.get("UPDATE_CLVAL_BASELINES"))
 
 _FLOAT_REL_TOL = 1e-6
 _FLOAT_ABS_TOL = 1e-9
@@ -46,19 +47,16 @@ def test_cluster_validation_config_matches_snapshot() -> None:
     from cluster_validation import ClusterValidationConfig
 
     current = config_snapshot(ClusterValidationConfig())
-    if os.environ.get("UPDATE_CLVAL_CONFIG_SNAPSHOT"):
+    if _UPDATE_BASELINES:
         CONFIG_SNAPSHOT.write_text(json.dumps(current, indent=2, sort_keys=True) + "\n")
         pytest.skip("snapshot regenerated")
     expected = json.loads(CONFIG_SNAPSHOT.read_text())
     drift = sorted(set(current) | set(expected))
     mismatches = [k for k in drift if current.get(k) != expected.get(k)]
-    assert not mismatches, f"ClusterValidationConfig drift: {mismatches}; regen with UPDATE_CLVAL_CONFIG_SNAPSHOT=1"
+    assert not mismatches, f"ClusterValidationConfig drift: {mismatches}; regen with UPDATE_CLVAL_BASELINES=1"
 
 
-@pytest.mark.skipif(
-    not os.environ.get("RUN_CLVAL_REGRESSION"),
-    reason="set RUN_CLVAL_REGRESSION=1 to run (slow clustering regression)",
-)
+@pytest.mark.skipif(not _RUN_REGRESSION, reason="set RUN_CLVAL_REGRESSION=1 to run (slow clustering regression)")
 def test_cluster_validation_matches_baseline(tmp_path: Path) -> None:
     """Run cluster validation on the committed fixture and compare to the baseline."""
     from cluster_validation import ClusterValidationConfig, run_cluster_validation_on_adata
@@ -74,6 +72,9 @@ def test_cluster_validation_matches_baseline(tmp_path: Path) -> None:
         plot=False,
     )
     captured = capture_fields(result)
+    if _UPDATE_BASELINES:
+        BASELINE.write_text(json.dumps(captured, indent=2, sort_keys=True) + "\n")
+        pytest.skip("baseline regenerated")
     baseline = json.loads(BASELINE.read_text())
     mismatches = [field for field in ALL_FIELDS if not _matches(captured.get(field), baseline.get(field))]
-    assert not mismatches, f"drift in fields: {mismatches}"
+    assert not mismatches, f"drift in fields: {mismatches}; regen with UPDATE_CLVAL_BASELINES=1"
