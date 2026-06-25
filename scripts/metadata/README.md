@@ -100,8 +100,8 @@ After regex matching, `disease_categories_for` drops the `Cystic Fibrosis` label
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| `sampleParquetPath` | required | Path to sample-level metadata Parquet |
-| `obsParquetPath` | required | Path to obs-level metadata Parquet |
+| `sampleParquetPath` | `data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/..._sample_metadata.parquet` | Path to sample-level metadata Parquet |
+| `obsParquetPath` | `data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/..._obs_metadata.parquet` | Path to obs-level metadata Parquet |
 | `minObsCount` | `1000` | Minimum cells per sample; samples below this are dropped before any other filtering |
 | `outputDir` | `output/metadata` | Directory for `datasets.csv`, `accession_disease_categories.json`, `datasets_subset_qc.csv`, and figures |
 
