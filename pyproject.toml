@@ -13,6 +13,7 @@ packages = [
     "scripts/r2",
     "scripts/gcs",
     "scripts/cytetype_runner",
+    "scripts/celltypist_runner",
     "scripts/annotation_inspector",
     "scripts/umap_plots",
 ]

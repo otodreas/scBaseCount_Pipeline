@@ -15,7 +15,21 @@ cfg = CyteOntoConfig(
 similarities = run_cyteonto(cfg)
 ```
 
-`run_cyteonto` returns a `pandas.DataFrame` with one row per `(algorithm, cell)` pair. The CSV is also written to `output/cyteonto/runs/{run_id}.csv` and every step is appended to `logs/cyteonto.log`.
+Multi-algorithm comparison (for example CellTypist and CyteType against cxg author labels):
+
+```python
+cfg = CyteOntoConfig(
+    h5adPath=Path("output/celltypist_vs_cxg/data/SRX17412841_cytetype_annotated.h5ad"),
+    authorCol="cell_type",
+    algorithmCols={
+        "celltypist": "predicted_labels",
+        "cytetype": "cytetype_annotation_leiden_merged",
+    },
+)
+similarities = run_cyteonto(cfg)
+```
+
+`run_cyteonto` returns a `pandas.DataFrame` with one row per unique label combination per algorithm. The CSV is also written to `output/cyteonto/runs/{run_id}.csv` and every step is appended to `logs/cyteonto.log`.
 
 ### Interrupting a run
 
@@ -41,19 +55,23 @@ results = check_pending_runs()
 
 ## Input conventions
 
-The pipeline reads two fixed columns from `adata.obs`:
+By default the pipeline reads two columns from `adata.obs`:
 
 | Column | Role in payload |
 |--------|----------------|
-| `cell_type` | `authorLabels` -- the STATE reference annotation |
+| `cell_type` | `authorLabels` -- the CELLxGENE author reference annotation |
 | `cytetype_annotation_leiden_merged` | `algorithms["algo1"]` -- the CyteType annotation |
+
+Override with `authorCol` and `algorithmCols` on `CyteOntoConfig`.
+
+The payload is deduplicated before submission: only unique combinations of `(authorCol, *algorithmCols)` are sent to CyteOnto. Map cytescores back to cells with `attach_cytescores_to_obs`.
 
 ## Pipeline steps
 
 | Step | Module | What happens |
 |------|--------|--------------|
 | Load | `pipeline.py` | Read h5ad with `scanpy` |
-| Build payload | `payload.py` | Extract the two obs columns into the API request dict |
+| Build payload | `payload.py` | Extract unique label combinations from obs into the API request dict |
 | Write payload | `payload.py` | Serialize to `output/cyteonto/payloads/{stem}_annotations.json` |
 | Submit | `client.py` | POST `/compare` to the CyteOnto API; receive `run_id` |
 | Poll result | `client.py` | GET `/result/{run_id}?format=csv` on `pollIntervalS` cadence; HTTP 409 means still running, HTTP 200 saves CSV to `output/cyteonto/runs/{run_id}.csv` |
@@ -63,6 +81,8 @@ The pipeline reads two fixed columns from `adata.obs`:
 | Field | Default | Description |
 |-------|---------|-------------|
 | `h5adPath` | required | Path to the annotated h5ad file |
+| `authorCol` | `cell_type` | `obs` column used as CyteOnto author labels |
+| `algorithmCols` | `{"algo1": "cytetype_annotation_leiden_merged"}` | Map of algorithm key to `obs` column |
 | `payloadDir` | `output/cyteonto/payloads` | Directory for the payload JSON |
 | `runsDir` | `output/cyteonto/runs` | Directory for run stubs (JSON) and result CSVs |
 | `baseUrl` | `https://cyteonto.nygen.io` | CyteOnto service base URL |
@@ -76,16 +96,18 @@ All default paths are relative to the repo root.
 | Column | Type | Description |
 |--------|------|-------------|
 | `run_id` | str | CyteOnto run identifier |
-| `algorithm` | str | Algorithm key (`algo1`) |
-| `pair_index` | int | Row position in the label lists |
-| `author_label` | str | STATE reference label for this cell |
-| `algorithm_label` | str | CyteType label for this cell |
+| `algorithm` | str | Algorithm key (`algo1`, `celltypist`, `cytetype`, etc.) |
+| `pair_index` | int | Row position in the deduplicated label lists |
+| `author_label` | str | Author reference label for this combination |
+| `algorithm_label` | str | Algorithm label for this combination |
 | `author_ontology_id` | str | Best Cell Ontology match for the author label |
 | `author_embedding_similarity` | float | Cosine similarity to that CL term |
 | `algorithm_ontology_id` | str | Best Cell Ontology match for the algorithm label |
 | `algorithm_embedding_similarity` | float | Cosine similarity to that CL term |
 | `cytescore_similarity` | float | Ontology-aware agreement score between the two labels |
 | `similarity_method` | str | Scoring method used (`cytescore`, `string_similarity`, etc.) |
+
+Per-cell analysis should join these rows onto `adata.obs` with `attach_cytescores_to_obs`, not treat one CSV row as one cell.
 
 ## Logging
 
