@@ -10,7 +10,7 @@ _log = configure_file_logger("celltypist_runner.log", __name__)
 
 
 def annotate_celltypist(adata: sc.AnnData, cfg: CellTypistRunnerConfig) -> sc.AnnData:
-    """Run CellTypist on a copy of adata and write predicted labels onto the input obs."""
+    """Run CellTypist on adata and write predicted labels and confidence scores onto obs."""
     if cfg.geneSymbolCol not in adata.var:
         raise ValueError(f"gene symbol column {cfg.geneSymbolCol!r} not found in adata.var")
 
@@ -29,9 +29,12 @@ def annotate_celltypist(adata: sc.AnnData, cfg: CellTypistRunnerConfig) -> sc.An
     work.var_names = work.var[cfg.geneSymbolCol].astype(str).tolist()
     work.var_names_make_unique()
 
-    predictions = annotate(work, model, majority_voting=False)
-    predicted = predictions.to_adata().obs["predicted_labels"].astype(str)
-    adata.obs[cfg.predictedLabelKey] = predicted.reindex(index=adata.obs_names).values
+    predictions = annotate(work, model)
+    annotated = predictions.to_adata()
+    adata.obs[cfg.predictedLabelKey] = (
+        annotated.obs["predicted_labels"].astype(str).reindex(index=adata.obs_names).values
+    )
+    adata.obs["celltypist_conf_score"] = annotated.obs["conf_score"].reindex(index=adata.obs_names).values
 
     _log.info(
         "annotated %d cells with model=%s  n_labels=%d",

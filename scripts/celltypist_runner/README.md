@@ -13,7 +13,7 @@ cfg = CellTypistRunnerConfig(modelName="Nuclei_Lung_Airway.pkl")
 adata = annotate_celltypist(adata, cfg)
 ```
 
-The input `adata` is left on raw counts; normalization and log1p are applied on an internal copy only for inference. Annotation uses per-cell model predictions only (CellTypist over-clustering and majority voting are not used). Predicted labels are written to `obs["predicted_labels"]` by default.
+The input `adata` is left on raw counts; normalization and log1p are applied on an internal copy only for inference. Annotation uses per-cell model predictions only (CellTypist over-clustering and majority voting are not used). Results are extracted via `predictions.to_adata()` and copied onto the input object as `obs["predicted_labels"]` (configurable via `predictedLabelKey`) and `obs["conf_score"]`.
 
 ## Config reference
 

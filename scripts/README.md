@@ -9,7 +9,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`metadata/`](metadata/) | `filter_lung(sample, cfg)` | `output/metadata/datasets.csv`, `accession_disease_categories.json`, `datasets_subset_qc.csv`, figures |
 | [`study_context/`](study_context/) | `pipeline_for_accession_list(accessions)` | `CONTEXTS_JSONL_PATH` → `output/context/contexts.jsonl` |
 | [`cluster_validation/`](cluster_validation/) | `run_cluster_validation(cfg)` | `output/clustering/data/{srx}_clustered.h5ad`, figures |
-| [`celltypist_runner/`](celltypist_runner/) | `annotate_celltypist(adata, cfg)` | `obs["predicted_labels"]` on the input AnnData |
+| [`celltypist_runner/`](celltypist_runner/) | `annotate_celltypist(adata, cfg)` | `obs["predicted_labels"]`, `obs["conf_score"]` on the input AnnData |
 | [`cytetype_runner/`](cytetype_runner/) | `run_cytetype(cfg, ...)` | `output/cytetype/data/{srx}_cytetype_annotated.h5ad` (job details embedded in `adata.uns["cytetype_jobDetails"]`) |
 | [`cyteonto/`](cyteonto/) | `run_cyteonto(cfg)` | `output/cyteonto/runs/{run_id}.csv` |
 | [`h5ad_extractor/`](h5ad_extractor/) | `extract_annotation_columns(cfg)` | `output/h5ad_extract/{stem}_{obs\|var}_columns.{parquet\|csv}` |

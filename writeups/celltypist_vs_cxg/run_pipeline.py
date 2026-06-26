@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from shared.csv_writer import append_csv_row
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
-from study_context import ExperimentContext, experiment_context_summary
+from study_context import CONTEXTS_JSONL_PATH, experiment_context_summary, load_contexts_jsonl
 
 load_dotenv()
 
@@ -33,7 +33,7 @@ CYTEONTO_RESULTS_DIR = OUTPUT_ROOT / "cyteonto_results"
 CYTEONTO_RUNS_DIR = OUTPUT_ROOT / "cyteonto_runs"
 CYTEONTO_PAYLOADS_DIR = OUTPUT_ROOT / "cyteonto_payloads"
 FIGS_DIR = OUTPUT_ROOT / "figs"
-CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
+CONTEXTS_JSONL = CONTEXTS_JSONL_PATH
 LOCAL_H5AD_ROOT = REPO_ROOT / "data" / "scbasecount" / "2026-01-12" / "h5ad" / "GeneFull" / "Homo_sapiens"
 RUNS_DIR = OUTPUT_ROOT / "runs"
 
@@ -59,6 +59,8 @@ _CSV_COLUMNS = [
 
 @dataclass(frozen=True)
 class CachePaths:
+    """Pipeline cache paths for a single SRX accession."""
+
     srx: str
     clustered: Path
     annotated: Path
@@ -66,6 +68,7 @@ class CachePaths:
 
     @classmethod
     def for_srx(cls, srx: str) -> CachePaths:
+        """Return cache paths for srx, derived from this pipeline's output layout."""
         return cls(
             srx=srx,
             clustered=DATA_DIR / f"{srx}_celltypist_prior_clustered.h5ad",
@@ -75,16 +78,12 @@ class CachePaths:
 
 
 def load_context(accession: str, contexts_path: Path) -> str:
-    """Return the study context summary for an accession, or an empty string if not found."""
-    if not contexts_path.is_file():
-        return ""
-    for line in contexts_path.read_text().splitlines():
-        if not line.strip():
-            continue
-        ctx = ExperimentContext.model_validate_json(line)
-        if ctx.accession == accession:
-            return experiment_context_summary(ctx)
-    return ""
+    """Return the study context summary for an accession."""
+    contexts = load_contexts_jsonl(contexts_path)
+    ctx = contexts.get(accession)
+    if ctx is None:
+        raise ValueError(f"{accession}: no study context found in {rel_to_repo(contexts_path)}")
+    return experiment_context_summary(ctx)
 
 
 def _write_run_metadata(
@@ -176,8 +175,6 @@ def _run_cytetype(srx: str, paths: CachePaths) -> None:
         raise FileNotFoundError(f"clustered h5ad not found at {paths.clustered}")
 
     study_context = load_context(srx, CONTEXTS_JSONL)
-    if not study_context:
-        log.warning("%s: no study context found in contexts.jsonl; proceeding with empty context", srx)
 
     cytetype_cfg = CyteTypeRunnerConfig(srxAccession=srx, outputDir=DATA_DIR)
     cytetype_result = run_cytetype(
