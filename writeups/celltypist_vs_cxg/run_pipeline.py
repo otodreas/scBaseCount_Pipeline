@@ -86,11 +86,24 @@ def load_context(accession: str, contexts_path: Path) -> str:
     return experiment_context_summary(ctx)
 
 
+def _accession_outputs(paths: CachePaths) -> dict[str, str]:
+    """Return existing per-accession output file paths (relative to repo) keyed by output type."""
+    outputs: dict[str, str] = {}
+    if paths.clustered.is_file():
+        outputs["clustered_h5ad"] = rel_to_repo(paths.clustered)
+    if paths.annotated.is_file():
+        outputs["annotated_h5ad"] = rel_to_repo(paths.annotated)
+    if paths.cyteonto_csv.is_file():
+        outputs["cyteonto_csv"] = rel_to_repo(paths.cyteonto_csv)
+    return outputs
+
+
 def _write_run_metadata(
     metadata_path: Path,
     args: argparse.Namespace,
     run_ts: str,
     run_dir: Path,
+    outputs: dict[str, dict[str, str]] | None = None,
 ) -> None:
     payload: dict = {
         "run_timestamp": run_ts,
@@ -106,6 +119,8 @@ def _write_run_metadata(
     }
     if args.metadata is not None:
         payload["notes"] = args.metadata
+    if outputs is not None:
+        payload["outputs"] = outputs
     metadata_path.write_text(json.dumps(payload, indent=2))
 
 
@@ -331,6 +346,7 @@ def main() -> None:
     total = len(args.srx)
     skipped = 0
     failed = 0
+    outputs: dict[str, dict[str, str]] = {}
 
     for i, srx in enumerate(args.srx, start=1):
         position = f"{i}/{total}"
@@ -346,6 +362,7 @@ def main() -> None:
             )
             elapsed = time.monotonic() - run_start
             paths = CachePaths.for_srx(srx)
+            outputs[srx] = _accession_outputs(paths)
             log.info("%s (%s): %s in %.2fs", srx, position, status, elapsed)
             _record_accession(
                 csv_summary_path,
@@ -363,6 +380,7 @@ def main() -> None:
         except KeyboardInterrupt as exc:
             elapsed = time.monotonic() - run_start
             paths = CachePaths.for_srx(srx)
+            outputs[srx] = _accession_outputs(paths)
             log.warning("%s (%s): interrupted after %.2fs", srx, position, elapsed)
             _record_accession(
                 csv_summary_path,
@@ -378,6 +396,7 @@ def main() -> None:
         except Exception as exc:
             elapsed = time.monotonic() - run_start
             paths = CachePaths.for_srx(srx)
+            outputs[srx] = _accession_outputs(paths)
             log.exception("%s (%s): pipeline failed after %.2fs", srx, position, elapsed)
             _record_accession(
                 csv_summary_path,
@@ -389,6 +408,8 @@ def main() -> None:
                 error=f"{type(exc).__name__}: {exc}",
             )
             failed += 1
+
+    _write_run_metadata(metadata_path, args, RUN_TIMESTAMP, run_dir, outputs)
 
     processed = total - skipped - failed
     log.info("Pipeline complete. %d skipped, %d processed, %d failed.", skipped, processed, failed)
