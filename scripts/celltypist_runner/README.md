@@ -13,7 +13,7 @@ cfg = CellTypistRunnerConfig(modelName="Nuclei_Lung_Airway.pkl")
 adata = annotate_celltypist(adata, cfg)
 ```
 
-The input `adata` is left on raw counts; normalization and log1p are applied on an internal copy only for inference. Predicted labels are written to `obs["predicted_labels"]` by default.
+The input `adata` is left on raw counts; normalization and log1p are applied on an internal copy only for inference. Annotation uses per-cell model predictions only (CellTypist over-clustering and majority voting are not used). Predicted labels are written to `obs["predicted_labels"]` by default.
 
 ## Config reference
 
@@ -21,7 +21,6 @@ The input `adata` is left on raw counts; normalization and log1p are applied on 
 |-------|---------|-------------|
 | `modelName` | `Nuclei_Lung_Airway.pkl` | CellTypist model filename (downloaded when `downloadIfMissing=True`) |
 | `targetSum` | `10000` | Target sum for `normalize_total` before annotation |
-| `majorityVoting` | `False` | Pass through to `celltypist.annotate` |
 | `geneSymbolCol` | `gene_symbols` | `var` column used to set gene symbols for CellTypist |
 | `predictedLabelKey` | `predicted_labels` | `obs` column written with CellTypist output |
 | `downloadIfMissing` | `True` | Call `celltypist.models.download_models()` before loading the model |

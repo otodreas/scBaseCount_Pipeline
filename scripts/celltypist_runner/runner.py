@@ -23,15 +23,15 @@ def annotate_celltypist(adata: sc.AnnData, cfg: CellTypistRunnerConfig) -> sc.An
     sc.pp.normalize_total(work, target_sum=cfg.targetSum)
     sc.pp.log1p(work.X)
 
+    # CellTypist expects gene symbols as var_names; keep Ensembl IDs before swapping.
     if "ensembl_id" not in work.var:
         work.var["ensembl_id"] = work.var_names
-    work.var_names = work.var[cfg.geneSymbolCol].astype(str)
+    work.var_names = work.var[cfg.geneSymbolCol].astype(str).tolist()
     work.var_names_make_unique()
 
-    sc.pp.neighbors(work)
-    predictions = annotate(work, model, majority_voting=cfg.majorityVoting)
+    predictions = annotate(work, model, majority_voting=False)
     predicted = predictions.to_adata().obs["predicted_labels"].astype(str)
-    adata.obs[cfg.predictedLabelKey] = predicted.reindex(adata.obs_names).values
+    adata.obs[cfg.predictedLabelKey] = predicted.reindex(index=adata.obs_names).values
 
     _log.info(
         "annotated %d cells with model=%s  n_labels=%d",
