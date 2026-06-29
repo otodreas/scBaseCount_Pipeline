@@ -280,9 +280,9 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--srx",
         nargs="+",
-        default=["SRX12708356"],
+        default=["SRX12366723"],
         metavar="ACCESSION",
-        help="One or more SRX accessions (default: SRX12708356)",
+        help="One or more SRX accessions (default: SRX12366723--33rd percentile in n_obs)",
     )
     parser.add_argument(
         "--model-name",
