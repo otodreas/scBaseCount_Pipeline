@@ -54,7 +54,7 @@ Each accession triggers four sequential API calls:
 | 3 | ENA Portal API — `filereport?result=study` | `StudyContext`: `studyDescription`, `studyTitle`, `geoAccession`, `pubmedIds` |
 | 4 | NCBI E-utilities — `efetch?db=pubmed` | `StudyContext.pubmedAbstract` |
 
-`sample_accession` and `study_accession` are discovered automatically from Call. Only the SRX/ERX needs to be provided. All HTTP calls go through `_curl_get`, which uses `curl -sf` via subprocess with exponential-backoff retries (up to 3 attempts).
+`sample_accession` and `study_accession` are discovered automatically from Call. Only the SRX/ERX needs to be provided. All HTTP calls go through `_http_get`, which uses a shared `httpx.Client` with exponential-backoff retries (up to 3 attempts).
 
 ### Rate limits
 
