@@ -20,7 +20,6 @@ PACKAGES = [
     "r2",
     "gcs",
     "cytetype_runner",
-    "celltypist_runner",
     "annotation_inspector",
 ]
 
