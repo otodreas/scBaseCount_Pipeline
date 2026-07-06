@@ -5,6 +5,7 @@ alwaysApply: true
 
 # Git
 
+- Implementation plans must include a **PR strategy** section (`plain GitHub` or `Graphite stack`, rationale, shape). See `graphite.mdc` for criteria.
 - When on the main branch, do NOT stage or commit files automatically
 - When on the main branch, do NOT run `git add` or `git commit` without explicit user instruction
 - After completing a task, summarize changes made but wait for commit instruction
