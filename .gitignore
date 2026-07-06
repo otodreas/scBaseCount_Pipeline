@@ -22,7 +22,6 @@ output/h5ad_extract/
 output/cyteonto_pipeline/*/results/
 output/annotation_inspection_pipeline/
 output/umap_plots/
-output/celltypist_vs_cxg/
 
 # Logs
 logs/
