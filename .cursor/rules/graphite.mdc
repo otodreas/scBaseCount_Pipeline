@@ -1,0 +1,87 @@
+---
+description: Graphite stacked PR workflow for multi-layer agent changes
+alwaysApply: false
+---
+
+# Graphite
+
+Use Graphite (`gt`) only for multi-step features that need ordered, dependent PRs. All rules in `git.mdc` still apply.
+
+## Plan mode
+
+Every implementation plan must include a **PR strategy** section so the tool choice can be reviewed before any git work:
+
+```markdown
+## PR strategy
+
+**Tool:** plain GitHub | Graphite stack
+**Rationale:** <one sentence citing the criteria below>
+**Shape:** <single PR title and scope, or numbered stack with files per PR>
+```
+
+- Pick exactly one tool. Do not leave it implicit or say "TBD".
+- If the choice is unclear, state both options with tradeoffs and ask before implementing.
+- Do not create branches, commit, push, or open PRs until the user approves the plan and PR strategy.
+
+## When to use Graphite vs plain GitHub
+
+Use **plain GitHub** (one branch, one PR via `gh`) for:
+- Single-file or single-concern fixes
+- Exploratory notebook work
+- Changes that fit in one reviewable PR
+
+Use **Graphite** when the work spans layers and has real dependencies, for example:
+- `scripts/` util → `pipelines/` runner → `notebooks/` validation
+- Refactor foundation → consumer → tests/docs
+
+## Before creating a stack
+
+1. Compare work to `main` and propose a stack plan (PR titles, base order, files per slice).
+2. Ask for user approval before creating branches, committing, pushing, or submitting.
+3. Cap stacks at **3 PRs**. If more slices are needed, propose independent PRs off `main` instead.
+4. Do not stack notebook-only diffs unless the user asks.
+
+## Stack order
+
+Bottom to top (each PR targets the branch below, trunk is `main`):
+
+```text
+main ← PR1 (foundation) ← PR2 (integration) ← PR3 (downstream)
+```
+
+Prefer reviewer-aligned slices: shared code first, pipeline wiring second, notebooks last.
+
+## Allowed commands
+
+After user approval, use `gt` for stack operations:
+
+```sh
+gt trunk                    # once per clone; trunk is main
+gt create -m "message"      # new stack branch (from current stack tip)
+gt modify -m "message"      # amend current branch (stage named files first)
+gt submit                   # open or update stack PRs on GitHub
+```
+
+Use `gh pr create` only when the user explicitly wants a single non-stacked PR.
+
+## Requires explicit user approval
+
+Never run without asking first:
+
+- `gt sync`, `gt restack`, or any command that rebases the stack
+- `gt submit --stack` / force-push to remote branches
+- Editing or amending a lower stack branch when upper branches already exist
+
+If a lower branch must change after upper branches exist, stop and ask how to proceed.
+
+## Safety
+
+- Never commit on `main`. Start stacks from an up-to-date `main`.
+- Stage only named files or hunks. No `git add .` or `git add -A`.
+- Before any commit, show the diff and confirm scope.
+- No destructive git (`reset --hard`, `clean -fdx`, branch deletion, force-push) without explicit approval.
+- Save a recoverable snapshot before moving work between branches (`git stash create` + backup ref).
+
+## After submitting
+
+Report PR titles and URLs, stack order, and anything left uncommitted or off-stack.
