@@ -8,9 +8,10 @@ import httpx
 import pandas as pd
 import scanpy as sc
 from shared.logger import configure_file_logger
+from shared.repo import REPO_ROOT as _REPO_ROOT
 
 from cyteonto.client import poll_result, submit
-from cyteonto.config import _REPO_ROOT, CyteOntoConfig
+from cyteonto.config import CyteOntoConfig
 from cyteonto.payload import build_payload, write_payload
 
 _log = configure_file_logger("cyteonto.log", __name__)
@@ -65,7 +66,7 @@ def run_cyteonto(cfg: CyteOntoConfig) -> pd.DataFrame | None:
     _log.info("loaded %d cells  %d genes", adata.n_obs, adata.n_vars)
     print(f"[cyteonto] loaded    {adata.n_obs} cells  {adata.n_vars} genes")
 
-    payload = build_payload(adata)
+    payload = build_payload(adata, cfg.authorCol, cfg.algorithmCols)
     _log.info(
         "payload  author_labels=%d  algorithms=%d",
         len(payload["authorLabels"]),

@@ -15,12 +15,11 @@ from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
-from study_context import ExperimentContext, experiment_context_summary
+from study_context import CONTEXTS_JSONL_PATH, ExperimentContext, experiment_context_summary, load_contexts_jsonl
 
 load_dotenv()
 
 _DEFAULT_DATASETS_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
-_DEFAULT_CONTEXTS_JSONL = REPO_ROOT / "output" / "context" / "contexts.jsonl"
 RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 CLUSTERED_DOWNLOAD_ROOT = REPO_ROOT / "data" / "clustered_h5ad"
 RUN_OUTPUT_DIR = REPO_ROOT / "output" / "cytetype_pipeline"
@@ -34,21 +33,6 @@ add_stdout_handler()
 
 def read_datasets(path: Path) -> pd.DataFrame:
     return pd.read_csv(path)
-
-
-def load_contexts(path: Path) -> dict[str, ExperimentContext]:
-    if not path.exists():
-        log.warning("contexts.jsonl not found at %s; study context will be empty for all samples", path)
-        return {}
-    contexts: dict[str, ExperimentContext] = {}
-    with open(path) as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            ctx = ExperimentContext.model_validate_json(line)
-            contexts[ctx.accession] = ctx
-    return contexts
 
 
 def _write_run_metadata(
@@ -68,7 +52,7 @@ def _write_run_metadata(
         "clustering_prefix": args.clustering_prefix,
         "r2_prefix": args.r2_prefix,
         "datasets_path": str(args.datasets),
-        "contexts_path": str(args.contexts) if args.contexts is not None else str(_DEFAULT_CONTEXTS_JSONL),
+        "contexts_path": str(args.contexts) if args.contexts is not None else str(CONTEXTS_JSONL_PATH),
         "min_interval_seconds": args.min_interval,
         "cytetype_metadata_columns": metadata_columns,
     }
@@ -215,7 +199,7 @@ def _parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         metavar="PATH",
-        help=f"Path to contexts JSONL (default: {_DEFAULT_CONTEXTS_JSONL})",
+        help=f"Path to contexts JSONL (default: {CONTEXTS_JSONL_PATH})",
     )
     parser.add_argument(
         "--clustering-prefix",
@@ -291,8 +275,8 @@ def main() -> None:
         log.info("run-level --metadata note (recorded as 'notes' in metadata.json): %s", args.metadata)
     uploaded = fetch_uploaded_r2_keys()
 
-    contexts_path = args.contexts if args.contexts is not None else _DEFAULT_CONTEXTS_JSONL
-    contexts = load_contexts(contexts_path)
+    contexts_path = args.contexts if args.contexts is not None else CONTEXTS_JSONL_PATH
+    contexts = load_contexts_jsonl(contexts_path)
 
     run_dir = RUN_OUTPUT_DIR / (f"dry_run_{RUN_TIMESTAMP}" if args.dry_run else RUN_TIMESTAMP)
     run_dir.mkdir(parents=True, exist_ok=True)

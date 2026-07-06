@@ -11,10 +11,9 @@ One experiment context may be cited in multiple studies. Currently, if an experi
 ## Usage
 
 ```python
-from study_context import CONTEXTS_JSONL_PATH, load_contexts_jsonl, pipeline_for_accession_list, write_contexts_jsonl
+from study_context import CONTEXTS_JSONL_PATH, load_contexts_jsonl, pipeline_for_accession_list
 
 contexts = pipeline_for_accession_list(accessions)
-write_contexts_jsonl(contexts)  # default path: CONTEXTS_JSONL_PATH
 by_accession = load_contexts_jsonl()
 ```
 

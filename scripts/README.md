@@ -29,4 +29,4 @@ metadata  →  study_context  →  cluster_validation  →  cytetype_runner  →
                                                          r2  (upload)
 ```
 
-`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cytetype_runner` wraps the CyteType annotation step and persists the annotated h5ad. `gcs` and `r2` handle file transfer to and from cloud storage. `cyteonto` submits CyteType-annotated h5ad files to the CyteOnto API and returns ontology-aware similarity scores.
+`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cytetype_runner` wraps the CyteType annotation step and persists the annotated h5ad. `gcs` and `r2` handle file transfer to and from cloud storage. `cyteonto` submits CyteType-annotated h5ad label columns to the CyteOnto API and returns ontology-aware similarity scores.

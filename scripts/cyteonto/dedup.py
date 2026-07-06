@@ -46,3 +46,23 @@ def dedup_table(df_path: Path, accession: str) -> pd.DataFrame | None:
     df["accession"] = accession
     df["table_filepath"] = str(df_path)
     return df
+
+
+def attach_cytescores_to_obs(
+    obs: pd.DataFrame,
+    cyteonto_df: pd.DataFrame,
+    *,
+    author_col: str,
+    algorithm_col: str,
+    algorithm: str,
+    out_col: str = "cytescore_similarity",
+) -> pd.DataFrame:
+    """Map deduplicated CyteOnto rows onto obs cells by author and algorithm label pair."""
+    sub = cyteonto_df.loc[cyteonto_df["algorithm"] == algorithm].copy()
+    sub["pair_label"] = sub["author_label"].astype(str) + sub["algorithm_label"].astype(str)
+    score_map = sub.drop_duplicates("pair_label").set_index("pair_label")["cytescore_similarity"]
+
+    out = obs.copy()
+    out["pair_label"] = out[author_col].astype(str) + out[algorithm_col].astype(str)
+    out[out_col] = out["pair_label"].map(score_map)
+    return out
