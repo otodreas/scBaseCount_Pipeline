@@ -22,8 +22,8 @@ cfg = CyteOntoConfig(
     h5adPath=Path("output/celltypist_vs_cxg/data/SRX17412841_cytetype_annotated.h5ad"),
     authorCol="cell_type",
     algorithmCols={
-        "celltypist": "predicted_labels",
         "cytetype": "cytetype_annotation_leiden_merged",
+        "cytetype_batch_corrected": "cytetype_annotation_leiden_merged_batch",  # example
     },
 )
 similarities = run_cyteonto(cfg)
