@@ -16,9 +16,9 @@ Analysis notebooks for the scBaseCount pipeline. Run them in order — each stag
 
 **`pipeline/metadata.ipynb`** — Loads sample metadata from Parquet, applies lung tissue and disease filters, and exports the artifacts used by downstream notebooks: `datasets.csv` for clustering, `accession_disease_categories.json` mapping every lung-intersection accession to its `DISEASE_MAP` labels, and `datasets_subset_qc.csv` (a per-cohort QC-passing sample of up to 25 accessions across IPF / COVID-19 / COPD / Interstitial Lung Disease / Cystic Fibrosis) used as input to cytetype evaluation runs. Also produces three summary figures (sample breakdown, disease breakdown, cell count distribution). See `scripts/metadata/README.md` for the regex catalogue and labelling rules.
 
-**`analysis/clusters_to_cytetype_analysis.ipynb`** — Cost-planning notebook. Loads the clustering pipeline summary (`run.csv`) and joins it against both `accession_disease_categories.json` and `datasets_subset_qc.csv` to estimate how many CyteType clusters each disease cohort would consume. Produces inclusive (parent + child overlap counted) and disjoint (most-specific label) cluster-count tables.
-
 **`pipeline/study_context.ipynb`** — Fetches structured experiment context (study description, PubMed abstract, tissue type, library prep) from EBI ENA and NCBI for each accession in the dataset catalog. Results are cached to `output/context/contexts.jsonl` and can be reloaded without re-fetching. Includes field coverage, warnings, and distribution summaries.
+
+**`analysis/clusters_to_cytetype_analysis.ipynb`** — Cost-planning notebook. Loads the clustering pipeline summary (`run.csv`) and joins it against both `accession_disease_categories.json` and `datasets_subset_qc.csv` to estimate how many CyteType clusters each disease cohort would consume. Produces inclusive (parent + child overlap counted) and disjoint (most-specific label) cluster-count tables.
 
 **`pipeline/clustering.ipynb`** — Runs the cluster validation pipeline across all h5ad files in the scBaseCount data directory. For each sample: preprocesses, embeds, sweeps Leiden resolutions, selects the optimal resolution via Jaccard scoring, merges over-clustered partitions using a random forest, and writes the final annotated AnnData. Produces figures per sample under `output/clustering/figs/{srx}/`.
 
