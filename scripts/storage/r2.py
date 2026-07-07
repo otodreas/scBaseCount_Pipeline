@@ -31,11 +31,28 @@ def r2_key_exists(r2_key: str) -> bool:
         raise
 
 
-def download_from_r2(r2_key: str, local_path: Path) -> None:
+def download_from_r2(r2_key: str, local_path: Path, verify_md5: bool = False) -> None:
     bucket = os.environ["BUCKET"]
     local_path.parent.mkdir(parents=True, exist_ok=True)
     _log.info("Downloading r2://%s/%s -> %s", bucket, r2_key, local_path)
     _r2_client().download_file(bucket, r2_key, str(local_path))
+    if verify_md5:
+        _verify_downloaded_md5(r2_key, local_path)
+
+
+def _verify_downloaded_md5(r2_key: str, local_path: Path) -> None:
+    from storage.transfer import _local_md5_b64
+
+    stored = r2_object_md5(r2_key)
+    if stored is None:
+        _log.warning("No stored MD5 for r2://%s/%s, skipping download verification", os.environ["BUCKET"], r2_key)
+        return
+    local = _local_md5_b64(local_path)
+    if local != stored:
+        raise ValueError(
+            f"Download MD5 mismatch for r2://{os.environ['BUCKET']}/{r2_key}: local={local} stored={stored}"
+        )
+    _log.info("Download MD5 verified: r2://%s/%s", os.environ["BUCKET"], r2_key)
 
 
 def fetch_uploaded_r2_keys(prefix: str | None = None) -> set[str]:
@@ -90,3 +107,39 @@ def verify_upload(r2_key: str) -> bool:
             _log.warning("Upload verification failed: r2://%s/%s not found", bucket, r2_key)
             return False
         raise
+
+
+def delete_from_r2(r2_key: str) -> None:
+    bucket = os.environ["BUCKET"]
+    client = _r2_client()
+
+    try:
+        client.head_object(Bucket=bucket, Key=r2_key)
+    except ClientError as exc:
+        if exc.response["Error"]["Code"] in ("404", "NoSuchKey"):
+            raise FileNotFoundError(f"R2 object not found: r2://{bucket}/{r2_key}") from None
+        raise
+    _log.info("Deleting r2://%s/%s", bucket, r2_key)
+    client.delete_object(Bucket=bucket, Key=r2_key)
+
+
+def delete_r2_prefix(prefix: str) -> list[str]:
+    bucket = os.environ["BUCKET"]
+    client = _r2_client()
+    keys = sorted(fetch_uploaded_r2_keys(prefix))
+    if not keys:
+        _log.info("No objects under prefix %r to delete", prefix)
+        return []
+    failed: set[str] = set()
+    for start in range(0, len(keys), 1000):
+        batch = keys[start : start + 1000]
+        resp = client.delete_objects(
+            Bucket=bucket,
+            Delete={"Objects": [{"Key": key} for key in batch], "Quiet": True},
+        )
+        for err in resp.get("Errors", []):
+            _log.error("Failed to delete r2://%s/%s: %s", bucket, err["Key"], err["Message"])
+            failed.add(err["Key"])
+    deleted = [key for key in keys if key not in failed]
+    _log.info("Deleted %d object(s) under prefix %r", len(deleted), prefix)
+    return deleted
