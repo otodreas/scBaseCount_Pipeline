@@ -13,11 +13,11 @@ import pandas as pd
 from annotation_inspector.extremes import write_extremes_csv
 from annotation_inspector.inspect import PAIR_COLUMNS, inspect_accession
 from dotenv import load_dotenv
-from r2 import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
+from storage import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists
 
 load_dotenv()
 

@@ -11,11 +11,11 @@ import scanpy as sc
 from cluster_validation import build_metric_dataframes, compute_nse_kld_row, save_metric_plot
 from cluster_validation.merge import MERGED_CLUSTER_KEY
 from dotenv import load_dotenv
-from r2 import download_from_r2, fetch_uploaded_r2_keys
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
+from storage import download_from_r2, fetch_uploaded_r2_keys
 
 load_dotenv()
 

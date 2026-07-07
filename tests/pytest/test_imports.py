@@ -17,8 +17,7 @@ PACKAGES = [
     "metadata",
     "cyteonto",
     "h5ad_extractor",
-    "r2",
-    "gcs",
+    "storage",
     "cytetype_runner",
     "annotation_inspector",
 ]

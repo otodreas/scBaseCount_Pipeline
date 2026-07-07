@@ -9,21 +9,23 @@ from pathlib import Path
 import pandas as pd
 from cluster_validation import ClusterValidationConfig, ClusterValidationResult, run_cluster_validation
 from dotenv import load_dotenv
-from gcs import download_from_gcs, gcs_local_path, verify_download
-from r2 import (
-    download_from_r2,
-    fetch_uploaded_r2_keys,
-    gcs_uri_to_r2_raw_key,
-    r2_key_exists,
-    r2_object_md5,
-    upload_to_r2,
-    verify_upload,
-)
-from r2.client import _local_md5_b64
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
+from storage import (
+    download_from_gcs,
+    download_from_r2,
+    fetch_uploaded_r2_keys,
+    gcs_local_path,
+    gcs_uri_to_r2_raw_key,
+    r2_key_exists,
+    r2_object_md5,
+    upload_to_r2,
+    verify_download,
+    verify_upload,
+)
+from storage.transfer import _local_md5_b64
 
 load_dotenv()
 

@@ -10,11 +10,11 @@ import pandas as pd
 from cluster_validation.merge import MERGED_CLUSTER_KEY
 from cytetype_runner import CyteTypeRunnerConfig, require_api_key, run_cytetype
 from dotenv import load_dotenv
-from r2 import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists, upload_to_r2, verify_upload
 from shared.csv_writer import append_csv_row
 from shared.files import safe_delete
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
+from storage import download_from_r2, fetch_uploaded_r2_keys, r2_key_exists, upload_to_r2, verify_upload
 from study_context import CONTEXTS_JSONL_PATH, ExperimentContext, experiment_context_summary, load_contexts_jsonl
 
 load_dotenv()

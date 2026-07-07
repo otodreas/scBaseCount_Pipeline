@@ -1,26 +1,13 @@
 from __future__ import annotations
 
-import base64
-import hashlib
 import os
 from pathlib import Path
-from urllib.parse import urlparse
 
 import boto3
 from botocore.exceptions import ClientError
 from shared.logger import configure_file_logger
 
 _log = configure_file_logger("r2.log", __name__)
-
-_MD5_METADATA_KEY = "gcs-md5"
-
-
-def _local_md5_b64(path: Path) -> str:
-    h = hashlib.md5()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(8 * 1024 * 1024), b""):
-            h.update(chunk)
-    return base64.b64encode(h.digest()).decode()
 
 
 def _r2_client() -> boto3.client:
@@ -30,13 +17,6 @@ def _r2_client() -> boto3.client:
         aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
         aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
     )
-
-
-def gcs_uri_to_r2_raw_key(gs_uri: str) -> str:
-    parsed = urlparse(gs_uri)
-    bucket = parsed.netloc
-    blob = parsed.path.lstrip("/")
-    return f"{bucket}/{blob}"
 
 
 def r2_key_exists(r2_key: str) -> bool:
@@ -77,6 +57,8 @@ def fetch_uploaded_r2_keys(prefix: str | None = None) -> set[str]:
 
 
 def r2_object_md5(r2_key: str) -> str | None:
+    from storage.transfer import _MD5_METADATA_KEY
+
     bucket = os.environ["BUCKET"]
     try:
         resp = _r2_client().head_object(Bucket=bucket, Key=r2_key)
@@ -85,16 +67,6 @@ def r2_object_md5(r2_key: str) -> str | None:
         if exc.response["Error"]["Code"] in ("404", "NoSuchKey"):
             return None
         raise
-
-
-def r2_raw_matches_gcs(r2_key: str, gcs_md5: str) -> bool:
-    stored = r2_object_md5(r2_key)
-    if stored is None:
-        return False
-    matches = stored == gcs_md5
-    if not matches:
-        _log.warning("MD5 mismatch for r2://%s: stored=%s expected=%s", r2_key, stored, gcs_md5)
-    return matches
 
 
 def upload_to_r2(local_path: Path, r2_key: str, extra_metadata: dict[str, str] | None = None) -> None:
