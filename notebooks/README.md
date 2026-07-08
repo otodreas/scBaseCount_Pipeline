@@ -39,3 +39,5 @@ Not part of the main pipeline. Use these to verify connectivity or inspect h5ad 
 **`analysis/cluster_stats.ipynb`** — Loads `cluster_stats.json` produced by [`pipelines/cluster_stats.py`](../pipelines/cluster_stats.py) and builds an `xarray` tensor of cell-type by cluster counts for downstream analysis.
 
 **`analysis/annotation_inspection.ipynb`** — Loads `summary.csv` and `extremes.csv` from [`pipelines/run_annotation_inspection_pipeline.py`](../pipelines/run_annotation_inspection_pipeline.py) for pair-level groupbys and extremes review.
+
+**`analysis/atlas_integration.ipynb`** — Loads or builds the merged lung atlas from [`scripts/atlas_integration/`](../scripts/atlas_integration/), compares UMAP embeddings before and after Harmony batch correction, reviews integration metrics, and builds a CyteType vs `cell_type` confusion matrix (excluding `unknown`). See [`writeups/atlas/README.md`](../writeups/atlas/README.md).
