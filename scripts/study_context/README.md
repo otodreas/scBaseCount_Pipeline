@@ -45,6 +45,38 @@ ctx.warnings                 # any fetch failures, non-fatal
 
 ![Flow diagram](study_context_flow.png)
 
+### Dataflow
+
+```text
+pipeline_for_accession_list           pool of 8 accessions
+  |
+  v
+fetch_experiment_context(accession)    one accession
+  |
+  |  GET read_experiment  ->  ENA Portal API  ->  json.loads
+  v
+first record + sorted runAccessions
+  |-- TechnicalContext   (instrument*, library* fields)
+  |-- BiologicalContext  (scientificName, taxId, tissueType, ...)
+  |
+  v
+concurrent pool of 2 -----------------------------------------.
+  |                                                           |
+  |  GET sample XML  ->  ENA Browser API                      |  GET study  ->  ENA Portal API
+  |    -> parse XML (SAMPLE_ATTRIBUTE)                         |    -> json.loads + regex PubMed ids
+  v                                                           v
+sampleAttributes                                          StudyContext fields
+                                                              |
+                                                              |  GET efetch pubmed  ->  NCBI E-utilities
+                                                              v    -> parse XML (AbstractText)
+                                                          pubmedAbstract
+  |
+  v
+ExperimentContext  ->  contexts.jsonl
+```
+
+Every `GET` goes through `_http_get` (shared `httpx.Client`, `follow_redirects`, 30s timeout, up to 3 retries with exponential backoff). Call 1 runs first; the sample-XML and study calls run concurrently in a 2-worker pool, and the PubMed `efetch` is nested inside the study call because it needs the PubMed IDs parsed from the study record. Portal calls return JSON parsed with `json.loads`; the sample and PubMed calls return XML parsed with `xml.etree.ElementTree`. Every failure is captured as a non-fatal string in `warnings`, so a single bad call never aborts the record.
+
 Each accession triggers four sequential API calls:
 
 | Call | Endpoint | Populates |
@@ -78,6 +110,44 @@ NCBI_API_KEY=your_key_here
 | **Warnings** | Count and type breakdown of non-fatal fetch failures; lists affected accessions |
 | **Distributions** | Value counts for `libraryStrategy`, `scientificName`, `tissueType` |
 | **Spot checks** | Prints a summary of the first 3 records; separately lists all records missing `pubmedAbstract` so they can be investigated or re-fetched |
+
+## Comparing `contexts.jsonl` versions
+
+`scripts/study_context/compare.py` diffs two `contexts.jsonl` snapshots and reports how many accessions were deleted, added, unchanged, or changed. Use it before replacing the cache after a partial re-fetch to see whether the rerun would affect downstream CyteType inputs.
+
+```bash
+uv run python -m study_context.compare \
+  HEAD:output/context/contexts.jsonl \
+  output/context/contexts.jsonl \
+  --semantic --verbose --list-changed
+```
+
+Each positional argument is a source spec:
+
+| Form | Example | Meaning |
+|------|---------|---------|
+| File path | `output/context/contexts.jsonl` | Read from the working tree |
+| Git object path | `HEAD:output/context/contexts.jsonl` | Read that path at a git ref |
+| Git ref only | `HEAD` | Same as `HEAD:output/context/contexts.jsonl` |
+
+The second argument defaults to `output/context/contexts.jsonl` when omitted.
+
+| Flag | Effect |
+|------|--------|
+| `--semantic` | Treat `runAccessions` order differences as identical |
+| `--verbose` | Print top-level field counts (`study`, `biological`, `technical`, …) among changed rows |
+| `--list-changed` | Print accession IDs that changed |
+
+Exit code `0` means the diff is deletions only; any additions or changes exit `1`. Compare a re-run output written to a separate file the same way:
+
+```bash
+uv run python -m study_context.compare \
+  output/context/contexts.jsonl \
+  output/context/contexts_rerun.jsonl \
+  --semantic --verbose --list-changed
+```
+
+If you write only the re-fetched accessions to the new file, every accession not in that file appears as deleted. Merge re-fetched rows back into the full cache first, or compare only against a baseline filtered to the same accession set.
 
 ## Output model
 
