@@ -7,6 +7,8 @@ alwaysApply: false
 
 Use Graphite (`gt`) only for multi-step features that need ordered, dependent PRs. All rules in `git.mdc` still apply.
 
+Branch commits for a planned PR or Graphite stack are allowed once the user approves the plan and PR strategy. That approval covers creating branches, committing slice-by-slice, and submitting the stack. It does not permit committing directly onto `main`.
+
 ## Plan mode
 
 Every implementation plan must include a **PR strategy** section so the tool choice can be reviewed before any git work:
@@ -22,6 +24,7 @@ Every implementation plan must include a **PR strategy** section so the tool cho
 - Pick exactly one tool. Do not leave it implicit or say "TBD".
 - If the choice is unclear, state both options with tradeoffs and ask before implementing.
 - Do not create branches, commit, push, or open PRs until the user approves the plan and PR strategy.
+- After that approval, branch commits for the stack do not need a separate commit confirmation for each slice.
 
 ## When to use Graphite vs plain GitHub
 
@@ -37,7 +40,7 @@ Use **Graphite** when the work spans layers and has real dependencies, for examp
 ## Before creating a stack
 
 1. Compare work to `main` and propose a stack plan (PR titles, base order, files per slice).
-2. Ask for user approval before creating branches, committing, pushing, or submitting.
+2. Ask for user approval before creating branches, committing, pushing, or submitting, unless the user has already approved the plan and asked to build the stack.
 3. Cap stacks at **3 PRs**. If more slices are needed, propose independent PRs off `main` instead.
 4. Do not stack notebook-only diffs unless the user asks.
 
