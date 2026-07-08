@@ -236,3 +236,36 @@ uv run python pipelines/run_annotation_inspection_pipeline.py \
 uv run python pipelines/run_annotation_inspection_pipeline.py \
   --from-summary output/annotation_inspection_pipeline/20260603_120000/summary.csv
 ```
+
+---
+
+## `run_atlas_integration.py`
+
+Builds the merged lung atlas via [`atlas_integration`](../scripts/atlas_integration/README.md): downloads raw h5ad files incrementally (local cache, else R2 raw mirror, else GCS), QC-filters each accession, concatenates on shared genes, runs Harmony on `studyAccession`, clusters the atlas, and uploads `lung_atlas.h5ad` to R2.
+
+**Output:** `output/atlas_pipeline/{timestamp}/`
+
+| File | Description |
+|------|-------------|
+| `merge.csv` | Per-accession merge status during incremental download |
+| `run.csv` | Final atlas upload status |
+| `metadata.json` | Run config snapshot |
+| `atlas/data/lung_atlas.h5ad` | Integrated atlas |
+| `atlas/run_metadata.json` | Merge stats and integration metrics |
+| `figs/` | UMAP PNGs |
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--datasets` | `output/metadata/datasets.csv` | Accession list |
+| `--contexts` | `output/context/contexts.jsonl` | Study context cache for batch keys |
+| `--r2-prefix` | `atlas_pipeline_{timestamp}` | R2 folder for atlas output |
+| `--subsample-n` | none | Optional per-accession cell cap before concat |
+| `--metadata` | none | Free-form note in `metadata.json` |
+
+**Log:** `logs/atlas_integration_pipeline.log`
+
+Downstream analysis: [`notebooks/analysis/atlas_integration.ipynb`](../notebooks/analysis/atlas_integration.ipynb).
+
+```sh
+uv run python pipelines/run_atlas_integration.py --subsample-n 2000
+```
