@@ -20,6 +20,7 @@ PACKAGES = [
     "storage",
     "cytetype_runner",
     "annotation_inspector",
+    "atlas_integration",
 ]
 
 

@@ -6,7 +6,8 @@ alwaysApply: true
 # Git
 
 - Implementation plans must include a **PR strategy** section (`plain GitHub` or `Graphite stack`, rationale, shape). See `graphite.mdc` for criteria.
-- When on the main branch, do NOT stage or commit files automatically
-- When on the main branch, do NOT run `git add` or `git commit` without explicit user instruction
-- After completing a task, summarize changes made but wait for commit instruction
-- If asked to commit, always show the diff first and confirm scope
+- When on the `main` branch, do NOT stage or commit files directly to `main`
+- When on the `main` branch, do NOT run `git add` or `git commit` onto `main` without explicit user instruction
+- When opening a PR, work on a feature branch instead of `main`. Commits on that new or existing branch do not require separate approval once the user has asked for the PR or stack
+- After completing a task, summarize changes made but wait for commit instruction unless the user has already asked for a branch commit or PR stack
+- If asked to commit on `main`, always show the diff first and confirm scope. On a PR branch, still stage only named files and show the diff when the commit scope is non-obvious
