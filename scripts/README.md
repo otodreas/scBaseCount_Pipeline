@@ -14,6 +14,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`h5ad_extractor/`](h5ad_extractor/) | `extract_annotation_columns(cfg)` | `output/h5ad_extract/{stem}_{obs\|var}_columns.{parquet\|csv}` |
 | [`annotation_inspector/`](annotation_inspector/) | `inspect_accession(...)`, `write_extremes_csv(...)` | Pair-level `summary.csv`, optional `extremes.csv` |
 | [`umap_plots/`](umap_plots/) | `plot_umap(adata, colorBy, ...)` | `output/umap_plots/figs/umap_{colorBy}.png` |
+| [`atlas_integration/`](atlas_integration/) | `run_atlas_integration(cfg)` | `output/atlas/data/lung_atlas.h5ad`, `output/atlas/run_metadata.json`, figures |
 | [`storage/`](storage/) | `download_from_gcs(...)`, `upload_to_r2(...)` | local mirror under `data/`; R2 upload side effect |
 | [`shared/`](shared/) | `REPO_ROOT`, `configure_file_logger(...)` | — (utilities only) |
 
@@ -25,6 +26,8 @@ Each pipeline package has its own `README.md` with usage examples, config refere
 metadata  →  study_context  →  cluster_validation  →  cytetype_runner  →  cyteonto
                                                               |
                                                          storage (download / upload)
+
+cluster_validation (per sample)  →  atlas_integration (merged lung atlas)
 ```
 
-`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation. `cytetype_runner` wraps the CyteType annotation step and persists the annotated h5ad. `storage` handles file transfer to and from cloud storage. `cyteonto` submits CyteType-annotated h5ad label columns to the CyteOnto API and returns ontology-aware similarity scores.
+`metadata` produces the dataset catalog and accession list consumed by both `study_context` and `cluster_validation`. `study_context` produces the text context strings fed into CyteType for cluster annotation and the `studyAccession` batch keys used by `atlas_integration`. `cytetype_runner` wraps the CyteType annotation step and persists the annotated h5ad. `storage` handles file transfer to and from cloud storage. `cyteonto` submits CyteType-annotated h5ad label columns to the CyteOnto API and returns ontology-aware similarity scores. `atlas_integration` merges the lung cohort into one h5ad, applies Harmony on study, and writes integration metrics.
