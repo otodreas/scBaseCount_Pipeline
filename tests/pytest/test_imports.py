@@ -20,6 +20,7 @@ PACKAGES = [
     "storage",
     "cytetype_runner",
     "annotation_inspector",
+    "h5ad_concat",
 ]
 
 

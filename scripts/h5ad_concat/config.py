@@ -1,0 +1,24 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Literal
+
+from pydantic import BaseModel
+from shared.repo import REPO_ROOT
+from study_context.utils import CONTEXTS_JSONL_PATH
+
+
+class H5adConcatConfig(BaseModel):
+    r2Keys: list[str]
+    contextsPath: Path = CONTEXTS_JSONL_PATH
+    cellTypeKey: str = "cell_type"
+    studyKey: str = "study"
+    accessionKey: str = "accession"
+    missingLabel: str = "unknown"
+    join: Literal["inner", "outer"] = "inner"
+    cacheDir: Path = REPO_ROOT / "data" / "h5ad_concat" / "cache"
+    outputPath: Path = REPO_ROOT / "output" / "atlas" / "data" / "atlas.h5ad"
+    maxLoadedElems: int = 100_000_000
+    mergeBatchSize: int = 25
+    verifyMd5: bool = True
+    # TODO(preprocess): preprocess: bool = True
