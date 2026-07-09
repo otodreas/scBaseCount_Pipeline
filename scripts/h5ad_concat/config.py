@@ -9,7 +9,7 @@ from study_context.utils import CONTEXTS_JSONL_PATH
 
 
 class H5adConcatConfig(BaseModel):
-    r2Keys: list[str]
+    r2Keys: list[str]  # TODO(input): support datasets.csv (parse file where a column contains the keys)
     contextsPath: Path = CONTEXTS_JSONL_PATH
     cellTypeKey: str = "cell_type"
     studyKey: str = "study"
