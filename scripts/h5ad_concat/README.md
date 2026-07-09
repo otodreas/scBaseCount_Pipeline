@@ -26,6 +26,38 @@ Requires R2 credentials (see `[storage/](../storage/README.md)`). Each concatena
 
 For a concrete case, see `notebooks/pipeline/study_context.ipynb`, which diffs experiments `ERX11662385` and `ERX11662370` from study `PRJEB68315`: they share the same `studyAccession` yet come from different patients (ages 67 and 52) with different disease subtypes (non-small cell lung cancer and lung adenocarcinoma) and different tumor grading. This is one example, not an exhaustive audit, but the pattern is inherent to how ENA study accessions aggregate samples, so we treat within-study biological heterogeneity as expected rather than exceptional.
 
+The block below is pasted directly from the field-by-field diff output of that notebook, kept here only as a visual demonstration:
+
+```text
+accession:
+  ERX11662385: ERX11662385
+  ERX11662370: ERX11662370
+biological.sampleAttributes.age:
+  ERX11662385: 67
+  ERX11662370: 52
+biological.sampleAttributes.disease:
+  ERX11662385: non-small cell lung cancer
+  ERX11662370: lung adenocarcinoma
+biological.sampleAttributes.individual:
+  ERX11662385: Patient 23
+  ERX11662370: Patient 24
+biological.sampleAttributes.original source name:
+  ERX11662385: TB21.0086
+  ERX11662370: TB21.0106
+biological.sampleAttributes.tumor grading:
+  ERX11662385: T4N0
+  ERX11662370: T3N0M0
+biological.sampleTitle:
+  ERX11662385: P23_B2
+  ERX11662370: P24_B2
+runAccessions:
+  ERX11662385: ['ERR12251785', 'ERR12252043', 'ERR12251741', 'ERR12251857', 'ERR12252030', 'ERR12251724', 'ERR12251755', 'ERR12251994']
+  ERX11662370: ['ERR12252007', 'ERR12251936', 'ERR12251941', 'ERR12251754']
+sampleAccession:
+  ERX11662385: SAMEA114591111
+  ERX11662370: SAMEA114591096
+```
+
 ## Validation gate
 
 Each file is checked before it enters the concat. Failing files are recorded in `result.skipped` and excluded; the run continues.
