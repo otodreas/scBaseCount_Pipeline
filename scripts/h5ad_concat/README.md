@@ -18,35 +18,42 @@ result = run_h5ad_concat(cfg)
 print(result.nObs, result.studiesSeen, result.skipped)
 ```
 
-Requires R2 credentials (see [`storage/`](../storage/README.md)). Study batch labels come from `output/context/contexts.jsonl` via `studyAccession`.
+Requires R2 credentials (see `[storage/](../storage/README.md)`). Each concatenated file gains a single new obs column, `study_accession` (the `batchKey`), resolved from `output/context/contexts.jsonl` via `ctx.study.studyAccession`. This is the experimental batch key for downstream integration.
 
 ## Validation gate
 
 Each file is checked before it enters the concat. Failing files are recorded in `result.skipped` and excluded; the run continues.
 
-| Check | Reason | Active |
-|-------|--------|--------|
-| MD5 matches stored `gcs-md5` metadata | `md5_mismatch` | yes |
-| `studyAccession` resolves from contexts | `missing_study` | yes |
-| At least one non-blank `cell_type` label | `cell_type_all_missing` | yes |
-| Preprocessing passes | `preprocess_failed` | future |
+
+| Check                                    | Reason                  | Active |
+| ---------------------------------------- | ----------------------- | ------ |
+| MD5 matches stored `gcs-md5` metadata    | `md5_mismatch`          | yes    |
+| `studyAccession` resolves from contexts  | `missing_study`         | yes    |
+| At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
+| Preprocessing passes                     | `preprocess_failed`     | future |
+
+
+
 
 ## Config
 
-| Field | Default | Description |
-|-------|---------|-------------|
-| `r2Keys` | (required) | Explicit R2 object keys to download and concat |
-| `contextsPath` | `output/context/contexts.jsonl` | Study context lookup |
-| `cellTypeKey` | `"cell_type"` | Column checked and filled |
-| `studyKey` | `"study"` | Batch label column written by concat |
-| `accessionKey` | `"accession"` | Experiment id column written during prepare |
-| `missingLabel` | `"unknown"` | Fill value for blank `cell_type` |
-| `join` | `"inner"` | Gene join strategy for concat |
-| `cacheDir` | `data/h5ad_concat/cache` | Staging for downloads and partial merges |
-| `outputPath` | `output/atlas/data/atlas.h5ad` | Merged atlas output |
-| `maxLoadedElems` | `100_000_000` | Streaming chunk size for `concat_on_disk` |
-| `mergeBatchSize` | `25` | Max prepared files on disk per concat batch |
-| `verifyMd5` | `True` | Verify download against R2 `gcs-md5` metadata |
+
+| Field            | Default                         | Description                                    |
+| ---------------- | ------------------------------- | ---------------------------------------------- |
+| `r2Keys`         | (required)                      | Explicit R2 object keys to download and concat |
+| `contextsPath`   | `output/context/contexts.jsonl` | Study context lookup                           |
+| `cellTypeKey`    | `"cell_type"`                   | Column checked and filled                      |
+| `batchKey`       | `"study_accession"`             | obs column holding the batch key (ENA study accession) |
+| `missingLabel`   | `"UNKNOWN"`                     | Fill value for blank `cell_type`               |
+| `join`           | `"inner"`                       | Gene join strategy for concat                  |
+| `cacheDir`       | `data/h5ad_concat/cache`        | Staging for downloads and partial merges       |
+| `outputPath`     | `output/atlas/data/atlas.h5ad`  | Merged atlas output                            |
+| `maxLoadedElems` | `100_000_000`                   | Streaming chunk size for `concat_on_disk`      |
+| `mergeBatchSize` | `25`                            | Max prepared files on disk per concat batch    |
+| `verifyMd5`      | `True`                          | Verify download against R2 `gcs-md5` metadata  |
+
+
+
 
 ## Output
 
@@ -68,6 +75,7 @@ Prepared files are concatenated with `anndata.experimental.concat_on_disk`, whic
 
 Future work is marked in source with `# TODO(...)` comments at the call site:
 
-- **`datasets-csv`** (`pipeline.py`): accept `output/metadata/datasets.csv` accessions mapped to R2 raw keys as an alternative to explicit `r2Keys`.
-- **`preprocess`** (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
-- **`upload-atlas`** (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with base64 MD5 metadata.
+- `datasets-csv` (`pipeline.py`): accept `output/metadata/datasets.csv` accessions mapped to R2 raw keys as an alternative to explicit `r2Keys`.
+- `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
+- `upload-atlas` (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with base64 MD5 metadata.
+

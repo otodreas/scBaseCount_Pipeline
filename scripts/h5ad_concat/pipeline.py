@@ -42,7 +42,7 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     # TODO(upload-atlas): upload output_path to R2 via upload_to_r2 with _local_md5_b64 metadata.
 
     merged = ad.read_h5ad(output_path)
-    studies_seen = sorted(merged.obs[cfg.studyKey].unique().tolist())
+    studies_seen = sorted(merged.obs[cfg.batchKey].unique().tolist())
 
     for path in cfg.cacheDir.glob("**/*"):
         if path.is_file() and path != output_path:

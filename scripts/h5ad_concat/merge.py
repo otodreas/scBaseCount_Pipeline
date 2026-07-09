@@ -10,25 +10,6 @@ from shared.files import safe_delete
 from h5ad_concat.config import H5adConcatConfig
 
 
-def _concat_batch(
-    in_paths: list[Path],
-    study_keys: list[str],
-    out_path: Path,
-    cfg: H5adConcatConfig,
-    *,
-    label: bool,
-) -> None:
-    """Concatenate one batch of prepared h5ads to out_path."""
-    kwargs: dict = {
-        "max_loaded_elems": cfg.maxLoadedElems,
-        "join": cfg.join,
-    }
-    if label:
-        kwargs["label"] = cfg.studyKey
-        kwargs["keys"] = study_keys
-    concat_on_disk(in_paths, out_path, **kwargs)
-
-
 def concat_prepared(
     prepared: list[tuple[Path, str]],
     cfg: H5adConcatConfig,
@@ -44,14 +25,12 @@ def concat_prepared(
     partial_dir.mkdir(parents=True, exist_ok=True)
 
     paths = [path for path, _ in prepared]
-    study_keys = [key for _, key in prepared]
 
     accumulator: Path | None = None
-    for batch_start in range(0, len(paths), cfg.mergeBatchSize):
+    for batch_start in range(0, len(paths), cfg.mergeBatchSize):  # cfg.mergeBatchSize is step size
         batch_paths = paths[batch_start : batch_start + cfg.mergeBatchSize]
-        batch_keys = study_keys[batch_start : batch_start + cfg.mergeBatchSize]
         batch_out = partial_dir / f"batch_{batch_start:05d}.h5ad"
-        _concat_batch(batch_paths, batch_keys, batch_out, cfg, label=True)
+        concat_on_disk(batch_paths, batch_out, max_loaded_elems=cfg.maxLoadedElems, join=cfg.join)
         for path in batch_paths:
             safe_delete(path, log)
 
@@ -60,7 +39,7 @@ def concat_prepared(
             continue
 
         merged = partial_dir / f"fold_{batch_start:05d}.h5ad"
-        _concat_batch([accumulator, batch_out], [], merged, cfg, label=False)
+        concat_on_disk([accumulator, batch_out], merged, max_loaded_elems=cfg.maxLoadedElems, join=cfg.join)
         safe_delete(accumulator, log)
         safe_delete(batch_out, log)
         accumulator = merged

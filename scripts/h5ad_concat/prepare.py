@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 import anndata as ad
+from scipy.sparse import issparse
 from shared.files import safe_delete
 from storage import download_from_r2
 from study_context.models import ExperimentContext
@@ -18,7 +20,7 @@ def accession_from_r2_key(r2_key: str) -> str:
     return Path(r2_key).stem
 
 
-def resolve_study_accession(accession: str, contexts: dict[str, ExperimentContext]) -> str:
+def resolve_batch_key(accession: str, contexts: dict[str, ExperimentContext]) -> str:
     """Resolve studyAccession from contexts; raise FileRejected when missing."""
     ctx = contexts.get(accession)
     if ctx is None or ctx.study is None:
@@ -46,6 +48,17 @@ def prefix_obs_names(adata: ad.AnnData, accession: str) -> None:
     adata.obs_names = [f"{accession}_{name}" for name in adata.obs_names]
 
 
+def to_csr(adata: ad.AnnData) -> None:
+    """Convert X and any sparse layers to CSR in place; required for obs-axis concat_on_disk."""
+    x: Any = adata.X
+    if issparse(x) and x.format != "csr":
+        adata.X = x.tocsr()
+    for key in list(adata.layers.keys()):
+        matrix: Any = adata.layers[key]
+        if issparse(matrix) and matrix.format != "csr":
+            adata.layers[key] = matrix.tocsr()
+
+
 def prepare_accession(
     r2_key: str,
     cfg: H5adConcatConfig,
@@ -68,7 +81,7 @@ def prepare_accession(
         raise
 
     try:
-        study_accession = resolve_study_accession(accession, contexts)
+        study_accession = resolve_batch_key(accession, contexts)
         adata = ad.read_h5ad(raw_path)
 
         # TODO(preprocess): when cfg.preprocess is enabled, run cluster_validation.preprocess here
@@ -77,9 +90,10 @@ def prepare_accession(
         if cell_type_all_missing(adata, cfg.cellTypeKey):
             raise FileRejected(SkipReason.cell_type_all_missing)
 
-        adata.obs[cfg.accessionKey] = accession
+        adata.obs[cfg.batchKey] = study_accession
         fill_cell_type(adata, cfg)
         prefix_obs_names(adata, accession)
+        to_csr(adata)
         adata.write_h5ad(prepared_path)
         return prepared_path, study_accession
     finally:
