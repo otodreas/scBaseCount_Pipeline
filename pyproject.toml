@@ -13,6 +13,7 @@ packages = [
     "scripts/storage",
     "scripts/cytetype_runner",
     "scripts/annotation_inspector",
+    "scripts/h5ad_concat",
     "scripts/umap_plots",
 ]
 
