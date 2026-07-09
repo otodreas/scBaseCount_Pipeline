@@ -59,6 +59,10 @@ def to_csr(adata: ad.AnnData) -> None:
             adata.layers[key] = matrix.tocsr()
 
 
+# TODO(stream-pipeline): prepare_accession stays per-file; pipeline should call it in batches and
+# hand each batch to merge before downloading the next mergeBatchSize files.
+
+
 def prepare_accession(
     r2_key: str,
     cfg: H5adConcatConfig,

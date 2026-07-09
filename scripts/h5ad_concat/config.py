@@ -19,6 +19,8 @@ class H5adConcatConfig(BaseModel):
     cacheDir: Path = REPO_ROOT / "data" / "h5ad_concat" / "cache"
     outputPath: Path = REPO_ROOT / "output" / "atlas" / "data" / "atlas.h5ad"
     maxLoadedElems: int = 100_000_000
-    mergeBatchSize: int = 25
+    mergeBatchSize: int = (
+        25  # TODO(stream-pipeline): also bounds prepared files on disk when prepare/merge are interleaved
+    )
     verifyMd5: bool = True
     # TODO(preprocess): preprocess: bool = True

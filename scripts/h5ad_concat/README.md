@@ -69,13 +69,18 @@ Logs append to `logs/h5ad_concat.log`.
 
 ## Memory and disk
 
-Prepared files are concatenated with `anndata.experimental.concat_on_disk`, which streams sparse chunks instead of loading full objects into RAM. `mergeBatchSize` bounds how many prepared h5ads sit on disk at once; each batch is merged and deleted before the next batch starts. The merged output file must still fit on disk.
+Prepared files are concatenated with `anndata.experimental.concat_on_disk`, which streams sparse chunks instead of loading full objects into RAM. During merge, `mergeBatchSize` bounds how many prepared h5ads are folded per batch; each batch is merged and deleted before the next merge batch starts. The merged output file must still fit on disk.
+
+Today the pipeline prepares every passing file before merge begins, so peak staging is the sum of all prepared h5ads. A later fold step can still require roughly 2x the atlas size on disk while copying the accumulator into the next fold file.
 
 ## TODO
 
 Future work is marked in source with `# TODO(...)` comments at the call site:
 
-- `datasets-csv` (`pipeline.py`): accept `output/metadata/datasets.csv` accessions mapped to R2 raw keys as an alternative to explicit `r2Keys`.
+- `input` (`config.py`): support `datasets.csv` as an input source (parse a column containing R2 keys) instead of requiring explicit `r2Keys`.
+- `datasets-csv` (`pipeline.py`): resolve `cfg.r2Keys` from `output/metadata/datasets.csv` accessions mapped to R2 raw keys (see `pipelines/run_clustering_pipeline.py`).
 - `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
-- `upload-atlas` (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with base64 MD5 metadata.
+- `output` (`merge.py`): support appending to an existing atlas and/or building a new atlas version instead of always overwriting `outputPath`.
+- `stream-pipeline` (`pipeline.py`, `merge.py`, `prepare.py`, `config.py`): interleave download/prepare with the batch/fold merge loop so only `mergeBatchSize` prepared files sit on disk at once, instead of staging all passing files before merge starts.
+- `upload-atlas` (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with `_local_md5_b64` metadata.
 
