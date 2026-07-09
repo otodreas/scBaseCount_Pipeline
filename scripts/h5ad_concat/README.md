@@ -20,6 +20,12 @@ print(result.nObs, result.studiesSeen, result.skipped)
 
 Requires R2 credentials (see `[storage/](../storage/README.md)`). Each concatenated file gains a single new obs column, `study_accession` (the `batchKey`), resolved from `output/context/contexts.jsonl` via `ctx.study.studyAccession`. This is the experimental batch key for downstream integration.
 
+## Batch key caveat
+
+`study_accession` is a coarse batch key. A single `studyAccession` can span multiple experiments that differ in biologically meaningful ways, including patient age, disease subtype, individual donor, and tumor grading. Grouping these under one batch key therefore folds real biological variation into a single batch, so downstream integration that treats a batch as a technical unit will treat some genuine biological signal as batch effect.
+
+For a concrete case, see `notebooks/pipeline/study_context.ipynb`, which diffs experiments `ERX11662385` and `ERX11662370` from study `PRJEB68315`: they share the same `studyAccession` yet come from different patients (ages 67 and 52) with different disease subtypes (non-small cell lung cancer and lung adenocarcinoma) and different tumor grading. This is one example, not an exhaustive audit, but the pattern is inherent to how ENA study accessions aggregate samples, so we treat within-study biological heterogeneity as expected rather than exceptional.
+
 ## Validation gate
 
 Each file is checked before it enters the concat. Failing files are recorded in `result.skipped` and excluded; the run continues.
