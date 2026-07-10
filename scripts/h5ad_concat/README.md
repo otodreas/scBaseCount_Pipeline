@@ -1,6 +1,6 @@
 # h5ad_concat
 
-Download scBaseCount h5ad files from R2, validate each file in-pipeline, enrich `obs`, and concatenate passing files into a local atlas with memory-safe on-disk merging.
+Download scBaseCount h5ad files from R2, validate each file in-pipeline, enrich `obs`, and concatenate passing files into a local gzip-compressed atlas held in memory during merge.
 
 ## Usage
 
@@ -86,11 +86,11 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | `batchKey`       | `"study_accession"`             | obs column holding the batch key (ENA study accession) |
 | `missingLabel`   | `"UNKNOWN"`                     | Fill value for blank `cell_type`               |
 | `join`           | `"inner"`                       | Gene join strategy for concat                  |
-| `cacheDir`       | `data/h5ad_concat/cache`        | Staging for downloads and partial merges       |
-| `outputPath`     | `output/atlas/data/atlas.h5ad`  | Merged atlas output                            |
-| `maxLoadedElems` | `100_000_000`                   | Streaming chunk size for `concat_on_disk`      |
-| `mergeBatchSize` | `25`                            | Max prepared files on disk per concat batch    |
-| `verifyMd5`      | `True`                          | Verify download against R2 `gcs-md5` metadata  |
+| `cacheDir`         | `data/h5ad_concat/cache`        | Staging for transient raw downloads             |
+| `outputPath`       | `output/atlas/data/atlas.h5ad`  | Merged atlas output                             |
+| `downloadBatchSize`| `8`                             | Reserved for concurrent download batching       |
+| `compression`      | `"gzip"`                        | h5ad write compression for the atlas            |
+| `verifyMd5`        | `True`                          | Verify download against R2 `gcs-md5` metadata   |
 
 
 
@@ -109,9 +109,9 @@ Logs append to `logs/h5ad_concat.log`.
 
 ## Memory and disk
 
-Prepared files are concatenated with `anndata.experimental.concat_on_disk`, which streams sparse chunks instead of loading full objects into RAM. During merge, `mergeBatchSize` bounds how many prepared h5ads are folded per batch; each batch is merged and deleted before the next merge batch starts. The merged output file must still fit on disk.
+Each h5ad is downloaded to a transient raw file under `cacheDir/raw`, loaded into memory with `read_h5ad`, validated and enriched, then the raw file is deleted immediately. Passing objects accumulate in RAM until all keys are processed, then `ad.concat` builds one in-memory atlas and `write_h5ad(..., compression="gzip")` writes the final output.
 
-Today the pipeline prepares every passing file before merge begins, so peak staging is the sum of all prepared h5ads. A later fold step can still require roughly 2x the atlas size on disk while copying the accumulator into the next fold file.
+Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the gzipped atlas. Peak RAM is roughly the sum of all loaded objects plus the concatenated result during `ad.concat`. The gzipped atlas must still fit on disk.
 
 ## TODO
 
@@ -121,6 +121,5 @@ Future work is marked in source with `# TODO(...)` comments at the call site:
 - `datasets-csv` (`pipeline.py`): resolve `cfg.r2Keys` from `output/metadata/datasets.csv` accessions mapped to R2 raw keys (see `pipelines/run_clustering_pipeline.py`).
 - `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
 - `output` (`merge.py`): support appending to an existing atlas and/or building a new atlas version instead of always overwriting `outputPath`.
-- `stream-pipeline` (`pipeline.py`, `merge.py`, `prepare.py`, `config.py`): interleave download/prepare with the batch/fold merge loop so only `mergeBatchSize` prepared files sit on disk at once, instead of staging all passing files before merge starts.
 - `upload-atlas` (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with `_local_md5_b64` metadata.
 

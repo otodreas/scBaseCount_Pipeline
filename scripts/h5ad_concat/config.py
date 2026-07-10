@@ -18,9 +18,7 @@ class H5adConcatConfig(BaseModel):
     join: Literal["inner", "outer"] = "inner"
     cacheDir: Path = REPO_ROOT / "data" / "h5ad_concat" / "cache"
     outputPath: Path = REPO_ROOT / "output" / "atlas" / "data" / "atlas.h5ad"
-    maxLoadedElems: int = 100_000_000
-    mergeBatchSize: int = (
-        25  # TODO(stream-pipeline): also bounds prepared files on disk when prepare/merge are interleaved
-    )
+    downloadBatchSize: int = 8
+    compression: Literal["gzip", "lzf"] | None = "gzip"
     verifyMd5: bool = True
     # TODO(preprocess): preprocess: bool = True
