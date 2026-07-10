@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any
 
 import anndata as ad
-from scipy.sparse import issparse
 from shared.files import safe_delete
 from storage import download_from_r2
 from study_context.models import ExperimentContext
@@ -48,33 +46,16 @@ def prefix_obs_names(adata: ad.AnnData, accession: str) -> None:
     adata.obs_names = [f"{accession}_{name}" for name in adata.obs_names]
 
 
-def to_csr(adata: ad.AnnData) -> None:
-    """Convert X and any sparse layers to CSR in place; required for obs-axis concat_on_disk."""
-    x: Any = adata.X
-    if issparse(x) and x.format != "csr":
-        adata.X = x.tocsr()
-    for key in list(adata.layers.keys()):
-        matrix: Any = adata.layers[key]
-        if issparse(matrix) and matrix.format != "csr":
-            adata.layers[key] = matrix.tocsr()
-
-
-# TODO(stream-pipeline): prepare_accession stays per-file; pipeline should call it in batches and
-# hand each batch to merge before downloading the next mergeBatchSize files.
-
-
-def prepare_accession(
+def prepare_adata(
     r2_key: str,
     cfg: H5adConcatConfig,
     contexts: dict[str, ExperimentContext],
     log: logging.Logger,
-) -> tuple[Path, str]:
-    """Download, validate, enrich, and stage one h5ad; return (prepared_path, studyAccession)."""
+) -> tuple[ad.AnnData, str]:
+    """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession)."""
     accession = accession_from_r2_key(r2_key)
     raw_path = cfg.cacheDir / "raw" / f"{accession}.h5ad"
-    prepared_path = cfg.cacheDir / "prepared" / f"{accession}.h5ad"
     raw_path.parent.mkdir(parents=True, exist_ok=True)
-    prepared_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
         download_from_r2(r2_key, raw_path, verify_md5=cfg.verifyMd5)
@@ -97,8 +78,6 @@ def prepare_accession(
         adata.obs[cfg.batchKey] = study_accession
         fill_cell_type(adata, cfg)
         prefix_obs_names(adata, accession)
-        to_csr(adata)
-        adata.write_h5ad(prepared_path)
-        return prepared_path, study_accession
+        return adata, study_accession
     finally:
         safe_delete(raw_path, log)
