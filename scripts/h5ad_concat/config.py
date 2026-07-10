@@ -21,4 +21,6 @@ class H5adConcatConfig(BaseModel):
     downloadBatchSize: int = 8
     compression: Literal["gzip", "lzf"] | None = "gzip"
     verifyMd5: bool = True
+    checkpointEvery: int = 25
+    resume: bool = True
     # TODO(preprocess): preprocess: bool = True

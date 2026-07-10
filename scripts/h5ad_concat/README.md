@@ -91,6 +91,8 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | `downloadBatchSize`| `8`                             | Reserved for concurrent download batching       |
 | `compression`      | `"gzip"`                        | h5ad write compression for the atlas            |
 | `verifyMd5`        | `True`                          | Verify download against R2 `gcs-md5` metadata   |
+| `checkpointEvery`  | `25`                            | Write atlas every N processed files (`0` = end only) |
+| `resume`           | `True`                          | Resume from existing atlas at `outputPath` when present |
 
 
 
@@ -107,11 +109,19 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 
 Logs append to `logs/h5ad_concat.log`.
 
+## Crash recovery and resume
+
+Every `checkpointEvery` processed files (concatenated or skipped), the pipeline folds pending `AnnData` into the in-memory atlas and atomically overwrites `outputPath`. The write uses a temp file plus `os.replace`, so a crash during the write leaves the previous atlas intact.
+
+Progress is recorded in `atlas.uns["h5adConcatManifest"]` as JSON. On restart with `resume=True`, the pipeline reloads the atlas, parses the manifest, and skips any `r2Key` already listed. Skipped-only progress before the first successful concat is not persisted until an atlas exists.
+
+Set `resume=False` to ignore an existing atlas and rebuild from scratch. Set `checkpointEvery=0` to disable periodic writes and only write once at the end.
+
 ## Memory and disk
 
-Each h5ad is downloaded to a transient raw file under `cacheDir/raw`, loaded into memory with `read_h5ad`, validated and enriched, then the raw file is deleted immediately. Passing objects accumulate in RAM until all keys are processed, then `ad.concat` builds one in-memory atlas and `write_h5ad(..., compression="gzip")` writes the final output.
+Each h5ad is downloaded to a transient raw file under `cacheDir/raw`, loaded into memory with `read_h5ad`, validated and enriched, then the raw file is deleted immediately. Passing objects accumulate in RAM until a checkpoint folds them into the atlas object, bounding peak RAM to roughly one atlas plus up to `checkpointEvery` pending files.
 
-Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the gzipped atlas. Peak RAM is roughly the sum of all loaded objects plus the concatenated result during `ad.concat`. The gzipped atlas must still fit on disk.
+Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the gzipped atlas. During each atomic checkpoint write, disk use is transiently about 2x the gzipped atlas (temp file plus destination). Peak RAM is roughly the atlas plus pending files during fold. The gzipped atlas must still fit on disk.
 
 ## TODO
 
@@ -120,6 +130,6 @@ Future work is marked in source with `# TODO(...)` comments at the call site:
 - `input` (`config.py`): support `datasets.csv` as an input source (parse a column containing R2 keys) instead of requiring explicit `r2Keys`.
 - `datasets-csv` (`pipeline.py`): resolve `cfg.r2Keys` from `output/metadata/datasets.csv` accessions mapped to R2 raw keys (see `pipelines/run_clustering_pipeline.py`).
 - `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
-- `output` (`merge.py`): support appending to an existing atlas and/or building a new atlas version instead of always overwriting `outputPath`.
+- `output` (`merge.py`): support building new atlas versions instead of overwriting `outputPath`.
 - `upload-atlas` (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with `_local_md5_b64` metadata.
 
