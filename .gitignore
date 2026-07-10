@@ -8,6 +8,7 @@ __pycache__/
 
 # Data/cache
 data/
+!data/scbasecount/2026-01-12/star_references/Homo_sapiens/hg38_2020/geneInfo.tab
 !tests/pytest/data/
 tmp/
 extra/
@@ -43,6 +44,7 @@ DailyNotes.md
 # IDE
 .cursor/plans
 docs/handoffs
+.cursorignore
 
 # Zotero
 docs/zotero_pdfs/
