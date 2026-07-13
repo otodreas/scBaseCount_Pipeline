@@ -18,6 +18,16 @@ result = run_h5ad_concat(cfg)
 print(result.nObs, result.studiesSeen, result.skipped)
 ```
 
+Or resolve R2 keys from `output/metadata/datasets.csv` (`file_path` column holds `gs://` URIs mapped to R2 raw keys):
+
+```python
+cfg = H5adConcatConfig(
+    datasetsPath="output/metadata/datasets.csv",
+    uploadAtlas=True,
+    atlasR2Key="atlas/2026-01-12/atlas.h5ad",
+)
+```
+
 Requires R2 credentials (see `[storage/](../storage/README.md)`). Each concatenated file gains a single new obs column, `study_accession` (the `batchKey`), resolved from `output/context/contexts.jsonl` via `ctx.study.studyAccession`. This is the experimental batch key for downstream integration.
 
 ## Batch effect
@@ -79,10 +89,11 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 
 ## Config
 
-
+Exactly one of `r2Keys` or `datasetsPath` is required.
 | Field            | Default                         | Description                                    |
 | ---------------- | ------------------------------- | ---------------------------------------------- |
-| `r2Keys`         | (required)                      | Explicit R2 object keys to download and concat |
+| `r2Keys`         | `None`                          | Explicit R2 object keys to download and concat |
+| `datasetsPath`   | `None`                          | Path to datasets CSV; `file_path` URIs resolve to R2 raw keys |
 | `contextsPath`   | `output/context/contexts.jsonl` | Study context lookup                           |
 | `cellTypeKey`    | `"cell_type"`                   | Column checked and filled                      |
 | `batchKey`       | `"study_accession"`             | obs column holding the batch key (ENA study accession) |
@@ -93,6 +104,8 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | `downloadBatchSize`| `8`                             | Reserved for concurrent download batching       |
 | `compression`      | `"gzip"`                        | h5ad write compression for the atlas            |
 | `verifyMd5`        | `True`                          | Verify download against R2 `gcs-md5` metadata   |
+| `uploadAtlas`      | `False`                         | Upload merged atlas to R2 after write           |
+| `atlasR2Key`       | `None`                          | R2 object key for atlas upload (required when `uploadAtlas` is true) |
 
 
 
@@ -101,11 +114,14 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 
 `run_h5ad_concat` returns `H5adConcatResult`:
 
-- `outputPath`: merged atlas h5ad
+- `outputPath`: merged atlas h5ad path (local file remains unless upload succeeds)
 - `nObs`, `nVars`: shape of merged object
 - `nFilesConcatenated`: count of files that passed validation
 - `studiesSeen`: unique `studyAccession` values in the merged atlas
 - `skipped`: list of rejected files with `r2Key`, `accession`, and `reason`
+- `atlasR2Key`: R2 object key when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
+
+When `uploadAtlas` is true and upload verifies, the local `.h5ad` is deleted and replaced by a JSON manifest at `outputPath` with suffix `.json` (e.g. `output/atlas/data/atlas.json`). The manifest holds `H5adConcatResult` so run metadata is readable without pulling the atlas from R2.
 
 Logs append to `logs/h5ad_concat.log`.
 
@@ -119,9 +135,6 @@ Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the 
 
 Future work is marked in source with `# TODO(...)` comments at the call site:
 
-- `input` (`config.py`): support `datasets.csv` as an input source (parse a column containing R2 keys) instead of requiring explicit `r2Keys`.
-- `datasets-csv` (`pipeline.py`): resolve `cfg.r2Keys` from `output/metadata/datasets.csv` accessions mapped to R2 raw keys (see `pipelines/run_clustering_pipeline.py`).
 - `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
 - `output` (`merge.py`): support appending to an existing atlas and/or building a new atlas version instead of always overwriting `outputPath`.
-- `upload-atlas` (`pipeline.py`): upload the merged atlas to R2 via `upload_to_r2` with `_local_md5_b64` metadata.
 

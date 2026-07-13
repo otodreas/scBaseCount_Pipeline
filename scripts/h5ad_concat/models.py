@@ -28,3 +28,4 @@ class H5adConcatResult(BaseModel):
     nFilesConcatenated: int
     studiesSeen: list[str]
     skipped: list[SkippedFile]
+    atlasR2Key: str | None = None

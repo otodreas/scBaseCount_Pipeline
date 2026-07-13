@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
+import pandas as pd
+from shared.files import safe_delete
 from shared.logger import configure_file_logger
+from storage import gcs_uri_to_r2_raw_key, upload_to_r2, verify_upload
+from storage.transfer import _MD5_METADATA_KEY, _local_md5_b64
 from study_context.utils import load_contexts_jsonl
 
 from h5ad_concat.config import H5adConcatConfig
@@ -12,16 +19,54 @@ from h5ad_concat.prepare import accession_from_r2_key, prepare_adata
 _log = configure_file_logger("h5ad_concat.log", __name__)
 
 
+def resolve_r2_keys(cfg: H5adConcatConfig) -> list[str]:
+    """Return explicit r2Keys or resolve them from datasets.csv file_path URIs."""
+    if cfg.datasetsPath is not None:
+        datasets = pd.read_csv(cfg.datasetsPath)
+        keys = [gcs_uri_to_r2_raw_key(uri) for uri in datasets["file_path"]]
+        _log.info("Resolved %d R2 key(s) from %s", len(keys), cfg.datasetsPath)
+        return keys
+    return cfg.r2Keys or []
+
+
+def _upload_atlas_and_finalize(
+    cfg: H5adConcatConfig,
+    output_path: Path,
+    result: H5adConcatResult,
+) -> None:
+    """Upload the atlas to R2, write a JSON manifest, and delete the local h5ad on success."""
+    if not cfg.uploadAtlas or not cfg.atlasR2Key:
+        return
+
+    r2_key = cfg.atlasR2Key
+    try:
+        md5 = _local_md5_b64(output_path)
+        _log.info("Uploading atlas to R2 key %s", r2_key)
+        upload_to_r2(output_path, r2_key, extra_metadata={_MD5_METADATA_KEY: md5})
+        if not verify_upload(r2_key):
+            msg = f"Upload verification failed for {r2_key}"
+            _log.error(msg)
+            raise RuntimeError(msg)
+        _log.info("Atlas uploaded and verified at %s", r2_key)
+        manifest_path = output_path.with_suffix(".json")
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(json.dumps(result.model_dump(mode="json"), indent=2))
+        _log.info("Wrote atlas manifest to %s", manifest_path)
+        safe_delete(output_path, _log)
+    except Exception:
+        _log.exception("Atlas upload failed for %s", r2_key)
+        raise
+
+
 def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     """Download, validate, and concatenate h5ad files from R2 into a local atlas."""
-    # TODO(datasets-csv): resolve cfg.r2Keys from output/metadata/datasets.csv accessions
-    # mapped to R2 raw keys (see pipelines/run_clustering_pipeline.py).
+    r2_keys = resolve_r2_keys(cfg)
     contexts = load_contexts_jsonl(cfg.contextsPath)
     skipped: list[SkippedFile] = []
     adatas = []
     studies: list[str] = []
 
-    for r2_key in cfg.r2Keys:
+    for r2_key in r2_keys:
         accession = accession_from_r2_key(r2_key)
         try:
             adata, study_accession = prepare_adata(r2_key, accession, cfg, contexts, _log)
@@ -49,13 +94,16 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
         _log.exception("write failed")
         raise
 
-    # TODO(upload-atlas): upload output_path to R2 via upload_to_r2 with _local_md5_b64 metadata.
-
-    return H5adConcatResult(
+    result = H5adConcatResult(
         outputPath=output_path,
         nObs=atlas.n_obs,
         nVars=atlas.n_vars,
         nFilesConcatenated=len(adatas),
         studiesSeen=sorted(set(studies)),
         skipped=skipped,
+        atlasR2Key=cfg.atlasR2Key if cfg.uploadAtlas else None,
     )
+
+    _upload_atlas_and_finalize(cfg, output_path, result)
+
+    return result
