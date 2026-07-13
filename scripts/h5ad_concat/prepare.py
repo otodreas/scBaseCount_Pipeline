@@ -55,6 +55,7 @@ def prepare_adata(
     log: logging.Logger,
 ) -> tuple[ad.AnnData, str]:
     """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession)."""
+    study_accession = resolve_batch_key(accession, contexts)
     raw_path = cfg.cacheDir / "raw" / f"{accession}.h5ad"
 
     try:
@@ -70,7 +71,6 @@ def prepare_adata(
         raise FileRejected(SkipReason.download_failed) from exc
 
     try:
-        study_accession = resolve_batch_key(accession, contexts)
         try:
             adata = ad.read_h5ad(raw_path)
         except Exception as exc:
