@@ -10,7 +10,7 @@ from study_context.utils import CONTEXTS_JSONL_PATH
 
 class H5adConcatConfig(BaseModel):
     r2Keys: list[str] | None = None
-    datasetsPath: Path | None = None
+    datasetsPath: Path | None = REPO_ROOT / "output" / "metadata" / "datasets.csv"
     contextsPath: Path = CONTEXTS_JSONL_PATH
     cellTypeKey: str = "cell_type"
     # Column added to obs holding the experimental batch key; value is the ENA study accession.

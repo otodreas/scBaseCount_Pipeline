@@ -52,6 +52,8 @@ def _upload_atlas_and_finalize(
         _log.info("Atlas uploaded and verified at %s", r2_key)
         manifest_path = output_path.with_suffix(".json")
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        # Local .h5ad is deleted below; point outputPath at the surviving manifest.
+        result.outputPath = manifest_path
         manifest_path.write_text(json.dumps(result.model_dump(mode="json"), indent=2))
         _log.info("Wrote atlas manifest to %s", manifest_path)
         safe_delete(output_path, _log)

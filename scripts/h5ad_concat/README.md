@@ -114,7 +114,7 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 
 `run_h5ad_concat` returns `H5adConcatResult`:
 
-- `outputPath`: merged atlas h5ad path (local file remains unless upload succeeds)
+- `outputPath`: local atlas `.h5ad` path, or the JSON manifest path when the upload succeeds
 - `nObs`, `nVars`: shape of merged object
 - `nFilesConcatenated`: count of files that passed validation
 - `studiesSeen`: unique `studyAccession` values in the merged atlas
