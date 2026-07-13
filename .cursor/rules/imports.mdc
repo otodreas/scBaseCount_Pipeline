@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+Dont use legacy imports like List, Option from typing and annotation from __future__ be aware of python version being used and make most of the syntactic sugar
