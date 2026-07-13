@@ -8,9 +8,11 @@ import anndata as ad
 from h5ad_concat.config import H5adConcatConfig
 
 
-def concat_atlas(adatas: list[ad.AnnData], cfg: H5adConcatConfig) -> ad.AnnData:
+def concat_atlas(adatas: list[ad.AnnData], cfg: H5adConcatConfig, log: logging.Logger) -> ad.AnnData:
     """Concatenate prepared AnnData objects on the obs axis into one in-memory atlas."""
-    return ad.concat(adatas, axis="obs", join=cfg.join)
+    adata = ad.concat(adatas, axis="obs", join=cfg.join)
+    log.info("Concatenated %d AnnData objects into one in-memory atlas", len(adatas))
+    return adata
 
 
 def write_atlas(adata: ad.AnnData, cfg: H5adConcatConfig, log: logging.Logger) -> Path:

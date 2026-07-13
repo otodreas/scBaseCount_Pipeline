@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 
 import anndata as ad
+from botocore.exceptions import BotoCoreError, ClientError
 from shared.files import safe_delete
 from storage import download_from_r2
 from study_context.models import ExperimentContext
@@ -48,26 +49,32 @@ def prefix_obs_names(adata: ad.AnnData, accession: str) -> None:
 
 def prepare_adata(
     r2_key: str,
+    accession: str,
     cfg: H5adConcatConfig,
     contexts: dict[str, ExperimentContext],
     log: logging.Logger,
 ) -> tuple[ad.AnnData, str]:
     """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession)."""
-    accession = accession_from_r2_key(r2_key)
     raw_path = cfg.cacheDir / "raw" / f"{accession}.h5ad"
-    raw_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
+        raw_path.parent.mkdir(parents=True, exist_ok=True)
         download_from_r2(r2_key, raw_path, verify_md5=cfg.verifyMd5)
-    except ValueError as exc:
+    except ValueError as exc:  # md5 mismatch is ValueError subclass
+        safe_delete(raw_path, log)
         if "MD5 mismatch" in str(exc):
-            safe_delete(raw_path, log)
             raise FileRejected(SkipReason.md5_mismatch) from exc
-        raise
+        raise FileRejected(SkipReason.download_failed) from exc
+    except (ClientError, BotoCoreError, OSError) as exc:
+        safe_delete(raw_path, log)
+        raise FileRejected(SkipReason.download_failed) from exc
 
     try:
         study_accession = resolve_batch_key(accession, contexts)
-        adata = ad.read_h5ad(raw_path)
+        try:
+            adata = ad.read_h5ad(raw_path)
+        except Exception as exc:
+            raise FileRejected(SkipReason.read_failed) from exc
 
         # TODO(preprocess): when cfg.preprocess is enabled, run cluster_validation.preprocess here
         # and raise FileRejected(SkipReason.preprocess_failed) on InsufficientCellsError or other failures.

@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 
 class SkipReason(StrEnum):
+    download_failed = "download_failed"
+    read_failed = "read_failed"
     md5_mismatch = "md5_mismatch"
     missing_study = "missing_study"
     preprocess_failed = "preprocess_failed"

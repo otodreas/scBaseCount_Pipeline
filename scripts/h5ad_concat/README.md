@@ -67,7 +67,9 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 
 | Check                                    | Reason                  | Active |
 | ---------------------------------------- | ----------------------- | ------ |
+| R2 download succeeds                       | `download_failed`       | yes    |
 | MD5 matches stored `gcs-md5` metadata    | `md5_mismatch`          | yes    |
+| Downloaded h5ad loads cleanly            | `read_failed`           | yes    |
 | `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
 | Preprocessing passes                     | `preprocess_failed`     | future |

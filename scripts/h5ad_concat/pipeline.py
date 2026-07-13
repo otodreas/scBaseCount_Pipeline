@@ -24,19 +24,30 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     for r2_key in cfg.r2Keys:
         accession = accession_from_r2_key(r2_key)
         try:
-            adata, study_accession = prepare_adata(r2_key, cfg, contexts, _log)
+            adata, study_accession = prepare_adata(r2_key, accession, cfg, contexts, _log)
             adatas.append(adata)
             studies.append(study_accession)
         except FileRejected as exc:
-            _log.warning("%s: skipped (%s)", accession, exc.reason.value)
+            detail = f": {exc.__cause__}" if exc.__cause__ else ""
+            # Warn on skipped files, continue pipeline
+            _log.warning("%s: skipped (%s)%s", accession, exc.reason.value, detail)
             skipped.append(SkippedFile(r2Key=r2_key, accession=accession, reason=exc.reason))
 
     if not adatas:
         msg = "No files passed validation; nothing to concatenate"
         raise ValueError(msg)
 
-    atlas = concat_atlas(adatas, cfg)
-    output_path = write_atlas(atlas, cfg, _log)
+    try:
+        atlas = concat_atlas(adatas, cfg, _log)
+    except Exception:
+        _log.exception("concat failed")
+        raise
+
+    try:
+        output_path = write_atlas(atlas, cfg, _log)
+    except Exception:
+        _log.exception("write failed")
+        raise
 
     # TODO(upload-atlas): upload output_path to R2 via upload_to_r2 with _local_md5_b64 metadata.
 
