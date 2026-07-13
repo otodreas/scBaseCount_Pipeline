@@ -43,7 +43,9 @@ def fill_cell_type(adata: ad.AnnData, cfg: H5adConcatConfig) -> None:
 
 
 def prefix_obs_names(adata: ad.AnnData, accession: str) -> None:
-    """Prefix obs_names with accession so barcodes are globally unique across studies."""
+    """Prefix obs_names with accession so barcodes are globally unique across studies.
+    This is not done in the concat call because the prefix and key variable need to match.
+    """
     adata.obs_names = [f"{accession}_{name}" for name in adata.obs_names]
 
 
@@ -58,6 +60,7 @@ def prepare_adata(
     study_accession = resolve_batch_key(accession, contexts)
     raw_path = cfg.cacheDir / "raw" / f"{accession}.h5ad"
 
+    # Attempt to download the file and verify with MD5
     try:
         raw_path.parent.mkdir(parents=True, exist_ok=True)
         download_from_r2(r2_key, raw_path, verify_md5=cfg.verifyMd5)
@@ -70,12 +73,15 @@ def prepare_adata(
         safe_delete(raw_path, log)
         raise FileRejected(SkipReason.download_failed) from exc
 
+    # Attempt to read the file and validate the AnnData object
     try:
-        try:
-            adata = ad.read_h5ad(raw_path)
-        except Exception as exc:
-            raise FileRejected(SkipReason.read_failed) from exc
+        adata = ad.read_h5ad(raw_path)
+    except Exception as exc:
+        safe_delete(raw_path, log)
+        raise FileRejected(SkipReason.read_failed) from exc
 
+    # Check that cell types are present
+    try:
         # TODO(preprocess): when cfg.preprocess is enabled, run cluster_validation.preprocess here
         # and raise FileRejected(SkipReason.preprocess_failed) on InsufficientCellsError or other failures.
 
