@@ -22,6 +22,8 @@ _log = configure_file_logger("h5ad_concat.log", __name__)
 def resolve_r2_keys(cfg: H5adConcatConfig) -> list[str]:
     """Return explicit r2Keys or resolve them from datasets.csv file_path URIs."""
     if cfg.datasetsPath is not None:
+        if not cfg.datasetsPath.is_file():
+            raise FileNotFoundError(f"datasets file not found at {cfg.datasetsPath}")
         datasets = pd.read_csv(cfg.datasetsPath)
         keys = [gcs_uri_to_r2_raw_key(uri) for uri in datasets["file_path"]]
         _log.info("Resolved %d R2 key(s) from %s", len(keys), cfg.datasetsPath)
