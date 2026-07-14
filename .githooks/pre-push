@@ -15,7 +15,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   else
     range="$remote_sha..$local_sha"
   fi
-  changed="$changed $(git diff --name-only "$range" -- scripts/cluster_validation/)"
+  changed="$changed $(git diff --name-only "$range" -- scripts/cluster_validation/ scripts/h5ad_concat/ tests/pytest/test_h5ad_concat_smoke.py)"
 done
 
 case "$changed" in
@@ -25,5 +25,15 @@ case "$changed" in
     ;;
   *)
     echo "[pre-push] no cluster_validation changes; skipping regression test"
+    ;;
+esac
+
+case "$changed" in
+  *scripts/h5ad_concat/*|*tests/pytest/test_h5ad_concat_smoke.py*)
+    echo "[pre-push] h5ad_concat changed; running smoke tests"
+    uv run pytest tests/pytest/test_h5ad_concat_smoke.py -q
+    ;;
+  *)
+    echo "[pre-push] no h5ad_concat changes; skipping smoke test"
     ;;
 esac

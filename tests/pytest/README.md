@@ -1,8 +1,45 @@
-# cluster_validation regression tests
+# pytest suite
+
+Tests for the packages under `scripts/`. Run everything from the repo root with `uv run pytest`.
+
+## Test files
+
+| File | Purpose |
+|------|---------|
+| `test_imports.py` | Import smoke test: every package shipped by the wheel build target imports cleanly |
+| `test_h5ad_concat_smoke.py` | In-memory smoke tests for `scripts/h5ad_concat/` that need no R2 download or upload |
+| `test_cyteonto_payload.py` | Unit test for `cyteonto.payload.build_payload` label deduplication |
+| `test_cluster_validation_regression.py` | Config snapshot test (always on) and golden regression test (opt-in) for `scripts/cluster_validation/` |
+| `_clval_capture.py` | Field list and helpers shared by the cluster_validation regression test |
+
+## h5ad_concat smoke tests
+
+`test_h5ad_concat_smoke.py` builds tiny synthetic `AnnData` objects in memory and exercises the concat path and the adata-level validation helpers without touching R2 or the filesystem cache. It is fast and always on.
+
+What is checked:
+
+- `concat_atlas`: obs stacking, globally unique barcodes with the per-file accession suffix (`index_unique="_"`), obs order, and that `SRX_accession` is preserved
+- `concat_atlas` join behavior: `inner` intersects `var_names`, `outer` unions them
+- `write_atlas`: writes to a `tmp_path` and round-trips (`n_obs`, `var_names` order, unique barcodes)
+- `cell_type_all_missing`: column absent, all blank or NaN, and some present
+- `fill_cell_type`: blank and NaN entries become `missingLabel`, real labels are kept
+- `validate_single_accession`: passes on a single matching accession, rejects multiple values and a wrong single value with `FileRejected(SkipReason.accession_mismatch)`
+
+Run it:
+
+```sh
+uv run pytest tests/pytest/test_h5ad_concat_smoke.py -q
+```
+
+The [`pre-push`](../../.githooks/pre-push) hook runs this file automatically when commits being pushed touch `scripts/h5ad_concat/` or the test itself. No env flag is needed.
+
+This does not exercise `run_h5ad_concat` or `prepare_adata` end to end, since those download from R2. It covers the in-memory logic those functions call.
+
+## cluster_validation regression tests
 
 Golden regression for `scripts/cluster_validation/`. Compares deterministic `ClusterValidationResult` fields against committed JSON baselines so clustering behavior stays stable when the default weak prior (`weakPriorKey="cell_type"`) is used.
 
-## Layout
+### Layout
 
 | Path | Purpose |
 |------|---------|
@@ -12,7 +49,7 @@ Golden regression for `scripts/cluster_validation/`. Compares deterministic `Clu
 | `baselines/clval_SRX12708356.json` | Expected deterministic result fields for the fixture |
 | `baselines/clval_config_snapshot.json` | Expected default `ClusterValidationConfig.model_dump()` |
 
-## Why numeric regression instead of figure diff
+### Why numeric regression instead of figure diff
 
 Reference plots under `docs/exploratory_depreciated/cluster_validation_sandbox/.figs/` came from the manual sandbox notebook, not the package. They are useful visually but not a strict oracle.
 
@@ -20,7 +57,7 @@ Figures also stamp a runtime timestamp (`_now()` in `viz.py`), so PNGs are never
 
 The regression compares deterministic fields from `ClusterValidationResult` that should be stable for the default prior.
 
-## What is checked
+### What is checked
 
 24 fields from `_clval_capture.ALL_FIELDS`:
 
@@ -32,7 +69,7 @@ Branch-only metadata (`runTag`, `weakPriorKey`, `adataPath`, etc.) is excluded. 
 
 The config snapshot test catches drift in default hyperparameters and repo-relative paths without running clustering.
 
-## Environment variables
+### Environment variables
 
 These are test-only flags. They are not listed in `.env.example` and do not need to live in `.env`.
 
@@ -43,7 +80,7 @@ These are test-only flags. They are not listed in `.env.example` and do not need
 
 Unset these variables for normal test runs and CI.
 
-## Running
+### Running
 
 From the repo root:
 
@@ -71,7 +108,7 @@ UPDATE_CLVAL_BASELINES=1 uv run pytest tests/pytest/test_cluster_validation_regr
 git add tests/pytest/baselines/clval_config_snapshot.json
 ```
 
-## What this does not check
+### What this does not check
 
 - Visual parity with sandbox `.figs/` (timestamped plots, different notebook origin)
 - Behavior with a non-default weak prior (e.g. CellTypist `predicted_labels`)
