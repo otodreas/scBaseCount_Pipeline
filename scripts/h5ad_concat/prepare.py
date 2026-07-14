@@ -12,6 +12,7 @@ from study_context.models import ExperimentContext
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
+from h5ad_concat.qc import apply_qc_gate
 
 
 def accession_from_r2_key(r2_key: str) -> str:
@@ -83,8 +84,15 @@ def prepare_adata(
 
     # Check that cell types are present
     try:
-        # TODO(preprocess): when cfg.preprocess is enabled, run cluster_validation.preprocess here
-        # and raise FileRejected(SkipReason.preprocess_failed) on InsufficientCellsError or other failures.
+        if cfg.preprocess:
+            adata, qc_stats = apply_qc_gate(adata, cfg)
+            log.info(
+                "%s: QC kept %d/%d cells (%.1f%% dropped)",
+                accession,
+                qc_stats.nCellsAfter,
+                qc_stats.nCellsBefore,
+                qc_stats.pctCellsDropped,
+            )
 
         validate_single_accession(adata, accession, cfg)
 
