@@ -8,9 +8,13 @@ import anndata as ad
 from h5ad_concat.config import H5adConcatConfig
 
 
-def concat_atlas(adatas: list[ad.AnnData], cfg: H5adConcatConfig, log: logging.Logger) -> ad.AnnData:
-    """Concatenate prepared AnnData objects on the obs axis into one in-memory atlas."""
-    adata = ad.concat(adatas, axis="obs", join=cfg.join)
+def concat_atlas(
+    adatas: list[ad.AnnData], accessions: list[str], cfg: H5adConcatConfig, log: logging.Logger
+) -> ad.AnnData:
+    """Concatenate prepared AnnData objects on the obs axis into one in-memory atlas.
+    Barcodes are made globally unique by suffixing each cell with its accession via index_unique.
+    """
+    adata = ad.concat(adatas, axis="obs", join=cfg.join, keys=accessions, index_unique="_")
     log.info("Concatenated %d AnnData objects into one in-memory atlas", len(adatas))
     return adata
 

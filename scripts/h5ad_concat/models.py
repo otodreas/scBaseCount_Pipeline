@@ -13,6 +13,7 @@ class SkipReason(StrEnum):
     missing_study = "missing_study"
     preprocess_failed = "preprocess_failed"
     cell_type_all_missing = "cell_type_all_missing"
+    accession_mismatch = "accession_mismatch"
 
 
 class SkippedFile(BaseModel):

@@ -42,11 +42,12 @@ def fill_cell_type(adata: ad.AnnData, cfg: H5adConcatConfig) -> None:
     adata.obs[cfg.cellTypeKey] = values.fillna(cfg.missingLabel).replace("", cfg.missingLabel)
 
 
-def prefix_obs_names(adata: ad.AnnData, accession: str) -> None:
-    """Prefix obs_names with accession so barcodes are globally unique across studies.
-    This is not done in the concat call because the prefix and key variable need to match.
-    """
-    adata.obs_names = [f"{accession}_{name}" for name in adata.obs_names]
+def validate_single_accession(adata: ad.AnnData, accession: str, cfg: H5adConcatConfig) -> None:
+    """Raise FileRejected when obs accessionKey is not a single value equal to accession."""
+    found = adata.obs[cfg.accessionKey].unique().tolist()
+    if len(found) != 1 or found[0] != accession:
+        msg = f"expected single accession {accession}, found {found}"
+        raise FileRejected(SkipReason.accession_mismatch) from ValueError(msg)
 
 
 def prepare_adata(
@@ -85,12 +86,14 @@ def prepare_adata(
         # TODO(preprocess): when cfg.preprocess is enabled, run cluster_validation.preprocess here
         # and raise FileRejected(SkipReason.preprocess_failed) on InsufficientCellsError or other failures.
 
+        validate_single_accession(adata, accession, cfg)
+
         if cell_type_all_missing(adata, cfg.cellTypeKey):
             raise FileRejected(SkipReason.cell_type_all_missing)
 
         adata.obs[cfg.batchKey] = study_accession
         fill_cell_type(adata, cfg)
-        prefix_obs_names(adata, accession)
         return adata, study_accession
+
     finally:
         safe_delete(raw_path, log)

@@ -69,6 +69,7 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     skipped: list[SkippedFile] = []
     adatas = []
     studies: list[str] = []
+    accessions: list[str] = []
 
     for r2_key in r2_keys:
         accession = accession_from_r2_key(r2_key)
@@ -76,18 +77,18 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
             adata, study_accession = prepare_adata(r2_key, accession, cfg, contexts, _log)
             adatas.append(adata)
             studies.append(study_accession)
+            accessions.append(accession)
         except FileRejected as exc:
             detail = f": {exc.__cause__}" if exc.__cause__ else ""
             # Warn on skipped files, continue pipeline
             _log.warning("%s: skipped (%s)%s", accession, exc.reason.value, detail)
             skipped.append(SkippedFile(r2Key=r2_key, accession=accession, reason=exc.reason))
-
     if not adatas:
         msg = "No files passed validation; nothing to concatenate"
         raise ValueError(msg)
 
     try:
-        atlas = concat_atlas(adatas, cfg, _log)
+        atlas = concat_atlas(adatas, accessions, cfg, _log)
     except Exception:
         _log.exception("concat failed")
         raise

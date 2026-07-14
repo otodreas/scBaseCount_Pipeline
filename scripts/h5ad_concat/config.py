@@ -15,6 +15,8 @@ class H5adConcatConfig(BaseModel):
     cellTypeKey: str = "cell_type"
     # Column added to obs holding the experimental batch key; value is the ENA study accession.
     batchKey: str = "study_accession"
+    # Existing obs column holding the per-file experiment accession; used to make barcodes unique.
+    accessionKey: str = "SRX_accession"
     missingLabel: str = "UNKNOWN"
     join: Literal["inner", "outer"] = "inner"
     cacheDir: Path = REPO_ROOT / "data" / "h5ad_concat" / "cache"
