@@ -14,16 +14,14 @@ Tests for the packages under `scripts/`. Run everything from the repo root with 
 
 ## h5ad_concat smoke tests
 
-`test_h5ad_concat_smoke.py` builds tiny synthetic `AnnData` objects in memory and exercises the concat path and the adata-level validation helpers without touching R2 or the filesystem cache. It is fast and always on.
+`test_h5ad_concat_smoke.py` mirrors the `run_h5ad_concat` data flow from `scripts/h5ad_concat/pipeline.py`. It mocks only the R2/IO boundary (`download_from_r2` writes prebuilt adata to the cache path; `load_contexts_jsonl` returns in-memory contexts) so `prepare_adata` -> `apply_qc_gate` -> `concat_atlas` -> `write_atlas` all run for real. One `_make_adata` helper builds every fixture.
 
 What is checked:
 
-- `concat_atlas`: obs stacking, globally unique barcodes with the per-file accession suffix (`index_unique="_"`), obs order, and that `SRX_accession` is preserved
-- `concat_atlas` join behavior: `inner` intersects `var_names`, `outer` unions them
-- `write_atlas`: writes to a `tmp_path` and round-trips (`n_obs`, `var_names` order, unique barcodes)
-- `cell_type_all_missing`: column absent, all blank or NaN, and some present
-- `fill_cell_type`: blank and NaN entries become `missingLabel`, real labels are kept
-- `validate_single_accession`: passes on a single matching accession, rejects multiple values and a wrong single value with `FileRejected(SkipReason.accession_mismatch)`
+- `run_h5ad_concat`: happy path (two files concatenated, atlas written, unique accession-suffixed barcodes), skip-and-continue when one file is rejected (`cell_type_all_missing`), and `ValueError` when every file is rejected
+- `flag_qc_genes`: classifies `mt` / `ribo` / `hb` (case-insensitive, anchored HB regex), prefers `gene_symbols` over `var_names`
+- `apply_qc_gate`: filters low-gene cells, optional `maxPctHb` ceiling, `FileRejected(SkipReason.preprocess_failed)` when too few cells remain, returns `QcStats`
+- `prepare_adata`: download errors map to `SkipReason` (`md5_mismatch` vs `download_failed`) and raw cache paths are deleted
 
 Run it:
 
@@ -32,8 +30,6 @@ uv run pytest tests/pytest/test_h5ad_concat_smoke.py -q
 ```
 
 The [`pre-push`](../../.githooks/pre-push) hook runs this file automatically when commits being pushed touch `scripts/h5ad_concat/` or the test itself. No env flag is needed.
-
-This does not exercise `run_h5ad_concat` or `prepare_adata` end to end, since those download from R2. It covers the in-memory logic those functions call.
 
 ## cluster_validation regression tests
 

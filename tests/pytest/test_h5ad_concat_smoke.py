@@ -1,220 +1,300 @@
-"""Smoke tests for h5ad_concat that run entirely on in-memory AnnData (no real R2 I/O).
+"""Smoke tests for h5ad_concat aligned with run_h5ad_concat (pipeline.py).
 
-Covers concat_atlas / write_atlas, the adata-level prepare helpers
-(cell_type_all_missing, fill_cell_type, validate_single_accession), and the
-prepare_adata download-failure handling (with download_from_r2 mocked out).
+Mocks only the R2/IO boundary (download_from_r2, load_contexts_jsonl) so
+prepare_adata -> apply_qc_gate -> concat_atlas -> write_atlas run for real.
 """
 
+from __future__ import annotations
+
 import logging
+from collections.abc import Sequence
 
 import anndata as ad
 import numpy as np
 import pandas as pd
 import pytest
 from botocore.exceptions import BotoCoreError, ClientError
-from h5ad_concat import prepare
+from h5ad_concat import pipeline, prepare
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
-from h5ad_concat.merge import concat_atlas, write_atlas
 from h5ad_concat.models import SkipReason
-from h5ad_concat.prepare import (
-    cell_type_all_missing,
-    fill_cell_type,
-    prepare_adata,
-    validate_single_accession,
-)
+from h5ad_concat.prepare import accession_from_r2_key, prepare_adata
+from h5ad_concat.qc import QcStats, apply_qc_gate, flag_qc_genes
+from study_context.models import ExperimentContext, StudyContext
+
+ad.settings.allow_write_nullable_strings = True
 
 _LOG = logging.getLogger("h5ad_concat_smoke")
 
 
-def _make_adata(accession: str, cell_types: list[str | None], var_names: list[str]) -> ad.AnnData:
-    """Build a tiny AnnData with SRX_accession and cell_type obs columns and shared barcodes."""
-    n_obs = len(cell_types)
-    x = np.arange(n_obs * len(var_names), dtype=np.float32).reshape(n_obs, len(var_names))
+def _cfg(**overrides) -> H5adConcatConfig:
+    """Build a minimal H5adConcatConfig for tests."""
+    defaults = {"r2Keys": ["k"], "datasetsPath": None}
+    defaults.update(overrides)
+    return H5adConcatConfig(**defaults)
+
+
+def _make_adata(
+    accession: str = "SRX1",
+    cell_types: Sequence[str | None] = ("T cell",),
+    gene_names: Sequence[str] = ("GAPDH",),
+    counts: np.ndarray | None = None,
+    *,
+    use_gene_symbols: bool = False,
+    pad_to_genes: int = 0,
+) -> ad.AnnData:
+    """Build one in-memory AnnData for h5ad_concat tests."""
+    names = list(gene_names)
+    explicit_counts = counts is not None
+    if counts is None:
+        n_obs = len(cell_types)
+    else:
+        counts = np.asarray(counts, dtype=np.float32)
+        n_obs = counts.shape[0]
+        if len(cell_types) != n_obs:
+            cell_types = ["T cell"] * n_obs
+    if pad_to_genes > len(names):
+        n_pad = pad_to_genes - len(names)
+        names.extend(f"PAD{i}" for i in range(n_pad))
+        if explicit_counts:
+            counts = np.hstack([counts, np.zeros((n_obs, n_pad), dtype=np.float32)])
+    if counts is None:
+        counts = np.ones((n_obs, len(names)), dtype=np.float32)
     obs = pd.DataFrame(
-        {"SRX_accession": [accession] * n_obs, "cell_type": cell_types},
+        {"SRX_accession": [accession] * n_obs, "cell_type": list(cell_types)},
         index=[f"cell{i}" for i in range(n_obs)],
     )
-    var = pd.DataFrame(index=list(var_names))
-    return ad.AnnData(X=x, obs=obs, var=var)
+    var = pd.DataFrame(index=[f"g{i}" for i in range(len(names))])
+    if use_gene_symbols:
+        var["gene_symbols"] = names
+    else:
+        var.index = pd.Index(names)
+    return ad.AnnData(X=counts, obs=obs, var=var)
 
 
-def test_concat_atlas_stacks_and_suffixes_barcodes() -> None:
-    cfg = H5adConcatConfig()
-    genes = ["g1", "g2", "g3"]
-    a1 = _make_adata("SRX1", ["T cell", "B cell"], genes)
-    a2 = _make_adata("SRX2", ["NK cell", "T cell", "B cell"], genes)
-
-    atlas = concat_atlas([a1, a2], ["SRX1", "SRX2"], cfg, _LOG)
-
-    assert atlas.n_obs == a1.n_obs + a2.n_obs
-    assert atlas.obs_names.is_unique
-    assert list(atlas.obs_names) == [
-        "cell0_SRX1",
-        "cell1_SRX1",
-        "cell0_SRX2",
-        "cell1_SRX2",
-        "cell2_SRX2",
-    ]
-    assert set(atlas.obs["SRX_accession"]) == {"SRX1", "SRX2"}
+def _contexts_for_keys(r2_keys: Sequence[str]) -> dict[str, ExperimentContext]:
+    """Return study contexts keyed by accession for the given R2 keys."""
+    return {
+        accession_from_r2_key(key): ExperimentContext(
+            accession=accession_from_r2_key(key),
+            study=StudyContext(studyAccession=f"STUDY_{accession_from_r2_key(key)}"),
+        )
+        for key in r2_keys
+    }
 
 
-def test_concat_atlas_inner_join_intersects_vars() -> None:
-    cfg = H5adConcatConfig(join="inner")
-    a1 = _make_adata("SRX1", ["T cell"], ["g1", "g2", "g3"])
-    a2 = _make_adata("SRX2", ["B cell"], ["g2", "g3", "g4"])
+def _run_pipeline(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+    adatas_by_key: dict[str, ad.AnnData],
+    cfg: H5adConcatConfig,
+):
+    """Run run_h5ad_concat with download_from_r2 and load_contexts_jsonl mocked."""
 
-    atlas = concat_atlas([a1, a2], ["SRX1", "SRX2"], cfg, _LOG)
+    def fake_download(r2_key: str, raw_path, **_kwargs) -> None:
+        adatas_by_key[r2_key].write_h5ad(raw_path)
 
-    assert list(atlas.var_names) == ["g2", "g3"]
-
-
-def test_concat_atlas_outer_join_unions_vars() -> None:
-    cfg = H5adConcatConfig(join="outer")
-    a1 = _make_adata("SRX1", ["T cell"], ["g1", "g2"])
-    a2 = _make_adata("SRX2", ["B cell"], ["g2", "g3"])
-
-    atlas = concat_atlas([a1, a2], ["SRX1", "SRX2"], cfg, _LOG)
-
-    assert set(atlas.var_names) == {"g1", "g2", "g3"}
+    monkeypatch.setattr(prepare, "download_from_r2", fake_download)
+    monkeypatch.setattr(pipeline, "load_contexts_jsonl", lambda _path: _contexts_for_keys(adatas_by_key))
+    return pipeline.run_h5ad_concat(cfg)
 
 
-def test_write_atlas_roundtrip(tmp_path) -> None:
+def _qc_ready_adata(
+    gene_names: Sequence[str],
+    counts: np.ndarray,
+    *,
+    use_gene_symbols: bool = False,
+) -> ad.AnnData:
+    """Build an adata with explicit counts and enough genes for scanpy QC metrics."""
+    return _make_adata(
+        gene_names=gene_names,
+        counts=counts,
+        use_gene_symbols=use_gene_symbols,
+        pad_to_genes=500,
+    )
+
+
+# --- run_h5ad_concat (end-to-end) ---
+
+
+def test_run_h5ad_concat_happy_path(monkeypatch, tmp_path) -> None:
+    key1, key2 = "prefix/SRX1.h5ad", "prefix/SRX2.h5ad"
+    a1 = _make_adata("SRX1", ["T cell", "B cell"], pad_to_genes=500)
+    a2 = _make_adata("SRX2", ["NK cell", "T cell", "B cell"], pad_to_genes=500)
     out = tmp_path / "atlas.h5ad"
-    cfg = H5adConcatConfig(outputPath=out)
-    a1 = _make_adata("SRX1", ["T cell", "B cell"], ["g1", "g2"])
-    a2 = _make_adata("SRX2", ["NK cell"], ["g1", "g2"])
-    atlas = concat_atlas([a1, a2], ["SRX1", "SRX2"], cfg, _LOG)
+    cfg = _cfg(
+        r2Keys=[key1, key2],
+        outputPath=out,
+        cacheDir=tmp_path,
+        minGenesPerCell=10,
+        minCellsPerGene=0,
+        maxPctMito=100.0,
+    )
 
-    path = write_atlas(atlas, cfg, _LOG)
+    result = _run_pipeline(monkeypatch, tmp_path, {key1: a1, key2: a2}, cfg)
 
-    assert path == out
+    assert result.nFilesConcatenated == 2
+    assert result.nObs == a1.n_obs + a2.n_obs
+    assert result.skipped == []
+    assert result.studiesSeen == ["STUDY_SRX1", "STUDY_SRX2"]
     assert out.exists()
     reloaded = ad.read_h5ad(out)
-    assert reloaded.n_obs == atlas.n_obs
-    assert list(reloaded.var_names) == list(atlas.var_names)
+    assert reloaded.n_obs == result.nObs
     assert reloaded.obs_names.is_unique
+    assert set(reloaded.obs_names.str.split("_").str[-1]) == {"SRX1", "SRX2"}
 
 
-def test_cell_type_all_missing_when_column_absent() -> None:
-    adata = _make_adata("SRX1", ["T cell"], ["g1"])
-    del adata.obs["cell_type"]
-    assert cell_type_all_missing(adata, "cell_type") is True
+def test_run_h5ad_concat_skips_rejected_and_continues(monkeypatch, tmp_path) -> None:
+    good_key, bad_key = "prefix/SRX1.h5ad", "prefix/SRX2.h5ad"
+    good = _make_adata("SRX1", ["T cell"], pad_to_genes=500)
+    bad = _make_adata("SRX2", [None, ""], pad_to_genes=500)
+    out = tmp_path / "atlas.h5ad"
+    cfg = _cfg(
+        r2Keys=[good_key, bad_key],
+        outputPath=out,
+        cacheDir=tmp_path,
+        minGenesPerCell=10,
+        minCellsPerGene=0,
+        maxPctMito=100.0,
+    )
+
+    result = _run_pipeline(monkeypatch, tmp_path, {good_key: good, bad_key: bad}, cfg)
+
+    assert result.nFilesConcatenated == 1
+    assert result.nObs == good.n_obs
+    assert len(result.skipped) == 1
+    assert result.skipped[0].accession == "SRX2"
+    assert result.skipped[0].reason is SkipReason.cell_type_all_missing
+    assert out.exists()
 
 
-def test_cell_type_all_missing_when_all_blank_or_nan() -> None:
-    adata = _make_adata("SRX1", [None, "", "  "], ["g1"])
-    assert cell_type_all_missing(adata, "cell_type") is True
+def test_run_h5ad_concat_raises_when_all_rejected(monkeypatch, tmp_path) -> None:
+    key = "prefix/SRX1.h5ad"
+    rejected = _make_adata("SRX1", [None, ""], pad_to_genes=500)
+    cfg = _cfg(
+        r2Keys=[key],
+        outputPath=tmp_path / "atlas.h5ad",
+        cacheDir=tmp_path,
+        minGenesPerCell=10,
+        minCellsPerGene=0,
+        maxPctMito=100.0,
+    )
+
+    with pytest.raises(ValueError, match="No files passed validation"):
+        _run_pipeline(monkeypatch, tmp_path, {key: rejected}, cfg)
 
 
-def test_cell_type_all_missing_false_when_some_present() -> None:
-    adata = _make_adata("SRX1", [None, "T cell"], ["g1"])
-    assert cell_type_all_missing(adata, "cell_type") is False
+# --- qc.py (unit) ---
 
 
-def test_fill_cell_type_replaces_blanks_and_keeps_labels() -> None:
-    cfg = H5adConcatConfig()
-    adata = _make_adata("SRX1", ["T cell", None, ""], ["g1"])
+def test_flag_qc_genes_classifies_and_anchors() -> None:
+    genes = ["GAPDH", "MT-ND1", "mt-nd2", "RPS18", "RPL10", "HBA1", "HBB", "HBP1", "HBEGF"]
+    adata = _make_adata(gene_names=genes, pad_to_genes=0)
 
-    fill_cell_type(adata, cfg)
+    flag_qc_genes(adata)
 
-    assert list(adata.obs["cell_type"]) == ["T cell", cfg.missingLabel, cfg.missingLabel]
-
-
-def test_validate_single_accession_passes_on_match() -> None:
-    cfg = H5adConcatConfig()
-    adata = _make_adata("SRX1", ["T cell", "B cell"], ["g1"])
-    validate_single_accession(adata, "SRX1", cfg)
+    assert list(adata.var["mt"]) == [False, True, True, False, False, False, False, False, False]
+    assert list(adata.var["ribo"]) == [False, False, False, True, True, False, False, False, False]
+    assert list(adata.var["hb"]) == [False, False, False, False, False, True, True, False, False]
 
 
-def test_validate_single_accession_rejects_multiple_values() -> None:
-    cfg = H5adConcatConfig()
-    adata = _make_adata("SRX1", ["T cell", "B cell"], ["g1"])
-    adata.obs["SRX_accession"] = ["SRX1", "SRX2"]
+def test_flag_qc_genes_prefers_gene_symbols_column() -> None:
+    genes = ["MT-ND1", "GAPDH"]
+    adata = _make_adata(gene_names=genes, use_gene_symbols=True, pad_to_genes=0)
+
+    flag_qc_genes(adata)
+
+    assert list(adata.var_names) == ["g0", "g1"]
+    assert list(adata.var["mt"]) == [True, False]
+
+
+def test_apply_qc_gate_filters_and_reports() -> None:
+    genes = ["G1", "G2", "G3"]
+    counts = np.array([[1, 0, 0], [1, 1, 1]], dtype=np.float32)
+    adata = _qc_ready_adata(genes, counts)
+    cfg = _cfg(minGenesPerCell=2, minCellsPerGene=0, maxPctMito=100.0)
+
+    filtered, stats = apply_qc_gate(adata, cfg)
+
+    assert filtered.n_obs == 1
+    assert list(filtered.obs_names) == ["cell1"]
+    assert isinstance(stats, QcStats)
+    assert stats.nCellsBefore == 2
+    assert stats.nCellsAfter == 1
+    assert stats.nGenesBefore == 500
+    assert stats.nGenesAfter == 500
+    assert stats.pctCellsDropped == 50.0
+    assert stats.medianGenesPerCell == 3.0
+    assert stats.medianPctMito == 0.0
+    assert stats.medianPctRibo == 0.0
+    assert stats.medianPctHb == 0.0
+
+
+def test_apply_qc_gate_max_pct_hb_opt_in() -> None:
+    genes = ["GAPDH", "HBA1"]
+    counts = np.array([[20, 80], [50, 50]], dtype=np.float32)
+    adata = _qc_ready_adata(genes, counts)
+    cfg_no_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=100.0, maxPctHb=None)
+
+    filtered_no_hb, _ = apply_qc_gate(adata, cfg_no_hb)
+    assert filtered_no_hb.n_obs == 2
+
+    cfg_with_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=100.0, maxPctHb=60.0)
+    filtered_with_hb, stats = apply_qc_gate(adata, cfg_with_hb)
+
+    assert filtered_with_hb.n_obs == 1
+    assert list(filtered_with_hb.obs_names) == ["cell1"]
+    assert stats.nCellsAfter == 1
+
+
+def test_apply_qc_gate_rejects_when_no_cells_remain() -> None:
+    genes = ["GAPDH", "MT-ND1"]
+    counts = np.array([[10, 90], [10, 90]], dtype=np.float32)
+    adata = _qc_ready_adata(genes, counts)
+    cfg = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=20.0, minCellsAfterQc=1)
 
     with pytest.raises(FileRejected) as excinfo:
-        validate_single_accession(adata, "SRX1", cfg)
+        apply_qc_gate(adata, cfg)
 
-    assert excinfo.value.reason is SkipReason.accession_mismatch
-    assert isinstance(excinfo.value.__cause__, ValueError)
+    assert excinfo.value.reason is SkipReason.preprocess_failed
 
 
-def test_validate_single_accession_rejects_wrong_value() -> None:
-    cfg = H5adConcatConfig()
-    adata = _make_adata("SRX9", ["T cell"], ["g1"])
-
-    with pytest.raises(FileRejected) as excinfo:
-        validate_single_accession(adata, "SRX1", cfg)
-
-    assert excinfo.value.reason is SkipReason.accession_mismatch
+# --- prepare_adata download failures (unit) ---
 
 
 def _client_error() -> ClientError:
-    """Build a minimal botocore ClientError for a failed GetObject call."""
     return ClientError({"Error": {"Code": "500", "Message": "boom"}}, "GetObject")
 
 
-def _run_prepare_with_failing_download(
-    monkeypatch: pytest.MonkeyPatch, tmp_path, download_exc: Exception
-) -> tuple[FileRejected, list]:
-    """Run prepare_adata with download_from_r2 raising download_exc; return (raised, deleted paths)."""
+@pytest.mark.parametrize(
+    ("download_exc", "expected_reason"),
+    [
+        (ValueError("Download MD5 mismatch for r2://bucket/key: local=a stored=b"), SkipReason.md5_mismatch),
+        (ValueError("unexpected value error"), SkipReason.download_failed),
+        (_client_error(), SkipReason.download_failed),
+        (BotoCoreError(), SkipReason.download_failed),
+        (OSError("disk full"), SkipReason.download_failed),
+    ],
+)
+def test_prepare_adata_maps_download_errors_to_skip_reason(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+    download_exc: Exception,
+    expected_reason: SkipReason,
+) -> None:
     cfg = H5adConcatConfig(cacheDir=tmp_path)
     deleted: list = []
+    contexts = _contexts_for_keys(["prefix/SRX1.h5ad"])
 
     def _raise_download(*_args, **_kwargs) -> None:
         raise download_exc
 
-    monkeypatch.setattr(prepare, "resolve_batch_key", lambda accession, contexts: "STUDY1")
     monkeypatch.setattr(prepare, "download_from_r2", _raise_download)
     monkeypatch.setattr(prepare, "safe_delete", lambda path, log: deleted.append(path))
 
     with pytest.raises(FileRejected) as excinfo:
-        prepare_adata("prefix/SRX1.h5ad", "SRX1", cfg, {}, _LOG)
+        prepare_adata("prefix/SRX1.h5ad", "SRX1", cfg, contexts, _LOG)
 
-    return excinfo.value, deleted
-
-
-def test_prepare_adata_md5_mismatch_rejected(monkeypatch, tmp_path) -> None:
-    exc = ValueError("Download MD5 mismatch for r2://bucket/key: local=a stored=b")
-    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
-
-    assert rejected.reason is SkipReason.md5_mismatch
-    assert rejected.__cause__ is exc
-    raw_path = tmp_path / "raw" / "SRX1.h5ad"
-    assert raw_path in deleted
-
-
-def test_prepare_adata_other_value_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
-    exc = ValueError("unexpected value error")
-    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
-
-    assert rejected.reason is SkipReason.download_failed
-    assert rejected.__cause__ is exc
-    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
-
-
-def test_prepare_adata_client_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
-    exc = _client_error()
-    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
-
-    assert rejected.reason is SkipReason.download_failed
-    assert rejected.__cause__ is exc
-    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
-
-
-def test_prepare_adata_botocore_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
-    exc = BotoCoreError()
-    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
-
-    assert rejected.reason is SkipReason.download_failed
-    assert rejected.__cause__ is exc
-    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
-
-
-def test_prepare_adata_os_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
-    exc = OSError("disk full")
-    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
-
-    assert rejected.reason is SkipReason.download_failed
-    assert rejected.__cause__ is exc
-    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
+    assert excinfo.value.reason is expected_reason
+    assert excinfo.value.__cause__ is download_exc
+    assert tmp_path / "raw" / "SRX1.h5ad" in deleted
