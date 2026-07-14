@@ -29,7 +29,12 @@ _LOG = logging.getLogger("h5ad_concat_smoke")
 
 def _cfg(**overrides) -> H5adConcatConfig:
     """Build a minimal H5adConcatConfig for tests."""
-    defaults = {"r2Keys": ["k"], "datasetsPath": None}
+    defaults = {
+        "r2Keys": ["k"],
+        "datasetsPath": None,
+        "minCellsAfterQc": 1,
+        "maxPctCellsDropped": None,
+    }
     defaults.update(overrides)
     return H5adConcatConfig(**defaults)
 
@@ -256,7 +261,51 @@ def test_apply_qc_gate_rejects_when_no_cells_remain() -> None:
     with pytest.raises(FileRejected) as excinfo:
         apply_qc_gate(adata, cfg)
 
-    assert excinfo.value.reason is SkipReason.preprocess_failed
+    assert excinfo.value.reason is SkipReason.too_few_cells
+
+
+def _counts_by_genes_per_cell(genes_per_cell: Sequence[int], *, n_genes: int = 500) -> np.ndarray:
+    """Build a count matrix where row i has genes_per_cell[i] genes detected."""
+    counts = np.zeros((len(genes_per_cell), n_genes), dtype=np.float32)
+    for row, n_detected in enumerate(genes_per_cell):
+        counts[row, :n_detected] = 1.0
+    return counts
+
+
+def test_apply_qc_gate_rejects_excessive_dropout() -> None:
+    genes = [f"g{i}" for i in range(500)]
+    counts = _counts_by_genes_per_cell([250, 250, 10, 10, 10])
+    adata = _make_adata(gene_names=genes, counts=counts, pad_to_genes=0)
+    cfg = _cfg(
+        minGenesPerCell=200,
+        minCellsPerGene=0,
+        maxPctMito=100.0,
+        minCellsAfterQc=1,
+        maxPctCellsDropped=40.0,
+    )
+
+    with pytest.raises(FileRejected) as excinfo:
+        apply_qc_gate(adata, cfg)
+
+    assert excinfo.value.reason is SkipReason.excessive_cell_dropout
+
+
+def test_apply_qc_gate_dropout_gate_off_by_default() -> None:
+    genes = [f"g{i}" for i in range(500)]
+    counts = _counts_by_genes_per_cell([250, 250, 10, 10, 10])
+    adata = _make_adata(gene_names=genes, counts=counts, pad_to_genes=0)
+    cfg = _cfg(
+        minGenesPerCell=200,
+        minCellsPerGene=0,
+        maxPctMito=100.0,
+        minCellsAfterQc=1,
+        maxPctCellsDropped=None,
+    )
+
+    filtered, stats = apply_qc_gate(adata, cfg)
+
+    assert filtered.n_obs == 2
+    assert stats.pctCellsDropped == 60.0
 
 
 # --- prepare_adata download failures (unit) ---

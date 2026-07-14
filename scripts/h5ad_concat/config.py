@@ -32,7 +32,9 @@ class H5adConcatConfig(BaseModel):
     # Opt-in hemoglobin ceiling; leave None to record pct_counts_hb without filtering.
     maxPctHb: float | None = None
     minCellsPerGene: int = 3
-    minCellsAfterQc: int = 1
+    minCellsAfterQc: int = 100
+    # Reject a file when more than this percent of input cells are dropped by QC; None disables the gate.
+    maxPctCellsDropped: float | None = 40.0
 
     @model_validator(mode="after")
     def validate_input_and_upload(self) -> Self:

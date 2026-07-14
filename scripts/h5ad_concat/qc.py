@@ -55,14 +55,17 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
         adata = adata[adata.obs["pct_counts_hb"] < cfg.maxPctHb].copy()
 
     n_cells_after = adata.n_obs
+    pct_dropped = 100.0 * (n_cells_before - n_cells_after) / n_cells_before if n_cells_before > 0 else 0.0
+
     if n_cells_after < cfg.minCellsAfterQc:
-        raise FileRejected(SkipReason.preprocess_failed)
+        raise FileRejected(SkipReason.too_few_cells)
+    if cfg.maxPctCellsDropped is not None and pct_dropped > cfg.maxPctCellsDropped:
+        raise FileRejected(SkipReason.excessive_cell_dropout)
 
     median_genes = float(adata.obs["n_genes_by_counts"].median()) if n_cells_after > 0 else 0.0
     median_mito = float(adata.obs["pct_counts_mt"].median()) if n_cells_after > 0 else 0.0
     median_ribo = float(adata.obs["pct_counts_ribo"].median()) if n_cells_after > 0 else 0.0
     median_hb = float(adata.obs["pct_counts_hb"].median()) if n_cells_after > 0 else 0.0
-    pct_dropped = 100.0 * (n_cells_before - n_cells_after) / n_cells_before if n_cells_before > 0 else 0.0
 
     return adata, QcStats(
         nCellsBefore=n_cells_before,
