@@ -1,7 +1,8 @@
-"""Smoke tests for h5ad_concat that run entirely on in-memory AnnData (no R2 I/O).
+"""Smoke tests for h5ad_concat that run entirely on in-memory AnnData (no real R2 I/O).
 
-Covers concat_atlas / write_atlas and the adata-level prepare helpers
-(cell_type_all_missing, fill_cell_type, validate_single_accession).
+Covers concat_atlas / write_atlas, the adata-level prepare helpers
+(cell_type_all_missing, fill_cell_type, validate_single_accession), and the
+prepare_adata download-failure handling (with download_from_r2 mocked out).
 """
 
 import logging
@@ -10,11 +11,18 @@ import anndata as ad
 import numpy as np
 import pandas as pd
 import pytest
+from botocore.exceptions import BotoCoreError, ClientError
+from h5ad_concat import prepare
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.merge import concat_atlas, write_atlas
 from h5ad_concat.models import SkipReason
-from h5ad_concat.prepare import cell_type_all_missing, fill_cell_type, validate_single_accession
+from h5ad_concat.prepare import (
+    cell_type_all_missing,
+    fill_cell_type,
+    prepare_adata,
+    validate_single_accession,
+)
 
 _LOG = logging.getLogger("h5ad_concat_smoke")
 
@@ -139,3 +147,74 @@ def test_validate_single_accession_rejects_wrong_value() -> None:
         validate_single_accession(adata, "SRX1", cfg)
 
     assert excinfo.value.reason is SkipReason.accession_mismatch
+
+
+def _client_error() -> ClientError:
+    """Build a minimal botocore ClientError for a failed GetObject call."""
+    return ClientError({"Error": {"Code": "500", "Message": "boom"}}, "GetObject")
+
+
+def _run_prepare_with_failing_download(
+    monkeypatch: pytest.MonkeyPatch, tmp_path, download_exc: Exception
+) -> tuple[FileRejected, list]:
+    """Run prepare_adata with download_from_r2 raising download_exc; return (raised, deleted paths)."""
+    cfg = H5adConcatConfig(cacheDir=tmp_path)
+    deleted: list = []
+
+    def _raise_download(*_args, **_kwargs) -> None:
+        raise download_exc
+
+    monkeypatch.setattr(prepare, "resolve_batch_key", lambda accession, contexts: "STUDY1")
+    monkeypatch.setattr(prepare, "download_from_r2", _raise_download)
+    monkeypatch.setattr(prepare, "safe_delete", lambda path, log: deleted.append(path))
+
+    with pytest.raises(FileRejected) as excinfo:
+        prepare_adata("prefix/SRX1.h5ad", "SRX1", cfg, {}, _LOG)
+
+    return excinfo.value, deleted
+
+
+def test_prepare_adata_md5_mismatch_rejected(monkeypatch, tmp_path) -> None:
+    exc = ValueError("Download MD5 mismatch for r2://bucket/key: local=a stored=b")
+    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
+
+    assert rejected.reason is SkipReason.md5_mismatch
+    assert rejected.__cause__ is exc
+    raw_path = tmp_path / "raw" / "SRX1.h5ad"
+    assert raw_path in deleted
+
+
+def test_prepare_adata_other_value_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
+    exc = ValueError("unexpected value error")
+    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
+
+    assert rejected.reason is SkipReason.download_failed
+    assert rejected.__cause__ is exc
+    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
+
+
+def test_prepare_adata_client_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
+    exc = _client_error()
+    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
+
+    assert rejected.reason is SkipReason.download_failed
+    assert rejected.__cause__ is exc
+    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
+
+
+def test_prepare_adata_botocore_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
+    exc = BotoCoreError()
+    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
+
+    assert rejected.reason is SkipReason.download_failed
+    assert rejected.__cause__ is exc
+    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
+
+
+def test_prepare_adata_os_error_rejected_as_download_failed(monkeypatch, tmp_path) -> None:
+    exc = OSError("disk full")
+    rejected, deleted = _run_prepare_with_failing_download(monkeypatch, tmp_path, exc)
+
+    assert rejected.reason is SkipReason.download_failed
+    assert rejected.__cause__ is exc
+    assert (tmp_path / "raw" / "SRX1.h5ad") in deleted
