@@ -136,5 +136,4 @@ Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the 
 Future work is marked in source with `# TODO(...)` comments at the call site:
 
 - `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
-- `output` (`merge.py`): support appending to an existing atlas and/or building a new atlas version instead of always overwriting `outputPath`.
 

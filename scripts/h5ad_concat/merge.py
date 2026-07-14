@@ -18,7 +18,6 @@ def concat_atlas(adatas: list[ad.AnnData], cfg: H5adConcatConfig, log: logging.L
 def write_atlas(adata: ad.AnnData, cfg: H5adConcatConfig, log: logging.Logger) -> Path:
     """Write the atlas to cfg.outputPath with gzip, overwriting any existing file."""
     cfg.outputPath.parent.mkdir(parents=True, exist_ok=True)
-    # TODO(output): support appending to existing atlas and/or building new atlas version
     if cfg.outputPath.exists():
         cfg.outputPath.unlink()
     adata.write_h5ad(cfg.outputPath, compression=cfg.compression)
