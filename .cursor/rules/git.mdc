@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Git
 
-- Implementation plans must include a **PR strategy** section (`plain GitHub` or `Graphite stack`, rationale, shape). See `graphite.mdc` for criteria.
+- Implementation plans must include a **PR strategy** section (`single-layer stack` or `multi-layer stack`, rationale, shape). See `graphite.mdc` for criteria. All PRs are opened via Graphite (`gt submit`).
 - When on the `main` branch, do NOT stage or commit files directly to `main`
 - When on the `main` branch, do NOT run `git add` or `git commit` onto `main` without explicit user instruction
 - When opening a PR, work on a feature branch instead of `main`. Commits on that new or existing branch do not require separate approval once the user has asked for the PR or stack

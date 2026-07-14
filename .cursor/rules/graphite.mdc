@@ -1,39 +1,39 @@
 ---
-description: Graphite stacked PR workflow for multi-layer agent changes
+description: Graphite PR workflow for single-layer and multi-layer stacks
 alwaysApply: false
 ---
 
 # Graphite
 
-Use Graphite (`gt`) only for multi-step features that need ordered, dependent PRs. All rules in `git.mdc` still apply.
+Always use Graphite (`gt`) to open PRs. A single-layer stack is one branch and one PR submitted via `gt submit`; it appears as a normal GitHub PR and can be opened, reviewed, and merged in the GitHub UI. All rules in `git.mdc` still apply.
 
 Branch commits for a planned PR or Graphite stack are allowed once the user approves the plan and PR strategy. That approval covers creating branches, committing slice-by-slice, and submitting the stack. It does not permit committing directly onto `main`.
 
 ## Plan mode
 
-Every implementation plan must include a **PR strategy** section so the tool choice can be reviewed before any git work:
+Every implementation plan must include a **PR strategy** section so the stack shape can be reviewed before any git work:
 
 ```markdown
 ## PR strategy
 
-**Tool:** plain GitHub | Graphite stack
+**Stack:** single-layer | multi-layer
 **Rationale:** <one sentence citing the criteria below>
 **Shape:** <single PR title and scope, or numbered stack with files per PR>
 ```
 
-- Pick exactly one tool. Do not leave it implicit or say "TBD".
+- Pick exactly one stack type. Do not leave it implicit or say "TBD".
 - If the choice is unclear, state both options with tradeoffs and ask before implementing.
 - Do not create branches, commit, push, or open PRs until the user approves the plan and PR strategy.
 - After that approval, branch commits for the stack do not need a separate commit confirmation for each slice.
 
-## When to use Graphite vs plain GitHub
+## Single-layer vs multi-layer stack
 
-Use **plain GitHub** (one branch, one PR via `gh`) for:
+Use a **single-layer stack** (one branch off `main`, one PR via `gt submit`) for:
 - Single-file or single-concern fixes
 - Exploratory notebook work
 - Changes that fit in one reviewable PR
 
-Use **Graphite** when the work spans layers and has real dependencies, for example:
+Use a **multi-layer stack** when the work spans layers and has real dependencies, for example:
 - `scripts/` util → `pipelines/` runner → `notebooks/` validation
 - Refactor foundation → consumer → tests/docs
 
@@ -41,12 +41,12 @@ Use **Graphite** when the work spans layers and has real dependencies, for examp
 
 1. Compare work to `main` and propose a stack plan (PR titles, base order, files per slice).
 2. Ask for user approval before creating branches, committing, pushing, or submitting, unless the user has already approved the plan and asked to build the stack.
-3. Cap stacks at **3 PRs**. If more slices are needed, propose independent PRs off `main` instead.
+3. Cap multi-layer stacks at **3 PRs**. If more slices are needed, propose independent single-layer stacks off `main` instead.
 4. Do not stack notebook-only diffs unless the user asks.
 
 ## Stack order
 
-Bottom to top (each PR targets the branch below, trunk is `main`):
+For multi-layer stacks, bottom to top (each PR targets the branch below, trunk is `main`):
 
 ```text
 main ← PR1 (foundation) ← PR2 (integration) ← PR3 (downstream)
@@ -56,16 +56,16 @@ Prefer reviewer-aligned slices: shared code first, pipeline wiring second, noteb
 
 ## Allowed commands
 
-After user approval, use `gt` for stack operations:
+After user approval, use `gt` for all PR operations:
 
 ```sh
 gt trunk                    # once per clone; trunk is main
 gt create -m "message"      # new stack branch (from current stack tip)
 gt modify -m "message"      # amend current branch (stage named files first)
-gt submit                   # open or update stack PRs on GitHub
+gt submit                   # open or update PR(s) on GitHub
 ```
 
-Use `gh pr create` only when the user explicitly wants a single non-stacked PR.
+Do not use `gh pr create`. Use `gt submit` for both single-layer and multi-layer stacks.
 
 ## Requires explicit user approval
 
