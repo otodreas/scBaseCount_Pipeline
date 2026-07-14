@@ -82,7 +82,7 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | Downloaded h5ad loads cleanly            | `read_failed`           | yes    |
 | `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
-| Preprocessing passes                     | `preprocess_failed`     | future |
+| Preprocessing passes                     | `preprocess_failed`     | yes    |
 
 
 
@@ -106,6 +106,12 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `verifyMd5`        | `True`                          | Verify download against R2 `gcs-md5` metadata   |
 | `uploadAtlas`      | `False`                         | Upload merged atlas to R2 after write           |
 | `atlasR2Key`       | `None`                          | R2 object key for atlas upload (required when `uploadAtlas` is true) |
+| `preprocess`         | `True`                          | Run per-file QC gate before concat admission |
+| `minGenesPerCell`    | `200`                           | Minimum genes detected per cell |
+| `maxPctMito`         | `20.0`                          | Maximum mitochondrial read fraction per cell |
+| `maxPctHb`           | `None`                          | Optional hemoglobin read fraction ceiling; unset records the metric without filtering |
+| `minCellsPerGene`    | `3`                             | Minimum cells expressing a gene; set `0` to disable |
+| `minCellsAfterQc`    | `1`                             | Minimum cells remaining after QC or file is skipped |
 
 
 
@@ -131,9 +137,7 @@ Each h5ad is downloaded to a transient raw file under `cacheDir/raw`, loaded int
 
 Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the gzipped atlas. Peak RAM is roughly the sum of all loaded objects plus the concatenated result during `ad.concat`. The gzipped atlas must still fit on disk.
 
-## TODO
+Per-file QC filters low-quality cells and genes while preserving raw counts in `X`. Normalization, HVG selection, and integration remain downstream on the merged atlas.
 
-Future work is marked in source with `# TODO(...)` comments at the call site:
-
-- `preprocess` (`config.py`, `prepare.py`): add `preprocess: bool = True`; when enabled, run `cluster_validation.preprocess` per file and skip failures as `preprocess_failed`.
+QC records `pct_counts_mt`, `pct_counts_ribo`, and `pct_counts_hb` per cell. Only mitochondrial fraction filters by default (`maxPctMito`), because ribosomal and hemoglobin fractions are strongly tied to cell state and tissue and can vary by study; filtering on them risks removing biology and reintroducing study-correlated bias. Ribosomal fraction is recorded only, and hemoglobin filtering is opt-in via `maxPctHb`.
 

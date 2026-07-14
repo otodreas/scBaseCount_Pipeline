@@ -26,7 +26,13 @@ class H5adConcatConfig(BaseModel):
     verifyMd5: bool = True
     uploadAtlas: bool = False
     atlasR2Key: str | None = None
-    # TODO(preprocess): preprocess: bool = True
+    preprocess: bool = True
+    minGenesPerCell: int = 200
+    maxPctMito: float = 20.0
+    # Opt-in hemoglobin ceiling; leave None to record pct_counts_hb without filtering.
+    maxPctHb: float | None = None
+    minCellsPerGene: int = 3
+    minCellsAfterQc: int = 1
 
     @model_validator(mode="after")
     def validate_input_and_upload(self) -> Self:
