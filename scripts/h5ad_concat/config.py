@@ -32,7 +32,9 @@ class H5adConcatConfig(BaseModel):
     # Opt-in hemoglobin ceiling; leave None to record pct_counts_hb without filtering.
     maxPctHb: float | None = None
     minCellsPerGene: int = 3
-    minCellsAfterQc: int = 1
+    minCellsAfterQc: int = 100
+    # Reject a file when less than this percent of input cells remain after QC; None disables the gate.
+    minPctCellsAfterQc: float | None = 0.4
 
     @model_validator(mode="after")
     def validate_input_and_upload(self) -> Self:
@@ -46,5 +48,11 @@ class H5adConcatConfig(BaseModel):
             raise ValueError(msg)
         if self.uploadAtlas and not self.atlasR2Key:
             msg = "atlasR2Key is required when uploadAtlas is true"
+            raise ValueError(msg)
+        if self.minPctCellsAfterQc is not None and not (0.0 < self.minPctCellsAfterQc <= 1.0):
+            msg = "minPctCellsAfterQc must be between 0.0 and 1.0"
+            raise ValueError(msg)
+        if self.minCellsAfterQc < 1:
+            msg = "minCellsAfterQc must be at least 1"
             raise ValueError(msg)
         return self

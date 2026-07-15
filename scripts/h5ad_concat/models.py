@@ -11,7 +11,8 @@ class SkipReason(StrEnum):
     read_failed = "read_failed"
     md5_mismatch = "md5_mismatch"
     missing_study = "missing_study"
-    preprocess_failed = "preprocess_failed"
+    too_few_cells = "too_few_cells"
+    excessive_cell_dropout = "excessive_cell_dropout"
     cell_type_all_missing = "cell_type_all_missing"
     accession_mismatch = "accession_mismatch"
 

@@ -20,7 +20,7 @@ What is checked:
 
 - `run_h5ad_concat`: happy path (two files concatenated, atlas written, unique accession-suffixed barcodes), skip-and-continue when one file is rejected (`cell_type_all_missing`), and `ValueError` when every file is rejected
 - `flag_qc_genes`: classifies `mt` / `ribo` / `hb` (case-insensitive, anchored HB regex), prefers `gene_symbols` over `var_names`
-- `apply_qc_gate`: filters low-gene cells, optional `maxPctHb` ceiling, `FileRejected(SkipReason.preprocess_failed)` when too few cells remain, returns `QcStats`
+- `apply_qc_gate`: filters low-gene cells, optional `maxPctHb` ceiling, `FileRejected(SkipReason.too_few_cells)` when too few cells remain, optional `excessive_cell_dropout` when `minPctCellsAfterQc` is set, returns `QcStats`
 - `prepare_adata`: download errors map to `SkipReason` (`md5_mismatch` vs `download_failed`) and raw cache paths are deleted
 
 Run it:

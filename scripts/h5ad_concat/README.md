@@ -82,7 +82,8 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | Downloaded h5ad loads cleanly            | `read_failed`           | yes    |
 | `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
-| Preprocessing passes                     | `preprocess_failed`     | yes    |
+| At least `minCellsAfterQc` cells remain after QC | `too_few_cells` | yes    |
+| Cell dropout fraction at or below `minPctCellsAfterQc` | `excessive_cell_dropout` | yes |
 
 
 
@@ -111,7 +112,8 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `maxPctMito`         | `20.0`                          | Maximum mitochondrial read fraction per cell |
 | `maxPctHb`           | `None`                          | Optional hemoglobin read fraction ceiling; unset records the metric without filtering |
 | `minCellsPerGene`    | `3`                             | Minimum cells expressing a gene; set `0` to disable |
-| `minCellsAfterQc`    | `1`                             | Minimum cells remaining after QC or file is skipped |
+| `minCellsAfterQc`    | `100`                           | Absolute floor: minimum cells remaining after QC or file is skipped |
+| `minPctCellsAfterQc` | `40.0`                          | Relative floor: reject when less than this percent of input cells remain after QC; set `None` to disable |
 
 
 
@@ -140,4 +142,14 @@ Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the 
 Per-file QC filters low-quality cells and genes while preserving raw counts in `X`. Normalization, HVG selection, and integration remain downstream on the merged atlas.
 
 QC records `pct_counts_mt`, `pct_counts_ribo`, and `pct_counts_hb` per cell. Only mitochondrial fraction filters by default (`maxPctMito`), because ribosomal and hemoglobin fractions are strongly tied to cell state and tissue and can vary by study; filtering on them risks removing biology and reintroducing study-correlated bias. Ribosomal fraction is recorded only, and hemoglobin filtering is opt-in via `maxPctHb`.
+
+## Cell-count gates and the dropout denominator
+
+Per-cell QC filters low-quality cells; dataset-level gates then decide whether the filtered remainder is still trustworthy enough to merge. A file is rejected when either gate fails: fewer than `minCellsAfterQc` cells remain (absolute floor, default 100), or less than `minPctCellsAfterQc` percent cells remain  (relative floor, default 40%).
+
+The relative gate is only meaningful when the input matrix is already cell-called. scBaseCount h5ads are produced by scRecounter with STARsolo `--soloCellFilter EmptyDrops_CR` (CellRanger-style empty-droplet removal; Youngblut et al. 2025, Methods 5.2). The denominator for `pctCellsDropped` is therefore called cells, not raw barcodes, so a high drop fraction signals systemic dataset badness rather than routine empty-droplet removal.
+
+In the local `GeneFull/Homo_sapiens` sample, five of six files lose less than 1% of cells under default per-cell filters; the sparsest file (`SRX12708356`) loses about 49.5% (roughly half its cells fall below `minGenesPerCell=200`), which is the motivating case for the relative gate.
+
+Reference: Youngblut et al. (2025), *scBaseCount: an AI agent-curated, uniformly processed, and continually expanding single cell data repository*, bioRxiv [10.1101/2025.02.27.640494](https://doi.org/10.1101/2025.02.27.640494). Local copy: `docs/zotero_pdfs/Youngblut et al. - 2025 - scBaseCount an AI agent-curated, uniformly processed, and continually expanding single cell data re.pdf`.
 
