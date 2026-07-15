@@ -133,7 +133,7 @@ def test_run_h5ad_concat_happy_path(monkeypatch, tmp_path) -> None:
         cacheDir=tmp_path,
         minGenesPerCell=10,
         minCellsPerGene=0,
-        maxPctMito=100.0,
+        maxPctMito=1.0,
     )
 
     result = _run_pipeline(monkeypatch, tmp_path, {key1: a1, key2: a2}, cfg)
@@ -160,7 +160,7 @@ def test_run_h5ad_concat_skips_rejected_and_continues(monkeypatch, tmp_path) -> 
         cacheDir=tmp_path,
         minGenesPerCell=10,
         minCellsPerGene=0,
-        maxPctMito=100.0,
+        maxPctMito=1.0,
     )
 
     result = _run_pipeline(monkeypatch, tmp_path, {good_key: good, bad_key: bad}, cfg)
@@ -182,7 +182,7 @@ def test_run_h5ad_concat_raises_when_all_rejected(monkeypatch, tmp_path) -> None
         cacheDir=tmp_path,
         minGenesPerCell=10,
         minCellsPerGene=0,
-        maxPctMito=100.0,
+        maxPctMito=1.0,
     )
 
     with pytest.raises(ValueError, match="No files passed validation"):
@@ -217,7 +217,7 @@ def test_apply_qc_gate_filters_and_reports() -> None:
     genes = ["G1", "G2", "G3"]
     counts = np.array([[1, 0, 0], [1, 1, 1]], dtype=np.float32)
     adata = _qc_ready_adata(genes, counts)
-    cfg = _cfg(minGenesPerCell=2, minCellsPerGene=0, maxPctMito=100.0)
+    cfg = _cfg(minGenesPerCell=2, minCellsPerGene=0, maxPctMito=1.0)
 
     filtered, stats = apply_qc_gate(adata, cfg)
 
@@ -239,12 +239,12 @@ def test_apply_qc_gate_max_pct_hb_opt_in() -> None:
     genes = ["GAPDH", "HBA1"]
     counts = np.array([[20, 80], [50, 50]], dtype=np.float32)
     adata = _qc_ready_adata(genes, counts)
-    cfg_no_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=100.0, maxPctHb=None)
+    cfg_no_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=1.0, maxPctHb=None)
 
     filtered_no_hb, _ = apply_qc_gate(adata, cfg_no_hb)
     assert filtered_no_hb.n_obs == 2
 
-    cfg_with_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=100.0, maxPctHb=60.0)
+    cfg_with_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=1.0, maxPctHb=0.6)
     filtered_with_hb, stats = apply_qc_gate(adata, cfg_with_hb)
 
     assert filtered_with_hb.n_obs == 1
@@ -256,7 +256,7 @@ def test_apply_qc_gate_rejects_when_no_cells_remain() -> None:
     genes = ["GAPDH", "MT-ND1"]
     counts = np.array([[10, 90], [10, 90]], dtype=np.float32)
     adata = _qc_ready_adata(genes, counts)
-    cfg = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=20.0, minCellsAfterQc=1)
+    cfg = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=0.2, minCellsAfterQc=1)
 
     with pytest.raises(FileRejected) as excinfo:
         apply_qc_gate(adata, cfg)
@@ -279,7 +279,7 @@ def test_apply_qc_gate_rejects_excessive_dropout() -> None:
     cfg = _cfg(
         minGenesPerCell=200,
         minCellsPerGene=0,
-        maxPctMito=100.0,
+        maxPctMito=1.0,
         minCellsAfterQc=1,
         minPctCellsAfterQc=0.5,
     )
@@ -297,7 +297,7 @@ def test_apply_qc_gate_dropout_gate_off_by_default() -> None:
     cfg = _cfg(
         minGenesPerCell=200,
         minCellsPerGene=0,
-        maxPctMito=100.0,
+        maxPctMito=1.0,
         minCellsAfterQc=1,
         minPctCellsAfterQc=None,
     )

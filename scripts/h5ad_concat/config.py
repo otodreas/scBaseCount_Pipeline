@@ -28,12 +28,13 @@ class H5adConcatConfig(BaseModel):
     atlasR2Key: str | None = None
     preprocess: bool = True
     minGenesPerCell: int = 200
-    maxPctMito: float = 20.0
-    # Opt-in hemoglobin ceiling; leave None to record pct_counts_hb without filtering.
+    # Maximum mitochondrial read fraction per cell, as a fraction in (0.0, 1.0].
+    maxPctMito: float = 0.2
+    # Opt-in hemoglobin ceiling as a fraction in (0.0, 1.0]; leave None to record pct_counts_hb without filtering.
     maxPctHb: float | None = None
     minCellsPerGene: int = 3
     minCellsAfterQc: int = 100
-    # Reject a file when less than this percent of input cells remain after QC; None disables the gate.
+    # Reject a file when less than this fraction of input cells remain after QC; None disables the gate.
     minPctCellsAfterQc: float | None = 0.4
 
     @model_validator(mode="after")
@@ -51,6 +52,12 @@ class H5adConcatConfig(BaseModel):
             raise ValueError(msg)
         if self.minPctCellsAfterQc is not None and not (0.0 < self.minPctCellsAfterQc <= 1.0):
             msg = "minPctCellsAfterQc must be between 0.0 and 1.0"
+            raise ValueError(msg)
+        if not (0.0 < self.maxPctMito <= 1.0):
+            msg = "maxPctMito must be between 0.0 and 1.0"
+            raise ValueError(msg)
+        if self.maxPctHb is not None and not (0.0 < self.maxPctHb <= 1.0):
+            msg = "maxPctHb must be between 0.0 and 1.0"
             raise ValueError(msg)
         if self.minCellsAfterQc < 1:
             msg = "minCellsAfterQc must be at least 1"

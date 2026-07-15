@@ -109,11 +109,11 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `atlasR2Key`       | `None`                          | R2 object key for atlas upload (required when `uploadAtlas` is true) |
 | `preprocess`         | `True`                          | Run per-file QC gate before concat admission |
 | `minGenesPerCell`    | `200`                           | Minimum genes detected per cell |
-| `maxPctMito`         | `20.0`                          | Maximum mitochondrial read fraction per cell |
-| `maxPctHb`           | `None`                          | Optional hemoglobin read fraction ceiling; unset records the metric without filtering |
+| `maxPctMito`         | `0.2`                           | Maximum mitochondrial read fraction per cell, as a fraction in (0, 1] |
+| `maxPctHb`           | `None`                          | Optional hemoglobin read fraction ceiling in (0, 1]; unset records the metric without filtering |
 | `minCellsPerGene`    | `3`                             | Minimum cells expressing a gene; set `0` to disable |
 | `minCellsAfterQc`    | `100`                           | Absolute floor: minimum cells remaining after QC or file is skipped |
-| `minPctCellsAfterQc` | `40.0`                          | Relative floor: reject when less than this percent of input cells remain after QC; set `None` to disable |
+| `minPctCellsAfterQc` | `0.4`                           | Relative floor as a fraction in (0, 1]: reject when less than this fraction of input cells remain after QC; set `None` to disable |
 
 
 
