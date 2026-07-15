@@ -16,7 +16,17 @@ class H5adConcatConfig(BaseModel):
     # Existing obs column holding the per-file experiment accession; used to make barcodes unique.
     accessionKey: str = "SRX_accession"
     missingLabel: str = "UNKNOWN"
-    join: Literal["inner", "outer"] = "inner"
+    # Reference genes are mandatory
+    geneInfoPath: Path = (
+        REPO_ROOT
+        / "data"
+        / "scbasecount"
+        / "2026-01-12"
+        / "star_references"
+        / "Homo_sapiens"
+        / "hg38_2020"
+        / "geneInfo.tab"
+    )
     cacheDir: Path = REPO_ROOT / "data" / "h5ad_concat" / "cache"
     outputPath: Path = REPO_ROOT / "output" / "atlas" / "data" / "atlas.h5ad"
     downloadBatchSize: int = Field(default=8, ge=1)
@@ -25,6 +35,8 @@ class H5adConcatConfig(BaseModel):
     uploadAtlas: bool = False
     atlasR2Key: str | None = None
     preprocess: bool = True
+    # Reindex every layer (e.g. STARsolo UniqueAndMult matrices) onto the reference axis instead of X only.
+    conserveLayers: bool = False
     # Minimum genes detected per cell; 0 disables the filter.
     minGenesPerCell: int = Field(default=200, ge=0)
     # Maximum mitochondrial read fraction per cell, as a fraction in (0, 1]; 1.0 keeps every cell.

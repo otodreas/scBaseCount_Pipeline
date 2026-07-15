@@ -8,6 +8,18 @@ from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
 
+_QC_GENE_FLAGS = ("mt", "ribo", "hb")
+
+# var columns apply_qc_gate writes: the gene flags from flag_qc_genes plus the per-gene metrics
+# scanpy adds (calculate_qc_metrics with log1p=False). Exposed so downstream steps can tell these
+# per-file QC stats apart from genuine gene annotations.
+QC_VAR_KEYS: frozenset[str] = frozenset(_QC_GENE_FLAGS) | {
+    "n_cells_by_counts",
+    "mean_counts",
+    "pct_dropout_by_counts",
+    "total_counts",
+}
+
 
 def _gene_names(adata: ad.AnnData) -> pd.Series:
     """Return uppercased gene names from gene_symbols when present, else var_names."""
@@ -46,7 +58,7 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
     n_genes_before = adata.n_vars
 
     flag_qc_genes(adata)
-    sc.pp.calculate_qc_metrics(adata, qc_vars=["mt", "ribo", "hb"], inplace=True, log1p=False)
+    sc.pp.calculate_qc_metrics(adata, qc_vars=list(_QC_GENE_FLAGS), inplace=True, log1p=False)
     sc.pp.filter_cells(adata, min_genes=cfg.minGenesPerCell)
     if cfg.minCellsPerGene > 0:
         sc.pp.filter_genes(adata, min_cells=cfg.minCellsPerGene)

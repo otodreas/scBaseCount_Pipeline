@@ -80,10 +80,12 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | R2 download succeeds                       | `download_failed`       | yes    |
 | MD5 matches stored `gcs-md5` metadata    | `md5_mismatch`          | yes    |
 | Downloaded h5ad loads cleanly            | `read_failed`           | yes    |
+| `obs` accession column is a single value matching the file accession | `accession_mismatch` | yes |
 | `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
 | At least `minCellsAfterQc` cells remain after QC | `too_few_cells` | yes    |
 | Cell dropout fraction at or below `minPctCellsAfterQc` | `excessive_cell_dropout` | yes |
+| Gene axis maps to reference | `gene_axis_mismatch` | yes |
 
 
 
@@ -98,8 +100,9 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `contextsPath`   | `output/context/contexts.jsonl` | Study context lookup                           |
 | `cellTypeKey`    | `"cell_type"`                   | Column checked and filled                      |
 | `batchKey`       | `"study_accession"`             | obs column holding the batch key (ENA study accession) |
+| `accessionKey`   | `"SRX_accession"`               | Existing obs column holding the per-file experiment accession |
 | `missingLabel`   | `"UNKNOWN"`                     | Fill value for blank `cell_type`               |
-| `join`           | `"inner"`                       | Gene join strategy for concat                  |
+| `geneInfoPath`   | `data/scbasecount/2026-01-12/star_references/Homo_sapiens/hg38_2020/geneInfo.tab` | STAR reference gene axis for alignment |
 | `cacheDir`         | `data/h5ad_concat/cache`        | Staging for transient raw downloads             |
 | `outputPath`       | `output/atlas/data/atlas.h5ad`  | Merged atlas output                             |
 | `downloadBatchSize`| `8`                             | Reserved for concurrent download batching       |
@@ -108,10 +111,11 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `uploadAtlas`      | `False`                         | Upload merged atlas to R2 after write           |
 | `atlasR2Key`       | `None`                          | R2 object key for atlas upload (required when `uploadAtlas` is true) |
 | `preprocess`         | `True`                          | Run per-file QC gate before concat admission |
+| `conserveLayers`     | `False`                         | Reindex every layer (e.g. STARsolo UniqueAndMult matrices) onto the reference axis instead of `X` only |
 | `minGenesPerCell`    | `200`                           | Minimum genes detected per cell |
 | `maxPctMito`         | `0.2`                           | Maximum mitochondrial read fraction per cell, as a fraction in (0, 1]; `1.0` keeps every cell |
 | `maxPctHb`           | `1.0`                           | Hemoglobin read fraction ceiling in (0, 1]; `1.0` records the metric without filtering |
-| `minCellsPerGene`    | `3`                             | Minimum cells expressing a gene; set `0` to disable |
+| `minCellsPerGene`    | `0`                             | Minimum cells expressing a gene; set `0` to disable |
 | `minCellsAfterQc`    | `100`                           | Absolute floor: minimum cells remaining after QC or file is skipped |
 | `minPctCellsAfterQc` | `0.4`                           | Relative floor as a fraction in [0, 1]: reject when less than this fraction of input cells remain after QC; set `0` to disable |
 
@@ -128,6 +132,7 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 - `studiesSeen`: unique `studyAccession` values in the merged atlas
 - `skipped`: list of rejected files with `r2Key`, `accession`, and `reason`
 - `atlasR2Key`: R2 object key when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
+- `conserveLayers`: whether alignment reindexed all layers onto the reference axis for this run
 
 When `uploadAtlas` is true and upload verifies, the local `.h5ad` is deleted and replaced by a JSON manifest at `outputPath` with suffix `.json` (e.g. `output/atlas/data/atlas.json`). The manifest holds `H5adConcatResult` so run metadata is readable without pulling the atlas from R2.
 
@@ -140,6 +145,8 @@ Each h5ad is downloaded to a transient raw file under `cacheDir/raw`, loaded int
 Peak disk usage is one raw h5ad (or a small concurrent download batch) plus the gzipped atlas. Peak RAM is roughly the sum of all loaded objects plus the concatenated result during `ad.concat`. The gzipped atlas must still fit on disk.
 
 Per-file QC filters low-quality cells and genes while preserving raw counts in `X`. Normalization, HVG selection, and integration remain downstream on the merged atlas.
+
+Each file is reindexed to the canonical `geneInfoPath` Ensembl-ID axis before concat, so the atlas gene space is fixed at 36,601 genes in reference order and the concat join is a no-op. Sparse-gene filtering is deferred downstream (`minCellsPerGene` defaults to `0`).
 
 QC records `pct_counts_mt`, `pct_counts_ribo`, and `pct_counts_hb` per cell. Only mitochondrial fraction filters by default (`maxPctMito`), because ribosomal and hemoglobin fractions are strongly tied to cell state and tissue and can vary by study; filtering on them risks removing biology and reintroducing study-correlated bias. Ribosomal fraction is recorded only, and hemoglobin filtering is opt-in via `maxPctHb`.
 

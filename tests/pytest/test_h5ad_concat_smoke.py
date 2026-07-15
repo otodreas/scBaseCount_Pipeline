@@ -20,6 +20,7 @@ from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
 from h5ad_concat.prepare import accession_from_r2_key, prepare_adata
 from h5ad_concat.qc import QcStats, apply_qc_gate, flag_qc_genes
+from h5ad_concat.reference import GeneReference
 from study_context.models import ExperimentContext, StudyContext
 
 ad.settings.allow_write_nullable_strings = True
@@ -88,6 +89,16 @@ def _contexts_for_keys(r2_keys: Sequence[str]) -> dict[str, ExperimentContext]:
     }
 
 
+def _reference_for_adatas(adatas_by_key: dict[str, ad.AnnData]) -> GeneReference:
+    """Build a minimal GeneReference covering all var_names in the test adatas."""
+    ids = sorted({str(gene_id) for adata in adatas_by_key.values() for gene_id in adata.var_names})
+    var = pd.DataFrame(
+        {"gene_symbol": ids, "biotype": ["protein_coding"] * len(ids)},
+        index=ids,
+    )
+    return GeneReference(ids=ids, var=var)
+
+
 def _run_pipeline(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
@@ -101,6 +112,11 @@ def _run_pipeline(
 
     monkeypatch.setattr(prepare, "download_from_r2", fake_download)
     monkeypatch.setattr(pipeline, "load_contexts_jsonl", lambda _path: _contexts_for_keys(adatas_by_key))
+    monkeypatch.setattr(
+        pipeline,
+        "load_gene_reference",
+        lambda _path: _reference_for_adatas(adatas_by_key),
+    )
     return pipeline.run_h5ad_concat(cfg)
 
 
@@ -334,6 +350,7 @@ def test_prepare_adata_maps_download_errors_to_skip_reason(
     cfg = H5adConcatConfig(cacheDir=tmp_path)
     deleted: list = []
     contexts = _contexts_for_keys(["prefix/SRX1.h5ad"])
+    reference = _reference_for_adatas({"prefix/SRX1.h5ad": _make_adata()})
 
     def _raise_download(*_args, **_kwargs) -> None:
         raise download_exc
@@ -342,7 +359,7 @@ def test_prepare_adata_maps_download_errors_to_skip_reason(
     monkeypatch.setattr(prepare, "safe_delete", lambda path, log: deleted.append(path))
 
     with pytest.raises(FileRejected) as excinfo:
-        prepare_adata("prefix/SRX1.h5ad", "SRX1", cfg, contexts, _LOG)
+        prepare_adata("prefix/SRX1.h5ad", "SRX1", cfg, contexts, reference, _LOG)
 
     assert excinfo.value.reason is expected_reason
     assert excinfo.value.__cause__ is download_exc

@@ -14,7 +14,7 @@ def concat_atlas(
     """Concatenate prepared AnnData objects on the obs axis into one in-memory atlas.
     Barcodes are made globally unique by suffixing each cell with its accession via index_unique.
     """
-    adata = ad.concat(adatas, axis="obs", join=cfg.join, keys=accessions, index_unique="_")
+    adata = ad.concat(adatas, axis="obs", join="inner", keys=accessions, index_unique="_")
     log.info("Concatenated %d AnnData objects into one in-memory atlas", len(adatas))
     return adata
 

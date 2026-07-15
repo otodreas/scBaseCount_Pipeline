@@ -15,6 +15,7 @@ class SkipReason(StrEnum):
     excessive_cell_dropout = "excessive_cell_dropout"
     cell_type_all_missing = "cell_type_all_missing"
     accession_mismatch = "accession_mismatch"
+    gene_axis_mismatch = "gene_axis_mismatch"
 
 
 class SkippedFile(BaseModel):
@@ -31,3 +32,4 @@ class H5adConcatResult(BaseModel):
     studiesSeen: list[str]
     skipped: list[SkippedFile]
     atlasR2Key: str | None = None
+    conserveLayers: bool = False
