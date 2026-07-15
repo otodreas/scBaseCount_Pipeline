@@ -1,1 +1,1 @@
-- [ ] Set `verify_md5 = True` in [`download_from_r2`, line 34](scripts/storage/r2.py) to check that downloaded `h5ad` files' md5 hash matches the value stored in metadata on upload
+- [x] Set `verify_md5 = True` in `download_from_r2`[, line 34](scripts/storage/r2.py) to check that downloaded `h5ad` files' md5 hash matches the value stored in metadata on upload
