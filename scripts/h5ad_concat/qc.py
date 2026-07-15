@@ -55,7 +55,7 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
         adata = adata[adata.obs["pct_counts_hb"] < cfg.maxPctHb].copy()
 
     n_cells_after = adata.n_obs
-    pct_dropped = 100.0 * (n_cells_before - n_cells_after) / n_cells_before if n_cells_before > 0 else 0.0
+    pct_dropped = (n_cells_before - n_cells_after) / n_cells_before if n_cells_before > 0 else 0.0
 
     if n_cells_after < cfg.minCellsAfterQc:
         raise FileRejected(SkipReason.too_few_cells)

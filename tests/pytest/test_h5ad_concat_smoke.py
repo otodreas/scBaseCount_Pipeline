@@ -228,7 +228,7 @@ def test_apply_qc_gate_filters_and_reports() -> None:
     assert stats.nCellsAfter == 1
     assert stats.nGenesBefore == 500
     assert stats.nGenesAfter == 500
-    assert stats.pctCellsDropped == 50.0
+    assert stats.pctCellsDropped == 0.5
     assert stats.medianGenesPerCell == 3.0
     assert stats.medianPctMito == 0.0
     assert stats.medianPctRibo == 0.0
@@ -281,7 +281,7 @@ def test_apply_qc_gate_rejects_excessive_dropout() -> None:
         minCellsPerGene=0,
         maxPctMito=100.0,
         minCellsAfterQc=1,
-        maxPctCellsDropped=40.0,
+        maxPctCellsDropped=0.4,
     )
 
     with pytest.raises(FileRejected) as excinfo:
@@ -305,7 +305,7 @@ def test_apply_qc_gate_dropout_gate_off_by_default() -> None:
     filtered, stats = apply_qc_gate(adata, cfg)
 
     assert filtered.n_obs == 2
-    assert stats.pctCellsDropped == 60.0
+    assert stats.pctCellsDropped == 0.6
 
 
 # --- prepare_adata download failures (unit) ---
