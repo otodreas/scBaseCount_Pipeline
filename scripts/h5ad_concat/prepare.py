@@ -12,7 +12,7 @@ from study_context.models import ExperimentContext
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
-from h5ad_concat.qc import apply_qc_gate
+from h5ad_concat.qc import QC_VAR_KEYS, apply_qc_gate
 from h5ad_concat.reference import GeneReference, align_to_reference
 
 
@@ -97,15 +97,19 @@ def prepare_adata(
             )
 
         adata, align_stats = align_to_reference(adata, reference)
+        dropped_qc_stats = [key for key in align_stats.droppedVarKeys if key in QC_VAR_KEYS]
+        dropped_annotations = [key for key in align_stats.droppedVarKeys if key not in QC_VAR_KEYS]
         log.info(
-            "%s: aligned %d genes (%d zero-filled, %d dropped)",
+            "%s: aligned %d genes (%d zero-filled, %d dropped); dropped QC stats: %s; dropped annotations: %s",
             accession,
             align_stats.nGenesMapped,
             align_stats.nGenesZeroFilled,
             align_stats.nGenesDropped,
+            dropped_qc_stats,
+            dropped_annotations,
         )
 
-        validate_single_accession(adata, accession, cfg)
+        validate_single_accession(adata, accession, cfg)  # TODO: move up--this can be checked before qc and alignment
 
         if cell_type_all_missing(adata, cfg.cellTypeKey):
             raise FileRejected(SkipReason.cell_type_all_missing)

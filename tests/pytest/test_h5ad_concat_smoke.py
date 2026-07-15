@@ -96,8 +96,7 @@ def _reference_for_adatas(adatas_by_key: dict[str, ad.AnnData]) -> GeneReference
         {"gene_symbol": ids, "biotype": ["protein_coding"] * len(ids)},
         index=ids,
     )
-    position = {gene_id: idx for idx, gene_id in enumerate(ids)}
-    return GeneReference(ids=ids, var=var, position=position)
+    return GeneReference(ids=ids, var=var)
 
 
 def _run_pipeline(
