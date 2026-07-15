@@ -84,8 +84,9 @@ def prepare_adata(
         safe_delete(raw_path, log)
         raise FileRejected(SkipReason.read_failed) from exc
 
-    # Check that cell types are present
     try:
+        validate_single_accession(adata, accession, cfg)
+
         if cfg.preprocess:
             adata, qc_stats = apply_qc_gate(adata, cfg)
             log.info(
@@ -95,6 +96,9 @@ def prepare_adata(
                 qc_stats.nCellsBefore,
                 qc_stats.pctCellsAfter * 100.0,
             )
+
+        if cell_type_all_missing(adata, cfg.cellTypeKey):
+            raise FileRejected(SkipReason.cell_type_all_missing)
 
         adata, align_stats = align_to_reference(adata, reference)
         dropped_qc_stats = [key for key in align_stats.droppedVarKeys if key in QC_VAR_KEYS]
@@ -108,11 +112,6 @@ def prepare_adata(
             dropped_qc_stats,
             dropped_annotations,
         )
-
-        validate_single_accession(adata, accession, cfg)  # TODO: move up--this can be checked before qc and alignment
-
-        if cell_type_all_missing(adata, cfg.cellTypeKey):
-            raise FileRejected(SkipReason.cell_type_all_missing)
 
         adata.obs[cfg.batchKey] = study_accession
         fill_cell_type(adata, cfg)
