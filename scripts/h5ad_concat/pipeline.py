@@ -109,6 +109,7 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
         studiesSeen=sorted(set(studies)),
         skipped=skipped,
         atlasR2Key=cfg.atlasR2Key if cfg.uploadAtlas else None,
+        conserveLayers=cfg.conserveLayers,
     )
 
     _upload_atlas_and_finalize(cfg, output_path, result)

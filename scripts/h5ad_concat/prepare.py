@@ -100,7 +100,7 @@ def prepare_adata(
         if cell_type_all_missing(adata, cfg.cellTypeKey):
             raise FileRejected(SkipReason.cell_type_all_missing)
 
-        adata, align_stats = align_to_reference(adata, reference)
+        adata, align_stats = align_to_reference(adata, reference, conserve_layers=cfg.conserveLayers)
         dropped_qc_stats = [key for key in align_stats.droppedVarKeys if key in QC_VAR_KEYS]
         dropped_annotations = [key for key in align_stats.droppedVarKeys if key not in QC_VAR_KEYS]
         log.info(

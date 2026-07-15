@@ -80,6 +80,7 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | R2 download succeeds                       | `download_failed`       | yes    |
 | MD5 matches stored `gcs-md5` metadata    | `md5_mismatch`          | yes    |
 | Downloaded h5ad loads cleanly            | `read_failed`           | yes    |
+| `obs` accession column is a single value matching the file accession | `accession_mismatch` | yes |
 | `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
 | At least `minCellsAfterQc` cells remain after QC | `too_few_cells` | yes    |
@@ -110,6 +111,7 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `uploadAtlas`      | `False`                         | Upload merged atlas to R2 after write           |
 | `atlasR2Key`       | `None`                          | R2 object key for atlas upload (required when `uploadAtlas` is true) |
 | `preprocess`         | `True`                          | Run per-file QC gate before concat admission |
+| `conserveLayers`     | `False`                         | Reindex every layer (e.g. STARsolo UniqueAndMult matrices) onto the reference axis instead of `X` only |
 | `minGenesPerCell`    | `200`                           | Minimum genes detected per cell |
 | `maxPctMito`         | `0.2`                           | Maximum mitochondrial read fraction per cell, as a fraction in (0, 1]; `1.0` keeps every cell |
 | `maxPctHb`           | `1.0`                           | Hemoglobin read fraction ceiling in (0, 1]; `1.0` records the metric without filtering |
@@ -130,6 +132,7 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 - `studiesSeen`: unique `studyAccession` values in the merged atlas
 - `skipped`: list of rejected files with `r2Key`, `accession`, and `reason`
 - `atlasR2Key`: R2 object key when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
+- `conserveLayers`: whether alignment reindexed all layers onto the reference axis for this run
 
 When `uploadAtlas` is true and upload verifies, the local `.h5ad` is deleted and replaced by a JSON manifest at `outputPath` with suffix `.json` (e.g. `output/atlas/data/atlas.json`). The manifest holds `H5adConcatResult` so run metadata is readable without pulling the atlas from R2.
 

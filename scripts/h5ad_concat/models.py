@@ -32,3 +32,4 @@ class H5adConcatResult(BaseModel):
     studiesSeen: list[str]
     skipped: list[SkippedFile]
     atlasR2Key: str | None = None
+    conserveLayers: bool = False

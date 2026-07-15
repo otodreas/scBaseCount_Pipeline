@@ -35,6 +35,8 @@ class H5adConcatConfig(BaseModel):
     uploadAtlas: bool = False
     atlasR2Key: str | None = None
     preprocess: bool = True
+    # Reindex every layer (e.g. STARsolo UniqueAndMult matrices) onto the reference axis instead of X only.
+    conserveLayers: bool = False
     # Minimum genes detected per cell; 0 disables the filter.
     minGenesPerCell: int = Field(default=200, ge=0)
     # Maximum mitochondrial read fraction per cell, as a fraction in (0, 1]; 1.0 keeps every cell.
