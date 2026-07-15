@@ -50,17 +50,16 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
     sc.pp.filter_cells(adata, min_genes=cfg.minGenesPerCell)
     if cfg.minCellsPerGene > 0:
         sc.pp.filter_genes(adata, min_cells=cfg.minCellsPerGene)
-    # scanpy reports pct_counts_* on a 0-100 scale; config ceilings are fractions in (0, 1].
+    # scanpy reports pct_counts_* on a 0-100 scale; config ceilings are fractions in (0, 1] where 1.0 is a no-op.
     adata = adata[adata.obs["pct_counts_mt"] < cfg.maxPctMito * 100].copy()
-    if cfg.maxPctHb is not None:
-        adata = adata[adata.obs["pct_counts_hb"] < cfg.maxPctHb * 100].copy()
+    adata = adata[adata.obs["pct_counts_hb"] < cfg.maxPctHb * 100].copy()
 
     n_cells_after = adata.n_obs
     pct_cells_after = n_cells_after / n_cells_before if n_cells_before > 0 else 0.0
 
     if n_cells_after < cfg.minCellsAfterQc:
         raise FileRejected(SkipReason.too_few_cells)
-    if cfg.minPctCellsAfterQc is not None and pct_cells_after < cfg.minPctCellsAfterQc:
+    if pct_cells_after < cfg.minPctCellsAfterQc:
         raise FileRejected(SkipReason.excessive_cell_dropout)
 
     median_genes = float(adata.obs["n_genes_by_counts"].median()) if n_cells_after > 0 else 0.0

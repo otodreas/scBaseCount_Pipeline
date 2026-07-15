@@ -33,7 +33,7 @@ def _cfg(**overrides) -> H5adConcatConfig:
         "r2Keys": ["k"],
         "datasetsPath": None,
         "minCellsAfterQc": 1,
-        "minPctCellsAfterQc": None,
+        "minPctCellsAfterQc": 0.0,
     }
     defaults.update(overrides)
     return H5adConcatConfig(**defaults)
@@ -239,7 +239,7 @@ def test_apply_qc_gate_max_pct_hb_opt_in() -> None:
     genes = ["GAPDH", "HBA1"]
     counts = np.array([[20, 80], [50, 50]], dtype=np.float32)
     adata = _qc_ready_adata(genes, counts)
-    cfg_no_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=1.0, maxPctHb=None)
+    cfg_no_hb = _cfg(minGenesPerCell=1, minCellsPerGene=0, maxPctMito=1.0, maxPctHb=1.0)
 
     filtered_no_hb, _ = apply_qc_gate(adata, cfg_no_hb)
     assert filtered_no_hb.n_obs == 2
@@ -299,7 +299,7 @@ def test_apply_qc_gate_dropout_gate_off_by_default() -> None:
         minCellsPerGene=0,
         maxPctMito=1.0,
         minCellsAfterQc=1,
-        minPctCellsAfterQc=None,
+        minPctCellsAfterQc=0.0,
     )
 
     filtered, stats = apply_qc_gate(adata, cfg)
