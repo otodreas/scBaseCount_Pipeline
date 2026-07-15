@@ -87,11 +87,11 @@ def prepare_adata(
         if cfg.preprocess:
             adata, qc_stats = apply_qc_gate(adata, cfg)
             log.info(
-                "%s: QC kept %d/%d cells (%.1f%% dropped)",
+                "%s: QC kept %d/%d cells (%.1f%% retained)",
                 accession,
                 qc_stats.nCellsAfter,
                 qc_stats.nCellsBefore,
-                qc_stats.pctCellsDropped,
+                qc_stats.pctCellsAfter * 100.0,
             )
 
         validate_single_accession(adata, accession, cfg)

@@ -33,7 +33,7 @@ def _cfg(**overrides) -> H5adConcatConfig:
         "r2Keys": ["k"],
         "datasetsPath": None,
         "minCellsAfterQc": 1,
-        "maxPctCellsDropped": None,
+        "minPctCellsAfterQc": None,
     }
     defaults.update(overrides)
     return H5adConcatConfig(**defaults)
@@ -228,7 +228,7 @@ def test_apply_qc_gate_filters_and_reports() -> None:
     assert stats.nCellsAfter == 1
     assert stats.nGenesBefore == 500
     assert stats.nGenesAfter == 500
-    assert stats.pctCellsDropped == 0.5
+    assert stats.pctCellsAfter == 0.5
     assert stats.medianGenesPerCell == 3.0
     assert stats.medianPctMito == 0.0
     assert stats.medianPctRibo == 0.0
@@ -281,7 +281,7 @@ def test_apply_qc_gate_rejects_excessive_dropout() -> None:
         minCellsPerGene=0,
         maxPctMito=100.0,
         minCellsAfterQc=1,
-        maxPctCellsDropped=0.4,
+        minPctCellsAfterQc=0.5,
     )
 
     with pytest.raises(FileRejected) as excinfo:
@@ -299,13 +299,13 @@ def test_apply_qc_gate_dropout_gate_off_by_default() -> None:
         minCellsPerGene=0,
         maxPctMito=100.0,
         minCellsAfterQc=1,
-        maxPctCellsDropped=None,
+        minPctCellsAfterQc=None,
     )
 
     filtered, stats = apply_qc_gate(adata, cfg)
 
     assert filtered.n_obs == 2
-    assert stats.pctCellsDropped == 0.6
+    assert stats.pctCellsAfter == 0.4
 
 
 # --- prepare_adata download failures (unit) ---

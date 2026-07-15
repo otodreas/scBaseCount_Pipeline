@@ -28,7 +28,7 @@ class QcStats:
     medianPctMito: float
     medianPctRibo: float
     medianPctHb: float
-    pctCellsDropped: float
+    pctCellsAfter: float
 
 
 def flag_qc_genes(adata: ad.AnnData) -> None:
@@ -55,11 +55,11 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
         adata = adata[adata.obs["pct_counts_hb"] < cfg.maxPctHb].copy()
 
     n_cells_after = adata.n_obs
-    pct_dropped = (n_cells_before - n_cells_after) / n_cells_before if n_cells_before > 0 else 0.0
+    pct_cells_after = n_cells_after / n_cells_before if n_cells_before > 0 else 0.0
 
     if n_cells_after < cfg.minCellsAfterQc:
         raise FileRejected(SkipReason.too_few_cells)
-    if cfg.maxPctCellsDropped is not None and pct_dropped > cfg.maxPctCellsDropped:
+    if cfg.minPctCellsAfterQc is not None and pct_cells_after < cfg.minPctCellsAfterQc:
         raise FileRejected(SkipReason.excessive_cell_dropout)
 
     median_genes = float(adata.obs["n_genes_by_counts"].median()) if n_cells_after > 0 else 0.0
@@ -76,5 +76,5 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
         medianPctMito=median_mito,
         medianPctRibo=median_ribo,
         medianPctHb=median_hb,
-        pctCellsDropped=pct_dropped,
+        pctCellsAfter=pct_cells_after,
     )

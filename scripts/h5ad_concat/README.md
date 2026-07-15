@@ -83,7 +83,7 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
 | At least `minCellsAfterQc` cells remain after QC | `too_few_cells` | yes    |
-| Cell dropout fraction at or below `maxPctCellsDropped` | `excessive_cell_dropout` | yes |
+| Cell dropout fraction at or below `minPctCellsAfterQc` | `excessive_cell_dropout` | yes |
 
 
 
@@ -113,7 +113,7 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 | `maxPctHb`           | `None`                          | Optional hemoglobin read fraction ceiling; unset records the metric without filtering |
 | `minCellsPerGene`    | `3`                             | Minimum cells expressing a gene; set `0` to disable |
 | `minCellsAfterQc`    | `100`                           | Absolute floor: minimum cells remaining after QC or file is skipped |
-| `maxPctCellsDropped` | `40.0`                          | Relative floor: reject when more than this percent of input cells are dropped; set `None` to disable |
+| `minPctCellsAfterQc` | `40.0`                          | Relative floor: reject when less than this percent of input cells remain after QC; set `None` to disable |
 
 
 
@@ -145,7 +145,7 @@ QC records `pct_counts_mt`, `pct_counts_ribo`, and `pct_counts_hb` per cell. Onl
 
 ## Cell-count gates and the dropout denominator
 
-Per-cell QC filters low-quality cells; dataset-level gates then decide whether the filtered remainder is still trustworthy enough to merge. A file is rejected when either gate fails: fewer than `minCellsAfterQc` cells remain (absolute floor, default 100), or more than `maxPctCellsDropped` percent of input cells were dropped (relative floor, default 40%).
+Per-cell QC filters low-quality cells; dataset-level gates then decide whether the filtered remainder is still trustworthy enough to merge. A file is rejected when either gate fails: fewer than `minCellsAfterQc` cells remain (absolute floor, default 100), or less than `minPctCellsAfterQc` percent cells remain  (relative floor, default 40%).
 
 The relative gate is only meaningful when the input matrix is already cell-called. scBaseCount h5ads are produced by scRecounter with STARsolo `--soloCellFilter EmptyDrops_CR` (CellRanger-style empty-droplet removal; Youngblut et al. 2025, Methods 5.2). The denominator for `pctCellsDropped` is therefore called cells, not raw barcodes, so a high drop fraction signals systemic dataset badness rather than routine empty-droplet removal.
 
