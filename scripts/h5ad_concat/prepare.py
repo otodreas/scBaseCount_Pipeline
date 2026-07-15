@@ -13,6 +13,7 @@ from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
 from h5ad_concat.qc import apply_qc_gate
+from h5ad_concat.reference import GeneReference, align_to_reference
 
 
 def accession_from_r2_key(r2_key: str) -> str:
@@ -56,6 +57,7 @@ def prepare_adata(
     accession: str,
     cfg: H5adConcatConfig,
     contexts: dict[str, ExperimentContext],
+    reference: GeneReference,
     log: logging.Logger,
 ) -> tuple[ad.AnnData, str]:
     """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession)."""
@@ -93,6 +95,15 @@ def prepare_adata(
                 qc_stats.nCellsBefore,
                 qc_stats.pctCellsAfter * 100.0,
             )
+
+        adata, align_stats = align_to_reference(adata, reference)
+        log.info(
+            "%s: aligned %d genes (%d zero-filled, %d dropped)",
+            accession,
+            align_stats.nGenesMapped,
+            align_stats.nGenesZeroFilled,
+            align_stats.nGenesDropped,
+        )
 
         validate_single_accession(adata, accession, cfg)
 

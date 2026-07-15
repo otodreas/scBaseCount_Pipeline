@@ -15,6 +15,7 @@ from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.merge import concat_atlas, write_atlas
 from h5ad_concat.models import H5adConcatResult, SkippedFile
 from h5ad_concat.prepare import accession_from_r2_key, prepare_adata
+from h5ad_concat.reference import load_gene_reference
 
 _log = configure_file_logger("h5ad_concat.log", __name__)
 
@@ -66,6 +67,7 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     """Download, validate, and concatenate h5ad files from R2 into a local atlas."""
     r2_keys = resolve_r2_keys(cfg)
     contexts = load_contexts_jsonl(cfg.contextsPath)
+    reference = load_gene_reference(cfg.geneInfoPath)
     skipped: list[SkippedFile] = []
     adatas = []
     studies: list[str] = []
@@ -74,7 +76,7 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     for r2_key in r2_keys:
         accession = accession_from_r2_key(r2_key)
         try:
-            adata, study_accession = prepare_adata(r2_key, accession, cfg, contexts, _log)
+            adata, study_accession = prepare_adata(r2_key, accession, cfg, contexts, reference, _log)
             adatas.append(adata)
             studies.append(study_accession)
             accessions.append(accession)
