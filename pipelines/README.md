@@ -236,3 +236,19 @@ uv run python pipelines/run_annotation_inspection_pipeline.py \
 uv run python pipelines/run_annotation_inspection_pipeline.py \
   --from-summary output/annotation_inspection_pipeline/20260603_120000/summary.csv
 ```
+
+---
+
+## `run_atlas_concat.py`
+
+Concatenates raw scBaseCount h5ads into one merged atlas via [`h5ad_concat`](../scripts/h5ad_concat/README.md): download each file from R2, validate and QC it, align to the reference gene axis, and merge the passing files. Unlike the other runners it has no CLI flags; edit the `H5adConcatConfig` in the script (for example `atlasR2Key`, and `uploadAtlas=True` to push the atlas to R2).
+
+Reads `output/metadata/datasets.csv` by default (config `datasetsPath`).
+
+**Output:** `output/atlas/data/` (`atlas.h5ad`, `atlas_config.json`, `atlas.csv`, `atlas_result.json`)
+
+**Log:** `logs/h5ad_concat.log`
+
+```sh
+uv run python pipelines/run_atlas_concat.py
+```

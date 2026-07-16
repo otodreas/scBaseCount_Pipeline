@@ -33,7 +33,7 @@ class H5adConcatConfig(BaseModel):
     downloadBatchSize: int = Field(default=8, ge=1)
     compression: Literal["gzip", "lzf"] | None = "gzip"
     verifyMd5: bool = True
-    uploadAtlas: bool = False
+    uploadAtlas: bool = True
     atlasR2Key: str | None = None
     preprocess: bool = True
     # Reindex every layer (e.g. STARsolo UniqueAndMult matrices) onto the reference axis instead of X only.
