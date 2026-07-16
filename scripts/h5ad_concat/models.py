@@ -31,5 +31,10 @@ class H5adConcatResult(BaseModel):
     nFilesConcatenated: int
     studiesSeen: list[str]
     skipped: list[SkippedFile]
+    statusCsvPath: Path
+    configPath: Path
     atlasR2Key: str | None = None
+    atlasStatusR2Key: str | None = None
+    atlasConfigR2Key: str | None = None
+    atlasResultR2Key: str | None = None
     conserveLayers: bool = False
