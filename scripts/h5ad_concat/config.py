@@ -29,6 +29,7 @@ class H5adConcatConfig(BaseModel):
     )
     cacheDir: Path = REPO_ROOT / "data" / "h5ad_concat" / "cache"
     outputPath: Path = REPO_ROOT / "output" / "atlas" / "data" / "atlas.h5ad"
+    # Placeholder: yet to be implemented
     downloadBatchSize: int = Field(default=8, ge=1)
     compression: Literal["gzip", "lzf"] | None = "gzip"
     verifyMd5: bool = True
