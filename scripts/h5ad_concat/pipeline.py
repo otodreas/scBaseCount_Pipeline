@@ -69,10 +69,6 @@ def _finalize_outputs(
     config_path = _config_manifest_path(output_path)
     result_path = _result_manifest_path(output_path)
 
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    config_path.write_text(json.dumps(cfg.model_dump(mode="json"), indent=2))
-    _log.info("Wrote config manifest to %s", config_path)
-
     if cfg.uploadAtlas and cfg.atlasR2Key:
         r2_key = cfg.atlasR2Key
         status_r2_key = _sibling_r2_key(r2_key, ".csv")
@@ -125,7 +121,10 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     _log.info("Starting h5ad_concat run: %d key(s)", len(r2_keys))
 
     csv_path = cfg.outputPath.with_suffix(".csv")
+    config_path = _config_manifest_path(cfg.outputPath)
     csv_path.parent.mkdir(parents=True, exist_ok=True)
+    config_path.write_text(json.dumps(cfg.model_dump(mode="json"), indent=2))
+    _log.info("Wrote config manifest to %s", config_path)
     contexts = load_contexts_jsonl(cfg.contextsPath)
     reference = load_gene_reference(cfg.geneInfoPath)
     skipped: list[SkippedFile] = []
@@ -194,7 +193,7 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
             studiesSeen=sorted(set(studies)),
             skipped=skipped,
             statusCsvPath=csv_path,
-            configPath=_config_manifest_path(output_path),
+            configPath=config_path,
             atlasR2Key=cfg.atlasR2Key if cfg.uploadAtlas else None,
             conserveLayers=cfg.conserveLayers,
         )

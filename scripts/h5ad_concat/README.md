@@ -139,11 +139,16 @@ Exactly one of `r2Keys` or `datasetsPath` is required.
 - `atlasResultR2Key`: R2 object key for the result manifest when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
 - `conserveLayers`: whether alignment reindexed all layers onto the reference axis for this run
 
-During the run, a status CSV is written next to the atlas (e.g. `output/atlas/data/atlas.csv`) with one row per input file: `accession`, `r2Key`, `status` (`success` or `skip`), `reason`, and `studyAccession`. Rows are flushed after each file, so a partial ledger survives an interrupted run.
+A run writes up to four files next to the atlas output path (`cfg.outputPath`, default `output/atlas/data/atlas.h5ad`), all locally regardless of upload. R2 upload is optional: when `uploadAtlas` is true and upload verifies, each file is uploaded to R2 under the atlas key stem and the local `.h5ad` is deleted.
 
-After the run finishes, two JSON manifests are always written locally next to the atlas: a config manifest at `{atlas}_config.json` (e.g. `output/atlas/data/atlas_config.json`) holding the `H5adConcatConfig` used for the run, and a result manifest at `{atlas}_result.json` (e.g. `output/atlas/data/atlas_result.json`) holding `H5adConcatResult`. Together they make the run inputs and outputs readable without pulling the atlas from R2.
+| Output | Local file | R2 key when `uploadAtlas` | Written | Contents |
+| ------ | ---------- | ------------------------- | ------- | -------- |
+| Config | `atlas_config.json` | `{stem}_config.json` | At run start | The `H5adConcatConfig` used for the run |
+| Status | `atlas.csv` | `{stem}.csv` | Row per file during the loop | Per-file `accession`, `r2Key`, `status` (`success` or `skip`), `reason`, `studyAccession` |
+| Atlas | `atlas.h5ad` (deleted after successful upload) | `atlasR2Key` (the configured key) | After concatenation | Merged gzip-compressed AnnData |
+| Result | `atlas_result.json` | `{stem}_result.json` | After concatenation | The `H5adConcatResult` |
 
-When `uploadAtlas` is true and upload verifies, the local `.h5ad` is deleted, the status CSV and both manifests are uploaded to R2 alongside the atlas (same key stem, with `.csv`, `_config.json`, and `_result.json` respectively), and `outputPath` in the result points at the result manifest.
+The config manifest is written up front and the status CSV is flushed row by row during the loop, so both survive an interrupted or failed run (including when every file is rejected). The atlas and result manifest are written only once concatenation succeeds. Together these make the run inputs and outputs readable without pulling the atlas from R2. When the atlas is uploaded, `outputPath` in the result points at the result manifest instead of the deleted local `.h5ad`.
 
 Logs append to `logs/h5ad_concat.log`. Each run logs a start line and a completion line; `KeyboardInterrupt` (Ctrl-C) is logged as an interruption before the exception is re-raised.
 
