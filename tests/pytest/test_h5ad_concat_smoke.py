@@ -6,6 +6,7 @@ prepare_adata -> apply_qc_gate -> concat_atlas -> write_atlas run for real.
 
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Sequence
 
@@ -99,6 +100,11 @@ def _reference_for_adatas(adatas_by_key: dict[str, ad.AnnData]) -> GeneReference
     return GeneReference(ids=ids, var=var)
 
 
+def _read_status_csv(path) -> pd.DataFrame:
+    """Load the per-file status CSV written by run_h5ad_concat."""
+    return pd.read_csv(path)
+
+
 def _run_pipeline(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
@@ -158,6 +164,15 @@ def test_run_h5ad_concat_happy_path(monkeypatch, tmp_path) -> None:
     assert result.nObs == a1.n_obs + a2.n_obs
     assert result.skipped == []
     assert result.studiesSeen == ["STUDY_SRX1", "STUDY_SRX2"]
+    assert result.statusCsvPath == out.with_suffix(".csv")
+    status = _read_status_csv(result.statusCsvPath)
+    assert list(status.columns) == ["accession", "r2Key", "status", "reason", "studyAccession"]
+    assert list(status["status"]) == ["success", "success"]
+    assert result.configPath == tmp_path / "atlas_config.json"
+    assert (tmp_path / "atlas_result.json").exists()
+    assert (tmp_path / "atlas_config.json").exists()
+    config = json.loads((tmp_path / "atlas_config.json").read_text())
+    assert config["minGenesPerCell"] == 10
     assert out.exists()
     reloaded = ad.read_h5ad(out)
     assert reloaded.n_obs == result.nObs
@@ -186,15 +201,21 @@ def test_run_h5ad_concat_skips_rejected_and_continues(monkeypatch, tmp_path) -> 
     assert len(result.skipped) == 1
     assert result.skipped[0].accession == "SRX2"
     assert result.skipped[0].reason is SkipReason.cell_type_all_missing
+    status = _read_status_csv(result.statusCsvPath)
+    assert list(status["status"]) == ["success", "skip"]
+    assert status.loc[status["status"] == "skip", "reason"].iloc[0] == "cell_type_all_missing"
+    assert (tmp_path / "atlas_result.json").exists()
+    assert (tmp_path / "atlas_config.json").exists()
     assert out.exists()
 
 
 def test_run_h5ad_concat_raises_when_all_rejected(monkeypatch, tmp_path) -> None:
     key = "prefix/SRX1.h5ad"
     rejected = _make_adata("SRX1", [None, ""], pad_to_genes=500)
+    out = tmp_path / "atlas.h5ad"
     cfg = _cfg(
         r2Keys=[key],
-        outputPath=tmp_path / "atlas.h5ad",
+        outputPath=out,
         cacheDir=tmp_path,
         minGenesPerCell=10,
         minCellsPerGene=0,
@@ -203,6 +224,11 @@ def test_run_h5ad_concat_raises_when_all_rejected(monkeypatch, tmp_path) -> None
 
     with pytest.raises(ValueError, match="No files passed validation"):
         _run_pipeline(monkeypatch, tmp_path, {key: rejected}, cfg)
+
+    status = _read_status_csv(out.with_suffix(".csv"))
+    assert len(status) == 1
+    assert status.loc[0, "status"] == "skip"
+    assert status.loc[0, "reason"] == "cell_type_all_missing"
 
 
 # --- qc.py (unit) ---
