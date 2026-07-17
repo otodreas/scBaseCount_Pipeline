@@ -24,6 +24,7 @@ output/cyteonto_pipeline/*/results/
 output/annotation_inspection_pipeline/
 output/umap_plots/
 output/atlas/sample20/
+atlas.h5ad
 
 # Logs
 logs/
