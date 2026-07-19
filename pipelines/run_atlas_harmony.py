@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+import numpy as np
 import scanpy as sc
 from pydantic import BaseModel
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
@@ -121,6 +122,33 @@ def make_plots(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> None:
         plt.close(fig)
 
 
+def save_scree_plot(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> Path:
+    """Save a PCA scree plot of per-PC and cumulative explained variance, marking the PCs used for the graph."""
+    variance_ratio = adata.uns["pca"]["variance_ratio"]
+    pcs = np.arange(1, len(variance_ratio) + 1)
+    cfg.figsDir.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.bar(pcs, variance_ratio * 100, color="steelblue", alpha=0.7)
+    ax.set_xlabel("Principal component")
+    ax.set_ylabel("Explained variance (%)", color="steelblue")
+    ax.axvline(cfg.nPcs, color="gray", linestyle="--", linewidth=1, label=f"nPcs = {cfg.nPcs}")
+
+    ax2 = ax.twinx()
+    ax2.plot(pcs, np.cumsum(variance_ratio) * 100, color="crimson", marker="o", ms=3)
+    ax2.set_ylabel("Cumulative explained variance (%)", color="crimson")
+
+    ax.set_title("PCA scree plot")
+    ax.legend(loc="center right", fontsize=8)
+    fig.tight_layout()
+
+    scree_path = cfg.figsDir / "pca_scree.png"
+    fig.savefig(scree_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    log.info("Wrote %s", rel_to_repo(scree_path))
+    return scree_path
+
+
 def save_atlas(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> None:
     """Write the processed atlas h5ad and a run summary JSON alongside it."""
     cfg.outputH5ad.parent.mkdir(parents=True, exist_ok=True)
@@ -161,6 +189,7 @@ def run(cfg: AtlasHarmonyConfig) -> None:
     adata = _timed("harmony integration", lambda: integrate_harmony(adata, cfg))
 
     if cfg.writePlots:
+        _timed("scree plot", lambda: save_scree_plot(adata, cfg))
         _timed("plots", lambda: make_plots(adata, cfg))
     _timed("save", lambda: save_atlas(adata, cfg))
 
