@@ -17,6 +17,7 @@ import scanpy as sc
 from pydantic import BaseModel
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
+from storage.r2 import upload_to_r2, verify_upload
 from umap_plots import plot_umap
 from umap_plots.config import UmapPlotConfig
 
@@ -24,24 +25,23 @@ _LOG_FILENAME = "atlas_harmony.log"
 log = configure_file_logger(_LOG_FILENAME, __name__)
 add_stdout_handler()
 
-_DEFAULT_INPUT = REPO_ROOT / "output" / "atlas" / "data" / "atlas_sample20.h5ad"
-_DEFAULT_OUTPUT = REPO_ROOT / "output" / "atlas" / "data" / "atlas_sample20_harmony.h5ad"
-_DEFAULT_FIGS = REPO_ROOT / "output" / "atlas" / "figs"
-
-
 class AtlasHarmonyConfig(BaseModel):
-    inputH5ad: Path
-    outputH5ad: Path
-    figsDir: Path
+    inputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v1" / "atlas.h5ad"
+    outputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v1" / "processed" / "atlas_harmony.h5ad"
+    figsDir: Path = REPO_ROOT / "output" / "atlas" / "v1" / "processed" / "figs"
     batchKey: str = "study_accession"
     cellTypeKey: str = "cell_type"
     nTopGenes: int = 2000
     nPcs: int = 20
-    nPcsCompute: int = 25
+    nPcsCompute: int = 20
     resolution: float = 1.0
     scaleMaxValue: float = 10.0  # clip z-scores to +scaleMaxValue SD
     writePlots: bool = True
     compression: Literal["gzip", "lzf"] | None = "gzip"
+    r2Key: str | None = None
+
+
+_DEFAULT_CFG = AtlasHarmonyConfig()
 
 
 def load_and_normalize(cfg: AtlasHarmonyConfig) -> sc.AnnData:
@@ -65,11 +65,13 @@ def embed_uncorrected(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> sc.AnnData:
 
     sc.pp.scale(adata, max_value=cfg.scaleMaxValue)
     sc.tl.pca(adata, n_comps=cfg.nPcsCompute, svd_solver="arpack")
+    log.info("Computed %s PCs", cfg.nPcsCompute)
 
     sc.pp.neighbors(adata, n_pcs=cfg.nPcs)
+    log.info("Computed neighbors")
     sc.tl.umap(adata)
     adata.obsm["X_umap_uncorrected"] = adata.obsm["X_umap"].copy()
-
+    log.info("Computed UMAP")
     sc.tl.leiden(
         adata,
         resolution=cfg.resolution,
@@ -86,10 +88,12 @@ def integrate_harmony(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> sc.AnnData:
     """Run Harmony on the PCA embedding and build the corrected UMAP and leiden partition."""
     harmony_out = harmonypy.run_harmony(adata.obsm["X_pca"], adata.obs, cfg.batchKey)
     adata.obsm["X_pca_harmony"] = harmony_out.Z_corr
+    log.info("Ran Harmony integration with batch key %s", cfg.batchKey)
 
     sc.pp.neighbors(adata, use_rep="X_pca_harmony")
+    log.info("Computed neighbors using Harmony-corrected PCA")
     sc.tl.umap(adata)
-
+    log.info("Computed UMAP using Harmony-corrected PCA")
     sc.tl.leiden(
         adata,
         resolution=cfg.resolution,
@@ -181,6 +185,12 @@ def _timed[T](name: str, action: Callable[[], T]) -> T:
     log.info("DONE %s in %.1fs", name, time.perf_counter() - started)
     return result
 
+def _upload_atlas(cfg: AtlasHarmonyConfig) -> None:
+    """Upload the saved atlas h5ad to R2 and confirm the object is present."""
+    assert cfg.r2Key is not None
+    upload_to_r2(cfg.outputH5ad, cfg.r2Key)
+    if not verify_upload(cfg.r2Key):
+        raise RuntimeError(f"R2 upload verification failed for {cfg.r2Key}")
 
 def run(cfg: AtlasHarmonyConfig) -> None:
     """Run the full atlas Harmony flow: load, embed, integrate, plot, and save."""
@@ -191,22 +201,30 @@ def run(cfg: AtlasHarmonyConfig) -> None:
     if cfg.writePlots:
         _timed("scree plot", lambda: save_scree_plot(adata, cfg))
         _timed("plots", lambda: make_plots(adata, cfg))
-    _timed("save", lambda: save_atlas(adata, cfg))
+    _timed("save atlas", lambda: save_atlas(adata, cfg))
+    if cfg.r2Key:
+        _timed("upload to r2", lambda: _upload_atlas(cfg))
+
+
 
 
 def _parse_args() -> argparse.Namespace:
+    d = _DEFAULT_CFG
     parser = argparse.ArgumentParser(description="Run Harmony batch correction and clustering on a merged atlas h5ad.")
-    parser.add_argument("--input", type=Path, default=_DEFAULT_INPUT, metavar="PATH", help="Input atlas h5ad")
-    parser.add_argument("--output", type=Path, default=_DEFAULT_OUTPUT, metavar="PATH", help="Output atlas h5ad")
-    parser.add_argument("--figs-dir", type=Path, default=_DEFAULT_FIGS, metavar="PATH", help="Directory for UMAP PNGs")
-    parser.add_argument("--batch-key", type=str, default="study_accession", metavar="COL", help="obs batch column")
-    parser.add_argument("--cell-type-key", type=str, default="cell_type", metavar="COL", help="obs cell type column")
-    parser.add_argument("--n-top-genes", type=int, default=2000, metavar="N", help="Number of HVGs")
-    parser.add_argument("--n-pcs", type=int, default=30, metavar="N", help="PCs used for the neighbor graph")
-    parser.add_argument("--n-pcs-compute", type=int, default=50, metavar="N", help="PCs computed by PCA")
-    parser.add_argument("--resolution", type=float, default=1.0, metavar="R", help="Leiden resolution")
+    parser.add_argument("--input", type=Path, default=d.inputH5ad, metavar="PATH", help="Input atlas h5ad")
+    parser.add_argument("--output", type=Path, default=d.outputH5ad, metavar="PATH", help="Output atlas h5ad")
+    parser.add_argument("--figs-dir", type=Path, default=d.figsDir, metavar="PATH", help="Directory for UMAP PNGs")
+    parser.add_argument("--batch-key", type=str, default=d.batchKey, metavar="COL", help="obs batch column")
+    parser.add_argument("--cell-type-key", type=str, default=d.cellTypeKey, metavar="COL", help="obs cell type column")
+    parser.add_argument("--n-top-genes", type=int, default=d.nTopGenes, metavar="N", help="Number of HVGs")
+    parser.add_argument("--n-pcs", type=int, default=d.nPcs, metavar="N", help="PCs used for the neighbor graph")
+    parser.add_argument(
+        "--n-pcs-compute", type=int, default=d.nPcsCompute, metavar="N", help="PCs computed by PCA"
+    )
+    parser.add_argument("--resolution", type=float, default=d.resolution, metavar="R", help="Leiden resolution")
     parser.add_argument("--no-plots", action="store_true", help="Skip writing UMAP PNGs")
     parser.add_argument("--threads", type=int, default=0, metavar="N", help="scanpy n_jobs (0 leaves the default)")
+    parser.add_argument("--r2-key", type=str, default=d.r2Key, metavar="KEY", help="R2 key")
     return parser.parse_args()
 
 
@@ -216,17 +234,20 @@ def main() -> None:
     if args.threads > 0:
         sc.settings.n_jobs = args.threads
 
-    cfg = AtlasHarmonyConfig(
-        inputH5ad=args.input,
-        outputH5ad=args.output,
-        figsDir=args.figs_dir,
-        batchKey=args.batch_key,
-        cellTypeKey=args.cell_type_key,
-        nTopGenes=args.n_top_genes,
-        nPcs=args.n_pcs,
-        nPcsCompute=args.n_pcs_compute,
-        resolution=args.resolution,
-        writePlots=not args.no_plots,
+    cfg = _DEFAULT_CFG.model_copy(
+        update={
+            "inputH5ad": args.input,
+            "outputH5ad": args.output,
+            "figsDir": args.figs_dir,
+            "batchKey": args.batch_key,
+            "cellTypeKey": args.cell_type_key,
+            "nTopGenes": args.n_top_genes,
+            "nPcs": args.n_pcs,
+            "nPcsCompute": args.n_pcs_compute,
+            "resolution": args.resolution,
+            "writePlots": not args.no_plots,
+            "r2Key": args.r2_key,
+        }
     )
 
     log_run_separator(log)
