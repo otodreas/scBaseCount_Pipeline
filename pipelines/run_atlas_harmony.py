@@ -25,6 +25,7 @@ _LOG_FILENAME = "atlas_harmony.log"
 log = configure_file_logger(_LOG_FILENAME, __name__)
 add_stdout_handler()
 
+
 class AtlasHarmonyConfig(BaseModel):
     inputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v1" / "atlas.h5ad"
     outputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v1" / "processed" / "atlas_harmony.h5ad"
@@ -185,12 +186,14 @@ def _timed[T](name: str, action: Callable[[], T]) -> T:
     log.info("DONE %s in %.1fs", name, time.perf_counter() - started)
     return result
 
+
 def _upload_atlas(cfg: AtlasHarmonyConfig) -> None:
     """Upload the saved atlas h5ad to R2 and confirm the object is present."""
     assert cfg.r2Key is not None
     upload_to_r2(cfg.outputH5ad, cfg.r2Key)
     if not verify_upload(cfg.r2Key):
         raise RuntimeError(f"R2 upload verification failed for {cfg.r2Key}")
+
 
 def run(cfg: AtlasHarmonyConfig) -> None:
     """Run the full atlas Harmony flow: load, embed, integrate, plot, and save."""
@@ -206,8 +209,6 @@ def run(cfg: AtlasHarmonyConfig) -> None:
         _timed("upload to r2", lambda: _upload_atlas(cfg))
 
 
-
-
 def _parse_args() -> argparse.Namespace:
     d = _DEFAULT_CFG
     parser = argparse.ArgumentParser(description="Run Harmony batch correction and clustering on a merged atlas h5ad.")
@@ -218,9 +219,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--cell-type-key", type=str, default=d.cellTypeKey, metavar="COL", help="obs cell type column")
     parser.add_argument("--n-top-genes", type=int, default=d.nTopGenes, metavar="N", help="Number of HVGs")
     parser.add_argument("--n-pcs", type=int, default=d.nPcs, metavar="N", help="PCs used for the neighbor graph")
-    parser.add_argument(
-        "--n-pcs-compute", type=int, default=d.nPcsCompute, metavar="N", help="PCs computed by PCA"
-    )
+    parser.add_argument("--n-pcs-compute", type=int, default=d.nPcsCompute, metavar="N", help="PCs computed by PCA")
     parser.add_argument("--resolution", type=float, default=d.resolution, metavar="R", help="Leiden resolution")
     parser.add_argument("--no-plots", action="store_true", help="Skip writing UMAP PNGs")
     parser.add_argument("--threads", type=int, default=0, metavar="N", help="scanpy n_jobs (0 leaves the default)")
