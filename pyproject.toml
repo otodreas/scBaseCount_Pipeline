@@ -41,6 +41,7 @@ dependencies = [
     "xarray>=2026.4.0",
     "statsmodels>=0.14.6",
     "celltypist>=1.7.1",
+    "harmonypy>=2.0.0",
 ]
 
 [dependency-groups]
