@@ -1,0 +1,13 @@
+{
+  "input": "output/atlas/v1/atlas.h5ad",
+  "output": "output/atlas/v1/processed_1/atlas_harmony.h5ad",
+  "figsDir": "output/atlas/v1/processed_1/figs",
+  "cells": 4730766,
+  "hvgs": 2000,
+  "studies": 103,
+  "clustersUncorrected": 66,
+  "clustersHarmony": 49,
+  "resolution": 1.0,
+  "nPcs": 20,
+  "nTopGenes": 2000
+}
