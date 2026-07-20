@@ -130,6 +130,23 @@
                 "--datasets",
                 "${workspaceFolder}/output/metadata/datasets_test.csv",
             ]
+        },
+        {
+            "name": "run_scib_benchmark",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "program": "${workspaceFolder}/pipelines/run_scib_benchmark.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--input",
+                "output/atlas/v1/processed_1/atlas_harmony.h5ad",
+                "--out-dir",
+                "output/atlas/v1/processed_1/scib"
+            ]
         }
     ]
 }
