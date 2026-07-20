@@ -42,6 +42,7 @@ dependencies = [
     "statsmodels>=0.14.6",
     "celltypist>=1.7.1",
     "harmonypy>=2.0.0",
+    "scib-metrics>=0.5.10",
 ]
 
 [dependency-groups]
