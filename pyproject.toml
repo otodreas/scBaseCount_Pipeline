@@ -15,6 +15,7 @@ packages = [
     "scripts/annotation_inspector",
     "scripts/h5ad_concat",
     "scripts/umap_plots",
+    "scripts/scib_benchmark",
 ]
 
 [project]
