@@ -2,6 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+        },
+        {
             "name": "run_annotation_inspection_pipeline",
             "type": "debugpy",
             "request": "launch",
@@ -11,11 +19,15 @@
             "envFile": "${workspaceFolder}/.env",
             "justMyCode": false,
             "args": [
-                "--input-prefix", "cytetype_pipeline_20260522_175813",
-                "--cyteonto-prefix", "cyteonto_pipeline_20260526_112224",
-                "--workers", "10",
+                "--input-prefix",
+                "cytetype_pipeline_20260522_175813",
+                "--cyteonto-prefix",
+                "cyteonto_pipeline_20260526_112224",
+                "--workers",
+                "10",
                 // "--dry-run",
-                "--metadata", "dry run from 'run_annotation_inspection_pipeline' debug config (.vscode/launch.json)",
+                "--metadata",
+                "dry run from 'run_annotation_inspection_pipeline' debug config (.vscode/launch.json)",
                 // "--no-umap", "--no-extremes",
             ]
         },
@@ -129,6 +141,23 @@
             "args": [
                 "--datasets",
                 "${workspaceFolder}/output/metadata/datasets_test.csv",
+            ]
+        },
+        {
+            "name": "run_scib_benchmark",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "program": "${workspaceFolder}/pipelines/run_scib_benchmark.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
+            "justMyCode": false,
+            "args": [
+                "--input",
+                "output/atlas/v1/processed_1/atlas_harmony.h5ad",
+                "--out-dir",
+                "output/atlas/v1/processed_1/scib"
             ]
         }
     ]
