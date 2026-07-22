@@ -84,6 +84,7 @@ def embed_uncorrected(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> sc.AnnData:
 
 def integrate_harmony(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> sc.AnnData:
     """Run Harmony on the PCA embedding and build the corrected UMAP and leiden partition."""
+    # harmonypy 2.x returns Z_corr as (cells, PCs); scanpy still transposes it again.
     harmony_out = harmonypy.run_harmony(adata.obsm["X_pca"], adata.obs, cfg.batchKey)
     adata.obsm["X_pca_harmony"] = harmony_out.Z_corr
 
