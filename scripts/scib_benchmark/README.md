@@ -47,6 +47,12 @@ Written under `--out-dir`:
 
 If both `scib_results.csv` and `scib_results.svg` already exist, the run exits immediately (unless `--force`). A partial cache (only one file) triggers a full re-run with a warning.
 
+## Neighbor graphs
+
+`Benchmarker.prepare()` computes its own neighbor graphs with pynndescent, one per benchmarked embedding, at 90 neighbors (then subset to 15, 50, 90 for different metrics). Any neighbor graph already stored on the atlas (for example the `sc.pp.neighbors` output in `adata.obsp`/`adata.uns` from the Harmony pipeline) is ignored.
+
+This is the intended behavior and is scientifically appropriate: each embedding must be scored on a graph derived from that same embedding, so the neighbor-based metrics (cLISI, iLISI, KBET, graph connectivity) stay comparable across embeddings. A single precomputed graph is built on one representation and cannot serve the others, so reusing it would bias the comparison. Letting scib rebuild per-embedding graphs with fixed settings keeps the benchmark self-consistent and matches the upstream scIB methodology. The tradeoff is runtime, since the neighbor searches over all embeddings are a large part of the total compute.
+
 ## Reload results
 
 ```python
