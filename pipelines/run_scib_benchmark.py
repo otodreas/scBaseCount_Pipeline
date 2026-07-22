@@ -43,10 +43,11 @@ def main() -> None:
         n_jobs=6,
     )
     bm.benchmark()
+    log.info("scib benchmark metrics computed")
     df = bm.get_results()
     df.to_csv(args.out_dir / "scib_results.csv")
     bm.plot_results_table(show=False, save_dir=str(args.out_dir))
-    log.info("scib benchmark run complete")
+    log.info("scib benchmark plot & csv saved")
 
 
 if __name__ == "__main__":
