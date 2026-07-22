@@ -30,10 +30,6 @@ def main() -> None:
         "input=%s out_dir=%s batch_key=%s label_key=%s embeddings=%s n_jobs=%d force=%s",
         rel_to_repo(args.input),
         rel_to_repo(args.out_dir),
-        args.batch_key,
-        args.label_key,
-        args.embeddings,
-        args.n_jobs,
         args.force,
     )
     bm = Benchmarker(
