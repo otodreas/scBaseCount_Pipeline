@@ -27,7 +27,7 @@ def main() -> None:
     log_run_separator(log)
     log.info("scib benchmark run started")
     log.info(
-        "input=%s out_dir=%s batch_key=%s label_key=%s embeddings=%s n_jobs=%d force=%s",
+        "input=%s out_dir=%s, force=%s",
         rel_to_repo(args.input),
         rel_to_repo(args.out_dir),
         args.force,
