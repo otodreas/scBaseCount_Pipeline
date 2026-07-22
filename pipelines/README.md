@@ -252,3 +252,47 @@ Reads `output/metadata/datasets.csv` by default (config `datasetsPath`).
 ```sh
 uv run python pipelines/run_atlas_concat.py
 ```
+
+---
+
+## `run_atlas_harmony.py`
+
+Batch-corrects a merged atlas h5ad with Harmony on `study_accession`, then compares pre- and post-correction embeddings. Loads the atlas, normalizes and log-transforms counts, selects batch-aware HVGs, runs PCA, builds uncorrected and Harmony-corrected neighbor graphs and UMAPs, and clusters with Leiden. UMAP PNGs use [`umap_plots`](../scripts/umap_plots/README.md).
+
+Typical input: an atlas written by [`run_atlas_concat.py`](#run_atlas_concatpy) (for example `output/atlas/data/atlas_sample20.h5ad`).
+
+**Output:** paths below use CLI defaults; override with `--input`, `--output`, and `--figs-dir`.
+
+| File | Description |
+|------|-------------|
+| `{output}.h5ad` | Processed atlas with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
+| `{output_stem}_run.json` | Run summary (cell counts, HVGs, studies, cluster counts, config) |
+| `{figs_dir}/umap_{batch_key}_uncorrected.png` | Pre-correction UMAP colored by batch |
+| `{figs_dir}/umap_{cell_type_key}_uncorrected.png` | Pre-correction UMAP colored by cell type |
+| `{figs_dir}/umap_{batch_key}_harmony.png` | Harmony-corrected UMAP colored by batch |
+| `{figs_dir}/umap_{cell_type_key}_harmony.png` | Harmony-corrected UMAP colored by cell type |
+| `{figs_dir}/pca_scree.png` | PCA scree plot (per-PC and cumulative variance) |
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--input` | `output/atlas/data/atlas_sample20.h5ad` | Input atlas h5ad |
+| `--output` | `output/atlas/data/atlas_sample20_harmony.h5ad` | Output atlas h5ad |
+| `--figs-dir` | `output/atlas/figs` | Directory for UMAP and scree PNGs |
+| `--batch-key` | `study_accession` | `obs` column for Harmony batch correction |
+| `--cell-type-key` | `cell_type` | `obs` column for cell-type UMAP plots |
+| `--n-top-genes` | `2000` | Number of HVGs |
+| `--n-pcs` | `30` | PCs used for the neighbor graph |
+| `--n-pcs-compute` | `50` | PCs computed by PCA |
+| `--resolution` | `1.0` | Leiden resolution |
+| `--no-plots` | off | Skip writing PNGs (still saves the h5ad and run JSON) |
+| `--threads` | `0` | scanpy `n_jobs` (`0` leaves the default) |
+
+**Log:** `logs/atlas_harmony.log`
+
+```sh
+uv run python pipelines/run_atlas_harmony.py
+
+uv run python pipelines/run_atlas_harmony.py \
+  --input output/atlas/data/atlas.h5ad \
+  --output output/atlas/data/atlas_harmony.h5ad
+```
