@@ -26,6 +26,7 @@ output/umap_plots/
 output/atlas/sample20/
 atlas.h5ad
 atlas_harmony.h5ad
+atlas_harmony_sub.h5ad
 
 # Logs
 logs/
