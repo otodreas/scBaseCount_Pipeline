@@ -1,7 +1,8 @@
 import argparse
 from pathlib import Path
 
-from scib_benchmark import DEFAULT_EMBEDDING_KEYS, run_scib_benchmark
+import scanpy as sc
+from scib_metrics.benchmark import BatchCorrection, Benchmarker, BioConservation
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import rel_to_repo
 
@@ -13,16 +14,6 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run scib_metrics benchmark on atlas embeddings.")
     parser.add_argument("--input", type=Path, required=True, metavar="PATH", help="Input atlas h5ad")
     parser.add_argument("--out-dir", type=Path, required=True, metavar="PATH", help="Output directory")
-    parser.add_argument("--batch-key", type=str, default="study_accession", metavar="COL", help="obs batch column")
-    parser.add_argument("--label-key", type=str, default="cell_type", metavar="COL", help="obs label column")
-    parser.add_argument(
-        "--embeddings",
-        nargs="+",
-        default=DEFAULT_EMBEDDING_KEYS,
-        metavar="KEY",
-        help="obsm keys to benchmark",
-    )
-    parser.add_argument("--n-jobs", type=int, default=6, metavar="N", help="Parallel jobs for neighbor search")
     parser.add_argument(
         "--force",
         action="store_true",
@@ -45,16 +36,20 @@ def main() -> None:
         args.n_jobs,
         args.force,
     )
-    run_scib_benchmark(
-        input_h5ad=args.input,
-        out_dir=args.out_dir,
-        batch_key=args.batch_key,
-        label_key=args.label_key,
-        embedding_keys=args.embeddings,
-        n_jobs=args.n_jobs,
-        force=args.force,
-        log=log,
+    bm = Benchmarker(
+        adata=sc.read_h5ad(args.input, backed="r"),
+        batch_key="study_accession",
+        label_key="cell_type",
+        bio_conservation_metrics=BioConservation(),
+        batch_correction_metrics=BatchCorrection(),
+        embedding_obsm_keys=["X_pca", "X_pca_harmony"],
+        pre_integrated_embedding_obsm_key="X_pca",
+        n_jobs=6,
     )
+    bm.benchmark()
+    df = bm.get_results()
+    df.to_csv(args.out_dir / "scib_results.csv")
+    bm.plot_results_table(show=False, save_dir=str(args.out_dir))
     log.info("scib benchmark run complete")
 
 
