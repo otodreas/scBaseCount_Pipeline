@@ -19,12 +19,19 @@ class ResolutionSelection:
     bestIdx: int
 
 
+def _leiden_key(resolution: float, suffix: str = "") -> str:
+    prefix = f"leiden_{suffix}_" if suffix else "leiden_"
+    return f"{prefix}{resolution}"
+
+
 def select_resolution(
     adata: sc.AnnData,
     cfg: ClusterValidationConfig,
     n_clusters: dict[float, int],
     k_filtered: int,
+    suffix: str = "",
 ) -> tuple[sc.AnnData, ResolutionSelection]:
+    """Pick the resolution with the highest jaccard score against weakPriorKey."""
     resolutions = cfg.resolutions
     ref_labels = adata.obs[cfg.weakPriorKey].values
     celltypes = np.unique(ref_labels)
@@ -32,7 +39,7 @@ def select_resolution(
     jacc_arr = np.zeros(len(resolutions))
 
     for idx, r in enumerate(resolutions):
-        leiden_labels = adata.obs[f"leiden_{r}"].values
+        leiden_labels = adata.obs[_leiden_key(r, suffix)].values
         clusters = np.unique(leiden_labels)
         k, m = len(clusters), len(celltypes)
 
@@ -52,7 +59,7 @@ def select_resolution(
 
     best_idx = int(np.argmax(jacc_arr))
     selected = resolutions[best_idx]
-    cluster_key = f"leiden_{selected}"
+    cluster_key = _leiden_key(selected, suffix)
 
     return adata, ResolutionSelection(
         selectedResolution=selected,

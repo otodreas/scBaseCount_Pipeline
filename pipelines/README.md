@@ -265,7 +265,7 @@ Typical input: an atlas written by [`run_atlas_concat.py`](#run_atlas_concatpy) 
 
 | File | Description |
 |------|-------------|
-| `{output}.h5ad` | Processed atlas with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
+| `{output}.h5ad` | Processed atlas with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, `leiden_harmony_<r>` sweep columns, and `leiden_atlas` (auto-selected best harmony resolution vs `cell_type`) |
 | `{output_stem}_run.json` | Run summary (cell counts, HVGs, studies, cluster counts, config) |
 | `{figs_dir}/umap_{batch_key}_uncorrected.png` | Pre-correction UMAP colored by batch |
 | `{figs_dir}/umap_{cell_type_key}_uncorrected.png` | Pre-correction UMAP colored by cell type |

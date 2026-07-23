@@ -14,7 +14,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import scanpy as sc
-from pydantic import BaseModel
+from cluster_validation.clustering import sweep_leiden
+from cluster_validation.config import ClusterValidationConfig
+from cluster_validation.resolution import select_resolution
+from pydantic import BaseModel, Field
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import REPO_ROOT, rel_to_repo
 from storage.r2 import upload_to_r2, verify_upload
@@ -36,6 +39,7 @@ class AtlasHarmonyConfig(BaseModel):
     nPcs: int = 20
     nPcsCompute: int = 20
     resolution: float = 1.0
+    harmonyResolutions: list[float] = Field(default_factory=lambda: [0.1, 0.2, 0.4, 0.8, 1.5, 2.5, 4.0])
     scaleMaxValue: float = 10.0  # clip z-scores to +scaleMaxValue SD
     writePlots: bool = True
     compression: Literal["gzip", "lzf"] | None = "gzip"
@@ -96,15 +100,22 @@ def integrate_harmony(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> sc.AnnData:
     log.info("Computed neighbors using Harmony-corrected PCA")
     sc.tl.umap(adata)
     log.info("Computed UMAP using Harmony-corrected PCA")
-    sc.tl.leiden(
-        adata,
-        resolution=cfg.resolution,
-        flavor="igraph",
-        n_iterations=2,
-        directed=False,
-        key_added="leiden_atlas",
+
+    clust_cfg = ClusterValidationConfig(resolutions=cfg.harmonyResolutions, weakPriorKey=cfg.cellTypeKey)
+    adata, n_clusters = sweep_leiden(adata, clust_cfg, suffix="harmony")
+    adata, sel = select_resolution(adata, clust_cfg, n_clusters, adata.n_obs, suffix="harmony")
+    adata.obs["leiden_atlas"] = adata.obs[sel.clusterKey]
+    adata.uns["harmony_sweep"] = {
+        "resolutions": cfg.harmonyResolutions,
+        "nClusters": {str(r): k for r, k in n_clusters.items()},
+        "selectedResolution": sel.selectedResolution,
+    }
+    log.info("Harmony sweep clusters per resolution: %s", n_clusters)
+    log.info(
+        "Selected harmony resolution %.2f -> %d clusters (leiden_atlas)",
+        sel.selectedResolution,
+        adata.obs["leiden_atlas"].nunique(),
     )
-    log.info("Harmony-corrected leiden clusters: %d", adata.obs["leiden_atlas"].nunique())
     return adata
 
 
@@ -160,6 +171,7 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> None:
     cfg.outputH5ad.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(cfg.outputH5ad, compression=cfg.compression)
 
+    harmony_sweep = adata.uns.get("harmony_sweep", {})
     summary = {
         "input": rel_to_repo(cfg.inputH5ad),
         "output": rel_to_repo(cfg.outputH5ad),
@@ -170,6 +182,9 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> None:
         "clustersUncorrected": int(adata.obs["leiden_uncorrected"].nunique()),
         "clustersHarmony": int(adata.obs["leiden_atlas"].nunique()),
         "resolution": cfg.resolution,
+        "harmonyResolutions": harmony_sweep.get("resolutions", cfg.harmonyResolutions),
+        "harmonyClustersPerResolution": harmony_sweep.get("nClusters", {}),
+        "selectedHarmonyResolution": harmony_sweep.get("selectedResolution"),
         "nPcs": cfg.nPcs,
         "nTopGenes": cfg.nTopGenes,
     }
