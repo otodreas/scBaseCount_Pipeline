@@ -296,3 +296,19 @@ uv run python pipelines/run_atlas_harmony.py \
   --input output/atlas/data/atlas.h5ad \
   --output output/atlas/data/atlas_harmony.h5ad
 ```
+
+## `run_disease_markers.py`
+
+Maps Harmony Leiden clusters onto the full-gene atlas, annotates coarse disease areas from `contexts.jsonl`, and runs per-cluster one-vs-rest pseudobulk DE via [`disease_markers`](../scripts/disease_markers/README.md) (`decoupler` + `pydeseq2`).
+
+**Output:** `output/atlas/v1/processed_1/disease_markers/` (`eligibility_labels.csv`, `area_cluster_counts.csv`, `markers/`, `summary.json`). Optional: `output/atlas/v1/processed_1/atlas_with_clusters.h5ad` after cluster transfer.
+
+**Log:** `logs/disease_markers.log`
+
+```sh
+uv run python pipelines/run_disease_markers.py --labels-only
+
+uv run python pipelines/run_disease_markers.py \
+  --input-atlas output/atlas/v1/atlas.h5ad \
+  --harmony-atlas output/atlas/v1/processed_1/atlas_harmony.h5ad
+```
