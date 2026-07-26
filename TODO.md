@@ -4,3 +4,4 @@
 ```py
 ["X_pca", "X_pca_harmony", "X_umap", "X_umap_uncorrected"]
 ```
+- [ ] rsync 5k sub atlas to local, use to run atlas pipeline locally
