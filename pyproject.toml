@@ -44,6 +44,8 @@ dependencies = [
     "statsmodels>=0.14.6",
     "harmonypy>=2.0.0",
     "scib-metrics>=0.5.10",
+    "decoupler>=2.2.0",
+    "pydeseq2>=0.5.4",
 ]
 
 [dependency-groups]

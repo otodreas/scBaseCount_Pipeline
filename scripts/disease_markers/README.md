@@ -14,6 +14,21 @@ cfg = DiseaseMarkersConfig(
 run_disease_markers(cfg)
 ```
 
+Labels and eligibility only:
+
+```python
+from disease_markers import DiseaseMarkersConfig
+from disease_markers.pipeline import run_disease_markers
+
+run_disease_markers(DiseaseMarkersConfig(), runDe=False)
+```
+
+CLI:
+
+```sh
+uv run python pipelines/run_disease_markers.py --labels-only
+```
+
 Cluster transfer only (deterministic, no disease labels):
 
 ```python

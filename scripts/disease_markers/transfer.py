@@ -1,15 +1,19 @@
 from pathlib import Path
 
+import anndata as ad
 import scanpy as sc
 
 
 def transfer_leiden_clusters(
     adata: sc.AnnData,
-    harmonyH5ad: Path,
+    harmonyH5ad: Path | ad.AnnData,
     clusterKey: str = "leiden_atlas",
 ) -> sc.AnnData:
     """Attach cluster labels from the Harmony h5ad onto adata by obs_names without changing X."""
-    harmony = sc.read_h5ad(harmonyH5ad, backed="r")
+    if isinstance(harmonyH5ad, Path):
+        harmony = sc.read_h5ad(harmonyH5ad, backed="r")
+    else:
+        harmony = harmonyH5ad
     if clusterKey not in harmony.obs.columns:
         msg = f"{clusterKey!r} missing from Harmony atlas obs"
         raise KeyError(msg)
