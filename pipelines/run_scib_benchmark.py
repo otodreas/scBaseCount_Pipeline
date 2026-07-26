@@ -32,6 +32,7 @@ def main() -> None:
         rel_to_repo(args.out_dir),
         args.force,
     )
+    args.out_dir.mkdir(parents=True, exist_ok=True)
     bm = Benchmarker(
         adata=sc.read_h5ad(args.input, backed="r"),
         batch_key="study_accession",
