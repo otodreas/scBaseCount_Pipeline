@@ -16,6 +16,7 @@ packages = [
     "scripts/h5ad_concat",
     "scripts/umap_plots",
     "scripts/scib_benchmark",
+    "scripts/disease_markers",
 ]
 
 [project]
