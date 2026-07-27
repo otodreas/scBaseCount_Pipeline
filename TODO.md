@@ -5,3 +5,6 @@
 ["X_pca", "X_pca_harmony", "X_umap", "X_umap_uncorrected"]
 ```
 - [ ] rsync 5k sub atlas to local, use to run atlas pipeline locally
+- [ ] **build atlas v2 ([plan](.cursor/plans/include_healthy_atlas_v2_e8ae0bcd.plan.md))**
+    - if a single SRX_accession passes (its a lung related sample), then all of its companion datasets that belong to the same study (study accession) should also pass. they can be ruled out later due to poor quality
+    - [ ] also, look into batch correcting cells on that level
