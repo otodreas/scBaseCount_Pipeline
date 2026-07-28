@@ -31,6 +31,7 @@ atlas_harmony*.h5ad
 logs/
 logs_server/
 nohup.out
+tmux.out
 
 # CyteType
 obs.duckdb
