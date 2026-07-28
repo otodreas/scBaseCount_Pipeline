@@ -1,8 +1,13 @@
-from disease_markers.config import DiseaseMarkersConfig
-from disease_markers.transfer import load_full_atlas_transfer_clusters, transfer_leiden_clusters
+from disease_markers.labels import (
+    SampleLabelRow,
+    build_sample_label_table,
+    coarse_disease_area,
+    sample_labels_by_srx,
+)
 
 __all__ = [
-    "DiseaseMarkersConfig",
-    "load_full_atlas_transfer_clusters",
-    "transfer_leiden_clusters",
+    "SampleLabelRow",
+    "build_sample_label_table",
+    "coarse_disease_area",
+    "sample_labels_by_srx",
 ]

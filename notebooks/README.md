@@ -39,3 +39,5 @@ Not part of the main pipeline. Use these to verify connectivity or inspect h5ad 
 **`analysis/cluster_stats.ipynb`** — Loads `cluster_stats.json` produced by [`pipelines/cluster_stats.py`](../pipelines/cluster_stats.py) and builds an `xarray` tensor of cell-type by cluster counts for downstream analysis.
 
 **`analysis/annotation_inspection.ipynb`** — Loads `summary.csv` and `extremes.csv` from [`pipelines/run_annotation_inspection_pipeline.py`](../pipelines/run_annotation_inspection_pipeline.py) for pair-level groupbys and extremes review.
+
+**`analysis/analyze_atlas_DE.ipynb`** — Loads a Harmony atlas h5ad from [`pipelines/run_atlas_harmony.py`](../pipelines/run_atlas_harmony.py), uses `.raw` for full-gene counts, joins [`disease_markers`](../scripts/disease_markers/README.md) sample labels, builds SRX-level pseudobulks with Decoupler, and runs exploratory one-vs-rest PyDESeq2 per cluster.
