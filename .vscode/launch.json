@@ -2,6 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "DE sub 5k",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--input-atlas",
+                "${workspaceFolder}/output/atlas/v1/atlas_sub_5k.h5ad",
+                "--harmony-atlas",
+                "${workspaceFolder}/output/atlas/v1/processed_1/atlas_harmony_sub_5k.h5ad",
+                "--output-prefix",
+                "pseudobulk_20260509"
+            ]
+        },
+        {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
