@@ -1,55 +1,26 @@
 # disease_markers
 
-Map Harmony Leiden clusters onto the full-gene atlas, annotate cells with coarse disease areas, and run per-cluster one-vs-rest pseudobulk differential expression.
+Per-SRX coarse disease area labels and atlas eligibility rules derived from `contexts.jsonl` and `atlas.csv`.
 
 ## Usage
 
 ```python
-from disease_markers import DiseaseMarkersConfig, run_disease_markers
+from pathlib import Path
 
-cfg = DiseaseMarkersConfig(
-    inputAtlasH5ad=Path("output/atlas/v1/atlas.h5ad"),
-    harmonyAtlasH5ad=Path("output/atlas/v1/processed_1/atlas_harmony.h5ad"),
+from disease_markers.labels import build_sample_label_table, coarse_disease_area
+
+label_table = build_sample_label_table(
+    Path("output/context/contexts.jsonl"),
+    Path("output/atlas/v1/atlas.csv"),
 )
-run_disease_markers(cfg)
 ```
 
-Labels and eligibility only:
-
-```python
-from disease_markers import DiseaseMarkersConfig
-from disease_markers.pipeline import run_disease_markers
-
-run_disease_markers(DiseaseMarkersConfig(), runDe=False)
-```
-
-CLI:
-
-```sh
-uv run python pipelines/run_disease_markers.py --labels-only
-```
-
-Cluster transfer only (deterministic, no disease labels):
-
-```python
-from disease_markers.transfer import load_full_atlas_transfer_clusters
-
-adata = load_full_atlas_transfer_clusters(cfg.inputAtlasH5ad, cfg.harmonyAtlasH5ad)
-```
+Join labels onto an AnnData object by sample accession (for example `SRX_accession` in `obs`).
 
 ## Outputs
 
-Written under `output/atlas/v1/processed_1/disease_markers/`:
-
-| File | Description |
-|------|-------------|
-| `eligibility_labels.csv` | Per-SRX disease area, control flag, eligibility |
-| `area_cluster_counts.csv` | Sample and study counts per cluster and disease area |
-| `markers/<cluster>__<area>.csv` | Up-regulated genes for one-vs-rest tests |
-| `summary.json` | Run config and high-level counts |
-
-Optional intermediate: `output/atlas/v1/processed_1/atlas_with_clusters.h5ad` when `writeTransferredAtlas` is true (before eligibility subsetting).
+Typical notebook or ad hoc export: `eligibility_labels.csv` with columns `srxAccession`, `studyAccession`, `diseaseRaw`, `diseaseArea`, `isControl`, `eligible`, `excludeReason`.
 
 ## Config
 
-See `DiseaseMarkersConfig` in `config.py`. Key fields: `clusterKey` (`leiden_atlas`), `sampleKey` (`SRX_accession`), `studyKey` (`study_accession`), `minCellsPerProfile`, `minSamplesPerArea`, `minStudiesPerArea`, `padjThreshold`, `lfcThreshold`.
+Labeling logic lives in `labels.py` (`coarse_disease_area`, `build_sample_label_table`). Thresholds for downstream DE (minimum cells per pseudobulk, samples per area, and so on) are set in analysis notebooks.

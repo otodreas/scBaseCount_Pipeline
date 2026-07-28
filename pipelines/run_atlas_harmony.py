@@ -46,12 +46,12 @@ _DEFAULT_CFG = AtlasHarmonyConfig()
 
 
 def load_and_normalize(cfg: AtlasHarmonyConfig) -> sc.AnnData:
-    """Read the atlas h5ad, stash raw counts, and apply normalize_total + log1p."""
+    """Read the atlas h5ad, stash full-gene counts in ``.raw``, and apply normalize_total + log1p."""
     adata = sc.read_h5ad(cfg.inputH5ad)
     log.info("Loaded %s cells x %s genes", f"{adata.n_obs:,}", f"{adata.n_vars:,}")
     log.info("Studies (%s): %d", cfg.batchKey, adata.obs[cfg.batchKey].nunique())
 
-    adata.layers["counts"] = adata.X.copy()
+    adata.raw = adata.copy()
     sc.pp.normalize_total(adata)
     sc.pp.log1p(adata)
     return adata
@@ -166,6 +166,7 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasHarmonyConfig) -> None:
         "figsDir": rel_to_repo(cfg.figsDir),
         "cells": int(adata.n_obs),
         "hvgs": int(adata.n_vars),
+        "rawGenes": int(adata.raw.n_vars) if adata.raw is not None else 0,
         "studies": int(adata.obs[cfg.batchKey].nunique()),
         "clustersUncorrected": int(adata.obs["leiden_uncorrected"].nunique()),
         "clustersHarmony": int(adata.obs["leiden_atlas"].nunique()),

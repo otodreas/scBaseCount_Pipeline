@@ -265,8 +265,8 @@ Typical input: an atlas written by [`run_atlas_concat.py`](#run_atlas_concatpy) 
 
 | File | Description |
 |------|-------------|
-| `{output}.h5ad` | Processed atlas with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
-| `{output_stem}_run.json` | Run summary (cell counts, HVGs, studies, cluster counts, config) |
+| `{output}.h5ad` | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
+| `{output_stem}_run.json` | Run summary (cell counts, HVGs, raw gene count, studies, cluster counts, config) |
 | `{figs_dir}/umap_{batch_key}_uncorrected.png` | Pre-correction UMAP colored by batch |
 | `{figs_dir}/umap_{cell_type_key}_uncorrected.png` | Pre-correction UMAP colored by cell type |
 | `{figs_dir}/umap_{batch_key}_harmony.png` | Harmony-corrected UMAP colored by batch |
@@ -297,18 +297,4 @@ uv run python pipelines/run_atlas_harmony.py \
   --output output/atlas/data/atlas_harmony.h5ad
 ```
 
-## `run_disease_markers.py`
-
-Maps Harmony Leiden clusters onto the full-gene atlas, annotates coarse disease areas from `contexts.jsonl`, and runs per-cluster one-vs-rest pseudobulk DE via [`disease_markers`](../scripts/disease_markers/README.md) (`decoupler` + `pydeseq2`).
-
-**Output:** `output/atlas/v1/processed_1/disease_markers/` (`eligibility_labels.csv`, `area_cluster_counts.csv`, `markers/`, `summary.json`). Optional: `output/atlas/v1/processed_1/atlas_with_clusters.h5ad` after cluster transfer.
-
-**Log:** `logs/disease_markers.log`
-
-```sh
-uv run python pipelines/run_disease_markers.py --labels-only
-
-uv run python pipelines/run_disease_markers.py \
-  --input-atlas output/atlas/v1/atlas.h5ad \
-  --harmony-atlas output/atlas/v1/processed_1/atlas_harmony.h5ad
-```
+Downstream atlas DE and disease-area labeling: [`notebooks/analysis/analyze_atlas_DE.ipynb`](../notebooks/analysis/analyze_atlas_DE.ipynb) loads the Harmony h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from [`disease_markers`](../scripts/disease_markers/README.md).
