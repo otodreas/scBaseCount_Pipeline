@@ -31,4 +31,7 @@ with ThreadPoolExecutor(max_workers=ENA_MAX_REQUESTS_PER_SECOND) as pool:
 
 metadata_pq["study_accession"] = study_accessions
 
+lung_studies = metadata_pq.loc[metadata_pq["isLung"], "study_accession"].dropna().unique()
+metadata_pq["inAtlas"] = metadata_pq["isLung"] | metadata_pq["study_accession"].isin(lung_studies)
+
 metadata_pq.to_csv(REPO_ROOT / "output/metadata/datasets_v2.csv")
