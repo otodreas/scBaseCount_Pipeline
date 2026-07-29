@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
-from study_context.fetch import fetch_experiment_context
+from study_context.fetch import fetch_experiment_context, fetch_read_experiment_records, fetch_study_accession
 from study_context.models import BiologicalContext, ExperimentContext, StudyContext, TechnicalContext
 from study_context.utils import CONTEXTS_JSONL_PATH, experiment_context_summary, load_contexts_jsonl
 
@@ -18,6 +18,8 @@ def pipeline_for_accession_list(accessions: list[str], *, max_workers: int = 8) 
 
 __all__ = [
     "pipeline_for_accession_list",
+    "fetch_read_experiment_records",
+    "fetch_study_accession",
     "CONTEXTS_JSONL_PATH",
     "load_contexts_jsonl",
     "experiment_context_summary",

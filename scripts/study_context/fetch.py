@@ -36,10 +36,25 @@ def _http_get(url: str, *, retries: int = 3) -> str:
     raise RuntimeError(f"HTTP GET failed for {url!r}: {last_exc}")
 
 
+def fetch_read_experiment_records(
+    accession: str,
+    fields: str = "all",
+) -> list[dict[str, str]]:
+    url = f"{PORTAL_BASE}/filereport?accession={accession}&result=read_experiment&fields={fields}&format=json"
+    return json.loads(_http_get(url))
+
+
 def _str(val: str | None) -> str | None:
     if not val or not val.strip():
         return None
     return val.strip()
+
+
+def fetch_study_accession(accession: str) -> str | None:
+    records = fetch_read_experiment_records(accession, fields="study_accession")
+    if not records:
+        return None
+    return _str(records[0].get("study_accession"))
 
 
 def _parse_pubmed_ids(tag: str) -> list[str]:
@@ -111,10 +126,8 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
     _log.info("Fetching experiment context for accession: %s", accession)
     warnings: list[str] = []
 
-    url = f"{PORTAL_BASE}/filereport?accession={accession}&result=read_experiment&fields=all&format=json"
     try:
-        raw = _http_get(url)
-        records: list[dict[str, str]] = json.loads(raw)
+        records = fetch_read_experiment_records(accession)
     except Exception as exc:
         warnings.append(f"portal_api_failed:{exc}")
         return ExperimentContext(accession=accession, warnings=warnings)

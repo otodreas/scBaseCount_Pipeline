@@ -46,9 +46,10 @@ LUNG_DISEASE_RE = re.compile(
 LUNG_TISSUE_RE = re.compile(
     (
         r"\b(?:"
-        r"lung|pulmonary|alveolus|alveoli|bronchus|bronchi|bronchiole|"
-        r"airway|respiratory tract|bronchiolar|thoracic|trachea|pleura|"
-        r"interstitium|parenchyma"
+        r"lungs?|pulmonary|alveol(?:us|i|ar)|"
+        r"bronch(?:us|i|ial|iole|iolar|o[-\s]?alveolar)|"
+        r"airway|respiratory tract|(?:endo)?trache(?:a|al)|"
+        r"pleur(?:a|al)|BALF?"
         r")\b"
     ),
     re.IGNORECASE,
