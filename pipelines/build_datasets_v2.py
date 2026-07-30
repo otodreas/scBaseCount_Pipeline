@@ -50,3 +50,6 @@ metadata_pq = metadata_pq[
 
 
 metadata_pq.to_csv(REPO_ROOT / "output/metadata/datasets_v2.csv")
+print(
+    f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {REPO_ROOT / 'output/metadata/datasets_v2.csv'}"
+)
