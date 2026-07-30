@@ -1,9 +1,8 @@
-from __future__ import annotations
+from pathlib import Path
 
 import pandas as pd
 from shared.logger import configure_file_logger
 from storage import gcs_uri_to_r2_raw_key
-from study_context.utils import load_contexts_jsonl
 
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
@@ -16,33 +15,44 @@ from h5ad_concat.outputs import (
     status_csv_path,
     write_config_manifest,
 )
-from h5ad_concat.prepare import accession_from_r2_key, prepare_adata
+from h5ad_concat.prepare import prepare_adata
 from h5ad_concat.reference import load_gene_reference
 
 _log = configure_file_logger("h5ad_concat.log", __name__)
 
 
-def resolve_r2_keys(cfg: H5adConcatConfig) -> list[str]:
-    """Return explicit r2Keys or resolve them from datasets.csv file_path URIs."""
-    if cfg.datasetsPath is not None:
-        if not cfg.datasetsPath.is_file():
-            raise FileNotFoundError(f"datasets file not found at {cfg.datasetsPath}")
-        datasets = pd.read_csv(cfg.datasetsPath)
-        keys = [gcs_uri_to_r2_raw_key(uri) for uri in datasets["file_path"]]
-        _log.info("Resolved %d R2 key(s) from %s", len(keys), cfg.datasetsPath)
-        return keys
-    return cfg.r2Keys or []
+def load_concat_inputs(datasets_path: Path) -> list[tuple[str, str, str]]:
+    """Load R2 key, experiment accession, and study accession from a datasets CSV."""
+    if not datasets_path.is_file():
+        raise FileNotFoundError(f"datasets file not found at {datasets_path}")
+
+    datasets = pd.read_csv(datasets_path, dtype="string")
+    required_columns = ["file_path", "srx_accession", "study_accession"]
+    missing_columns = [column for column in required_columns if column not in datasets.columns]
+    if missing_columns:
+        raise ValueError(f"{datasets_path}: missing required columns: {', '.join(missing_columns)}")
+
+    for column in required_columns:
+        datasets[column] = datasets[column].str.strip()
+        if bool(datasets[column].isna().any()) or bool(datasets[column].eq("").any()):
+            raise ValueError(f"{datasets_path}: blank values in {column}")
+
+    inputs = [
+        (gcs_uri_to_r2_raw_key(gs_uri), accession, study_accession)
+        for gs_uri, accession, study_accession in datasets[required_columns].itertuples(index=False, name=None)
+    ]
+    _log.info("Loaded %d input(s) from %s", len(inputs), datasets_path)
+    return inputs
 
 
 def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     """Download, validate, and concatenate h5ad files from R2 into a local atlas."""
-    r2_keys = resolve_r2_keys(cfg)
-    _log.info("Starting h5ad_concat run: %d key(s)", len(r2_keys))
+    inputs = load_concat_inputs(cfg.datasetsPath)
+    _log.info("Starting h5ad_concat run: %d input(s)", len(inputs))
 
     csv_path = status_csv_path(cfg.outputPath)
     init_status_csv(csv_path)
     config_path = write_config_manifest(cfg, _log)
-    contexts = load_contexts_jsonl(cfg.contextsPath)
     reference = load_gene_reference(cfg.geneInfoPath)
     skipped: list[SkippedFile] = []
     adatas = []
@@ -50,10 +60,9 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     accessions: list[str] = []
 
     try:
-        for r2_key in r2_keys:
-            accession = accession_from_r2_key(r2_key)
+        for r2_key, accession, study_accession in inputs:
             try:
-                adata, study_accession = prepare_adata(r2_key, accession, cfg, contexts, reference, _log)
+                adata, study_accession = prepare_adata(r2_key, accession, study_accession, cfg, reference, _log)
                 adatas.append(adata)
                 studies.append(study_accession)
                 accessions.append(accession)

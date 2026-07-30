@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Sequence
+from pathlib import Path
 
 import anndata as ad
 import numpy as np
@@ -19,10 +20,9 @@ from h5ad_concat import pipeline, prepare
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
-from h5ad_concat.prepare import accession_from_r2_key, prepare_adata
+from h5ad_concat.prepare import prepare_adata
 from h5ad_concat.qc import QcStats, apply_qc_gate, flag_qc_genes
 from h5ad_concat.reference import GeneReference
-from study_context.models import ExperimentContext, StudyContext
 
 ad.settings.allow_write_nullable_strings = True
 
@@ -32,8 +32,6 @@ _LOG = logging.getLogger("h5ad_concat_smoke")
 def _cfg(**overrides) -> H5adConcatConfig:
     """Build a minimal H5adConcatConfig for tests."""
     defaults = {
-        "r2Keys": ["k"],
-        "datasetsPath": None,
         "minCellsAfterQc": 1,
         "minPctCellsAfterQc": 0.0,
     }
@@ -79,17 +77,6 @@ def _make_adata(
     return ad.AnnData(X=counts, obs=obs, var=var)
 
 
-def _contexts_for_keys(r2_keys: Sequence[str]) -> dict[str, ExperimentContext]:
-    """Return study contexts keyed by accession for the given R2 keys."""
-    return {
-        accession_from_r2_key(key): ExperimentContext(
-            accession=accession_from_r2_key(key),
-            study=StudyContext(studyAccession=f"STUDY_{accession_from_r2_key(key)}"),
-        )
-        for key in r2_keys
-    }
-
-
 def _reference_for_adatas(adatas_by_key: dict[str, ad.AnnData]) -> GeneReference:
     """Build a minimal GeneReference covering all var_names in the test adatas."""
     ids = sorted({str(gene_id) for adata in adatas_by_key.values() for gene_id in adata.var_names})
@@ -111,13 +98,25 @@ def _run_pipeline(
     adatas_by_key: dict[str, ad.AnnData],
     cfg: H5adConcatConfig,
 ):
-    """Run run_h5ad_concat with download_from_r2 and load_contexts_jsonl mocked."""
+    """Run run_h5ad_concat with the R2 download boundary mocked."""
 
     def fake_download(r2_key: str, raw_path, **_kwargs) -> None:
         adatas_by_key[r2_key].write_h5ad(raw_path)
 
+    datasets_path = tmp_path / "datasets.csv"
+    pd.DataFrame(
+        [
+            {
+                "srx_accession": Path(key).stem,
+                "file_path": f"gs://{key}",
+                "study_accession": f"STUDY_{Path(key).stem}",
+            }
+            for key in adatas_by_key
+        ]
+    ).to_csv(datasets_path, index=False)
+    cfg.datasetsPath = datasets_path
+
     monkeypatch.setattr(prepare, "download_from_r2", fake_download)
-    monkeypatch.setattr(pipeline, "load_contexts_jsonl", lambda _path: _contexts_for_keys(adatas_by_key))
     monkeypatch.setattr(
         pipeline,
         "load_gene_reference",
@@ -144,13 +143,28 @@ def _qc_ready_adata(
 # --- run_h5ad_concat (end-to-end) ---
 
 
+def test_load_concat_inputs_uses_csv_values(tmp_path) -> None:
+    datasets_path = tmp_path / "datasets.csv"
+    pd.DataFrame(
+        {
+            "srx_accession": ["SRX1"],
+            "file_path": ["gs://bucket/prefix/SRX1.h5ad"],
+            "study_accession": ["PRJNA1"],
+        }
+    ).to_csv(datasets_path, index=False)
+    inputs = pipeline.load_concat_inputs(datasets_path)
+
+    assert inputs == [
+        ("bucket/prefix/SRX1.h5ad", "SRX1", "PRJNA1"),
+    ]
+
+
 def test_run_h5ad_concat_happy_path(monkeypatch, tmp_path) -> None:
     key1, key2 = "prefix/SRX1.h5ad", "prefix/SRX2.h5ad"
     a1 = _make_adata("SRX1", ["T cell", "B cell"], pad_to_genes=500)
     a2 = _make_adata("SRX2", ["NK cell", "T cell", "B cell"], pad_to_genes=500)
     out = tmp_path / "atlas.h5ad"
     cfg = _cfg(
-        r2Keys=[key1, key2],
         outputPath=out,
         cacheDir=tmp_path,
         minGenesPerCell=10,
@@ -186,7 +200,6 @@ def test_run_h5ad_concat_skips_rejected_and_continues(monkeypatch, tmp_path) -> 
     bad = _make_adata("SRX2", [None, ""], pad_to_genes=500)
     out = tmp_path / "atlas.h5ad"
     cfg = _cfg(
-        r2Keys=[good_key, bad_key],
         outputPath=out,
         cacheDir=tmp_path,
         minGenesPerCell=10,
@@ -214,7 +227,6 @@ def test_run_h5ad_concat_raises_when_all_rejected(monkeypatch, tmp_path) -> None
     rejected = _make_adata("SRX1", [None, ""], pad_to_genes=500)
     out = tmp_path / "atlas.h5ad"
     cfg = _cfg(
-        r2Keys=[key],
         outputPath=out,
         cacheDir=tmp_path,
         minGenesPerCell=10,
@@ -375,7 +387,6 @@ def test_prepare_adata_maps_download_errors_to_skip_reason(
 ) -> None:
     cfg = H5adConcatConfig(cacheDir=tmp_path)
     deleted: list = []
-    contexts = _contexts_for_keys(["prefix/SRX1.h5ad"])
     reference = _reference_for_adatas({"prefix/SRX1.h5ad": _make_adata()})
 
     def _raise_download(*_args, **_kwargs) -> None:
@@ -385,7 +396,7 @@ def test_prepare_adata_maps_download_errors_to_skip_reason(
     monkeypatch.setattr(prepare, "safe_delete", lambda path, log: deleted.append(path))
 
     with pytest.raises(FileRejected) as excinfo:
-        prepare_adata("prefix/SRX1.h5ad", "SRX1", cfg, contexts, reference, _LOG)
+        prepare_adata("prefix/SRX1.h5ad", "SRX1", "STUDY_SRX1", cfg, reference, _LOG)
 
     assert excinfo.value.reason is expected_reason
     assert excinfo.value.__cause__ is download_exc

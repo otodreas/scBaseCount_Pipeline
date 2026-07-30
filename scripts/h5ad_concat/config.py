@@ -3,13 +3,10 @@ from typing import Literal, Self
 
 from pydantic import BaseModel, Field, model_validator
 from shared.repo import REPO_ROOT
-from study_context.utils import CONTEXTS_JSONL_PATH
 
 
 class H5adConcatConfig(BaseModel):
-    r2Keys: list[str] | None = None
-    datasetsPath: Path | None = REPO_ROOT / "output" / "metadata" / "datasets.csv"
-    contextsPath: Path = CONTEXTS_JSONL_PATH
+    datasetsPath: Path = REPO_ROOT / "output" / "metadata" / "datasets.csv"
     cellTypeKey: str = "cell_type"
     # Column added to obs holding the experimental batch key; value is the ENA study accession.
     batchKey: str = "study_accession"
@@ -52,15 +49,7 @@ class H5adConcatConfig(BaseModel):
     minPctCellsAfterQc: float = Field(default=0.4, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def validate_input_and_upload(self) -> Self:
-        has_r2_keys = self.r2Keys is not None and len(self.r2Keys) > 0
-        has_datasets = self.datasetsPath is not None
-        if has_r2_keys and has_datasets:
-            msg = "Provide r2Keys or datasetsPath, not both"
-            raise ValueError(msg)
-        if not has_r2_keys and not has_datasets:
-            msg = "Provide either r2Keys or datasetsPath"
-            raise ValueError(msg)
+    def validate_upload(self) -> Self:
         if self.uploadAtlas and not self.atlasR2Key:
             msg = "atlasR2Key is required when uploadAtlas is true"
             raise ValueError(msg)

@@ -1,32 +1,15 @@
-from __future__ import annotations
-
 import logging
-from pathlib import Path
 
 import anndata as ad
 from botocore.exceptions import BotoCoreError, ClientError
 from shared.files import safe_delete
 from storage import download_from_r2
-from study_context.models import ExperimentContext
 
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
 from h5ad_concat.models import SkipReason
 from h5ad_concat.qc import QC_VAR_KEYS, apply_qc_gate
 from h5ad_concat.reference import GeneReference, align_to_reference
-
-
-def accession_from_r2_key(r2_key: str) -> str:
-    """Return the accession stem from an R2 object key."""
-    return Path(r2_key).stem
-
-
-def resolve_batch_key(accession: str, contexts: dict[str, ExperimentContext]) -> str:
-    """Resolve studyAccession from contexts; raise FileRejected when missing."""
-    ctx = contexts.get(accession)
-    if ctx is None or ctx.study is None:
-        raise FileRejected(SkipReason.missing_study)
-    return ctx.study.studyAccession
 
 
 def cell_type_all_missing(adata: ad.AnnData, cell_type_key: str) -> bool:
@@ -55,13 +38,12 @@ def validate_single_accession(adata: ad.AnnData, accession: str, cfg: H5adConcat
 def prepare_adata(
     r2_key: str,
     accession: str,
+    study_accession: str,
     cfg: H5adConcatConfig,
-    contexts: dict[str, ExperimentContext],
     reference: GeneReference,
     log: logging.Logger,
 ) -> tuple[ad.AnnData, str]:
     """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession)."""
-    study_accession = resolve_batch_key(accession, contexts)
     raw_path = cfg.cacheDir / "raw" / f"{accession}.h5ad"
 
     # Attempt to download the file and verify with MD5

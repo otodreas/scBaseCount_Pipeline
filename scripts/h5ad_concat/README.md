@@ -8,17 +8,14 @@ Download scBaseCount h5ad files from R2, validate each file in-pipeline, enrich 
 from h5ad_concat import H5adConcatConfig, run_h5ad_concat
 
 cfg = H5adConcatConfig(
-    r2Keys=[
-        "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13061245.h5ad",
-        "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10048396.h5ad",
-    ],
+    datasetsPath="output/metadata/datasets.csv",
 )
 
 result = run_h5ad_concat(cfg)
 print(result.nObs, result.studiesSeen, result.skipped)
 ```
 
-Or resolve R2 keys from `output/metadata/datasets.csv` (`file_path` column holds `gs://` URIs mapped to R2 raw keys):
+The required CSV columns are `file_path`, `srx_accession`, and `study_accession`; `file_path` holds `gs://` URIs mapped to R2 raw keys. To upload the completed atlas:
 
 ```python
 cfg = H5adConcatConfig(
@@ -28,7 +25,7 @@ cfg = H5adConcatConfig(
 )
 ```
 
-Requires R2 credentials (see `[storage/](../storage/README.md)`). Each concatenated file gains a single new obs column, `study_accession` (the `batchKey`), resolved from `output/context/contexts.jsonl` via `ctx.study.studyAccession`. This is the experimental batch key for downstream integration.
+Requires R2 credentials (see `[storage/](../storage/README.md)`). Each concatenated file gains a single new obs column, `study_accession` (the `batchKey`), read from the corresponding datasets CSV row. This is the experimental batch key for downstream integration.
 
 ## Batch effect
 
@@ -81,7 +78,6 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | MD5 matches stored `gcs-md5` metadata    | `md5_mismatch`          | yes    |
 | Downloaded h5ad loads cleanly            | `read_failed`           | yes    |
 | `obs` accession column is a single value matching the file accession | `accession_mismatch` | yes |
-| `studyAccession` resolves from contexts  | `missing_study`         | yes    |
 | At least one non-blank `cell_type` label | `cell_type_all_missing` | yes    |
 | At least `minCellsAfterQc` cells remain after QC | `too_few_cells` | yes    |
 | Cell dropout fraction at or below `minPctCellsAfterQc` | `excessive_cell_dropout` | yes |
@@ -92,12 +88,9 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 
 ## Config
 
-Exactly one of `r2Keys` or `datasetsPath` is required.
 | Field            | Default                         | Description                                    |
 | ---------------- | ------------------------------- | ---------------------------------------------- |
-| `r2Keys`         | `None`                          | Explicit R2 object keys to download and concat |
-| `datasetsPath`   | `None`                          | Path to datasets CSV; `file_path` URIs resolve to R2 raw keys |
-| `contextsPath`   | `output/context/contexts.jsonl` | Study context lookup                           |
+| `datasetsPath`   | `output/metadata/datasets.csv` | Path to datasets CSV; `file_path`, `srx_accession`, and `study_accession` define each input |
 | `cellTypeKey`    | `"cell_type"`                   | Column checked and filled                      |
 | `batchKey`       | `"study_accession"`             | obs column holding the batch key (ENA study accession) |
 | `accessionKey`   | `"SRX_accession"`               | Existing obs column holding the per-file experiment accession |
