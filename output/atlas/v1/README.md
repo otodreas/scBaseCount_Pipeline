@@ -8,3 +8,5 @@ when needed.
 | `output/atlas/v1/atlas.h5ad` | `lung/atlas_v1.h5ad` |
 | `output/atlas/v1/processed_1/atlas_harmony.h5ad` | `atlas/v1/processed_1/atlas_harmony.h5ad` |
 | `output/atlas/v1/processed_2_raw/atlas_harmony_raw.h5ad` | `atlas/v1/processed_2_raw/atlas_harmony_raw.h5ad` |
+
+Note: atlas v2 will have a different r2 naming scheme: `atlas/v2/atlas_v2.h5ad
