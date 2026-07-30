@@ -8,13 +8,14 @@ from google.cloud import storage as gcs
 from shared.logger import configure_file_logger
 
 _log = configure_file_logger("gcs.log", __name__)
+_GCS_PROJECT = "arc-institute-virtual-cell-atlas"
 
 
 def _gcs_blob(gs_uri: str) -> gcs.Blob:
     parsed = urlparse(gs_uri)
     bucket_name = parsed.netloc
     blob_name = parsed.path.lstrip("/")
-    client = gcs.Client(credentials=AnonymousCredentials())
+    client = gcs.Client(project=_GCS_PROJECT, credentials=AnonymousCredentials())
     return client.bucket(bucket_name).blob(blob_name)
 
 
