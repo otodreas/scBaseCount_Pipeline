@@ -44,14 +44,17 @@ Study context is produced by [`notebooks/pipeline/study_context.ipynb`](../noteb
 
 ## `migrate_gcs_to_r2.py`
 
-Copies raw scBaseCount h5ad files from GCS to R2. Skips objects already in R2 with a matching MD5. Uses a local cache under `data/` when the file is not already on disk.
+Copies raw scBaseCount h5ad files from GCS to R2 for accessions present in the source CSV but absent from the baseline CSV. Skips objects already in R2 with a matching MD5. Uses a local cache under `data/` when the file is not already on disk.
 
 **Output:** `output/migration/{timestamp}/run.csv`
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--datasets` | `output/metadata/datasets.csv` | Accession list |
+| `--datasets` | `output/metadata/datasets_v2.csv` | Source accession list |
+| `--baseline` | `output/metadata/datasets.csv` | Accessions to exclude from migration |
 | `--dry-run` | off | Log planned uploads only |
+
+With the current metadata files, the default selection is 1,048 accessions. The process exits with status 1 if any selected row fails.
 
 **Log:** `logs/migrate_gcs_to_r2.log`
 
