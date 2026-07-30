@@ -15,15 +15,24 @@ from study_context import fetch_study_accession
 
 ENA_MAX_REQUESTS_PER_SECOND = 50
 MIN_OBS_COUNT_PER_STUDY = 1_000
+EXCLUDED_STUDY_ACCESSIONS = (
+    "PRJEB51634",
+    "PRJNA1005589",
+    "PRJNA1179423",
+    "PRJNA1188170",
+    "PRJNA1215450",
+    "PRJNA657844",
+    "PRJNA902813",
+)
 
-metadata_pq = pd.read_parquet(
+metadata_pq: pd.DataFrame = pd.read_parquet(
     REPO_ROOT
     / "data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/scbasecount_2026-01-12_metadata_GeneFull_Homo_sapiens_sample_metadata.parquet"
 )
 metadata_pq = metadata_pq.set_index("srx_accession")
 
 # Drop accessions that are not SRA/ENA
-metadata_pq = metadata_pq[~metadata_pq.index.str.startswith("NRX")]
+metadata_pq = metadata_pq.loc[~metadata_pq.index.str.startswith("NRX"), :]
 
 
 # Check for lung tissue
@@ -41,11 +50,14 @@ with ThreadPoolExecutor(max_workers=ENA_MAX_REQUESTS_PER_SECOND) as pool:
 
 metadata_pq["study_accession"] = study_accessions
 
-# Drop accessions that are not in a lung study
-metadata_pq = metadata_pq.loc[metadata_pq["is_lung"]].dropna(subset=["study_accession"])
+# Keep lung accessions, excluding known broad multi-organ studies
+metadata_pq = metadata_pq.loc[
+    metadata_pq["is_lung"] & ~metadata_pq["study_accession"].isin(EXCLUDED_STUDY_ACCESSIONS)
+].dropna(subset=["study_accession"])
 # Drop studies with less than MIN_OBS_COUNT_PER_STUDY observations
-metadata_pq = metadata_pq[
-    metadata_pq.groupby("study_accession")["obs_count"].transform("sum") > MIN_OBS_COUNT_PER_STUDY
+metadata_pq = metadata_pq.loc[
+    metadata_pq.groupby("study_accession")["obs_count"].transform("sum") > MIN_OBS_COUNT_PER_STUDY,
+    :,
 ]
 
 
