@@ -1,0 +1,13 @@
+{
+  "inputAtlas": "output/atlas/v1/atlas_sub_5k.h5ad",
+  "harmonyAtlas": "output/atlas/v1/processed_1/atlas_harmony_sub_5k.h5ad",
+  "outputDir": "output/atlas/v1/processed_1/disease_markers",
+  "nCellsAnnotated": 3514,
+  "nGenes": 36601,
+  "nEligibleSamples": 496,
+  "nMarkerTables": 0,
+  "clusterKey": "leiden_atlas",
+  "minCellsPerProfile": 10,
+  "minSamplesPerArea": 3,
+  "minStudiesPerArea": 2
+}

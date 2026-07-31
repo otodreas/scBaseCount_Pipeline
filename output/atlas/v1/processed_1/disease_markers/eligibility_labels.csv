@@ -1,0 +1,685 @@
+srxAccession,studyAccession,diseaseRaw,diseaseArea,isControl,eligible,excludeReason
+ERX11662338,PRJEB68315,non-small cell lung cancer Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662359,PRJEB68315,lung squamous cell carcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662361,PRJEB68315,lung squamous cell carcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662362,PRJEB68315,lung squamous cell carcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662366,PRJEB68315,lung squamous cell carcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662371,PRJEB68315,lung adenocarcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662373,PRJEB68315,lung adenocarcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662375,PRJEB68315,lung adenocarcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662377,PRJEB68315,non-small cell lung cancer Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662378,PRJEB68315,lung adenocarcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662382,PRJEB68315,lung adenocarcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11662384,PRJEB68315,lung adenocarcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue,Lung Cancer,False,True,
+ERX11876748,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876750,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876751,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876752,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876753,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876754,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876755,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876756,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876757,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876758,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876759,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876760,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876763,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876764,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876765,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876767,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876768,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876769,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876770,PRJEB71931,non-small cell lung adenocarcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876771,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX11876772,PRJEB71931,non-small cell squamous lung carcinoma Transcriptomic profiling of immune and stromal cells from the non small cell lung cancer (NSCLC) environment,Control,True,True,
+ERX4409913,PRJEB39956,lung adenocarcinoma scRNAseq of EGFR-mut PC9 cells control or treated for 24h or 72h with osimertinib,Lung Cancer,False,True,
+ERX4409915,PRJEB39956,lung adenocarcinoma scRNAseq of EGFR-mut PC9 cells control or treated for 24h or 72h with osimertinib,Lung Cancer,False,True,
+ERX8831396,PRJEB51720,squamous cell lung carcinoma Transcriptional profiling by single cell-RNA sequencing of HARA cells according to Calbindin and HERVH-LTR7 activity,Lung Cancer,False,True,
+SRX10008476,PRJNA699012,IPF Profiling of cultured primary stromal cells from human lung,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX10048373,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10048375,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX10048376,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX10048379,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX10048380,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX10048385,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX10048389,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10048391,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10048393,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10048395,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10048396,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10048397,PRJNA669824,The pulmonary vasculature in lethal COVID-19 and idiopathic pulmonary fibrosis at single cell resolution,IPF / Pulmonary Fibrosis,False,True,
+SRX10100448,PRJNA701930,"Single-cell longitudinal analysis of SARS-CoV-2 infection in human airway epithelium identifies target cells, alterations in gene expression and cell state changes",COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX10152685,PRJNA704098,COPD SINGLE CELL RNA SEQUENCING IDENTIFIES IGFBP5 AND QKI,COPD,False,True,
+SRX10327362,PRJNA713903,Single-cell RNA sequencing of human airway epithelia infected with measles virus (MeV),Other,False,False,unmapped_disease
+SRX10327364,PRJNA713903,Single-cell RNA sequencing of human airway epithelia infected with measles virus (MeV),Other,False,False,unmapped_disease
+SRX10327365,PRJNA713903,Single-cell RNA sequencing of human airway epithelia infected with measles virus (MeV),Other,False,False,unmapped_disease
+SRX10327368,PRJNA713903,Single-cell RNA sequencing of human airway epithelia infected with measles virus (MeV),Other,False,False,unmapped_disease
+SRX10335835,PRJNA714138,Lung cancer Identification of a novel antitumor CD4+ T cell cluster orchestrating antitumor immunity,Lung Cancer,False,True,
+SRX10425169,PRJNA716656,IPAH Transcriptional profiling of lung cell populations in idiopathic pulmonary arterial hypertension,Pulmonary Hypertension,False,True,
+SRX10425170,PRJNA716656,IPAH Transcriptional profiling of lung cell populations in idiopathic pulmonary arterial hypertension,Pulmonary Hypertension,False,True,
+SRX10957183,PRJNA731910,Resistance to targeted therapies in the brain tumor microenvironment occurs through selection of cells with distinct transcriptomic profiles,Other,False,False,excluded_sample_type
+SRX11143423,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11143424,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11143425,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11143427,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11143428,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11143429,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11143430,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,unmapped_disease
+SRX11438984,PRJNA746455,Macrophages govern antiviral responses in human lung tissues protected from SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,False,True,
+SRX11438987,PRJNA746455,Macrophages govern antiviral responses in human lung tissues protected from SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,False,True,
+SRX11438989,PRJNA746455,Macrophages govern antiviral responses in human lung tissues protected from SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,False,True,
+SRX11438990,PRJNA746455,Macrophages govern antiviral responses in human lung tissues protected from SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,False,True,
+SRX11438991,PRJNA746455,Macrophages govern antiviral responses in human lung tissues protected from SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,False,True,
+SRX11438992,PRJNA746455,Macrophages govern antiviral responses in human lung tissues protected from SARS-CoV-2 infection,COVID-19 / SARS-CoV-2,False,True,
+SRX11515843,PRJNA748731,Acute respiratory distress syndrome People critically ill with COVID-19 exhibit peripheral immune profiles predictive of mortality and reflective of SARS-CoV-2 lung viral burden,COVID-19 / SARS-CoV-2,False,True,
+SRX11515852,PRJNA748731,COVID-19 People critically ill with COVID-19 exhibit peripheral immune profiles predictive of mortality and reflective of SARS-CoV-2 lung viral burden,COVID-19 / SARS-CoV-2,False,True,
+SRX11987892,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987896,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987900,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987902,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987903,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987904,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987906,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987908,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987909,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987912,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX11987915,PRJNA759630,NSCLC Transcriptomic and topological analyses of human lung tumors identify cancer-associated fibroblast subsets associated with T cell exclusion,Lung Cancer,False,True,
+SRX12285822,PRJNA764933,The NF-κB transcriptional footprint is essential for SARS-CoV-2 replication,COVID-19 / SARS-CoV-2,False,True,
+SRX12366723,PRJNA766517,Modification of microglial transcriptome reveals to be novel therapeutic strategy against Alzheimer's Disease,Control,True,False,non_human
+SRX12509396,PRJNA769143,pulmonary arterial hypertension Single-cell mRNAseq human pulmonary arterial endothelial cells in healthy and pulmonary arterial hypertension,Pulmonary Hypertension,False,True,
+SRX12571167,PRJNA770341,Human lung tissue resident memory T cells are re-programmed but not eradicated with systemic glucocorticoids after acute cellular rejection,Other,False,False,unmapped_disease
+SRX12708356,PRJNA773094,COVID-19 Transcriptional reprogramming of infiltrating neutrophils drives lung disease in severe COVID-19 despite low viral load,COVID-19 / SARS-CoV-2,False,True,
+SRX12868712,PRJNA773987,Lung adenocarcinoma stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Lung Cancer,False,True,
+SRX12868713,PRJNA773987,Lung adenocarcinoma stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Lung Cancer,False,True,
+SRX12868714,PRJNA773987,Normal appearing adjacent lung tissue from lung adenocarcinoma patient. stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Control,True,True,
+SRX12868715,PRJNA773987,Lung adenocarcinoma stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Lung Cancer,False,True,
+SRX12868717,PRJNA773987,Lung adenocarcinoma stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Lung Cancer,False,True,
+SRX12868719,PRJNA773987,Lung adenocarcinoma stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Lung Cancer,False,True,
+SRX12868721,PRJNA773987,Lung adenocarcinoma stage IA single cell RNA sequencing of early lung adenocarcinoma from never smoker.,Lung Cancer,False,True,
+SRX13061245,PRJNA778775,Allelic variation in Class I HLA determines pre-existing memory responses to SARS-CoV-2 that shape the CD8+ T cell repertoire upon viral exposure,COVID-19 / SARS-CoV-2,False,True,
+SRX13198724,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198725,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198726,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198727,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198728,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198729,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198730,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13198732,PRJNA782639,Spatiotemporal transcriptional atlas of lung adenocarcinoma from adenocarcinoma in situ to invasive carcinoma [scRNA-seq],Lung Cancer,False,True,
+SRX13325103,PRJNA786555,LAM lung Midkine expression by stem-like tumor cells drives persistence to mTOR inhibition and rewires the microenvironment toward an immune-suppressive state,Other,False,False,unmapped_disease
+SRX14098301,PRJNA804479,COPD Secretory cells are the primary source of pIgR in small airways,COPD,False,False,excluded_sample_type
+SRX14098302,PRJNA804479,COPD Secretory cells are the primary source of pIgR in small airways,COPD,False,False,excluded_sample_type
+SRX14098303,PRJNA804479,COPD Secretory cells are the primary source of pIgR in small airways,COPD,False,False,excluded_sample_type
+SRX14098306,PRJNA804479,COPD Secretory cells are the primary source of pIgR in small airways,COPD,False,False,excluded_sample_type
+SRX14495312,PRJNA817261,yes Ewing sarcoma Adolescent bone sarcomas have distinct immune signatures and intercellular communication networks,Other,False,False,unmapped_disease
+SRX14589431,PRJNA819093,Transcriptome Analaysis of humanized lungs in COVID-19 [scRNAseq],COVID-19 / SARS-CoV-2,False,True,
+SRX14589432,PRJNA819093,Transcriptome Analaysis of humanized lungs in COVID-19 [scRNAseq],COVID-19 / SARS-CoV-2,False,True,
+SRX14589433,PRJNA819093,Transcriptome Analaysis of humanized lungs in COVID-19 [scRNAseq],COVID-19 / SARS-CoV-2,False,True,
+SRX14767848,PRJNA667491,non-CF Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX14767851,PRJNA667491,CF Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX14767852,PRJNA667491,CF Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX14767853,PRJNA667491,CF Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX14767854,PRJNA667491,non-CF Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX14767855,PRJNA667491,CF Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX14891756,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891759,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891760,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891761,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891762,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891763,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891764,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891765,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891767,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX14891769,PRJNA827791,Single cell RNA-sequencing based characterization of cell compositions in human multiple primary lung cancer,Lung Cancer,False,True,
+SRX15263315,PRJNA837899,A Multi-Organoid Platform Identifies CIART as a Key Factor for SARS-CoV-2 Infection [scRNA-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX15263316,PRJNA837899,A Multi-Organoid Platform Identifies CIART as a Key Factor for SARS-CoV-2 Infection [scRNA-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX15263317,PRJNA837899,A Multi-Organoid Platform Identifies CIART as a Key Factor for SARS-CoV-2 Infection [scRNA-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX15263318,PRJNA837899,A Multi-Organoid Platform Identifies CIART as a Key Factor for SARS-CoV-2 Infection [scRNA-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX16217002,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217003,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217004,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217005,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217006,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217007,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217008,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217009,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217010,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217012,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217013,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217014,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217015,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217016,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16217017,PRJNA858410,"Gene expression profile at single cell level of human TILs treated with PD1-TIM3, PD1-LAG3, anti-PD1 or control isotype.",Other,False,False,unmapped_disease
+SRX16757156,PRJNA864822,pulmonary arterial hypertension (PAH) Gene expression profile at single cell level of human pulmonary arteries (PA) of healthy and Pulmonary hypertension affected lungs and murine PA exposed to normoxia and hypoxia,Pulmonary Hypertension,False,True,
+SRX16757157,PRJNA864822,pulmonary arterial hypertension (PAH) Gene expression profile at single cell level of human pulmonary arteries (PA) of healthy and Pulmonary hypertension affected lungs and murine PA exposed to normoxia and hypoxia,Pulmonary Hypertension,False,True,
+SRX17035589,PRJNA868764,Integrated multiomics profiling identifies the differentiation program of regulatory T cells in human tumors [scRNA-seq],Control,True,True,
+SRX17137139,PRJNA870911,"SARS-CoV-2 infection of Lung Organoids Reveals Conserved Use of Tetraspanin-8 by Ancestral-, Delta-, and Omicron- Variants",COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX17150749,PRJNA871210,Investigating tumor radiation response heterogeneity using single-cell sequencing,Other,False,False,unmapped_disease
+SRX17150750,PRJNA871210,Investigating tumor radiation response heterogeneity using single-cell sequencing,Other,False,False,unmapped_disease
+SRX17412786,PRJNA563828,Control IPF Cell Atlas,Control,True,True,
+SRX17412792,PRJNA563828,Control IPF Cell Atlas,Control,True,True,
+SRX17412802,PRJNA563828,Control IPF Cell Atlas,Control,True,True,
+SRX17412805,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412806,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412807,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412808,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412809,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412811,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412812,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412813,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412814,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412815,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412816,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412817,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412818,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412820,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412821,PRJNA563828,COPD IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412823,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412824,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412825,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412827,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412828,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412829,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412830,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412831,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412832,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412833,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412834,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412835,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412836,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412837,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412839,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412840,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412841,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412842,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412843,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412844,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412845,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412846,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412847,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412848,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412849,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412850,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412851,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412852,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412853,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17412854,PRJNA563828,IPF IPF Cell Atlas,IPF / Pulmonary Fibrosis,False,True,
+SRX17664572,PRJNA882878,snRNAseq of human vascular dementia white matter vs control,Other,False,False,non_lung
+SRX17689197,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689198,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689199,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689200,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689201,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689203,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689204,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689205,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689208,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17689209,PRJNA883741,Normal Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,Control,True,True,
+SRX17689210,PRJNA883741,IPF Single-Nucleus Chromatin Accessibility Identifies a Critical Role for TWIST1 in IPF Myofibroblast Activity,IPF / Pulmonary Fibrosis,False,True,
+SRX17896691,PRJNA890673,"A distal lung organoid model to study interstitial lung disease, viral infection and human lung development.",Interstitial Lung Disease,False,False,excluded_sample_type
+SRX17896694,PRJNA890673,"A distal lung organoid model to study interstitial lung disease, viral infection and human lung development.",Interstitial Lung Disease,False,False,excluded_sample_type
+SRX18248062,PRJNA901260,Lung adenocarcinoma Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Control,True,True,
+SRX18248063,PRJNA901260,Lung adenocarcinoma pT1bNo Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Lung Cancer,False,True,
+SRX18248064,PRJNA901260,Lung adenocarcinoma Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Control,True,True,
+SRX18248065,PRJNA901260,Lung adenocarcinoma pT3N2M0 Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Lung Cancer,False,True,
+SRX18248066,PRJNA901260,Lung adenocarcinoma Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Control,True,True,
+SRX18248067,PRJNA901260,Lung adenocarcinoma pT1bN0 Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Lung Cancer,False,True,
+SRX18248068,PRJNA901260,Lung adenocarcinoma Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Control,True,True,
+SRX18248069,PRJNA901260,Lung adenocarcinoma pT1bN0 Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Lung Cancer,False,True,
+SRX18248070,PRJNA901260,Lung adenocarcinoma Single cell RNA sequencing of lung adenocarcinoma from current smoker.,Control,True,True,
+SRX18965979,PRJNA919922,Single cell transcriptomic profile of human airway orgnaoids.,Other,False,False,excluded_sample_type
+SRX19215444,PRJNA929481,Designing a single cell ATAC-Seq (scATAC-Seq) dataset to validate long read RNA-Seq isoforms and benchmark scATAC-Seq analysis methods II,Other,False,False,excluded_sample_type
+SRX19264641,PRJNA930840,Notochord and axial progenitor generation by timely BMP and NODAL inhibition during vertebrate trunk formation (human),Other,False,False,non_lung
+SRX19320094,PRJNA934551,Polycomb Repressive Complex 2 regulates basal cell fate during adult olfactory neurogenesism [scRNA-seq],Other,False,False,non_human
+SRX19704117,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704118,PRJNA945854,CTD-ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704122,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704126,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704127,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704128,PRJNA945854,ILD/HP Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704139,PRJNA945854,Control Cell type-specific and disease-associated eQTL in the human lung,Control,True,True,
+SRX19704142,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704143,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704144,PRJNA945854,NSIP Cell type-specific and disease-associated eQTL in the human lung,Other,False,False,unmapped_disease
+SRX19704145,PRJNA945854,NSIP Cell type-specific and disease-associated eQTL in the human lung,Other,False,False,unmapped_disease
+SRX19704147,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704148,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704149,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704150,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704151,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704152,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704156,PRJNA945854,IPAF Cell type-specific and disease-associated eQTL in the human lung,Other,False,False,unmapped_disease
+SRX19704157,PRJNA945854,IPAF Cell type-specific and disease-associated eQTL in the human lung,Other,False,False,unmapped_disease
+SRX19704158,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704159,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704160,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704161,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704162,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704164,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704165,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704166,PRJNA945854,ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704169,PRJNA945854,ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704170,PRJNA945854,ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704171,PRJNA945854,ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704179,PRJNA945854,Control Cell type-specific and disease-associated eQTL in the human lung,Control,True,True,
+SRX19704180,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704181,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704186,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704187,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704188,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704193,PRJNA945854,ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704194,PRJNA945854,ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19704196,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704197,PRJNA945854,IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19704198,PRJNA945854,IPAF Cell type-specific and disease-associated eQTL in the human lung,Other,False,False,unmapped_disease
+SRX19727428,PRJNA946652,mild COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727429,PRJNA946652,mild COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727430,PRJNA946652,mild COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727431,PRJNA946652,mild COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727432,PRJNA946652,moderate COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727434,PRJNA946652,moderate COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727435,PRJNA946652,moderate COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19727436,PRJNA946652,moderate COPD Single Cell RNA-Sequencing Identifies ferroptotic differences of alveolar macrophages in COPD,COPD,False,True,
+SRX19730933,PRJNA934540,Restoring Tumor Immunogenicity with Dendritic Cell Reprogramming [scRNA-seq],Other,False,False,unmapped_disease
+SRX19730934,PRJNA934540,Restoring Tumor Immunogenicity with Dendritic Cell Reprogramming [scRNA-seq],Other,False,False,unmapped_disease
+SRX19730935,PRJNA934540,Restoring Tumor Immunogenicity with Dendritic Cell Reprogramming [scRNA-seq],Other,False,False,unmapped_disease
+SRX19730968,PRJNA934540,Restoring Tumor Immunogenicity with Dendritic Cell Reprogramming [scRNA-seq],Other,False,False,unmapped_disease
+SRX19836243,PRJNA950922,PHPF Gene expression profile at single cell level of human pulmonary arteries (PA) of 2 healthy and 3 pulmonary hypertension associated with pulmonary fibrosis (PFPH) affected lungs,IPF / Pulmonary Fibrosis,False,True,
+SRX19836244,PRJNA950922,PHPF Gene expression profile at single cell level of human pulmonary arteries (PA) of 2 healthy and 3 pulmonary hypertension associated with pulmonary fibrosis (PFPH) affected lungs,IPF / Pulmonary Fibrosis,False,True,
+SRX19836245,PRJNA950922,PHPF Gene expression profile at single cell level of human pulmonary arteries (PA) of 2 healthy and 3 pulmonary hypertension associated with pulmonary fibrosis (PFPH) affected lungs,IPF / Pulmonary Fibrosis,False,True,
+SRX19844818,PRJNA945854,ILD ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19844819,PRJNA945854,ILD ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19844820,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844821,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844822,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844823,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844824,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844825,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844828,PRJNA945854,Control Control Cell type-specific and disease-associated eQTL in the human lung,Control,True,True,
+SRX19844830,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844831,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844832,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844833,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844834,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844835,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844836,PRJNA945854,ILD ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19844837,PRJNA945854,ILD ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19844838,PRJNA945854,ILD ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19844839,PRJNA945854,ILD ILD Cell type-specific and disease-associated eQTL in the human lung,Interstitial Lung Disease,False,True,
+SRX19844846,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844848,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19844849,PRJNA945854,IPF IPF Cell type-specific and disease-associated eQTL in the human lung,IPF / Pulmonary Fibrosis,False,True,
+SRX19886022,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886023,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886025,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886027,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886028,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886029,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886030,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886031,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886032,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886033,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886034,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886035,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886037,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886039,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886040,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886042,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886043,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886044,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886045,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886046,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886047,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886049,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX19886050,PRJNA952672,scRNA-seq data for H-23 and H-358 cells traced under using customized barcode,Other,False,False,unmapped_disease
+SRX20098024,PRJNA961720,Cryobiopsy: A Breakthrough Strategy for Clinical Utilization of Lung Cancer Organoids,Lung Cancer,False,False,excluded_sample_type
+SRX20221194,PRJNA967233,Aberrant differentiation of epithelial progenitors is accompanied by a hypoxic microenvironment in the paraquat-injured human lung,Other,False,False,unmapped_disease
+SRX20407493,PRJNA973717,Elevated Mast Cell Abundance is Associated with Enrichment of CCR2+ Cytotoxic T cells and Favorable Prognosis in Lung Adenocarcinoma,Lung Cancer,False,True,
+SRX20407494,PRJNA973717,Elevated Mast Cell Abundance is Associated with Enrichment of CCR2+ Cytotoxic T cells and Favorable Prognosis in Lung Adenocarcinoma,Lung Cancer,False,True,
+SRX20407496,PRJNA973717,Elevated Mast Cell Abundance is Associated with Enrichment of CCR2+ Cytotoxic T cells and Favorable Prognosis in Lung Adenocarcinoma,Lung Cancer,False,True,
+SRX20407497,PRJNA973717,Elevated Mast Cell Abundance is Associated with Enrichment of CCR2+ Cytotoxic T cells and Favorable Prognosis in Lung Adenocarcinoma,Lung Cancer,False,True,
+SRX20407498,PRJNA973717,Elevated Mast Cell Abundance is Associated with Enrichment of CCR2+ Cytotoxic T cells and Favorable Prognosis in Lung Adenocarcinoma,Lung Cancer,False,True,
+SRX20407499,PRJNA973717,Elevated Mast Cell Abundance is Associated with Enrichment of CCR2+ Cytotoxic T cells and Favorable Prognosis in Lung Adenocarcinoma,Lung Cancer,False,True,
+SRX20612052,PRJNA980643,Single cell multi-omic dissection of response and resistance to chimeric antigen receptor T cells against BCMA in relapsed multiple myeloma,Other,False,False,excluded_sample_type
+SRX20970826,PRJNA993165,Single cell susceptibility to SARS-CoV-2 infection is driven by variable cell states [scRNA-Seq],COVID-19 / SARS-CoV-2,False,True,
+SRX21203377,PRJNA1000503,fibrotic lung disease scRNA-seq analysis of biopsy tissue from Interstitial Lung Disease patients who took EGCG,Control,True,True,
+SRX21256826,PRJNA1002309,Genome-Wide CRISPR Screen Identifies Multiple Synthetic Lethal Targets That Enhance KRAS (G12C) Inhibitor Efficacy [scRNA-seq],Other,False,False,excluded_sample_type
+SRX21311407,PRJNA1003807,"scRNAseq of human blood, tonsil, lung and small intestine innate lymphoid cells",Other,False,False,excluded_sample_type
+SRX21460097,PRJNA1008237,Context-aware single-cell multiomics approach identifies cell-type specific lung cancer susceptibility genes,Lung Cancer,False,True,
+SRX21460119,PRJNA1008237,Context-aware single-cell multiomics approach identifies cell-type specific lung cancer susceptibility genes,Lung Cancer,False,True,
+SRX21808827,PRJNA1018509,Single-cell transcriptomic analysis (scRNA-seq) of healthy adult human parietal pleura,Other,False,False,unmapped_disease
+SRX21808829,PRJNA1018509,Single-cell transcriptomic analysis (scRNA-seq) of healthy adult human parietal pleura,Other,False,False,unmapped_disease
+SRX21808830,PRJNA1018509,Single-cell transcriptomic analysis (scRNA-seq) of healthy adult human parietal pleura,Other,False,False,unmapped_disease
+SRX21808831,PRJNA1018509,Single-cell transcriptomic analysis (scRNA-seq) of healthy adult human parietal pleura,Other,False,False,unmapped_disease
+SRX21808832,PRJNA1018509,Single-cell transcriptomic analysis (scRNA-seq) of healthy adult human parietal pleura,Other,False,False,unmapped_disease
+SRX21808834,PRJNA1018509,Single-cell transcriptomic analysis (scRNA-seq) of healthy adult human parietal pleura,Other,False,False,unmapped_disease
+SRX21897873,PRJNA1021137,single cell RNA-sequencing analysis of human SUV39H1-knockout CAR T compared to control CAR T cells (mock) in a xenograft model of lung adenocarcinoma,Lung Cancer,False,True,
+SRX21897876,PRJNA1021137,single cell RNA-sequencing analysis of human SUV39H1-knockout CAR T compared to control CAR T cells (mock) in a xenograft model of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22130035,PRJNA1029622,Generation of expandable multipotential distal lung progenitors from human pluripotent stem cells that model idiopathic pulmonary fibrosis [scRNA-Seq],IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX22159982,PRJNA1030397,A high-resolution transcriptomic and spatial atlas of cell types in the whole mouse brain,Other,False,False,non_human
+SRX22226492,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226494,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226496,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226498,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226500,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226502,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226504,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22226505,PRJNA1032112,Immediate myeloid depot for SARS-CoV-2 in the human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX22478206,PRJNA1037570,Cooperation between the Hippo and MAPK pathway activation drives acquired resistance to TEAD inhibition [multiome-seq],Other,False,False,non_lung
+SRX22613094,PRJNA1044045,Farnesyltransferase inhibition overcomes the adaptive resistance to targeted therapies in oncogene-addicted non-small cell lung cancer,Lung Cancer,False,True,
+SRX22613096,PRJNA1044045,Farnesyltransferase inhibition overcomes the adaptive resistance to targeted therapies in oncogene-addicted non-small cell lung cancer,Lung Cancer,False,True,
+SRX22613098,PRJNA1044045,Farnesyltransferase inhibition overcomes the adaptive resistance to targeted therapies in oncogene-addicted non-small cell lung cancer,Lung Cancer,False,True,
+SRX22613099,PRJNA1044045,Farnesyltransferase inhibition overcomes the adaptive resistance to targeted therapies in oncogene-addicted non-small cell lung cancer,Lung Cancer,False,True,
+SRX22834774,PRJNA1050266,Predicting Antigen-Specificities of Orphan T Cell Receptors from Cancer Patients with TCRpcDist,Other,False,False,unmapped_disease
+SRX22836420,PRJNA1050294,The iPSC-derived pulmonary epithilial cells in micro-patterned culture plate,Other,False,False,excluded_sample_type
+SRX22996309,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996310,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996311,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996312,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996313,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996314,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996315,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996316,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996317,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996318,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996319,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996320,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996322,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996323,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996325,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996327,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996328,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996329,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996330,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996331,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996333,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996334,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996335,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996336,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996337,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996338,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996339,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996340,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996341,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996342,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996343,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996344,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996345,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996346,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996347,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996348,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996349,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996350,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996351,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996352,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996353,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996354,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996355,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996356,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996358,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996359,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996360,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996361,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996363,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996364,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996365,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996366,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996367,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996368,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996369,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996371,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996373,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996374,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996376,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996377,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996378,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996379,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996380,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996381,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996382,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996383,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996384,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996385,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996386,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996387,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996388,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996389,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996390,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996391,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996392,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996393,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996394,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996395,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996396,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX22996397,PRJNA1055415,Single-cell RNA sequencing identifies dysregulated NOTCH3 signaling in tumor stroma of lung adenocarcinoma,Lung Cancer,False,True,
+SRX23231247,PRJNA1065377,Idiopathic pulmonary fibrosis (IPF) Tetrahedral framework nucleic acids loaded siCCR2 restrains M1 macrophage polarization to ameliorate pulmonary fibrosis in chemoradiation-induced murine model,IPF / Pulmonary Fibrosis,False,True,
+SRX23331462,PRJNA1066790,SARS-CoV-2 Variant of Concern Fitness and Adaptation in Primary Human Airway Epithelia,COVID-19 / SARS-CoV-2,False,True,
+SRX23331463,PRJNA1066790,SARS-CoV-2 Variant of Concern Fitness and Adaptation in Primary Human Airway Epithelia,COVID-19 / SARS-CoV-2,False,True,
+SRX23331471,PRJNA1066790,SARS-CoV-2 Variant of Concern Fitness and Adaptation in Primary Human Airway Epithelia,COVID-19 / SARS-CoV-2,False,True,
+SRX23331472,PRJNA1066790,SARS-CoV-2 Variant of Concern Fitness and Adaptation in Primary Human Airway Epithelia,COVID-19 / SARS-CoV-2,False,True,
+SRX23395179,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23395184,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23395186,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23395188,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23395190,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23395191,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23395192,PRJNA1069102,Single-cell analysis of lung epithelial cells reveals age and cell population-specific responses to SARS-CoV-2 infection in ciliated cells,COVID-19 / SARS-CoV-2,False,True,
+SRX23619806,PRJNA1076461,"Formation of malignant, metastatic small cell lung cancers through overproduction of cMYC protein in TP53 and RB1 depleted pulmonary neuroendocrine cells derived from human embryonic stem cells",Lung Cancer,False,False,excluded_sample_type
+SRX23619807,PRJNA1076461,"Formation of malignant, metastatic small cell lung cancers through overproduction of cMYC protein in TP53 and RB1 depleted pulmonary neuroendocrine cells derived from human embryonic stem cells",Lung Cancer,False,False,excluded_sample_type
+SRX23619809,PRJNA1076461,"Formation of malignant, metastatic small cell lung cancers through overproduction of cMYC protein in TP53 and RB1 depleted pulmonary neuroendocrine cells derived from human embryonic stem cells",Lung Cancer,False,False,excluded_sample_type
+SRX23724073,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724081,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724082,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724085,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724088,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724090,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724091,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724094,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724096,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724098,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724100,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724101,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724103,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724104,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724105,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724106,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724107,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724109,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724110,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724111,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724121,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724122,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724123,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724124,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23724125,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23802728,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23802731,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23802735,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23802736,PRJNA847631,A molecular cell atlas of COVID-19 initiation in human lung,COVID-19 / SARS-CoV-2,False,True,
+SRX23838225,PRJNA1076461,"Formation of malignant, metastatic small cell lung cancers through overproduction of cMYC protein in TP53 and RB1 depleted pulmonary neuroendocrine cells derived from human embryonic stem cells",Lung Cancer,False,False,excluded_sample_type
+SRX24275202,PRJNA1100571,Transcriptome-wide characterization of genetic perturbations,Other,False,False,excluded_sample_type
+SRX24313469,PRJNA1102421,A DGCR8/FLII-dominated on-off switch for immediate-early genes governs embryo implantation in mouse and human,Other,False,False,excluded_sample_type
+SRX24732576,PRJNA1117768,10x single-cell RNAseq profiling of influenza Virus infected Human Lung Tissue Explants (HLTE),Control,True,False,excluded_sample_type
+SRX24732577,PRJNA1117768,10x single-cell RNAseq profiling of influenza Virus infected Human Lung Tissue Explants (HLTE),Other,False,False,excluded_sample_type
+SRX24841614,PRJNA1121368,COPD explant A single-cell RNA sequencing atlas of the COPD distal lung to predict cell-cell communication,COPD,False,False,excluded_sample_type
+SRX24841615,PRJNA1121368,COPD explant A single-cell RNA sequencing atlas of the COPD distal lung to predict cell-cell communication,COPD,False,False,excluded_sample_type
+SRX24841616,PRJNA1121368,COPD explant A single-cell RNA sequencing atlas of the COPD distal lung to predict cell-cell communication,COPD,False,False,excluded_sample_type
+SRX24841617,PRJNA1121368,COPD explant A single-cell RNA sequencing atlas of the COPD distal lung to predict cell-cell communication,COPD,False,False,excluded_sample_type
+SRX24841618,PRJNA1121368,COPD explant A single-cell RNA sequencing atlas of the COPD distal lung to predict cell-cell communication,COPD,False,False,excluded_sample_type
+SRX24841619,PRJNA1121368,COPD explant A single-cell RNA sequencing atlas of the COPD distal lung to predict cell-cell communication,COPD,False,False,excluded_sample_type
+SRX25038161,PRJNA1127657,Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,Control,True,False,excluded_sample_type
+SRX25038162,PRJNA1127657,Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,Control,True,True,
+SRX25038163,PRJNA1127657,Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,Control,True,False,excluded_sample_type
+SRX25038164,PRJNA1127657,Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,Control,True,True,
+SRX25038165,PRJNA1127657,COPD Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,COPD,False,False,excluded_sample_type
+SRX25038166,PRJNA1127657,COPD Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,COPD,False,True,
+SRX25038167,PRJNA1127657,Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,Control,True,False,excluded_sample_type
+SRX25038168,PRJNA1127657,Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,Control,True,True,
+SRX25038169,PRJNA1127657,COPD Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,COPD,False,True,
+SRX25038170,PRJNA1127657,COPD Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,COPD,False,True,
+SRX25038171,PRJNA1127657,COPD Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,COPD,False,False,excluded_sample_type
+SRX25038172,PRJNA1127657,COPD Single-cell sequencing highlights increased atypical AT2 interacting with M1 macrophage in COPD,COPD,False,True,
+SRX25318272,PRJNA1135480,Single-cell transcriptomics reveals subset-specific metabolic profiles underpinning the bronchial epithelial response to flagellin,Other,False,False,unmapped_disease
+SRX25319036,PRJNA1135481,Gene expression profile at single cell level of human nasal primary airway cells from DNAH5 subjects,Control,True,True,
+SRX26487562,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487567,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487569,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487572,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487573,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487574,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487580,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487582,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487584,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487585,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487586,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487592,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487593,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487594,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487595,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26487598,PRJNA1177414,Divergent clinical and immunologic outcomes based on STK11 co-mutation status in resectable KRAS-mutant lung cancers following neoadjuvant immune checkpoint blockade,Lung Cancer,False,True,
+SRX26735837,PRJNA1186577,JUNB O-GlcNAcylation-mediated Promoter Accessibility of Metabolic Genes Modulates Distinct Epithelial Lineage in Pulmonary Fibrosis,IPF / Pulmonary Fibrosis,False,True,
+SRX27113449,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113450,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113451,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113452,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113453,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113454,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113456,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113457,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113458,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113459,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113460,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113461,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113462,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113463,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113464,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27113465,PRJNA1172658,Wilms’ tumor 1 impairs apoptotic clearance of fibroblasts in distal fibrotic lung lesions,Other,False,False,unmapped_disease
+SRX27208868,PRJNA1204132,NKG2D blockade impairs cytotoxic CD8+ tissue resident memory T cell accumulation and attenuates severity of chronic lung allograft dysfunction after transplantation,Other,False,False,unmapped_disease
+SRX27208877,PRJNA1204132,NKG2D blockade impairs cytotoxic CD8+ tissue resident memory T cell accumulation and attenuates severity of chronic lung allograft dysfunction after transplantation,Other,False,False,unmapped_disease
+SRX27291551,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291558,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291559,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291560,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291562,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291563,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291564,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291565,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291567,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291568,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291569,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291570,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291571,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291572,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291574,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291578,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291580,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291582,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291584,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291587,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291588,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291589,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291590,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291592,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291594,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291595,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291598,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291599,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291600,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291603,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291605,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291607,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291609,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291611,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291612,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291613,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291614,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291616,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291620,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291621,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291623,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27291624,PRJNA1208088,Single Nuclear RNAseq and MultiOme of IPF and Control Lung Tissue,IPF / Pulmonary Fibrosis,False,True,
+SRX27313889,PRJNA1209070,single cell RNA-seq analysis of lung cancer cell lines treated with JTE-607,Lung Cancer,False,False,excluded_sample_type
+SRX27358285,PRJNA1210996,Tonic ISG expression promotes efficient induction of IFNL in response to influenza infection,Other,False,False,unmapped_disease
+SRX27995731,PRJNA1202516,"Lung Cancer A Phase 1, First in Human Study of Adenovirally Transduced Autologous Macrophages Engineered to Contain an Anti-HER2 Chimeric Antigen Receptor in Subjects With HER2 Overexpressing Solid Tumors",Lung Cancer,False,True,
+SRX28769081,PRJNA1215450,Multimodal profiling reveals tissue-directed signatures of human immune cells altered with age,Other,False,False,unmapped_disease
+SRX29072175,PRJNA1272602,Regulatory T cells in lung tumor shape an anti-inflammatory myeloid-landscape recovery after chemotherapy,Lung Cancer,False,True,
+SRX29072176,PRJNA1272602,Regulatory T cells in lung tumor shape an anti-inflammatory myeloid-landscape recovery after chemotherapy,Lung Cancer,False,True,
+SRX29072177,PRJNA1272602,Regulatory T cells in lung tumor shape an anti-inflammatory myeloid-landscape recovery after chemotherapy,Lung Cancer,False,True,
+SRX29072178,PRJNA1272602,Regulatory T cells in lung tumor shape an anti-inflammatory myeloid-landscape recovery after chemotherapy,Lung Cancer,False,True,
+SRX29072179,PRJNA1272602,Regulatory T cells in lung tumor shape an anti-inflammatory myeloid-landscape recovery after chemotherapy,Lung Cancer,False,True,
+SRX8349956,PRJNA633134,Transcriptional analysis of cystic fibrosis airways at single-cell resolution reveals altered epithelial cell states and composition,Cystic Fibrosis,False,True,
+SRX8349958,PRJNA633134,Transcriptional analysis of cystic fibrosis airways at single-cell resolution reveals altered epithelial cell states and composition,Cystic Fibrosis,False,True,
+SRX8349959,PRJNA633134,Transcriptional analysis of cystic fibrosis airways at single-cell resolution reveals altered epithelial cell states and composition,Cystic Fibrosis,False,True,
+SRX8349961,PRJNA633134,Transcriptional analysis of cystic fibrosis airways at single-cell resolution reveals altered epithelial cell states and composition,Cystic Fibrosis,False,True,
+SRX8349966,PRJNA633134,Transcriptional analysis of cystic fibrosis airways at single-cell resolution reveals altered epithelial cell states and composition,Cystic Fibrosis,False,True,
+SRX8353568,PRJNA633281,Modeling COVID-19 with Human Pluripotent Stem Cell-Derived Cells Reveals Synergistic Effects of Anti-inflammatory Macrophages with ACE2 Inhibition Against SARS-CoV-2,COVID-19 / SARS-CoV-2,False,True,
+SRX8353571,PRJNA633281,Modeling COVID-19 with Human Pluripotent Stem Cell-Derived Cells Reveals Synergistic Effects of Anti-inflammatory Macrophages with ACE2 Inhibition Against SARS-CoV-2,COVID-19 / SARS-CoV-2,False,True,
+SRX8370852,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370854,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370855,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370856,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370857,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370858,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370860,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8370861,PRJNA634136,Cycling cancer persisters arise from lineages with distinct transcriptional and metabolic programs,Other,False,False,excluded_sample_type
+SRX8372491,PRJNA634159,Single-cell transcriptome analysis in non-small cell lung cancer,Lung Cancer,False,True,
+SRX8372494,PRJNA634159,Single-cell transcriptome analysis in non-small cell lung cancer,Lung Cancer,False,True,
+SRX8372495,PRJNA634159,Single-cell transcriptome analysis in non-small cell lung cancer,Lung Cancer,False,True,
+SRX8372496,PRJNA634159,Single-cell transcriptome analysis in non-small cell lung cancer,Lung Cancer,False,True,
+SRX8953166,PRJNA657422,Idiopathic pulmonary fibrosis (IPF) Disparate interferon signaling and shared aberrant basaloid cells in single-cell profiling of idiopathic pulmonary fibrosis and systemic sclerosis-associated interstitial lung disease,IPF / Pulmonary Fibrosis,False,True,
+SRX8953167,PRJNA657422,Idiopathic pulmonary fibrosis (IPF) Disparate interferon signaling and shared aberrant basaloid cells in single-cell profiling of idiopathic pulmonary fibrosis and systemic sclerosis-associated interstitial lung disease,IPF / Pulmonary Fibrosis,False,True,
+SRX8961824,PRJNA657844,Elucidation of tumor-stromal heterogeneity and the ligand-receptor interactome by single cell transcriptomics in real-world pancreatic cancer biopsies,Other,False,False,unmapped_disease
+SRX9127142,PRJNA663601,IPF Single-cell RNA-sequencing of human lung Lin–EpCAM+ cells,IPF / Pulmonary Fibrosis,False,True,
+SRX9127143,PRJNA663601,IPF Single-cell RNA-sequencing of human lung Lin–EpCAM+ cells,IPF / Pulmonary Fibrosis,False,True,
+SRX9127144,PRJNA663601,IPF Single-cell RNA-sequencing of human lung Lin–EpCAM+ cells,IPF / Pulmonary Fibrosis,False,True,
+SRX9246190,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246191,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246192,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246194,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246195,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246197,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246199,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246200,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246201,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246202,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246203,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246204,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246205,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246206,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246207,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9246208,PRJNA667491,Single cell RNA sequencing of polarized cystic fibrosis (CF) and non-CF human airway cell cultures following transduction of primary basal cells with lentivirus,Cystic Fibrosis,False,True,
+SRX9276289,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276290,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276291,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276292,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276293,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276294,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276295,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276302,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276303,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276304,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276306,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276308,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276309,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276315,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276316,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276318,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276319,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276320,PRJNA668609,SSc-ILD Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276322,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276323,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276324,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276325,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276326,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276332,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276333,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276334,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276335,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9276336,PRJNA668609,IPF Single-cell RNA-seq of sort human lung explants from IPF and SSc-ILD patients,IPF / Pulmonary Fibrosis,False,False,excluded_sample_type
+SRX9296012,PRJNA669984,Identification of required host factors for SARS-CoV-2 infection in human cells [ECCITE-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX9296013,PRJNA669984,Identification of required host factors for SARS-CoV-2 infection in human cells [ECCITE-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX9296018,PRJNA669984,Identification of required host factors for SARS-CoV-2 infection in human cells [ECCITE-seq],COVID-19 / SARS-CoV-2,False,False,excluded_sample_type
+SRX9430527,PRJNA674516,Single cell RNAseq of lung transplant recipient,Other,False,False,unmapped_disease
+SRX9495616,PRJNA677962,"Single-cell lineages reveal the rates, routes, and drivers of metastasis in cancer xenografts",Other,False,False,excluded_sample_type
+SRX9768485,PRJNA689219,Integrative single-cell RNA and T-cell receptor analyses reveal transcriptional features of antigen-reactive tumor-infiltrating regulatory T cells in patients with lung cancer,Lung Cancer,False,True,
+SRX9768488,PRJNA689219,Integrative single-cell RNA and T-cell receptor analyses reveal transcriptional features of antigen-reactive tumor-infiltrating regulatory T cells in patients with lung cancer,Lung Cancer,False,True,
+SRX9927818,PRJNA694436,Targeting TREM2 on tumor associated macrophages enhances efficacious immunotherapy,Other,False,False,unmapped_disease
