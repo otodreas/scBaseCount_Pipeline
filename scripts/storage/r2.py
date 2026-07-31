@@ -33,7 +33,7 @@ def r2_key_exists(r2_key: str) -> bool:
 
 def download_from_r2(r2_key: str, local_path: Path, verify_md5: bool = False) -> None:
     bucket = os.environ["BUCKET"]
-    local_path.parent.mkdir(parents=True, exist_ok=True)
+    local_path.parent.mkdir(parents=True, exist_ok=True)  # local path is a file, not the location of the file
     _log.info("Downloading r2://%s/%s -> %s", bucket, r2_key, local_path)
     _r2_client().download_file(bucket, r2_key, str(local_path))
     if verify_md5:
