@@ -14,9 +14,6 @@ from atlas_postprocessing.config import AtlasPostprocessingConfig
 
 log = logging.getLogger(__name__)
 
-_ATLAS_POINT_SIZE = 0.001
-_ATLAS_ALPHA = 0.25
-
 
 def make_atlas_plots(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> None:
     """Write pre- and post-correction UMAP PNGs with atlas-scale point styling."""
@@ -50,8 +47,6 @@ def _save_embedding_plot(
         adata,
         basis=basis,
         color=colorBy,
-        alpha=_ATLAS_ALPHA,
-        size=_ATLAS_POINT_SIZE,
         legend_loc=None,
         show=False,
         return_fig=True,

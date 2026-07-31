@@ -13,6 +13,7 @@ from storage.r2 import upload_to_r2, verify_upload
 from atlas_postprocessing.artifacts import load_approved_parameters
 from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.plots import make_atlas_plots, save_scree_plot
+from atlas_postprocessing.sampling import sample_metadata
 
 log = logging.getLogger(__name__)
 
@@ -41,9 +42,13 @@ def validate_graph_settings(cfg: AtlasPostprocessingConfig, n_obs: int) -> None:
         raise ValueError(f"nTopGenes must be >= 1, got {cfg.nTopGenes}")
 
 
-def load_and_normalize(cfg: AtlasPostprocessingConfig) -> sc.AnnData:
-    """Read the atlas h5ad, stash full-gene counts in ``.raw``, and apply normalize_total + log1p."""
-    adata = sc.read_h5ad(cfg.inputH5ad)
+def load_and_normalize(
+    cfg: AtlasPostprocessingConfig,
+    adata: sc.AnnData | None = None,
+) -> sc.AnnData:
+    """Read the atlas h5ad (or use a preloaded object), stash ``.raw``, and normalize + log1p."""
+    if adata is None:
+        adata = sc.read_h5ad(cfg.inputH5ad)
     log.info("Loaded %s cells x %s genes", f"{adata.n_obs:,}", f"{adata.n_vars:,}")
     if cfg.batchKey not in adata.obs:
         raise ValueError(f"adata.obs is missing batch key {cfg.batchKey!r}")
@@ -186,6 +191,7 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> Path:
         "nNeighbors": cfg.nNeighbors,
         "parametersJson": rel_to_repo(cfg.parametersJson) if cfg.parametersJson else None,
         "calibrationSummary": calibration_summary,
+        "sampling": sample_metadata(adata),
     }
     summary_path = cfg.outputH5ad.with_name(f"{cfg.outputH5ad.stem}_run.json")
     summary_path.write_text(json.dumps(summary, indent=2))
@@ -202,17 +208,20 @@ def upload_atlas(cfg: AtlasPostprocessingConfig) -> None:
         raise RuntimeError(f"R2 upload verification failed for {cfg.r2Key}")
 
 
-def run_postprocessing(cfg: AtlasPostprocessingConfig) -> sc.AnnData:
+def run_postprocessing(
+    cfg: AtlasPostprocessingConfig,
+    adata: sc.AnnData | None = None,
+) -> sc.AnnData:
     """Run the full atlas postprocessing flow: load, embed, integrate, plot, and save."""
-    adata = timed("load + normalize", lambda: load_and_normalize(cfg))
-    validate_graph_settings(cfg, adata.n_obs)
-    adata = timed("HVG + PCA + pre-correction embedding", lambda: embed_uncorrected(adata, cfg))
-    adata = timed("harmony integration", lambda: integrate_harmony(adata, cfg))
+    loaded = timed("load + normalize", lambda: load_and_normalize(cfg, adata=adata))
+    validate_graph_settings(cfg, loaded.n_obs)
+    loaded = timed("HVG + PCA + pre-correction embedding", lambda: embed_uncorrected(loaded, cfg))
+    loaded = timed("harmony integration", lambda: integrate_harmony(loaded, cfg))
 
     if cfg.writePlots:
-        timed("scree plot", lambda: save_scree_plot(adata, cfg))
-        timed("plots", lambda: make_atlas_plots(adata, cfg))
-    timed("save atlas", lambda: save_atlas(adata, cfg))
+        timed("scree plot", lambda: save_scree_plot(loaded, cfg))
+        timed("plots", lambda: make_atlas_plots(loaded, cfg))
+    timed("save atlas", lambda: save_atlas(loaded, cfg))
     if cfg.r2Key:
         timed("upload to r2", lambda: upload_atlas(cfg))
-    return adata
+    return loaded

@@ -2,13 +2,13 @@
 
 Batch runners for server-side work across many accessions. Each script reads `output/metadata/datasets.csv` (unless noted), writes a timestamped run directory under `output/`, and logs to `logs/`.
 
-Run from the repo root after `uv sync --group dev` and `.env` is configured (see [`.env.example`](../.env.example)).
+Run from the repo root after `uv sync --group dev` and `.env` is configured (see `[.env.example](../.env.example)`).
 
 ```sh
 uv run python pipelines/run_clustering_pipeline.py --help
 ```
 
-Package logic lives under [`scripts/`](../scripts/README.md). Interactive exploration uses [`notebooks/`](../notebooks/README.md).
+Package logic lives under `[scripts/](../scripts/README.md)`. Interactive exploration uses `[notebooks/](../notebooks/README.md)`.
 
 ## Typical order
 
@@ -22,25 +22,31 @@ migrate_gcs_to_r2  →  run_clustering_pipeline  →  run_cytetype_pipeline  →
 
 ## Shared inputs
 
-| File | Used by |
-|------|---------|
-| `output/metadata/datasets.csv` | All runners (`srx_accession`, `file_path`, …) |
+
+| File                                                                  | Used by                                                             |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `output/metadata/datasets.csv`                                        | All runners (`srx_accession`, `file_path`, …)                       |
 | `output/context/contexts.jsonl` (`study_context.CONTEXTS_JSONL_PATH`) | `run_cytetype_pipeline.py` (default; overridable with `--contexts`) |
 
-Study context is produced by [`notebooks/pipeline/study_context.ipynb`](../notebooks/pipeline/study_context.ipynb). The cytetype runner loads summaries via `experiment_context_summary`; missing accessions proceed with empty context.
+
+Study context is produced by `[notebooks/pipeline/study_context.ipynb](../notebooks/pipeline/study_context.ipynb)`. The cytetype runner loads summaries via `experiment_context_summary`; missing accessions proceed with empty context.
 
 ## R2 key layout
 
-| Stage | Key pattern | Example |
-|-------|-------------|---------|
-| Raw mirror | `gcs_uri_to_r2_raw_key(gs_uri)` from `file_path` | Mirrors GCS path under the bucket |
-| Clustering run | `{r2_prefix}/{srx}_clustered.h5ad` | `clustering_pipeline_20260511_140000/SRX…_clustered.h5ad` |
-| CyteType run | `{r2_prefix}/{srx}_annotated.h5ad` | `cytetype_pipeline_20260512_090000/SRX…_annotated.h5ad` |
-| CyteOnto run | `{r2_prefix}/{srx}_cyteonto.csv` | `cyteonto_pipeline_20260513_090000/SRX…_cyteonto.csv` |
+
+| Stage          | Key pattern                                      | Example                                                   |
+| -------------- | ------------------------------------------------ | --------------------------------------------------------- |
+| Raw mirror     | `gcs_uri_to_r2_raw_key(gs_uri)` from `file_path` | Mirrors GCS path under the bucket                         |
+| Clustering run | `{r2_prefix}/{srx}_clustered.h5ad`               | `clustering_pipeline_20260511_140000/SRX…_clustered.h5ad` |
+| CyteType run   | `{r2_prefix}/{srx}_annotated.h5ad`               | `cytetype_pipeline_20260512_090000/SRX…_annotated.h5ad`   |
+| CyteOnto run   | `{r2_prefix}/{srx}_cyteonto.csv`                 | `cyteonto_pipeline_20260513_090000/SRX…_cyteonto.csv`     |
+
 
 `--r2-prefix` defaults to `{script_name}_{YYYYMMDD_HHMMSS}` at import time. Pass an explicit prefix when chaining runs (cytetype needs `--clustering-prefix` from the clustering run’s `metadata.json`).
 
 ---
+
+
 
 ## `migrate_gcs_to_r2.py`
 
@@ -48,11 +54,13 @@ Copies raw scBaseCount h5ad files from GCS to R2 for accessions present in the s
 
 **Output:** `output/migration/{timestamp}/run.csv`
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--datasets` | `output/metadata/datasets_v2.csv` | Source accession list |
-| `--baseline` | `output/metadata/datasets.csv` | Accessions to exclude from migration |
-| `--dry-run` | off | Log planned uploads only |
+
+| Flag         | Default                           | Description                          |
+| ------------ | --------------------------------- | ------------------------------------ |
+| `--datasets` | `output/metadata/datasets_v2.csv` | Source accession list                |
+| `--baseline` | `output/metadata/datasets.csv`    | Accessions to exclude from migration |
+| `--dry-run`  | off                               | Log planned uploads only             |
+
 
 With the current metadata files, the default selection is 1,048 accessions. The process exits with status 1 if any selected row fails.
 
@@ -65,26 +73,32 @@ uv run python pipelines/migrate_gcs_to_r2.py
 
 ---
 
+
+
 ## `run_clustering_pipeline.py`
 
-Runs [`cluster_validation`](../scripts/cluster_validation/README.md) per accession: download raw h5ad (local cache, else R2 raw mirror, else GCS), cluster, upload `{srx}_clustered.h5ad` to R2. Skips accessions whose output key already exists.
+Runs `[cluster_validation](../scripts/cluster_validation/README.md)` per accession: download raw h5ad (local cache, else R2 raw mirror, else GCS), cluster, upload `{srx}_clustered.h5ad` to R2. Skips accessions whose output key already exists.
 
 Per-run artifacts also land under the run directory (`figs/`, `data/`) before upload; local clustered files are deleted after a successful upload.
 
 **Output:** `output/clustering_pipeline/{timestamp}/`
 
-| File | Description |
-|------|-------------|
-| `run.csv` | Per-accession status and clustering metrics |
-| `metadata.json` | Run config snapshot (`r2_prefix`, paths, optional `notes`) |
-| `figs/`, `data/` | Copies of figures and clustered h5ad for this batch run |
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--datasets` | `output/metadata/datasets.csv` | Accession list |
-| `--r2-prefix` | `clustering_pipeline_{timestamp}` | R2 folder for clustered outputs |
-| `--metadata` | none | Free-form note stored in `metadata.json` |
-| `--workers` | `1` | Parallel accession workers |
+| File             | Description                                                |
+| ---------------- | ---------------------------------------------------------- |
+| `run.csv`        | Per-accession status and clustering metrics                |
+| `metadata.json`  | Run config snapshot (`r2_prefix`, paths, optional `notes`) |
+| `figs/`, `data/` | Copies of figures and clustered h5ad for this batch run    |
+
+
+
+| Flag          | Default                           | Description                              |
+| ------------- | --------------------------------- | ---------------------------------------- |
+| `--datasets`  | `output/metadata/datasets.csv`    | Accession list                           |
+| `--r2-prefix` | `clustering_pipeline_{timestamp}` | R2 folder for clustered outputs          |
+| `--metadata`  | none                              | Free-form note stored in `metadata.json` |
+| `--workers`   | `1`                               | Parallel accession workers               |
+
 
 **Log:** `logs/clustering_pipeline.log`
 
@@ -94,29 +108,35 @@ uv run python pipelines/run_clustering_pipeline.py --workers 4
 
 ---
 
+
+
 ## `run_cytetype_pipeline.py`
 
-Runs [`cytetype_runner`](../scripts/cytetype_runner/README.md) on clustered h5ad files already in R2. Requires `CYTETYPE_API_KEY`. Accessions run **serially**; optional spacing between run starts via `--min-interval`.
+Runs `[cytetype_runner](../scripts/cytetype_runner/README.md)` on clustered h5ad files already in R2. Requires `CYTETYPE_API_KEY`. Accessions run **serially**; optional spacing between run starts via `--min-interval`.
 
 Downloads each input from `{clustering_prefix}/{srx}_clustered.h5ad`, annotates with study context from contexts JSONL, uploads `{r2_prefix}/{srx}_annotated.h5ad`. Per-accession metadata sent to CyteType is derived from the datasets CSV row (all columns, stringified).
 
 **Output:** `output/cytetype_pipeline/{timestamp}/` (or `dry_run_{timestamp}/`)
 
-| File | Description |
-|------|-------------|
-| `run.csv` | Per-accession status, timing, R2 keys |
-| `job_details.csv` | CyteType `job_id`, `report_url`, `api_url` |
-| `metadata.json` | Run config snapshot |
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--datasets` | `output/metadata/datasets.csv` | Accession list |
-| `--contexts` | `output/context/contexts.jsonl` | Study context cache |
-| `--clustering-prefix` | required | R2 prefix from a clustering pipeline run |
-| `--r2-prefix` | `cytetype_pipeline_{timestamp}` | R2 folder for annotated outputs |
-| `--metadata` | none | Run-level note in `metadata.json` only (not sent to CyteType) |
-| `--min-interval` | `0` | Minimum seconds between starting consecutive accessions |
-| `--dry-run` | off | Write plan CSVs without R2 or API calls |
+| File              | Description                                |
+| ----------------- | ------------------------------------------ |
+| `run.csv`         | Per-accession status, timing, R2 keys      |
+| `job_details.csv` | CyteType `job_id`, `report_url`, `api_url` |
+| `metadata.json`   | Run config snapshot                        |
+
+
+
+| Flag                  | Default                         | Description                                                   |
+| --------------------- | ------------------------------- | ------------------------------------------------------------- |
+| `--datasets`          | `output/metadata/datasets.csv`  | Accession list                                                |
+| `--contexts`          | `output/context/contexts.jsonl` | Study context cache                                           |
+| `--clustering-prefix` | required                        | R2 prefix from a clustering pipeline run                      |
+| `--r2-prefix`         | `cytetype_pipeline_{timestamp}` | R2 folder for annotated outputs                               |
+| `--metadata`          | none                            | Run-level note in `metadata.json` only (not sent to CyteType) |
+| `--min-interval`      | `0`                             | Minimum seconds between starting consecutive accessions       |
+| `--dry-run`           | off                             | Write plan CSVs without R2 or API calls                       |
+
 
 **Log:** `logs/cytetype_pipeline.log`
 
@@ -128,29 +148,35 @@ uv run python pipelines/run_cytetype_pipeline.py \
 
 ---
 
+
+
 ## `run_cyteonto_pipeline.py`
 
-Runs [`cyteonto`](../scripts/cyteonto/README.md) on annotated h5ad files already in R2. Lists every `{srx}_annotated.h5ad` under `--input-prefix` and runs accessions **serially**, blocking on each CyteOnto poll loop before starting the next.
+Runs `[cyteonto](../scripts/cyteonto/README.md)` on annotated h5ad files already in R2. Lists every `{srx}_annotated.h5ad` under `--input-prefix` and runs accessions **serially**, blocking on each CyteOnto poll loop before starting the next.
 
 Downloads each input from `{input_prefix}/{srx}_annotated.h5ad`, submits to the CyteOnto API, moves the result CSV to `results/{srx}_cyteonto.csv`, and uploads `{r2_prefix}/{srx}_cyteonto.csv`. Skips accessions whose output key already exists in R2.
 
 **Output:** `output/cyteonto_pipeline/{timestamp}/` (or `dry_run_{timestamp}/`)
 
-| File | Description |
-|------|-------------|
-| `run.csv` | Per-accession status, timing, R2 keys, `run_id`, local CSV path |
-| `results/{srx}_cyteonto.csv` | Per-accession CyteOnto similarity CSV |
-| `metadata.json` | Run config snapshot |
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--input-prefix` | required | R2 prefix containing annotated h5ads (e.g. from a cytetype pipeline run) |
-| `--r2-prefix` | `cyteonto_pipeline_{timestamp}` | R2 folder for CyteOnto result CSVs |
-| `--metadata` | none | Free-form note in `metadata.json` |
-| `--poll-interval-s` | `10` | Seconds between CyteOnto result polls |
-| `--poll-timeout-s` | `3600` | Seconds before a CyteOnto run raises `TimeoutError` |
-| `--min-interval` | `0` | Minimum seconds between starting consecutive accessions |
-| `--dry-run` | off | Write plan CSVs without R2 or API calls |
+| File                         | Description                                                     |
+| ---------------------------- | --------------------------------------------------------------- |
+| `run.csv`                    | Per-accession status, timing, R2 keys, `run_id`, local CSV path |
+| `results/{srx}_cyteonto.csv` | Per-accession CyteOnto similarity CSV                           |
+| `metadata.json`              | Run config snapshot                                             |
+
+
+
+| Flag                | Default                         | Description                                                              |
+| ------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| `--input-prefix`    | required                        | R2 prefix containing annotated h5ads (e.g. from a cytetype pipeline run) |
+| `--r2-prefix`       | `cyteonto_pipeline_{timestamp}` | R2 folder for CyteOnto result CSVs                                       |
+| `--metadata`        | none                            | Free-form note in `metadata.json`                                        |
+| `--poll-interval-s` | `10`                            | Seconds between CyteOnto result polls                                    |
+| `--poll-timeout-s`  | `3600`                          | Seconds before a CyteOnto run raises `TimeoutError`                      |
+| `--min-interval`    | `0`                             | Minimum seconds between starting consecutive accessions                  |
+| `--dry-run`         | off                             | Write plan CSVs without R2 or API calls                                  |
+
 
 **Log:** `logs/cyteonto_pipeline.log`
 
@@ -164,31 +190,37 @@ nohup uv run python pipelines/run_cyteonto_pipeline.py \
 
 ---
 
+
+
 ## `cluster_stats.py`
 
-Downloads clustered h5ad files from an R2 prefix, builds per-SRX `cell_type` × `leiden_merged` count matrices, and aggregates normalized Shannon entropy (NSE) and KL divergence (KLD) via [`cluster_validation.cell_type_metrics`](../scripts/cluster_validation/README.md).
+Downloads clustered h5ad files from an R2 prefix, builds per-SRX `cell_type` × `leiden_merged` count matrices, and aggregates normalized Shannon entropy (NSE) and KL divergence (KLD) via `[cluster_validation.cell_type_metrics](../scripts/cluster_validation/README.md)`.
 
 **Output:** `output/cluster_stats/{r2_prefix}/` (default; override with `--output-dir`)
 
-| File | Description |
-|------|-------------|
-| `run.csv` | Per-accession status |
-| `metadata.json` | Run config snapshot |
-| `cluster_stats.json` | Nested counts: `{srx: {cell_type: {cluster: count}}}` |
-| `nse_matrix.csv`, `kld_matrix.csv` | Accessions × cell types |
-| `cell_type_summary.csv` | Cell-type level means |
-| `cell_type_metrics.png` | Summary bar chart |
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--r2-prefix` | required | Clustering run prefix (e.g. `clustering_pipeline_20260511_140000`) |
-| `--output-dir` | `output/cluster_stats/{r2_prefix}` | Output root |
-| `--metadata` | none | Note in `metadata.json` |
-| `--workers` | `1` | Parallel accession workers |
+| File                               | Description                                           |
+| ---------------------------------- | ----------------------------------------------------- |
+| `run.csv`                          | Per-accession status                                  |
+| `metadata.json`                    | Run config snapshot                                   |
+| `cluster_stats.json`               | Nested counts: `{srx: {cell_type: {cluster: count}}}` |
+| `nse_matrix.csv`, `kld_matrix.csv` | Accessions × cell types                               |
+| `cell_type_summary.csv`            | Cell-type level means                                 |
+| `cell_type_metrics.png`            | Summary bar chart                                     |
+
+
+
+| Flag           | Default                            | Description                                                        |
+| -------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| `--r2-prefix`  | required                           | Clustering run prefix (e.g. `clustering_pipeline_20260511_140000`) |
+| `--output-dir` | `output/cluster_stats/{r2_prefix}` | Output root                                                        |
+| `--metadata`   | none                               | Note in `metadata.json`                                            |
+| `--workers`    | `1`                                | Parallel accession workers                                         |
+
 
 **Log:** `logs/cluster_stats.log`
 
-Downstream analysis: [`notebooks/analysis/cluster_stats.ipynb`](../notebooks/analysis/cluster_stats.ipynb).
+Downstream analysis: `[notebooks/analysis/cluster_stats.ipynb](../notebooks/analysis/cluster_stats.ipynb)`.
 
 ```sh
 uv run python pipelines/cluster_stats.py \
@@ -198,36 +230,42 @@ uv run python pipelines/cluster_stats.py \
 
 ---
 
+
+
 ## `run_annotation_inspection_pipeline.py`
 
-Inspects CyteType-annotated h5ads from R2, joins CyteOnto cytescores, and writes a pair-level summary plus optional extremes table via [`annotation_inspector`](../scripts/annotation_inspector/README.md).
+Inspects CyteType-annotated h5ads from R2, joins CyteOnto cytescores, and writes a pair-level summary plus optional extremes table via `[annotation_inspector](../scripts/annotation_inspector/README.md)`.
 
 Downloads `{input_prefix}/{srx}_annotated.h5ad` and `{cyteonto_prefix}/{srx}_cyteonto.csv` (when present), inspects each accession, deletes local cache files, and streams outputs as workers finish.
 
 **Output:** `output/annotation_inspection_pipeline/{timestamp}/` (or `dry_run_{timestamp}/`)
 
-| File | Description |
-|------|-------------|
-| `summary.csv` | Pair-level rows: labels, confidence, cytescore, n_cells, report_url |
-| `extremes.csv` | Top/bottom cytescore STATE types per CyteType label (when extremes enabled) |
-| `run.csv` | Per-accession status and timing |
-| `metadata.json` | Run config snapshot |
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--input-prefix` | required | R2 prefix containing annotated h5ads |
-| `--cyteonto-prefix` | required | R2 prefix containing `{srx}_cyteonto.csv` files |
-| `--workers` | `1` | Concurrent R2 fetch + inspect workers |
-| `--top-n` | `10` | Top/bottom STATE cell types per CyteType label for extremes |
-| `--no-extremes` | off | Skip `extremes.csv` (written by default) |
-| `--from-summary` | none | Rebuild `extremes.csv` from an existing `summary.csv` (no R2 fetch) |
-| `--output-dir` | summary parent | Output dir for `--from-summary` |
-| `--metadata` | none | Note in `metadata.json` |
-| `--dry-run` | off | Write plan CSV without R2 or inspection |
+| File            | Description                                                                 |
+| --------------- | --------------------------------------------------------------------------- |
+| `summary.csv`   | Pair-level rows: labels, confidence, cytescore, n_cells, report_url         |
+| `extremes.csv`  | Top/bottom cytescore STATE types per CyteType label (when extremes enabled) |
+| `run.csv`       | Per-accession status and timing                                             |
+| `metadata.json` | Run config snapshot                                                         |
+
+
+
+| Flag                | Default        | Description                                                         |
+| ------------------- | -------------- | ------------------------------------------------------------------- |
+| `--input-prefix`    | required       | R2 prefix containing annotated h5ads                                |
+| `--cyteonto-prefix` | required       | R2 prefix containing `{srx}_cyteonto.csv` files                     |
+| `--workers`         | `1`            | Concurrent R2 fetch + inspect workers                               |
+| `--top-n`           | `10`           | Top/bottom STATE cell types per CyteType label for extremes         |
+| `--no-extremes`     | off            | Skip `extremes.csv` (written by default)                            |
+| `--from-summary`    | none           | Rebuild `extremes.csv` from an existing `summary.csv` (no R2 fetch) |
+| `--output-dir`      | summary parent | Output dir for `--from-summary`                                     |
+| `--metadata`        | none           | Note in `metadata.json`                                             |
+| `--dry-run`         | off            | Write plan CSV without R2 or inspection                             |
+
 
 **Log:** `logs/annotation_inspection_pipeline.log`
 
-Downstream analysis: [`notebooks/analysis/annotation_inspection.ipynb`](../notebooks/analysis/annotation_inspection.ipynb).
+Downstream analysis: `[notebooks/analysis/annotation_inspection.ipynb](../notebooks/analysis/annotation_inspection.ipynb)`.
 
 ```sh
 uv run python pipelines/run_annotation_inspection_pipeline.py \
@@ -242,9 +280,11 @@ uv run python pipelines/run_annotation_inspection_pipeline.py \
 
 ---
 
+
+
 ## `run_atlas_concat.py`
 
-Concatenates raw scBaseCount h5ads into one merged atlas via [`h5ad_concat`](../scripts/h5ad_concat/README.md): download each file from R2, validate and QC it, align to the reference gene axis, and merge the passing files. Unlike the other runners it has no CLI flags; edit the `H5adConcatConfig` in the script (for example `atlasR2Key`, and `uploadAtlas=True` to push the atlas to R2).
+Concatenates raw scBaseCount h5ads into one merged atlas via `[h5ad_concat](../scripts/h5ad_concat/README.md)`: download each file from R2, validate and QC it, align to the reference gene axis, and merge the passing files. Unlike the other runners it has no CLI flags; edit the `H5adConcatConfig` in the script (for example `atlasR2Key`, and `uploadAtlas=True` to push the atlas to R2).
 
 Reads `output/metadata/datasets.csv` by default (config `datasetsPath`).
 
@@ -258,41 +298,49 @@ uv run python pipelines/run_atlas_concat.py
 
 ---
 
+
+
 ## Atlas postprocessing parameter selection and production
 
-Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is split into two runners under [`scripts/atlas_postprocessing/`](../scripts/atlas_postprocessing/):
+Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is split into two runners under `[scripts/atlas_postprocessing/](../scripts/atlas_postprocessing/)`:
 
-1. [`select_atlas_parameters.py`](select_atlas_parameters.py) calibrates and validates parameters on an **explicitly supplied representative subset** (`--input`). It never silently samples the full atlas.
-2. [`run_atlas_postprocessing.py`](run_atlas_postprocessing.py) runs one resolved parameter set on the full atlas (or any chosen input).
+1. `[select_atlas_parameters.py](select_atlas_parameters.py)` loads the **full atlas** (`--input`), replaces the in-memory object with a study-proportional representative sample of size `--sample-cells`, then calibrates or validates on that sample.
+2. `[run_atlas_postprocessing.py](run_atlas_postprocessing.py)` runs one resolved parameter set on the full atlas (or any chosen input). It does not sample.
 
-Harmony remains a method-specific stage (`X_pca_harmony`, Harmony comparison plots). Overall outputs use the generic `pp` layout under `output/atlas/v2/pp/`.
+Sampling is deterministic (seed `0`), stratified by `--batch-key` (default `study_accession`). Every study gets at least one cell when `N` is at least the study count; remaining slots use largest-remainder proportions by study size. Requests smaller than the study count, or larger than the atlas, are rejected. The full atlas is loaded into memory once per command, so plan RAM for the whole object even though sweeps run on the sample.
+
+Harmony remains a method-specific stage (`X_pca_harmony`, Harmony comparison plots). Overall outputs use the `post` layout under `output/atlas/v2/post/`.
 
 ### Recommended workflow
 
 ```sh
-# 1) Calibrate on a representative subset (writes diagnostics + parameters_template.json)
+# 1) Calibrate on a study-proportional sample of the full atlas
 uv run python pipelines/select_atlas_parameters.py calibrate \
-  --input path/to/representative_subset.h5ad \
-  --output-dir output/atlas/v2/pp/parameter_selection
+  --input output/atlas/v2/atlas_v2.h5ad \
+  --sample-cells 100000 \
+  --output-dir output/atlas/v2/post/parameter_selection
 
 # 2) Inspect metrics/figures, copy the template, edit the four values
-cp output/atlas/v2/pp/parameter_selection/parameters_template.json \
-   output/atlas/v2/pp/parameter_selection/approved_parameters.json
+cp output/atlas/v2/post/parameter_selection/parameters_template.json \
+   output/atlas/v2/post/parameter_selection/approved_parameters.json
 
-# 3) Validate the approved set on the same subset + scIB (no full-atlas work)
+# 3) Validate the approved set on a fresh sample with the same policy + scIB
 uv run python pipelines/select_atlas_parameters.py validate \
-  --input path/to/representative_subset.h5ad \
-  --parameters-json output/atlas/v2/pp/parameter_selection/approved_parameters.json \
-  --output-dir output/atlas/v2/pp/subset_validation
+  --input output/atlas/v2/atlas_v2.h5ad \
+  --sample-cells 100000 \
+  --parameters-json output/atlas/v2/post/parameter_selection/approved_parameters.json \
+  --output-dir output/atlas/v2/post/subset_validation
 
-# 4) After reviewing scIB, run production with the same approved JSON
+# 4) After reviewing scIB, run production on the full atlas with the same approved JSON
 uv run python pipelines/run_atlas_postprocessing.py \
-  --input output/atlas/v2/atlas.h5ad \
-  --output output/atlas/v2/pp/production/atlas_pp.h5ad \
-  --parameters-json output/atlas/v2/pp/parameter_selection/approved_parameters.json
+  --input output/atlas/v2/atlas_v2.h5ad \
+  --output output/atlas/v2/post/production/atlas_v2_post.h5ad \
+  --parameters-json output/atlas/v2/post/parameter_selection/approved_parameters.json
 ```
 
 Calibration sweeps one parameter family at a time around the configured baseline (HVGs, PCs, neighbors, Leiden resolution). It does not auto-select final values. Cell-type labels are used as weak priors for diagnostics only.
+
+For this atlas, `100000` cells is the recommended balance between representation and calibration cost. Use `50000` for a faster preliminary sweep or `200000` to check parameter stability with stronger rare-population coverage. Samples above `250000` are usually unnecessary unless the selected parameter region changes materially between the 100k and 200k runs. Use the same sample size for calibration and validation.
 
 Approved JSON shape (`AtlasPostprocessingParameters`, camelCase):
 
@@ -302,7 +350,7 @@ Approved JSON shape (`AtlasPostprocessingParameters`, camelCase):
   "nPcs": 20,
   "nNeighbors": 15,
   "resolution": 1.0,
-  "calibrationSummary": "output/atlas/v2/pp/parameter_selection/calibration_summary.json"
+  "calibrationSummary": "output/atlas/v2/post/parameter_selection/calibration_summary.json"
 }
 ```
 
@@ -310,62 +358,91 @@ Approved JSON shape (`AtlasPostprocessingParameters`, camelCase):
 
 ### `select_atlas_parameters.py calibrate`
 
-**Output root default:** `output/atlas/v2/pp/parameter_selection/`
+Loads the full atlas from `--input`, samples `--sample-cells` in memory, then sweeps on that sample.
 
-| File | Description |
-|------|-------------|
-| `calibration_summary.json` | Baseline, candidates, plateau intervals, coverage, timings, artifact paths |
-| `parameters_template.json` | Editable starting point for approved parameters |
-| `metrics/{hvg,pc,neighbors,resolution}.csv` | One metric table per sweep |
-| `figures/*_weak_prior_agreement.png`, `figures/resolution_matched_jaccard.png` | Single-metric plateau plots |
+**Output root default:** `output/atlas/v2/post/parameter_selection/`
+
+
+| File                                                                           | Description                                                                                         |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `calibration_summary.json`                                                     | Baseline, candidates, plateau intervals, coverage, timings, artifact paths, and `sampling` metadata |
+| `parameters_template.json`                                                     | Editable starting point for approved parameters                                                     |
+| `metrics/{hvg,pc,neighbors,resolution}.csv`                                    | One metric table per sweep                                                                          |
+| `figures/*_weak_prior_agreement.png`, `figures/resolution_matched_jaccard.png` | Single-metric plateau plots                                                                         |
+
+
+
+| Flag             | Required | Description                                              |
+| ---------------- | -------- | -------------------------------------------------------- |
+| `--input`        | yes      | Full atlas h5ad                                          |
+| `--sample-cells` | yes      | Exact cell count for the in-memory representative sample |
+
 
 Default candidate lists: HVGs `1000 2000 4000 8000`; PCs `10 20 30 50`; neighbors `5 10 15 30 50 100`; resolutions `0.2` through `2.0` step `0.2`. Override with `--hvg-candidates`, `--pc-candidates`, `--neighbor-candidates`, `--resolution-candidates`. Baseline defaults: `--n-top-genes 2000`, `--n-pcs 20`, `--n-neighbors 15`, `--resolution 1.0`, `--n-pcs-compute 50`.
+
+`sampling` in `calibration_summary.json` records `sourceCells`, `sampleCells`, `method` (`studyProportional`), `stratifyKey`, `seed` (`0`), and `nStudies`. `input` remains the full atlas path.
 
 **Log:** `logs/select_atlas_parameters.log`
 
 ### `select_atlas_parameters.py validate`
 
-Runs one production-equivalent subset pass with the approved JSON, then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
+Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one production-equivalent pass with the approved JSON, then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
 
-**Output root default:** `output/atlas/v2/pp/subset_validation/`
+**Output root default:** `output/atlas/v2/post/subset_validation/`
 
-| File | Description |
-|------|-------------|
-| `atlas_pp_subset.h5ad` | Processed subset |
-| `atlas_pp_subset_run.json` | Run summary |
-| `subset_validation_summary.json` | Approved values, scIB paths, timings |
-| `figures/` | Scree + atlas-scale UMAPs |
-| `scib/scib_results.csv`, `scib/scib_results.svg` | scIB report |
+
+| File                                             | Description                                             |
+| ------------------------------------------------ | ------------------------------------------------------- |
+| `atlas_pp_subset.h5ad`                           | Processed sample                                        |
+| `atlas_pp_subset_run.json`                       | Run summary including `sampling` metadata               |
+| `subset_validation_summary.json`                 | Approved values, sampling metadata, scIB paths, timings |
+| `figures/`                                       | Scree + atlas-scale UMAPs                               |
+| `scib/scib_results.csv`, `scib/scib_results.svg` | scIB report                                             |
+
+
+
+| Flag                | Required | Description                                              |
+| ------------------- | -------- | -------------------------------------------------------- |
+| `--input`           | yes      | Full atlas h5ad                                          |
+| `--sample-cells`    | yes      | Exact cell count for the in-memory representative sample |
+| `--parameters-json` | yes      | Approved parameter JSON from calibration review          |
+
+
+
 
 ### `run_atlas_postprocessing.py`
 
 Lightweight production runner. No sweeps and no scIB.
 
-**Output defaults:** `output/atlas/v2/pp/production/atlas_pp.h5ad` and `.../figures/`.
+**Output defaults:** `output/atlas/v2/post/production/atlas_pp.h5ad` and `.../figures/`.
 
-| File | Description |
-|------|-------------|
-| `{output}.h5ad` | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
-| `{output_stem}_run.json` | Run summary including `nNeighbors` and optional `parametersJson` |
-| `{figs_dir}/umap_{batch_key}_{uncorrected\|harmony}.png` | Atlas-scale Scanpy UMAPs (`alpha=0.25`, `size=0.001`) |
-| `{figs_dir}/pca_scree.png` | PCA scree plot |
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--input` | `output/atlas/v2/atlas.h5ad` | Input atlas h5ad |
-| `--output` | `output/atlas/v2/pp/production/atlas_pp.h5ad` | Output atlas h5ad |
-| `--figs-dir` | `output/atlas/v2/pp/production/figures` | Directory for UMAP and scree PNGs |
-| `--parameters-json` | none | Approved parameter JSON (optional) |
-| `--batch-key` | `study_accession` | `obs` column for Harmony batch correction |
-| `--cell-type-key` | `cell_type` | `obs` column for cell-type UMAP plots |
-| `--n-top-genes` | `2000` | Number of HVGs (disallowed with `--parameters-json`) |
-| `--n-pcs` | `20` | PCs used for the neighbor graph (disallowed with `--parameters-json`) |
-| `--n-pcs-compute` | `50` | PCs computed by PCA |
-| `--n-neighbors` | `15` | Neighbors for the graph (disallowed with `--parameters-json`) |
-| `--resolution` | `1.0` | Leiden resolution (disallowed with `--parameters-json`) |
-| `--no-plots` | off | Skip writing PNGs |
-| `--threads` | `0` | scanpy `n_jobs` (`0` leaves the default) |
+| File                                      | Description                                                                                                                                     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{output}.h5ad`                           | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
+| `{output_stem}_run.json`                  | Run summary including `nNeighbors` and optional `parametersJson`                                                                                |
+| `{figs_dir}/umap_{batch_key}_{uncorrected | harmony}.png`                                                                                                                                   |
+| `{figs_dir}/pca_scree.png`                | PCA scree plot                                                                                                                                  |
+
+
+
+| Flag                | Default                                         | Description                                                           |
+| ------------------- | ----------------------------------------------- | --------------------------------------------------------------------- |
+| `--input`           | `output/atlas/v2/atlas.h5ad`                    | Input atlas h5ad                                                      |
+| `--output`          | `output/atlas/v2/post/production/atlas_pp.h5ad` | Output atlas h5ad                                                     |
+| `--figs-dir`        | `output/atlas/v2/post/production/figures`       | Directory for UMAP and scree PNGs                                     |
+| `--parameters-json` | none                                            | Approved parameter JSON (optional)                                    |
+| `--batch-key`       | `study_accession`                               | `obs` column for Harmony batch correction                             |
+| `--cell-type-key`   | `cell_type`                                     | `obs` column for cell-type UMAP plots                                 |
+| `--n-top-genes`     | `2000`                                          | Number of HVGs (disallowed with `--parameters-json`)                  |
+| `--n-pcs`           | `20`                                            | PCs used for the neighbor graph (disallowed with `--parameters-json`) |
+| `--n-pcs-compute`   | `50`                                            | PCs computed by PCA                                                   |
+| `--n-neighbors`     | `15`                                            | Neighbors for the graph (disallowed with `--parameters-json`)         |
+| `--resolution`      | `1.0`                                           | Leiden resolution (disallowed with `--parameters-json`)               |
+| `--no-plots`        | off                                             | Skip writing PNGs                                                     |
+| `--threads`         | `0`                                             | scanpy `n_jobs` (`0` leaves the default)                              |
+
 
 **Log:** `logs/atlas_postprocessing.log`
 
-Downstream atlas DE and disease-area labeling: [`notebooks/analysis/analyze_atlas_DE.ipynb`](../notebooks/analysis/analyze_atlas_DE.ipynb) loads a postprocessed atlas h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from [`disease_markers`](../scripts/disease_markers/README.md).
+Downstream atlas DE and disease-area labeling: `[notebooks/analysis/analyze_atlas_DE.ipynb](../notebooks/analysis/analyze_atlas_DE.ipynb)` loads a postprocessed atlas h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from `[disease_markers](../scripts/disease_markers/README.md)`.

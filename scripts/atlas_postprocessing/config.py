@@ -22,8 +22,8 @@ class AtlasPostprocessingParameters(BaseModel):
 
 class AtlasPostprocessingConfig(BaseModel):
     inputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v2" / "atlas.h5ad"
-    outputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v2" / "pp" / "production" / "atlas_pp.h5ad"
-    figsDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "pp" / "production" / "figures"
+    outputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "production" / "atlas_pp.h5ad"
+    figsDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "production" / "figures"
     batchKey: str = "study_accession"
     cellTypeKey: str = "cell_type"
     nTopGenes: int = 2000
@@ -36,8 +36,8 @@ class AtlasPostprocessingConfig(BaseModel):
     compression: Literal["gzip", "lzf"] | None = "gzip"
     r2Key: str | None = None
     parametersJson: Path | None = None
-    calibrationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "pp" / "parameter_selection"
-    validationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "pp" / "subset_validation"
+    calibrationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "parameter_selection"
+    validationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "subset_validation"
     hvgCandidates: list[int] = Field(default_factory=lambda: [1000, 2000, 4000, 8000])
     pcCandidates: list[int] = Field(default_factory=lambda: [10, 20, 30, 50])
     neighborCandidates: list[int] = Field(default_factory=lambda: [5, 10, 15, 30, 50, 100])

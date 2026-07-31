@@ -18,6 +18,7 @@ from atlas_postprocessing.core import (
 )
 from atlas_postprocessing.metrics import cross_study_macro_cell_type_neighbor_agreement, extract_plateaus
 from atlas_postprocessing.plots import plot_sweep_metric
+from atlas_postprocessing.sampling import sample_metadata
 
 log = logging.getLogger(__name__)
 
@@ -215,7 +216,10 @@ def sweep_resolutions(adata_harmony: sc.AnnData, cfg: AtlasPostprocessingConfig)
     return {"rows": rows, "values": values, "scores": scores, "plateaus": plateaus}
 
 
-def run_calibration(cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
+def run_calibration(
+    cfg: AtlasPostprocessingConfig,
+    adata: sc.AnnData | None = None,
+) -> dict[str, Any]:
     """Sweep HVG/PC/neighbor/resolution on a representative subset and write diagnostics."""
     validate_candidate_lists(cfg)
     cfg.calibrationDir.mkdir(parents=True, exist_ok=True)
@@ -230,7 +234,7 @@ def run_calibration(cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
     )
 
     started_all = time.perf_counter()
-    adata_norm = load_and_normalize(cfg)
+    adata_norm = load_and_normalize(cfg, adata=adata)
     _require_cell_type(adata_norm, cfg)
     for n_neighbors in cfg.neighborCandidates:
         if n_neighbors >= adata_norm.n_obs:
@@ -323,6 +327,7 @@ def run_calibration(cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
         "calibrationDir": rel_to_repo(cfg.calibrationDir),
         "cells": int(adata_norm.n_obs),
         "genes": int(adata_norm.n_vars),
+        "sampling": sample_metadata(adata_norm),
         "batchKey": cfg.batchKey,
         "cellTypeKey": cfg.cellTypeKey,
         "baseline": {

@@ -13,6 +13,7 @@ from atlas_postprocessing.artifacts import (
 )
 from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.core import run_postprocessing, timed
+from atlas_postprocessing.sampling import SAMPLE_SEED, sample_metadata, sample_study_proportional
 from atlas_postprocessing.scib import run_scib_benchmark
 from atlas_postprocessing.selection import run_calibration
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
@@ -27,7 +28,14 @@ _DEFAULT_CFG = AtlasPostprocessingConfig()
 
 def _add_shared_args(parser: argparse.ArgumentParser) -> None:
     d = _DEFAULT_CFG
-    parser.add_argument("--input", type=Path, required=True, metavar="PATH", help="Representative subset h5ad")
+    parser.add_argument("--input", type=Path, required=True, metavar="PATH", help="Full atlas h5ad")
+    parser.add_argument(
+        "--sample-cells",
+        type=int,
+        required=True,
+        metavar="N",
+        help="Exact number of cells in the in-memory representative sample",
+    )
     parser.add_argument("--batch-key", type=str, default=d.batchKey, metavar="COL", help="obs batch column")
     parser.add_argument("--cell-type-key", type=str, default=d.cellTypeKey, metavar="COL", help="obs cell type column")
     parser.add_argument("--threads", type=int, default=0, metavar="N", help="scanpy n_jobs (0 leaves the default)")
@@ -36,7 +44,10 @@ def _add_shared_args(parser: argparse.ArgumentParser) -> None:
 def _parse_args() -> argparse.Namespace:
     d = _DEFAULT_CFG
     parser = argparse.ArgumentParser(
-        description="Calibrate atlas postprocessing parameters on a representative subset, or validate an approved set."
+        description=(
+            "Calibrate atlas postprocessing parameters on a study-proportional sample of the full atlas, "
+            "or validate an approved set on the same sampling policy."
+        )
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -89,7 +100,7 @@ def _parse_args() -> argparse.Namespace:
         help="Leiden resolution candidate list",
     )
 
-    validate = sub.add_parser("validate", help="Run approved parameters on the subset and scIB-benchmark Harmony")
+    validate = sub.add_parser("validate", help="Run approved parameters on the sample and scIB-benchmark Harmony")
     _add_shared_args(validate)
     validate.add_argument(
         "--parameters-json",
@@ -166,13 +177,40 @@ def _cfg_from_validate_args(args: argparse.Namespace) -> AtlasPostprocessingConf
     return cfg
 
 
+def _load_and_sample(cfg: AtlasPostprocessingConfig, sampleCells: int) -> sc.AnnData:
+    """Load the full atlas once and overwrite the in-memory object with a representative sample."""
+    adata = timed("load full atlas", lambda: sc.read_h5ad(cfg.inputH5ad), logger=log)
+    log.info(
+        "Full atlas loaded: %s cells x %s genes (%s studies)",
+        f"{adata.n_obs:,}",
+        f"{adata.n_vars:,}",
+        adata.obs[cfg.batchKey].nunique() if cfg.batchKey in adata.obs else "?",
+    )
+    adata = timed(
+        "study-proportional sample",
+        lambda: sample_study_proportional(
+            adata,
+            n=sampleCells,
+            stratifyKey=cfg.batchKey,
+            seed=SAMPLE_SEED,
+        ),
+        logger=log,
+    )
+    return adata
+
+
 def _run_validate(args: argparse.Namespace) -> None:
     cfg = _cfg_from_validate_args(args)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     scib_dir = args.output_dir / "scib"
 
     started = time.perf_counter()
-    adata = timed("approved subset postprocessing", lambda: run_postprocessing(cfg), logger=log)
+    sampled = _load_and_sample(cfg, args.sample_cells)
+    adata = timed(
+        "approved subset postprocessing",
+        lambda: run_postprocessing(cfg, adata=sampled),
+        logger=log,
+    )
     timed(
         "scIB benchmark",
         lambda: run_scib_benchmark(
@@ -198,6 +236,7 @@ def _run_validate(args: argparse.Namespace) -> None:
             "nNeighbors": cfg.nNeighbors,
             "resolution": cfg.resolution,
         },
+        "sampling": sample_metadata(adata),
         "subsetH5ad": rel_to_repo(cfg.outputH5ad),
         "runJson": rel_to_repo(cfg.outputH5ad.with_name(f"{cfg.outputH5ad.stem}_run.json")),
         "figuresDir": rel_to_repo(cfg.figsDir),
@@ -228,7 +267,8 @@ def main() -> None:
     if args.command == "calibrate":
         cfg = _cfg_from_calibrate_args(args)
         log.info("config: %s", cfg.model_dump_json())
-        run_calibration(cfg)
+        sampled = _load_and_sample(cfg, args.sample_cells)
+        run_calibration(cfg, adata=sampled)
     elif args.command == "validate":
         _run_validate(args)
     else:
