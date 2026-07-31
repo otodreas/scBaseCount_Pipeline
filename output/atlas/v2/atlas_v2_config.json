@@ -1,0 +1,23 @@
+{
+  "datasetsPath": "/home/inf-33-2025/Nygen_Project/output/metadata/datasets_v2.csv",
+  "cellTypeKey": "cell_type",
+  "batchKey": "study_accession",
+  "accessionKey": "SRX_accession",
+  "missingLabel": "UNKNOWN",
+  "geneInfoPath": "/home/inf-33-2025/Nygen_Project/data/scbasecount/2026-01-12/star_references/Homo_sapiens/hg38_2020/geneInfo.tab",
+  "cacheDir": "/home/inf-33-2025/Nygen_Project/data/h5ad_concat/cache",
+  "outputPath": "/home/inf-33-2025/Nygen_Project/output/atlas/v2/atlas_v2.h5ad",
+  "downloadBatchSize": 8,
+  "compression": "gzip",
+  "verifyMd5": true,
+  "uploadAtlas": true,
+  "atlasR2Key": "atlas/v2/atlas_v2.h5ad",
+  "preprocess": true,
+  "conserveLayers": false,
+  "minGenesPerCell": 200,
+  "maxPctMito": 0.2,
+  "maxPctHb": 1.0,
+  "minCellsPerGene": 0,
+  "minCellsAfterQc": 100,
+  "minPctCellsAfterQc": 0.5
+}

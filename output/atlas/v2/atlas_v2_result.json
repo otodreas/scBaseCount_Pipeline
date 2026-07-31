@@ -1,0 +1,2219 @@
+{
+  "outputPath": "/home/inf-33-2025/Nygen_Project/output/atlas/v2/atlas_v2_result.json",
+  "nObs": 9310348,
+  "nVars": 36601,
+  "nFilesConcatenated": 1410,
+  "studiesSeen": [
+    "PRJEB39956",
+    "PRJEB51720",
+    "PRJEB68315",
+    "PRJEB71931",
+    "PRJNA1000503",
+    "PRJNA1002309",
+    "PRJNA1003807",
+    "PRJNA1008237",
+    "PRJNA1010235",
+    "PRJNA1018509",
+    "PRJNA1021137",
+    "PRJNA1029622",
+    "PRJNA1030004",
+    "PRJNA1030397",
+    "PRJNA1032112",
+    "PRJNA1037570",
+    "PRJNA1041762",
+    "PRJNA1041779",
+    "PRJNA1044045",
+    "PRJNA1050266",
+    "PRJNA1050294",
+    "PRJNA1053822",
+    "PRJNA1055415",
+    "PRJNA1061642",
+    "PRJNA1065377",
+    "PRJNA1066790",
+    "PRJNA1068611",
+    "PRJNA1069102",
+    "PRJNA1071273",
+    "PRJNA1076461",
+    "PRJNA1083452",
+    "PRJNA1083474",
+    "PRJNA1086544",
+    "PRJNA1090971",
+    "PRJNA1092571",
+    "PRJNA1100571",
+    "PRJNA1101441",
+    "PRJNA1102355",
+    "PRJNA1102421",
+    "PRJNA1108287",
+    "PRJNA1108329",
+    "PRJNA1117768",
+    "PRJNA1121368",
+    "PRJNA1127657",
+    "PRJNA1133168",
+    "PRJNA1134791",
+    "PRJNA1135480",
+    "PRJNA1135481",
+    "PRJNA1136930",
+    "PRJNA1144126",
+    "PRJNA1149046",
+    "PRJNA1172658",
+    "PRJNA1177414",
+    "PRJNA1178711",
+    "PRJNA1186577",
+    "PRJNA1200047",
+    "PRJNA1202516",
+    "PRJNA1204132",
+    "PRJNA1208088",
+    "PRJNA1209070",
+    "PRJNA1210996",
+    "PRJNA1272602",
+    "PRJNA554141",
+    "PRJNA563828",
+    "PRJNA613670",
+    "PRJNA631019",
+    "PRJNA633134",
+    "PRJNA633281",
+    "PRJNA634136",
+    "PRJNA634159",
+    "PRJNA657422",
+    "PRJNA661032",
+    "PRJNA661081",
+    "PRJNA661567",
+    "PRJNA663601",
+    "PRJNA667491",
+    "PRJNA668609",
+    "PRJNA669824",
+    "PRJNA669984",
+    "PRJNA674516",
+    "PRJNA675538",
+    "PRJNA677825",
+    "PRJNA677962",
+    "PRJNA684305",
+    "PRJNA687221",
+    "PRJNA689219",
+    "PRJNA691041",
+    "PRJNA692173",
+    "PRJNA692726",
+    "PRJNA694436",
+    "PRJNA699012",
+    "PRJNA701396",
+    "PRJNA701930",
+    "PRJNA704098",
+    "PRJNA713903",
+    "PRJNA714138",
+    "PRJNA716656",
+    "PRJNA722248",
+    "PRJNA725827",
+    "PRJNA731910",
+    "PRJNA732700",
+    "PRJNA735258",
+    "PRJNA739470",
+    "PRJNA746455",
+    "PRJNA748731",
+    "PRJNA759630",
+    "PRJNA762558",
+    "PRJNA764933",
+    "PRJNA766517",
+    "PRJNA768255",
+    "PRJNA769143",
+    "PRJNA770341",
+    "PRJNA771701",
+    "PRJNA773094",
+    "PRJNA773987",
+    "PRJNA778775",
+    "PRJNA780480",
+    "PRJNA782639",
+    "PRJNA786555",
+    "PRJNA787622",
+    "PRJNA789499",
+    "PRJNA789838",
+    "PRJNA797244",
+    "PRJNA799597",
+    "PRJNA804479",
+    "PRJNA815369",
+    "PRJNA817261",
+    "PRJNA819093",
+    "PRJNA827791",
+    "PRJNA837899",
+    "PRJNA839251",
+    "PRJNA847631",
+    "PRJNA849915",
+    "PRJNA851108",
+    "PRJNA858410",
+    "PRJNA864822",
+    "PRJNA868764",
+    "PRJNA870911",
+    "PRJNA871210",
+    "PRJNA882878",
+    "PRJNA883741",
+    "PRJNA886085",
+    "PRJNA890673",
+    "PRJNA891742",
+    "PRJNA891766",
+    "PRJNA896321",
+    "PRJNA899793",
+    "PRJNA900364",
+    "PRJNA901260",
+    "PRJNA919922",
+    "PRJNA927026",
+    "PRJNA929481",
+    "PRJNA930840",
+    "PRJNA934540",
+    "PRJNA934551",
+    "PRJNA934917",
+    "PRJNA945417",
+    "PRJNA945854",
+    "PRJNA945866",
+    "PRJNA946652",
+    "PRJNA949104",
+    "PRJNA950922",
+    "PRJNA952672",
+    "PRJNA953399",
+    "PRJNA953640",
+    "PRJNA961720",
+    "PRJNA966111",
+    "PRJNA967233",
+    "PRJNA973717",
+    "PRJNA980643",
+    "PRJNA988459",
+    "PRJNA993165"
+  ],
+  "skipped": [
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19162058.h5ad",
+      "accession": "SRX19162058",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19162062.h5ad",
+      "accession": "SRX19162062",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19162063.h5ad",
+      "accession": "SRX19162063",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19233503.h5ad",
+      "accession": "SRX19233503",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19233502.h5ad",
+      "accession": "SRX19233502",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662385.h5ad",
+      "accession": "ERX11662385",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662357.h5ad",
+      "accession": "ERX11662357",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662360.h5ad",
+      "accession": "ERX11662360",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662364.h5ad",
+      "accession": "ERX11662364",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662370.h5ad",
+      "accession": "ERX11662370",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662369.h5ad",
+      "accession": "ERX11662369",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662380.h5ad",
+      "accession": "ERX11662380",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662367.h5ad",
+      "accession": "ERX11662367",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX8831394.h5ad",
+      "accession": "ERX8831394",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX8831397.h5ad",
+      "accession": "ERX8831397",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19780694.h5ad",
+      "accession": "SRX19780694",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22613097.h5ad",
+      "accession": "SRX22613097",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19162057.h5ad",
+      "accession": "SRX19162057",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19233504.h5ad",
+      "accession": "SRX19233504",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662376.h5ad",
+      "accession": "ERX11662376",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662381.h5ad",
+      "accession": "ERX11662381",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22613095.h5ad",
+      "accession": "SRX22613095",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23886062.h5ad",
+      "accession": "SRX23886062",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23886065.h5ad",
+      "accession": "SRX23886065",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19192164.h5ad",
+      "accession": "SRX19192164",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25261736.h5ad",
+      "accession": "SRX25261736",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22146401.h5ad",
+      "accession": "SRX22146401",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704124.h5ad",
+      "accession": "SRX19704124",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22834769.h5ad",
+      "accession": "SRX22834769",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19162053.h5ad",
+      "accession": "SRX19162053",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17896693.h5ad",
+      "accession": "SRX17896693",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17941758.h5ad",
+      "accession": "SRX17941758",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15325286.h5ad",
+      "accession": "SRX15325286",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704132.h5ad",
+      "accession": "SRX19704132",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704133.h5ad",
+      "accession": "SRX19704133",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704140.h5ad",
+      "accession": "SRX19704140",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704125.h5ad",
+      "accession": "SRX19704125",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23341417.h5ad",
+      "accession": "SRX23341417",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23341416.h5ad",
+      "accession": "SRX23341416",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23341414.h5ad",
+      "accession": "SRX23341414",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23331468.h5ad",
+      "accession": "SRX23331468",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23341415.h5ad",
+      "accession": "SRX23341415",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25261720.h5ad",
+      "accession": "SRX25261720",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26487581.h5ad",
+      "accession": "SRX26487581",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26487568.h5ad",
+      "accession": "SRX26487568",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26487589.h5ad",
+      "accession": "SRX26487589",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26487584.h5ad",
+      "accession": "SRX26487584",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26487587.h5ad",
+      "accession": "SRX26487587",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26487601.h5ad",
+      "accession": "SRX26487601",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507043.h5ad",
+      "accession": "SRX25507043",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507031.h5ad",
+      "accession": "SRX25507031",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507041.h5ad",
+      "accession": "SRX25507041",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507055.h5ad",
+      "accession": "SRX25507055",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507051.h5ad",
+      "accession": "SRX25507051",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507049.h5ad",
+      "accession": "SRX25507049",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507048.h5ad",
+      "accession": "SRX25507048",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507054.h5ad",
+      "accession": "SRX25507054",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507050.h5ad",
+      "accession": "SRX25507050",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507052.h5ad",
+      "accession": "SRX25507052",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507058.h5ad",
+      "accession": "SRX25507058",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507056.h5ad",
+      "accession": "SRX25507056",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507061.h5ad",
+      "accession": "SRX25507061",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507036.h5ad",
+      "accession": "SRX25507036",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507057.h5ad",
+      "accession": "SRX25507057",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507063.h5ad",
+      "accession": "SRX25507063",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507062.h5ad",
+      "accession": "SRX25507062",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507069.h5ad",
+      "accession": "SRX25507069",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507072.h5ad",
+      "accession": "SRX25507072",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507070.h5ad",
+      "accession": "SRX25507070",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507029.h5ad",
+      "accession": "SRX25507029",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507026.h5ad",
+      "accession": "SRX25507026",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507028.h5ad",
+      "accession": "SRX25507028",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507027.h5ad",
+      "accession": "SRX25507027",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507032.h5ad",
+      "accession": "SRX25507032",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507023.h5ad",
+      "accession": "SRX25507023",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507035.h5ad",
+      "accession": "SRX25507035",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507034.h5ad",
+      "accession": "SRX25507034",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507024.h5ad",
+      "accession": "SRX25507024",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507040.h5ad",
+      "accession": "SRX25507040",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507038.h5ad",
+      "accession": "SRX25507038",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507042.h5ad",
+      "accession": "SRX25507042",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507044.h5ad",
+      "accession": "SRX25507044",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507071.h5ad",
+      "accession": "SRX25507071",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507065.h5ad",
+      "accession": "SRX25507065",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507068.h5ad",
+      "accession": "SRX25507068",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507064.h5ad",
+      "accession": "SRX25507064",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507066.h5ad",
+      "accession": "SRX25507066",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25595938.h5ad",
+      "accession": "SRX25595938",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12571171.h5ad",
+      "accession": "SRX12571171",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12571169.h5ad",
+      "accession": "SRX12571169",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12571174.h5ad",
+      "accession": "SRX12571174",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12708371.h5ad",
+      "accession": "SRX12708371",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12708372.h5ad",
+      "accession": "SRX12708372",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12708373.h5ad",
+      "accession": "SRX12708373",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12708374.h5ad",
+      "accession": "SRX12708374",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12708370.h5ad",
+      "accession": "SRX12708370",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX12708376.h5ad",
+      "accession": "SRX12708376",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515869.h5ad",
+      "accession": "SRX11515869",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515858.h5ad",
+      "accession": "SRX11515858",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515807.h5ad",
+      "accession": "SRX11515807",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515825.h5ad",
+      "accession": "SRX11515825",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11071620.h5ad",
+      "accession": "SRX11071620",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515808.h5ad",
+      "accession": "SRX11515808",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515813.h5ad",
+      "accession": "SRX11515813",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11071619.h5ad",
+      "accession": "SRX11071619",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515812.h5ad",
+      "accession": "SRX11515812",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515827.h5ad",
+      "accession": "SRX11515827",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515830.h5ad",
+      "accession": "SRX11515830",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515805.h5ad",
+      "accession": "SRX11515805",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515828.h5ad",
+      "accession": "SRX11515828",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515831.h5ad",
+      "accession": "SRX11515831",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515859.h5ad",
+      "accession": "SRX11515859",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515826.h5ad",
+      "accession": "SRX11515826",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11071621.h5ad",
+      "accession": "SRX11071621",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814623.h5ad",
+      "accession": "SRX13814623",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814619.h5ad",
+      "accession": "SRX13814619",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814617.h5ad",
+      "accession": "SRX13814617",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814625.h5ad",
+      "accession": "SRX13814625",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13789895.h5ad",
+      "accession": "SRX13789895",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814621.h5ad",
+      "accession": "SRX13814621",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814627.h5ad",
+      "accession": "SRX13814627",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX13814629.h5ad",
+      "accession": "SRX13814629",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515833.h5ad",
+      "accession": "SRX11515833",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515820.h5ad",
+      "accession": "SRX11515820",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX14767851.h5ad",
+      "accession": "SRX14767851",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11071622.h5ad",
+      "accession": "SRX11071622",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515823.h5ad",
+      "accession": "SRX11515823",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515811.h5ad",
+      "accession": "SRX11515811",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15390221.h5ad",
+      "accession": "SRX15390221",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15390539.h5ad",
+      "accession": "SRX15390539",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515818.h5ad",
+      "accession": "SRX11515818",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515804.h5ad",
+      "accession": "SRX11515804",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515880.h5ad",
+      "accession": "SRX11515880",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11515822.h5ad",
+      "accession": "SRX11515822",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15805189.h5ad",
+      "accession": "SRX15805189",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15805169.h5ad",
+      "accession": "SRX15805169",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15805181.h5ad",
+      "accession": "SRX15805181",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX15805177.h5ad",
+      "accession": "SRX15805177",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217038.h5ad",
+      "accession": "SRX16217038",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217045.h5ad",
+      "accession": "SRX16217045",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217035.h5ad",
+      "accession": "SRX16217035",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217037.h5ad",
+      "accession": "SRX16217037",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217040.h5ad",
+      "accession": "SRX16217040",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217048.h5ad",
+      "accession": "SRX16217048",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217033.h5ad",
+      "accession": "SRX16217033",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217047.h5ad",
+      "accession": "SRX16217047",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX16217034.h5ad",
+      "accession": "SRX16217034",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10606548.h5ad",
+      "accession": "SRX10606548",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX18096301.h5ad",
+      "accession": "SRX18096301",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662356.h5ad",
+      "accession": "ERX11662356",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662358.h5ad",
+      "accession": "ERX11662358",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662363.h5ad",
+      "accession": "ERX11662363",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662365.h5ad",
+      "accession": "ERX11662365",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX11662383.h5ad",
+      "accession": "ERX11662383",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX8831395.h5ad",
+      "accession": "ERX8831395",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704146.h5ad",
+      "accession": "SRX19704146",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19162066.h5ad",
+      "accession": "SRX19162066",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19704131.h5ad",
+      "accession": "SRX19704131",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX22130034.h5ad",
+      "accession": "SRX22130034",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX23341418.h5ad",
+      "accession": "SRX23341418",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10152687.h5ad",
+      "accession": "SRX10152687",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27123182.h5ad",
+      "accession": "SRX27123182",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27208867.h5ad",
+      "accession": "SRX27208867",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27208869.h5ad",
+      "accession": "SRX27208869",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27208873.h5ad",
+      "accession": "SRX27208873",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27208878.h5ad",
+      "accession": "SRX27208878",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27208876.h5ad",
+      "accession": "SRX27208876",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX27208872.h5ad",
+      "accession": "SRX27208872",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25318271.h5ad",
+      "accession": "SRX25318271",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507030.h5ad",
+      "accession": "SRX25507030",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507022.h5ad",
+      "accession": "SRX25507022",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507033.h5ad",
+      "accession": "SRX25507033",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507045.h5ad",
+      "accession": "SRX25507045",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507039.h5ad",
+      "accession": "SRX25507039",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507053.h5ad",
+      "accession": "SRX25507053",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25507060.h5ad",
+      "accession": "SRX25507060",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25595935.h5ad",
+      "accession": "SRX25595935",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25595937.h5ad",
+      "accession": "SRX25595937",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412822.h5ad",
+      "accession": "SRX17412822",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412804.h5ad",
+      "accession": "SRX17412804",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19234378.h5ad",
+      "accession": "SRX19234378",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19234377.h5ad",
+      "accession": "SRX19234377",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19234380.h5ad",
+      "accession": "SRX19234380",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX25261768.h5ad",
+      "accession": "SRX25261768",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26213237.h5ad",
+      "accession": "SRX26213237",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26517110.h5ad",
+      "accession": "SRX26517110",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26517112.h5ad",
+      "accession": "SRX26517112",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX26213238.h5ad",
+      "accession": "SRX26213238",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9768484.h5ad",
+      "accession": "SRX9768484",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9495612.h5ad",
+      "accession": "SRX9495612",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9768481.h5ad",
+      "accession": "SRX9768481",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9768483.h5ad",
+      "accession": "SRX9768483",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9495614.h5ad",
+      "accession": "SRX9495614",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX10075292.h5ad",
+      "accession": "SRX10075292",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9768487.h5ad",
+      "accession": "SRX9768487",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9495610.h5ad",
+      "accession": "SRX9495610",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9058160.h5ad",
+      "accession": "SRX9058160",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9296016.h5ad",
+      "accession": "SRX9296016",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX8417844.h5ad",
+      "accession": "SRX8417844",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9058164.h5ad",
+      "accession": "SRX9058164",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX9062360.h5ad",
+      "accession": "SRX9062360",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX29072180.h5ad",
+      "accession": "SRX29072180",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7692419.h5ad",
+      "accession": "SRX7692419",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6812456.h5ad",
+      "accession": "SRX6812456",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6812462.h5ad",
+      "accession": "SRX6812462",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6812459.h5ad",
+      "accession": "SRX6812459",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX29130823.h5ad",
+      "accession": "SRX29130823",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX29130822.h5ad",
+      "accession": "SRX29130822",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX29130825.h5ad",
+      "accession": "SRX29130825",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX29130834.h5ad",
+      "accession": "SRX29130834",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558782.h5ad",
+      "accession": "ERX12558782",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138787.h5ad",
+      "accession": "ERX9138787",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558795.h5ad",
+      "accession": "ERX12558795",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138805.h5ad",
+      "accession": "ERX9138805",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138738.h5ad",
+      "accession": "ERX9138738",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX5329388.h5ad",
+      "accession": "SRX5329388",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558776.h5ad",
+      "accession": "ERX12558776",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138871.h5ad",
+      "accession": "ERX9138871",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138867.h5ad",
+      "accession": "ERX9138867",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11169657.h5ad",
+      "accession": "SRX11169657",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558793.h5ad",
+      "accession": "ERX12558793",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138888.h5ad",
+      "accession": "ERX9138888",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138869.h5ad",
+      "accession": "ERX9138869",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138862.h5ad",
+      "accession": "ERX9138862",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726375.h5ad",
+      "accession": "SRX6726375",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX19352021.h5ad",
+      "accession": "SRX19352021",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726367.h5ad",
+      "accession": "SRX6726367",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138845.h5ad",
+      "accession": "ERX9138845",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138808.h5ad",
+      "accession": "ERX9138808",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558773.h5ad",
+      "accession": "ERX12558773",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558765.h5ad",
+      "accession": "ERX12558765",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138798.h5ad",
+      "accession": "ERX9138798",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138761.h5ad",
+      "accession": "ERX9138761",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347526.h5ad",
+      "accession": "SRX7347526",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558780.h5ad",
+      "accession": "ERX12558780",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX5329391.h5ad",
+      "accession": "SRX5329391",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347533.h5ad",
+      "accession": "SRX7347533",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138903.h5ad",
+      "accession": "ERX9138903",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138803.h5ad",
+      "accession": "ERX9138803",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138847.h5ad",
+      "accession": "ERX9138847",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558785.h5ad",
+      "accession": "ERX12558785",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138865.h5ad",
+      "accession": "ERX9138865",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138832.h5ad",
+      "accession": "ERX9138832",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138778.h5ad",
+      "accession": "ERX9138778",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138840.h5ad",
+      "accession": "ERX9138840",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138744.h5ad",
+      "accession": "ERX9138744",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726370.h5ad",
+      "accession": "SRX6726370",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138762.h5ad",
+      "accession": "ERX9138762",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX5329395.h5ad",
+      "accession": "SRX5329395",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138817.h5ad",
+      "accession": "ERX9138817",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138842.h5ad",
+      "accession": "ERX9138842",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138752.h5ad",
+      "accession": "ERX9138752",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558808.h5ad",
+      "accession": "ERX12558808",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347530.h5ad",
+      "accession": "SRX7347530",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558763.h5ad",
+      "accession": "ERX12558763",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726373.h5ad",
+      "accession": "SRX6726373",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558792.h5ad",
+      "accession": "ERX12558792",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138816.h5ad",
+      "accession": "ERX9138816",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558758.h5ad",
+      "accession": "ERX12558758",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138870.h5ad",
+      "accession": "ERX9138870",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558757.h5ad",
+      "accession": "ERX12558757",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138828.h5ad",
+      "accession": "ERX9138828",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558760.h5ad",
+      "accession": "ERX12558760",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138827.h5ad",
+      "accession": "ERX9138827",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726368.h5ad",
+      "accession": "SRX6726368",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX5329392.h5ad",
+      "accession": "SRX5329392",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX5329382.h5ad",
+      "accession": "SRX5329382",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558800.h5ad",
+      "accession": "ERX12558800",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138876.h5ad",
+      "accession": "ERX9138876",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726377.h5ad",
+      "accession": "SRX6726377",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138819.h5ad",
+      "accession": "ERX9138819",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558789.h5ad",
+      "accession": "ERX12558789",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138772.h5ad",
+      "accession": "ERX9138772",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138792.h5ad",
+      "accession": "ERX9138792",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558809.h5ad",
+      "accession": "ERX12558809",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138799.h5ad",
+      "accession": "ERX9138799",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726381.h5ad",
+      "accession": "SRX6726381",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558766.h5ad",
+      "accession": "ERX12558766",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347529.h5ad",
+      "accession": "SRX7347529",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138797.h5ad",
+      "accession": "ERX9138797",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138746.h5ad",
+      "accession": "ERX9138746",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347534.h5ad",
+      "accession": "SRX7347534",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726385.h5ad",
+      "accession": "SRX6726385",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558799.h5ad",
+      "accession": "ERX12558799",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726382.h5ad",
+      "accession": "SRX6726382",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138810.h5ad",
+      "accession": "ERX9138810",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347527.h5ad",
+      "accession": "SRX7347527",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138739.h5ad",
+      "accession": "ERX9138739",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138782.h5ad",
+      "accession": "ERX9138782",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138785.h5ad",
+      "accession": "ERX9138785",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138833.h5ad",
+      "accession": "ERX9138833",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558774.h5ad",
+      "accession": "ERX12558774",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138768.h5ad",
+      "accession": "ERX9138768",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726376.h5ad",
+      "accession": "SRX6726376",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138875.h5ad",
+      "accession": "ERX9138875",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138897.h5ad",
+      "accession": "ERX9138897",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558772.h5ad",
+      "accession": "ERX12558772",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138854.h5ad",
+      "accession": "ERX9138854",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726386.h5ad",
+      "accession": "SRX6726386",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726378.h5ad",
+      "accession": "SRX6726378",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726396.h5ad",
+      "accession": "SRX6726396",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138773.h5ad",
+      "accession": "ERX9138773",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726395.h5ad",
+      "accession": "SRX6726395",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138863.h5ad",
+      "accession": "ERX9138863",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558784.h5ad",
+      "accession": "ERX12558784",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726380.h5ad",
+      "accession": "SRX6726380",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138763.h5ad",
+      "accession": "ERX9138763",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138769.h5ad",
+      "accession": "ERX9138769",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558815.h5ad",
+      "accession": "ERX12558815",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138824.h5ad",
+      "accession": "ERX9138824",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558777.h5ad",
+      "accession": "ERX12558777",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138892.h5ad",
+      "accession": "ERX9138892",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138873.h5ad",
+      "accession": "ERX9138873",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138822.h5ad",
+      "accession": "ERX9138822",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138856.h5ad",
+      "accession": "ERX9138856",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347537.h5ad",
+      "accession": "SRX7347537",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558779.h5ad",
+      "accession": "ERX12558779",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138804.h5ad",
+      "accession": "ERX9138804",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138757.h5ad",
+      "accession": "ERX9138757",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138800.h5ad",
+      "accession": "ERX9138800",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138751.h5ad",
+      "accession": "ERX9138751",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558764.h5ad",
+      "accession": "ERX12558764",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726379.h5ad",
+      "accession": "SRX6726379",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX5329389.h5ad",
+      "accession": "SRX5329389",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558798.h5ad",
+      "accession": "ERX12558798",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138790.h5ad",
+      "accession": "ERX9138790",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726388.h5ad",
+      "accession": "SRX6726388",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726383.h5ad",
+      "accession": "SRX6726383",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558810.h5ad",
+      "accession": "ERX12558810",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726392.h5ad",
+      "accession": "SRX6726392",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726387.h5ad",
+      "accession": "SRX6726387",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138750.h5ad",
+      "accession": "ERX9138750",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138789.h5ad",
+      "accession": "ERX9138789",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558762.h5ad",
+      "accession": "ERX12558762",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726393.h5ad",
+      "accession": "SRX6726393",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558794.h5ad",
+      "accession": "ERX12558794",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726398.h5ad",
+      "accession": "SRX6726398",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138861.h5ad",
+      "accession": "ERX9138861",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX11169659.h5ad",
+      "accession": "SRX11169659",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138793.h5ad",
+      "accession": "ERX9138793",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138826.h5ad",
+      "accession": "ERX9138826",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558787.h5ad",
+      "accession": "ERX12558787",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138779.h5ad",
+      "accession": "ERX9138779",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138839.h5ad",
+      "accession": "ERX9138839",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138764.h5ad",
+      "accession": "ERX9138764",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138887.h5ad",
+      "accession": "ERX9138887",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138811.h5ad",
+      "accession": "ERX9138811",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138883.h5ad",
+      "accession": "ERX9138883",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138771.h5ad",
+      "accession": "ERX9138771",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138758.h5ad",
+      "accession": "ERX9138758",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138745.h5ad",
+      "accession": "ERX9138745",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726390.h5ad",
+      "accession": "SRX6726390",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138880.h5ad",
+      "accession": "ERX9138880",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138848.h5ad",
+      "accession": "ERX9138848",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138737.h5ad",
+      "accession": "ERX9138737",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138877.h5ad",
+      "accession": "ERX9138877",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138815.h5ad",
+      "accession": "ERX9138815",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558791.h5ad",
+      "accession": "ERX12558791",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138795.h5ad",
+      "accession": "ERX9138795",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138866.h5ad",
+      "accession": "ERX9138866",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX7347528.h5ad",
+      "accession": "SRX7347528",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558781.h5ad",
+      "accession": "ERX12558781",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138894.h5ad",
+      "accession": "ERX9138894",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138743.h5ad",
+      "accession": "ERX9138743",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726397.h5ad",
+      "accession": "SRX6726397",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138860.h5ad",
+      "accession": "ERX9138860",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138786.h5ad",
+      "accession": "ERX9138786",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138742.h5ad",
+      "accession": "ERX9138742",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558797.h5ad",
+      "accession": "ERX12558797",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138879.h5ad",
+      "accession": "ERX9138879",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726394.h5ad",
+      "accession": "SRX6726394",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726389.h5ad",
+      "accession": "SRX6726389",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558759.h5ad",
+      "accession": "ERX12558759",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138765.h5ad",
+      "accession": "ERX9138765",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558812.h5ad",
+      "accession": "ERX12558812",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726384.h5ad",
+      "accession": "SRX6726384",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558788.h5ad",
+      "accession": "ERX12558788",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138783.h5ad",
+      "accession": "ERX9138783",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726391.h5ad",
+      "accession": "SRX6726391",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138859.h5ad",
+      "accession": "ERX9138859",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558783.h5ad",
+      "accession": "ERX12558783",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138898.h5ad",
+      "accession": "ERX9138898",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138829.h5ad",
+      "accession": "ERX9138829",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558756.h5ad",
+      "accession": "ERX12558756",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138781.h5ad",
+      "accession": "ERX9138781",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138775.h5ad",
+      "accession": "ERX9138775",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138818.h5ad",
+      "accession": "ERX9138818",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138807.h5ad",
+      "accession": "ERX9138807",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558775.h5ad",
+      "accession": "ERX12558775",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558801.h5ad",
+      "accession": "ERX12558801",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX6726369.h5ad",
+      "accession": "SRX6726369",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138857.h5ad",
+      "accession": "ERX9138857",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138784.h5ad",
+      "accession": "ERX9138784",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138881.h5ad",
+      "accession": "ERX9138881",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138796.h5ad",
+      "accession": "ERX9138796",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138900.h5ad",
+      "accession": "ERX9138900",
+      "reason": "excessive_cell_dropout"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138754.h5ad",
+      "accession": "ERX9138754",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138836.h5ad",
+      "accession": "ERX9138836",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138830.h5ad",
+      "accession": "ERX9138830",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558768.h5ad",
+      "accession": "ERX12558768",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138882.h5ad",
+      "accession": "ERX9138882",
+      "reason": "too_few_cells"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX12558767.h5ad",
+      "accession": "ERX12558767",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138759.h5ad",
+      "accession": "ERX9138759",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138825.h5ad",
+      "accession": "ERX9138825",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138885.h5ad",
+      "accession": "ERX9138885",
+      "reason": "cell_type_all_missing"
+    },
+    {
+      "r2Key": "arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/ERX9138760.h5ad",
+      "accession": "ERX9138760",
+      "reason": "too_few_cells"
+    }
+  ],
+  "statusCsvPath": "/home/inf-33-2025/Nygen_Project/output/atlas/v2/atlas_v2.csv",
+  "configPath": "/home/inf-33-2025/Nygen_Project/output/atlas/v2/atlas_v2_config.json",
+  "atlasR2Key": "atlas/v2/atlas_v2.h5ad",
+  "atlasStatusR2Key": "atlas/v2/atlas_v2.csv",
+  "atlasConfigR2Key": "atlas/v2/atlas_v2_config.json",
+  "atlasResultR2Key": "atlas/v2/atlas_v2_result.json",
+  "conserveLayers": false
+}
