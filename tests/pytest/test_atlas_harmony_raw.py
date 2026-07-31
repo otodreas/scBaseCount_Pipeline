@@ -5,7 +5,7 @@ from scipy.sparse import csr_matrix
 
 
 def test_raw_counts_survive_normalize_and_hvg_subset() -> None:
-    """Mirror run_atlas_harmony: full counts in .raw, HVG-only .X after subset."""
+    """Mirror atlas postprocessing: full counts in .raw, HVG-only .X after subset."""
     n_obs, n_vars = 12, 40
     rng = np.random.default_rng(0)
     counts = csr_matrix(rng.poisson(5, size=(n_obs, n_vars)).astype(np.float32))

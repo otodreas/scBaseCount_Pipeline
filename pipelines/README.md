@@ -258,46 +258,114 @@ uv run python pipelines/run_atlas_concat.py
 
 ---
 
-## `run_atlas_harmony.py`
+## Atlas postprocessing parameter selection and production
 
-Batch-corrects a merged atlas h5ad with Harmony on `study_accession`, then compares pre- and post-correction embeddings. Loads the atlas, normalizes and log-transforms counts, selects batch-aware HVGs, runs PCA, builds uncorrected and Harmony-corrected neighbor graphs and UMAPs, and clusters with Leiden. UMAP PNGs use [`umap_plots`](../scripts/umap_plots/README.md).
+Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is split into two runners under [`scripts/atlas_postprocessing/`](../scripts/atlas_postprocessing/):
 
-Typical input: an atlas written by [`run_atlas_concat.py`](#run_atlas_concatpy) (for example `output/atlas/data/atlas_sample20.h5ad`).
+1. [`select_atlas_parameters.py`](select_atlas_parameters.py) calibrates and validates parameters on an **explicitly supplied representative subset** (`--input`). It never silently samples the full atlas.
+2. [`run_atlas_postprocessing.py`](run_atlas_postprocessing.py) runs one resolved parameter set on the full atlas (or any chosen input).
 
-**Output:** paths below use CLI defaults; override with `--input`, `--output`, and `--figs-dir`.
+Harmony remains a method-specific stage (`X_pca_harmony`, Harmony comparison plots). Overall outputs use the generic `pp` layout under `output/atlas/v2/pp/`.
+
+### Recommended workflow
+
+```sh
+# 1) Calibrate on a representative subset (writes diagnostics + parameters_template.json)
+uv run python pipelines/select_atlas_parameters.py calibrate \
+  --input path/to/representative_subset.h5ad \
+  --output-dir output/atlas/v2/pp/parameter_selection
+
+# 2) Inspect metrics/figures, copy the template, edit the four values
+cp output/atlas/v2/pp/parameter_selection/parameters_template.json \
+   output/atlas/v2/pp/parameter_selection/approved_parameters.json
+
+# 3) Validate the approved set on the same subset + scIB (no full-atlas work)
+uv run python pipelines/select_atlas_parameters.py validate \
+  --input path/to/representative_subset.h5ad \
+  --parameters-json output/atlas/v2/pp/parameter_selection/approved_parameters.json \
+  --output-dir output/atlas/v2/pp/subset_validation
+
+# 4) After reviewing scIB, run production with the same approved JSON
+uv run python pipelines/run_atlas_postprocessing.py \
+  --input output/atlas/v2/atlas.h5ad \
+  --output output/atlas/v2/pp/production/atlas_pp.h5ad \
+  --parameters-json output/atlas/v2/pp/parameter_selection/approved_parameters.json
+```
+
+Calibration sweeps one parameter family at a time around the configured baseline (HVGs, PCs, neighbors, Leiden resolution). It does not auto-select final values. Cell-type labels are used as weak priors for diagnostics only.
+
+Approved JSON shape (`AtlasPostprocessingParameters`, camelCase):
+
+```json
+{
+  "nTopGenes": 2000,
+  "nPcs": 20,
+  "nNeighbors": 15,
+  "resolution": 1.0,
+  "calibrationSummary": "output/atlas/v2/pp/parameter_selection/calibration_summary.json"
+}
+```
+
+`--parameters-json` is authoritative for those four tuning knobs. Do not combine it with `--n-top-genes`, `--n-pcs`, `--n-neighbors`, or `--resolution`. Scalar overrides remain valid when `--parameters-json` is omitted.
+
+### `select_atlas_parameters.py calibrate`
+
+**Output root default:** `output/atlas/v2/pp/parameter_selection/`
+
+| File | Description |
+|------|-------------|
+| `calibration_summary.json` | Baseline, candidates, plateau intervals, coverage, timings, artifact paths |
+| `parameters_template.json` | Editable starting point for approved parameters |
+| `metrics/{hvg,pc,neighbors,resolution}.csv` | One metric table per sweep |
+| `figures/*_weak_prior_agreement.png`, `figures/resolution_matched_jaccard.png` | Single-metric plateau plots |
+
+Default candidate lists: HVGs `1000 2000 4000 8000`; PCs `10 20 30 50`; neighbors `5 10 15 30 50 100`; resolutions `0.2` through `2.0` step `0.2`. Override with `--hvg-candidates`, `--pc-candidates`, `--neighbor-candidates`, `--resolution-candidates`. Baseline defaults: `--n-top-genes 2000`, `--n-pcs 20`, `--n-neighbors 15`, `--resolution 1.0`, `--n-pcs-compute 50`.
+
+**Log:** `logs/select_atlas_parameters.log`
+
+### `select_atlas_parameters.py validate`
+
+Runs one production-equivalent subset pass with the approved JSON, then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
+
+**Output root default:** `output/atlas/v2/pp/subset_validation/`
+
+| File | Description |
+|------|-------------|
+| `atlas_pp_subset.h5ad` | Processed subset |
+| `atlas_pp_subset_run.json` | Run summary |
+| `subset_validation_summary.json` | Approved values, scIB paths, timings |
+| `figures/` | Scree + atlas-scale UMAPs |
+| `scib/scib_results.csv`, `scib/scib_results.svg` | scIB report |
+
+### `run_atlas_postprocessing.py`
+
+Lightweight production runner. No sweeps and no scIB.
+
+**Output defaults:** `output/atlas/v2/pp/production/atlas_pp.h5ad` and `.../figures/`.
 
 | File | Description |
 |------|-------------|
 | `{output}.h5ad` | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
-| `{output_stem}_run.json` | Run summary (cell counts, HVGs, raw gene count, studies, cluster counts, config) |
-| `{figs_dir}/umap_{batch_key}_uncorrected.png` | Pre-correction UMAP colored by batch |
-| `{figs_dir}/umap_{cell_type_key}_uncorrected.png` | Pre-correction UMAP colored by cell type |
-| `{figs_dir}/umap_{batch_key}_harmony.png` | Harmony-corrected UMAP colored by batch |
-| `{figs_dir}/umap_{cell_type_key}_harmony.png` | Harmony-corrected UMAP colored by cell type |
-| `{figs_dir}/pca_scree.png` | PCA scree plot (per-PC and cumulative variance) |
+| `{output_stem}_run.json` | Run summary including `nNeighbors` and optional `parametersJson` |
+| `{figs_dir}/umap_{batch_key}_{uncorrected\|harmony}.png` | Atlas-scale Scanpy UMAPs (`alpha=0.25`, `size=0.001`) |
+| `{figs_dir}/pca_scree.png` | PCA scree plot |
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--input` | `output/atlas/data/atlas_sample20.h5ad` | Input atlas h5ad |
-| `--output` | `output/atlas/data/atlas_sample20_harmony.h5ad` | Output atlas h5ad |
-| `--figs-dir` | `output/atlas/figs` | Directory for UMAP and scree PNGs |
+| `--input` | `output/atlas/v2/atlas.h5ad` | Input atlas h5ad |
+| `--output` | `output/atlas/v2/pp/production/atlas_pp.h5ad` | Output atlas h5ad |
+| `--figs-dir` | `output/atlas/v2/pp/production/figures` | Directory for UMAP and scree PNGs |
+| `--parameters-json` | none | Approved parameter JSON (optional) |
 | `--batch-key` | `study_accession` | `obs` column for Harmony batch correction |
 | `--cell-type-key` | `cell_type` | `obs` column for cell-type UMAP plots |
-| `--n-top-genes` | `2000` | Number of HVGs |
-| `--n-pcs` | `30` | PCs used for the neighbor graph |
+| `--n-top-genes` | `2000` | Number of HVGs (disallowed with `--parameters-json`) |
+| `--n-pcs` | `20` | PCs used for the neighbor graph (disallowed with `--parameters-json`) |
 | `--n-pcs-compute` | `50` | PCs computed by PCA |
-| `--resolution` | `1.0` | Leiden resolution |
-| `--no-plots` | off | Skip writing PNGs (still saves the h5ad and run JSON) |
+| `--n-neighbors` | `15` | Neighbors for the graph (disallowed with `--parameters-json`) |
+| `--resolution` | `1.0` | Leiden resolution (disallowed with `--parameters-json`) |
+| `--no-plots` | off | Skip writing PNGs |
 | `--threads` | `0` | scanpy `n_jobs` (`0` leaves the default) |
 
-**Log:** `logs/atlas_harmony.log`
+**Log:** `logs/atlas_postprocessing.log`
 
-```sh
-uv run python pipelines/run_atlas_harmony.py
-
-uv run python pipelines/run_atlas_harmony.py \
-  --input output/atlas/data/atlas.h5ad \
-  --output output/atlas/data/atlas_harmony.h5ad
-```
-
-Downstream atlas DE and disease-area labeling: [`notebooks/analysis/analyze_atlas_DE.ipynb`](../notebooks/analysis/analyze_atlas_DE.ipynb) loads the Harmony h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from [`disease_markers`](../scripts/disease_markers/README.md).
+Downstream atlas DE and disease-area labeling: [`notebooks/analysis/analyze_atlas_DE.ipynb`](../notebooks/analysis/analyze_atlas_DE.ipynb) loads a postprocessed atlas h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from [`disease_markers`](../scripts/disease_markers/README.md).
