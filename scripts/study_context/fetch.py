@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 import re
+import threading
 import time
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
@@ -21,6 +22,28 @@ _log = configure_file_logger("study_context.log", __name__)
 
 _http = httpx.Client(timeout=30.0, follow_redirects=True)
 
+_ncbi_rate_lock = threading.Lock()
+_ncbi_last_request_at = 0.0
+_NCBI_REQUESTS_PER_SECOND_WITH_KEY = 7
+_NCBI_REQUESTS_PER_SECOND_WITHOUT_KEY = 3
+
+
+def _ncbi_min_interval() -> float:
+    if os.environ.get("NCBI_API_KEY"):
+        return 1.0 / _NCBI_REQUESTS_PER_SECOND_WITH_KEY
+    return 1.0 / _NCBI_REQUESTS_PER_SECOND_WITHOUT_KEY
+
+
+def _ncbi_rate_limit_wait() -> None:
+    global _ncbi_last_request_at
+    with _ncbi_rate_lock:
+        interval = _ncbi_min_interval()
+        now = time.monotonic()
+        wait = _ncbi_last_request_at + interval - now
+        if wait > 0:
+            time.sleep(wait)
+        _ncbi_last_request_at = time.monotonic()
+
 
 def _http_get(url: str, *, retries: int = 3) -> str:
     last_exc: Exception | None = None
@@ -34,6 +57,11 @@ def _http_get(url: str, *, retries: int = 3) -> str:
             if attempt < retries:
                 time.sleep(2**attempt)
     raise RuntimeError(f"HTTP GET failed for {url!r}: {last_exc}")
+
+
+def _http_get_ncbi(url: str, *, retries: int = 3) -> str:
+    _ncbi_rate_limit_wait()
+    return _http_get(url, retries=retries)
 
 
 def fetch_read_experiment_records(
@@ -72,6 +100,53 @@ def _parse_sample_attributes(xml_text: str) -> dict[str, str]:
     return attrs
 
 
+def _is_ncbi_biosample(sample_accession: str) -> bool:
+    return sample_accession.upper().startswith("SAMN")
+
+
+def _parse_biosample_attributes(xml_text: str) -> dict[str, str]:
+    root = ET.fromstring(xml_text)
+    attrs: dict[str, str] = {}
+    for attr in root.iter("Attribute"):
+        name = attr.get("attribute_name") or attr.get("harmonized_name")
+        if name:
+            attrs[name] = (attr.text or "").strip()
+    return attrs
+
+
+def _ncbi_api_key_param() -> str:
+    api_key = os.environ.get("NCBI_API_KEY", "")
+    return f"&api_key={api_key}" if api_key else ""
+
+
+def _fetch_ncbi_biosample_attributes(sample_accession: str, warnings: list[str]) -> dict[str, str]:
+    url = (
+        f"{NCBI_EUTILS_BASE}/efetch.fcgi?db=biosample&id={sample_accession}"
+        f"&rettype=full&retmode=xml{_ncbi_api_key_param()}"
+    )
+    try:
+        xml_text = _http_get_ncbi(url)
+        return _parse_biosample_attributes(xml_text)
+    except Exception as exc:
+        warnings.append(f"biosample_fetch_failed:{exc}")
+        return {}
+
+
+def _fetch_ena_sample_attributes(sample_accession: str, warnings: list[str]) -> dict[str, str]:
+    try:
+        xml_text = _http_get(f"{BROWSER_BASE}/xml/{sample_accession}")
+        return _parse_sample_attributes(xml_text)
+    except Exception as exc:
+        warnings.append(f"sample_xml_failed:{exc}")
+        return {}
+
+
+def _fetch_sample_attributes(sample_accession: str, warnings: list[str]) -> dict[str, str]:
+    if _is_ncbi_biosample(sample_accession):
+        return _fetch_ncbi_biosample_attributes(sample_accession, warnings)
+    return _fetch_ena_sample_attributes(sample_accession, warnings)
+
+
 def _fetch_pubmed_abstract(pmids: list[str], warnings: list[str]) -> str | None:
     if not pmids:
         return None
@@ -82,7 +157,7 @@ def _fetch_pubmed_abstract(pmids: list[str], warnings: list[str]) -> str | None:
     key_param = f"&api_key={api_key}" if api_key else ""
     url = f"{NCBI_EUTILS_BASE}/efetch.fcgi?db=pubmed&id={','.join(pmids)}&rettype=xml&retmode=xml{key_param}"
     try:
-        xml_text = _http_get(url)
+        xml_text = _http_get_ncbi(url)
         root = ET.fromstring(xml_text)
     except Exception as exc:
         warnings.append(f"pubmed_fetch_failed:{exc}")
@@ -165,15 +240,13 @@ def fetch_experiment_context(accession: str) -> ExperimentContext:
     study_accession = _str(first.get("study_accession"))
 
     with ThreadPoolExecutor(max_workers=2) as pool:
-        xml_fut = pool.submit(_http_get, f"{BROWSER_BASE}/xml/{sample_accession}") if sample_accession else None
+        sample_fut = pool.submit(_fetch_sample_attributes, sample_accession, warnings) if sample_accession else None
         study_fut = pool.submit(_fetch_study_context, study_accession, warnings) if study_accession else None
 
-        if xml_fut is not None:
-            try:
-                xml_text = xml_fut.result()
-                biological = biological.model_copy(update={"sampleAttributes": _parse_sample_attributes(xml_text)})
-            except Exception as exc:
-                warnings.append(f"sample_xml_failed:{exc}")
+        if sample_fut is not None:
+            sample_attrs = sample_fut.result()
+            if sample_attrs:
+                biological = biological.model_copy(update={"sampleAttributes": sample_attrs})
 
         study = study_fut.result() if study_fut is not None else None
 

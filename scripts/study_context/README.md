@@ -62,11 +62,11 @@ first record + sorted runAccessions
   v
 concurrent pool of 2 -----------------------------------------.
   |                                                           |
-  |  GET sample XML  ->  ENA Browser API                      |  GET study  ->  ENA Portal API
-  |    -> parse XML (SAMPLE_ATTRIBUTE)                         |    -> json.loads + regex PubMed ids
-  v                                                           v
-sampleAttributes                                          StudyContext fields
-                                                              |
+  |  sampleAccession routing:                                 |  GET study  ->  ENA Portal API
+  |    SAMN* -> NCBI efetch biosample                         |    -> json.loads + regex PubMed ids
+  |    else  -> ENA Browser sample XML                        v
+  v                                                    StudyContext fields
+sampleAttributes (Attribute or SAMPLE_ATTRIBUTE)              |
                                                               |  GET efetch pubmed  ->  NCBI E-utilities
                                                               v    -> parse XML (AbstractText)
                                                           pubmedAbstract
@@ -75,14 +75,15 @@ sampleAttributes                                          StudyContext fields
 ExperimentContext  ->  contexts.jsonl
 ```
 
-Every `GET` goes through `_http_get` (shared `httpx.Client`, `follow_redirects`, 30s timeout, up to 3 retries with exponential backoff). Call 1 runs first; the sample-XML and study calls run concurrently in a 2-worker pool, and the PubMed `efetch` is nested inside the study call because it needs the PubMed IDs parsed from the study record. Portal calls return JSON parsed with `json.loads`; the sample and PubMed calls return XML parsed with `xml.etree.ElementTree`. Every failure is captured as a non-fatal string in `warnings`, so a single bad call never aborts the record.
+Every `GET` goes through `_http_get` (shared `httpx.Client`, `follow_redirects`, 30s timeout, up to 3 retries with exponential backoff). NCBI E-utilities calls (BioSample and PubMed) go through `_http_get_ncbi`, which enforces a global minimum interval between request starts (7/s with `NCBI_API_KEY`, 3/s without). Call 1 runs first; the sample-attribute and study calls run concurrently in a 2-worker pool, and the PubMed `efetch` is nested inside the study call because it needs the PubMed IDs parsed from the study record. Portal calls return JSON parsed with `json.loads`; the sample and PubMed calls return XML parsed with `xml.etree.ElementTree`. Every failure is captured as a non-fatal string in `warnings`, so a single bad call never aborts the record.
 
-Each accession triggers four sequential API calls:
+Each accession triggers up to four API calls (sample attributes are ID-routed):
 
 | Call | Endpoint | Populates |
 |------|----------|-----------|
 | 1 | ENA Portal API — `filereport?result=read_experiment` | `TechnicalContext`, partial `BiologicalContext`, `sample_accession`, `study_accession`, `runAccessions` |
-| 2 | ENA Browser API — `xml/{sample_accession}` | `BiologicalContext.sampleAttributes` (submitter-defined key-value blob) |
+| 2a | NCBI E-utilities — `efetch?db=biosample` | `BiologicalContext.sampleAttributes` when `sample_accession` is `SAMN*` |
+| 2b | ENA Browser API — `xml/{sample_accession}` | `BiologicalContext.sampleAttributes` for non-`SAMN` sample IDs (e.g. `SAMEA*`) |
 | 3 | ENA Portal API — `filereport?result=study` | `StudyContext`: `studyDescription`, `studyTitle`, `geoAccession`, `pubmedIds` |
 | 4 | NCBI E-utilities — `efetch?db=pubmed` | `StudyContext.pubmedAbstract` |
 
