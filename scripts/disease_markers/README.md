@@ -1,6 +1,6 @@
 # disease_markers
 
-Per-SRX coarse disease area labels and atlas eligibility rules derived from `contexts.jsonl` and `atlas.csv`.
+Per-experiment disease area, disease status, biological control, and atlas eligibility labels derived from `contexts.jsonl` and `atlas.csv`.
 
 ## Usage
 
@@ -15,11 +15,11 @@ label_table = build_sample_label_table(
 )
 ```
 
-Join labels onto an AnnData object by sample accession (for example `SRX_accession` in `obs`).
+Join labels onto an AnnData object by experiment accession (for example `SRX_accession` in `obs`). Each label row applies to the full experiment H5AD.
 
 ## Outputs
 
-Typical notebook or ad hoc export: `eligibility_labels.csv` with columns `srxAccession`, `studyAccession`, `diseaseRaw`, `diseaseArea`, `isControl`, `eligible`, `excludeReason`.
+Typical notebook or ad hoc export: `eligibility_labels.csv` with columns `srxAccession`, `studyAccession`, `diseaseRaw`, `diseaseArea`, `diseased`, `isBiologicalControl`, `controlType`, `eligible`, `excludeReason`.
 
 ## Config
 
