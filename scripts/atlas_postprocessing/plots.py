@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Literal
 
 import matplotlib
 
@@ -14,26 +15,35 @@ from atlas_postprocessing.config import AtlasPostprocessingConfig
 
 log = logging.getLogger(__name__)
 
+Workflow = Literal["production", "validation"]
 
-def make_atlas_plots(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> None:
-    """Write pre- and post-correction UMAP PNGs with atlas-scale point styling."""
+
+def make_atlas_plots(
+    adata: sc.AnnData,
+    cfg: AtlasPostprocessingConfig,
+    *,
+    workflow: Workflow = "production",
+) -> None:
+    """Write UMAP PNGs for the active workflow with atlas-scale point styling."""
     cfg.figsDir.mkdir(parents=True, exist_ok=True)
     for color_by in (cfg.batchKey, cfg.cellTypeKey):
         if color_by not in adata.obs:
             log.warning("Skipping UMAP for missing obs column %s", color_by)
             continue
-        _save_embedding_plot(
-            adata,
-            basis="X_umap_uncorrected",
-            colorBy=color_by,
-            outPath=cfg.figsDir / f"umap_{color_by}_uncorrected.png",
-        )
-        _save_embedding_plot(
-            adata,
-            basis="X_umap",
-            colorBy=color_by,
-            outPath=cfg.figsDir / f"umap_{color_by}_harmony.png",
-        )
+        if workflow == "validation" and "X_umap_uncorrected" in adata.obsm:
+            _save_embedding_plot(
+                adata,
+                basis="X_umap_uncorrected",
+                colorBy=color_by,
+                outPath=cfg.figsDir / f"umap_{color_by}_uncorrected.png",
+            )
+        if "X_umap" in adata.obsm:
+            _save_embedding_plot(
+                adata,
+                basis="X_umap",
+                colorBy=color_by,
+                outPath=cfg.figsDir / f"umap_{color_by}_harmony.png",
+            )
 
 
 def _save_embedding_plot(

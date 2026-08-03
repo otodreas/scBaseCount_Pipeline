@@ -2,7 +2,6 @@ import argparse
 import datetime
 from pathlib import Path
 
-import scanpy as sc
 from atlas_postprocessing.artifacts import (
     apply_parameters_to_config,
     load_approved_parameters,
@@ -16,6 +15,7 @@ from shared.repo import rel_to_repo
 
 _LOG_FILENAME = "atlas_postprocessing.log"
 log = configure_file_logger(_LOG_FILENAME, __name__)
+configure_file_logger(_LOG_FILENAME, "atlas_postprocessing")
 add_stdout_handler()
 
 _DEFAULT_CFG = AtlasPostprocessingConfig()
@@ -45,7 +45,13 @@ def _parse_args() -> argparse.Namespace:
         help="Approved parameter JSON from calibration (authoritative for the four tuning knobs)",
     )
     parser.add_argument("--no-plots", action="store_true", help="Skip writing UMAP PNGs")
-    parser.add_argument("--threads", type=int, default=0, metavar="N", help="scanpy n_jobs (0 leaves the default)")
+    parser.add_argument(
+        "--threads",
+        type=int,
+        default=0,
+        metavar="N",
+        help="Thread budget for Scanpy, Harmony, and parallel UMAP (0 leaves library defaults)",
+    )
     parser.add_argument("--r2-key", type=str, default=d.r2Key, metavar="KEY", help="R2 key")
     return parser.parse_args()
 
@@ -69,6 +75,7 @@ def build_config(args: argparse.Namespace) -> AtlasPostprocessingConfig:
             "nPcsCompute": args.n_pcs_compute,
             "writePlots": not args.no_plots,
             "r2Key": args.r2_key,
+            "nJobs": args.threads,
         }
     )
 
@@ -101,10 +108,6 @@ def build_config(args: argparse.Namespace) -> AtlasPostprocessingConfig:
 
 def main() -> None:
     args = _parse_args()
-
-    if args.threads > 0:
-        sc.settings.n_jobs = args.threads
-
     cfg = build_config(args)
 
     log_run_separator(log)
@@ -112,7 +115,7 @@ def main() -> None:
     log.info("config: %s", cfg.model_dump_json())
 
     started = datetime.datetime.now()
-    run_postprocessing(cfg)
+    run_postprocessing(cfg, workflow="production")
     log.info("atlas postprocessing run complete in %s", datetime.datetime.now() - started)
 
 

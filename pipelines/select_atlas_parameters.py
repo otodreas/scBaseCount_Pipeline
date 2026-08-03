@@ -12,7 +12,7 @@ from atlas_postprocessing.artifacts import (
     write_json,
 )
 from atlas_postprocessing.config import AtlasPostprocessingConfig
-from atlas_postprocessing.core import run_postprocessing, timed
+from atlas_postprocessing.core import apply_thread_settings, run_postprocessing, timed
 from atlas_postprocessing.sampling import SAMPLE_SEED, sample_metadata, sample_study_proportional
 from atlas_postprocessing.scib import run_scib_benchmark
 from atlas_postprocessing.selection import run_calibration
@@ -21,6 +21,7 @@ from shared.repo import rel_to_repo
 
 _LOG_FILENAME = "select_atlas_parameters.log"
 log = configure_file_logger(_LOG_FILENAME, __name__)
+configure_file_logger(_LOG_FILENAME, "atlas_postprocessing")
 add_stdout_handler()
 
 _DEFAULT_CFG = AtlasPostprocessingConfig()
@@ -38,7 +39,13 @@ def _add_shared_args(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("--batch-key", type=str, default=d.batchKey, metavar="COL", help="obs batch column")
     parser.add_argument("--cell-type-key", type=str, default=d.cellTypeKey, metavar="COL", help="obs cell type column")
-    parser.add_argument("--threads", type=int, default=0, metavar="N", help="scanpy n_jobs (0 leaves the default)")
+    parser.add_argument(
+        "--threads",
+        type=int,
+        default=0,
+        metavar="N",
+        help="Thread budget for Scanpy and Harmony (0 leaves library defaults)",
+    )
 
 
 def _parse_args() -> argparse.Namespace:
@@ -143,6 +150,7 @@ def _cfg_from_calibrate_args(args: argparse.Namespace) -> AtlasPostprocessingCon
             "neighborCandidates": list(args.neighbor_candidates),
             "resolutionCandidates": list(args.resolution_candidates),
             "writePlots": False,
+            "nJobs": args.threads,
         }
     )
 
@@ -162,6 +170,7 @@ def _cfg_from_validate_args(args: argparse.Namespace) -> AtlasPostprocessingConf
             "cellTypeKey": args.cell_type_key,
             "writePlots": not args.no_plots,
             "r2Key": None,
+            "nJobs": args.threads,
         }
     )
     cfg = apply_parameters_to_config(cfg, parameters, parametersPath=args.parameters_json)
@@ -208,7 +217,7 @@ def _run_validate(args: argparse.Namespace) -> None:
     sampled = _load_and_sample(cfg, args.sample_cells)
     adata = timed(
         "approved subset postprocessing",
-        lambda: run_postprocessing(cfg, adata=sampled),
+        lambda: run_postprocessing(cfg, adata=sampled, workflow="validation"),
         logger=log,
     )
     timed(
@@ -257,15 +266,13 @@ def _run_validate(args: argparse.Namespace) -> None:
 def main() -> None:
     args = _parse_args()
 
-    if args.threads > 0:
-        sc.settings.n_jobs = args.threads
-
     log_run_separator(log)
     log.info("select_atlas_parameters %s started", args.command)
 
     started = datetime.datetime.now()
     if args.command == "calibrate":
         cfg = _cfg_from_calibrate_args(args)
+        apply_thread_settings(cfg)
         log.info("config: %s", cfg.model_dump_json())
         sampled = _load_and_sample(cfg, args.sample_cells)
         run_calibration(cfg, adata=sampled)

@@ -309,7 +309,7 @@ Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is 
 
 Sampling is deterministic (seed `0`), stratified by `--batch-key` (default `study_accession`). Every study gets at least one cell when `N` is at least the study count; remaining slots use largest-remainder proportions by study size. Requests smaller than the study count, or larger than the atlas, are rejected. The full atlas is loaded into memory once per command, so plan RAM for the whole object even though sweeps run on the sample.
 
-Harmony remains a method-specific stage (`X_pca_harmony`, Harmony comparison plots). Overall outputs use the `post` layout under `output/atlas/v2/post/`.
+Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/v2/post/`. Full-atlas production builds **only** the Harmony-corrected neighbor graph, UMAP, and Leiden partition. Subset validation still builds both the uncorrected and Harmony-corrected embeddings so scIB can compare `X_pca` vs `X_pca_harmony`.
 
 ### Recommended workflow
 
@@ -386,7 +386,7 @@ Default candidate lists: HVGs `1000 2000 4000 8000`; PCs `10 20 30 50`; neighbor
 
 ### `select_atlas_parameters.py validate`
 
-Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one production-equivalent pass with the approved JSON, then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
+Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one dual-embedding validation pass with the approved JSON (uncorrected + Harmony graphs), then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
 
 **Output root default:** `output/atlas/v2/post/subset_validation/`
 
@@ -412,16 +412,16 @@ Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs
 
 ### `run_atlas_postprocessing.py`
 
-Lightweight production runner. No sweeps and no scIB.
+Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, then a **Harmony-only** neighbor graph, UMAP, and Leiden. Parallel production UMAP is intentionally non-reproducible for speed; revisit and freeze a seeded embedding before publication.
 
 **Output defaults:** `output/atlas/v2/post/production/atlas_pp.h5ad` and `.../figures/`.
 
 
 | File                                      | Description                                                                                                                                     |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{output}.h5ad`                           | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_umap_uncorrected`, `X_pca_harmony`, `leiden_uncorrected`, and `leiden_atlas` |
-| `{output_stem}_run.json`                  | Run summary including `nNeighbors` and optional `parametersJson`                                                                                |
-| `{figs_dir}/umap_{batch_key}_{uncorrected | harmony}.png`                                                                                                                                   |
+| `{output}.h5ad`                           | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_pca_harmony`, `X_umap`, and `leiden_atlas` (no uncorrected graph artifacts) |
+| `{output_stem}_run.json`                  | Run summary including `workflow`, `nNeighbors`, `nJobs`, and optional `parametersJson` (`clustersUncorrected` is `null` in production)         |
+| `{figs_dir}/umap_{batch_key}_harmony.png` | Harmony UMAP colored by batch and cell type                                                                                                     |
 | `{figs_dir}/pca_scree.png`                | PCA scree plot                                                                                                                                  |
 
 
@@ -440,7 +440,7 @@ Lightweight production runner. No sweeps and no scIB.
 | `--n-neighbors`     | `15`                                            | Neighbors for the graph (disallowed with `--parameters-json`)         |
 | `--resolution`      | `1.0`                                           | Leiden resolution (disallowed with `--parameters-json`)               |
 | `--no-plots`        | off                                             | Skip writing PNGs                                                     |
-| `--threads`         | `0`                                             | scanpy `n_jobs` (`0` leaves the default)                              |
+| `--threads`         | `0`                                             | Thread budget for Scanpy, Harmony, and parallel UMAP (`0` = library defaults) |
 
 
 **Log:** `logs/atlas_postprocessing.log`

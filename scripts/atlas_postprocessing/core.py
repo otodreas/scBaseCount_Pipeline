@@ -3,12 +3,16 @@ import logging
 import time
 from collections.abc import Callable
 from pathlib import Path
+from typing import Literal
 
 import harmonypy
+import numba
 import numpy as np
 import scanpy as sc
 from shared.repo import rel_to_repo
+from sklearn.utils import check_array, check_random_state
 from storage.r2 import upload_to_r2, verify_upload
+from umap.umap_ import find_ab_params, simplicial_set_embedding
 
 from atlas_postprocessing.artifacts import load_approved_parameters
 from atlas_postprocessing.config import AtlasPostprocessingConfig
@@ -16,6 +20,8 @@ from atlas_postprocessing.plots import make_atlas_plots, save_scree_plot
 from atlas_postprocessing.sampling import sample_metadata
 
 log = logging.getLogger(__name__)
+
+Workflow = Literal["production", "validation"]
 
 
 def timed[T](name: str, action: Callable[[], T], logger: logging.Logger | None = None) -> T:
@@ -26,6 +32,14 @@ def timed[T](name: str, action: Callable[[], T], logger: logging.Logger | None =
     result = action()
     active_log.info("DONE %s in %.1fs", name, time.perf_counter() - started)
     return result
+
+
+def apply_thread_settings(cfg: AtlasPostprocessingConfig) -> None:
+    """Apply configured job count to scanpy and Numba when explicitly set."""
+    if cfg.nJobs > 0:
+        sc.settings.n_jobs = cfg.nJobs
+        numba.set_num_threads(cfg.nJobs)
+        log.info("Using nJobs=%s for scanpy and Numba", cfg.nJobs)
 
 
 def validate_graph_settings(cfg: AtlasPostprocessingConfig, n_obs: int) -> None:
@@ -82,9 +96,16 @@ def scale_and_pca(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, nPcsComp
             f"({min(adata.n_obs - 1, adata.n_vars - 1)}) for shape {(adata.n_obs, adata.n_vars)}"
         )
     sc.pp.scale(adata, max_value=cfg.scaleMaxValue)
-    sc.tl.pca(adata, n_comps=n_comps, svd_solver="arpack")
+    sc.tl.pca(adata, n_comps=n_comps, svd_solver="auto")
     log.info("Computed %s PCs", n_comps)
     return adata
+
+
+def prepare_pca(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.AnnData:
+    """Select HVGs, scale, and compute PCA without building a neighbor graph."""
+    validate_graph_settings(cfg, adata.n_obs)
+    adata = select_hvgs(adata, cfg)
+    return scale_and_pca(adata, cfg)
 
 
 def build_neighbors(
@@ -95,14 +116,14 @@ def build_neighbors(
     useRep: str | None = None,
 ) -> None:
     """Build a neighbor graph with explicit neighborhood size and optional representation."""
-    kwargs: dict[str, object] = {"n_neighbors": nNeighbors}
+    kwargs: dict[str, int | str] = {"n_neighbors": nNeighbors}
     if useRep is not None:
         kwargs["use_rep"] = useRep
         if nPcs is not None:
             kwargs["n_pcs"] = nPcs
     elif nPcs is not None:
         kwargs["n_pcs"] = nPcs
-    sc.pp.neighbors(adata, **kwargs)
+    sc.pp.neighbors(adata, **kwargs)  # type: ignore[arg-type]
     log.info(
         "Computed neighbors n_neighbors=%s n_pcs=%s use_rep=%s",
         nNeighbors,
@@ -123,16 +144,74 @@ def run_leiden(adata: sc.AnnData, *, resolution: float, keyAdded: str) -> None:
     log.info("%s clusters: %d", keyAdded, adata.obs[keyAdded].nunique())
 
 
-def embed_uncorrected(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.AnnData:
-    """Select HVGs, scale, run PCA, and build the pre-correction UMAP and leiden partition."""
-    validate_graph_settings(cfg, adata.n_obs)
-    adata = select_hvgs(adata, cfg)
-    adata = scale_and_pca(adata, cfg)
-    build_neighbors(adata, nNeighbors=cfg.nNeighbors, nPcs=cfg.nPcs)
+def run_umap_deterministic(adata: sc.AnnData) -> None:
+    """Run Scanpy UMAP with the default fixed seed (reproducible, single-threaded)."""
     sc.tl.umap(adata)
+    log.info("Computed deterministic UMAP")
+
+
+def run_umap_parallel(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> None:
+    """Embed an existing neighbor graph with UMAP's parallel optimizer.
+
+    Parallel UMAP is not bit-reproducible across runs. Revisit before publication and
+    switch back to a seeded single-threaded embedding when coordinates must be frozen.
+    """
+    if "neighbors" not in adata.uns:
+        raise ValueError("adata.uns['neighbors'] is required; run sc.pp.neighbors first")
+    if "connectivities" not in adata.obsp:
+        raise ValueError("adata.obsp['connectivities'] is required; run sc.pp.neighbors first")
+
+    if cfg.nJobs > 0:
+        numba.set_num_threads(cfg.nJobs)
+
+    # Match Scanpy defaults used by sc.tl.umap for large graphs.
+    a, b = find_ab_params(spread=1.0, min_dist=0.5)
+    n_epochs = 500 if adata.n_obs <= 10_000 else 200
+    # random_state=None enables parallelism; results are intentionally non-reproducible.
+    random_state = check_random_state(None)
+    x = np.asarray(adata.obsm.get("X_pca_harmony", adata.obsm["X_pca"]), dtype=np.float32)
+    x = check_array(x, dtype="float32", accept_sparse=False)
+
+    connectivities = adata.obsp["connectivities"]
+    graph = connectivities.tocoo() if hasattr(connectivities, "tocoo") else connectivities
+
+    x_umap, _ = simplicial_set_embedding(
+        data=x,
+        graph=graph,
+        n_components=2,
+        initial_alpha=1.0,
+        a=a,
+        b=b,
+        gamma=1.0,
+        negative_sample_rate=5,
+        n_epochs=n_epochs,
+        init="spectral",
+        random_state=random_state,
+        metric="euclidean",
+        metric_kwds={},
+        densmap=False,
+        densmap_kwds={},
+        output_dens=False,
+        parallel=True,
+        verbose=False,
+    )
+    adata.obsm["X_umap"] = x_umap
+    adata.uns["umap"] = {"params": {"a": a, "b": b, "parallel": True}}
+    log.info("Computed parallel UMAP (non-reproducible; revisit for publication)")
+
+
+def embed_uncorrected(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.AnnData:
+    """Build the pre-correction neighbor graph, UMAP, and Leiden partition on existing PCA."""
+    validate_graph_settings(cfg, adata.n_obs)
+    if "X_pca" not in adata.obsm:
+        raise ValueError("adata.obsm['X_pca'] is required before uncorrected embedding")
+    timed("uncorrected neighbors", lambda: build_neighbors(adata, nNeighbors=cfg.nNeighbors, nPcs=cfg.nPcs))
+    timed("uncorrected UMAP", lambda: run_umap_deterministic(adata))
     adata.obsm["X_umap_uncorrected"] = adata.obsm["X_umap"].copy()
-    log.info("Computed UMAP")
-    run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_uncorrected")
+    timed(
+        "uncorrected Leiden",
+        lambda: run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_uncorrected"),
+    )
     return adata
 
 
@@ -143,29 +222,51 @@ def run_harmony_on_pcs(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, nPc
     if nPcs > adata.obsm["X_pca"].shape[1]:
         raise ValueError(f"Requested nPcs ({nPcs}) exceeds computed PCs ({adata.obsm['X_pca'].shape[1]})")
     pca_prefix = np.asarray(adata.obsm["X_pca"][:, :nPcs])
-    harmony_out = harmonypy.run_harmony(pca_prefix, adata.obs, cfg.batchKey)
+    harmony_out = harmonypy.run_harmony(
+        pca_prefix,
+        adata.obs,
+        cfg.batchKey,
+        ncores=cfg.nJobs,
+    )
     corrected = np.asarray(harmony_out.Z_corr)
-    log.info("Ran Harmony on %s PCs with batch key %s", nPcs, cfg.batchKey)
+    log.info("Ran Harmony on %s PCs with batch key %s ncores=%s", nPcs, cfg.batchKey, cfg.nJobs)
     return corrected
 
 
-def integrate_harmony(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.AnnData:
-    """Run Harmony on the PCA embedding and build the corrected UMAP and leiden partition."""
+def integrate_harmony(
+    adata: sc.AnnData,
+    cfg: AtlasPostprocessingConfig,
+    *,
+    parallelUmap: bool = False,
+) -> sc.AnnData:
+    """Run Harmony on the PCA embedding and build the corrected UMAP and Leiden partition."""
     validate_graph_settings(cfg, adata.n_obs)
-    adata.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata, cfg, nPcs=cfg.nPcs)
-    build_neighbors(
-        adata,
-        nNeighbors=cfg.nNeighbors,
-        nPcs=cfg.nPcs,
-        useRep="X_pca_harmony",
+
+    def _store_harmony() -> None:
+        adata.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata, cfg, nPcs=cfg.nPcs)
+
+    timed("Harmony correction", _store_harmony)
+    timed(
+        "Harmony neighbors",
+        lambda: build_neighbors(
+            adata,
+            nNeighbors=cfg.nNeighbors,
+            nPcs=cfg.nPcs,
+            useRep="X_pca_harmony",
+        ),
     )
-    sc.tl.umap(adata)
-    log.info("Computed UMAP using Harmony-corrected PCA")
-    run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_atlas")
+    if parallelUmap:
+        timed("Harmony UMAP", lambda: run_umap_parallel(adata, cfg))
+    else:
+        timed("Harmony UMAP", lambda: run_umap_deterministic(adata))
+    timed(
+        "Harmony Leiden",
+        lambda: run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_atlas"),
+    )
     return adata
 
 
-def save_atlas(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> Path:
+def save_atlas(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, workflow: Workflow) -> Path:
     """Write the processed atlas h5ad and a run summary JSON alongside it."""
     cfg.outputH5ad.parent.mkdir(parents=True, exist_ok=True)
     adata.write_h5ad(cfg.outputH5ad, compression=cfg.compression)
@@ -174,21 +275,24 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> Path:
     if cfg.parametersJson is not None:
         calibration_summary = load_approved_parameters(cfg.parametersJson).calibrationSummary
 
+    clusters_uncorrected = int(adata.obs["leiden_uncorrected"].nunique()) if "leiden_uncorrected" in adata.obs else None
     summary = {
         "input": rel_to_repo(cfg.inputH5ad),
         "output": rel_to_repo(cfg.outputH5ad),
         "figsDir": rel_to_repo(cfg.figsDir),
+        "workflow": workflow,
         "cells": int(adata.n_obs),
         "hvgs": int(adata.n_vars),
         "rawGenes": int(adata.raw.n_vars) if adata.raw is not None else 0,
         "studies": int(adata.obs[cfg.batchKey].nunique()),
-        "clustersUncorrected": int(adata.obs["leiden_uncorrected"].nunique()),
+        "clustersUncorrected": clusters_uncorrected,
         "clustersHarmony": int(adata.obs["leiden_atlas"].nunique()),
         "resolution": cfg.resolution,
         "nPcs": cfg.nPcs,
         "nPcsCompute": cfg.nPcsCompute,
         "nTopGenes": cfg.nTopGenes,
         "nNeighbors": cfg.nNeighbors,
+        "nJobs": cfg.nJobs,
         "parametersJson": rel_to_repo(cfg.parametersJson) if cfg.parametersJson else None,
         "calibrationSummary": calibration_summary,
         "sampling": sample_metadata(adata),
@@ -211,17 +315,33 @@ def upload_atlas(cfg: AtlasPostprocessingConfig) -> None:
 def run_postprocessing(
     cfg: AtlasPostprocessingConfig,
     adata: sc.AnnData | None = None,
+    *,
+    workflow: Workflow = "production",
 ) -> sc.AnnData:
-    """Run the full atlas postprocessing flow: load, embed, integrate, plot, and save."""
+    """Run atlas postprocessing for production (Harmony-only graph) or validation (both graphs)."""
+    apply_thread_settings(cfg)
     loaded = timed("load + normalize", lambda: load_and_normalize(cfg, adata=adata))
     validate_graph_settings(cfg, loaded.n_obs)
-    loaded = timed("HVG + PCA + pre-correction embedding", lambda: embed_uncorrected(loaded, cfg))
-    loaded = timed("harmony integration", lambda: integrate_harmony(loaded, cfg))
+    loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
+
+    if workflow == "validation":
+        loaded = timed("uncorrected embedding", lambda: embed_uncorrected(loaded, cfg))
+        loaded = timed(
+            "harmony integration",
+            lambda: integrate_harmony(loaded, cfg, parallelUmap=False),
+        )
+    elif workflow == "production":
+        loaded = timed(
+            "harmony integration",
+            lambda: integrate_harmony(loaded, cfg, parallelUmap=True),
+        )
+    else:
+        raise ValueError(f"Unknown workflow {workflow!r}")
 
     if cfg.writePlots:
         timed("scree plot", lambda: save_scree_plot(loaded, cfg))
-        timed("plots", lambda: make_atlas_plots(loaded, cfg))
-    timed("save atlas", lambda: save_atlas(loaded, cfg))
+        timed("plots", lambda: make_atlas_plots(loaded, cfg, workflow=workflow))
+    timed("save atlas", lambda: save_atlas(loaded, cfg, workflow=workflow))
     if cfg.r2Key:
         timed("upload to r2", lambda: upload_atlas(cfg))
     return loaded

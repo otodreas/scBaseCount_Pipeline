@@ -36,6 +36,7 @@ class AtlasPostprocessingConfig(BaseModel):
     compression: Literal["gzip", "lzf"] | None = "gzip"
     r2Key: str | None = None
     parametersJson: Path | None = None
+    nJobs: int = 0
     calibrationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "parameter_selection"
     validationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "subset_validation"
     hvgCandidates: list[int] = Field(default_factory=lambda: [1000, 2000, 4000, 8000])
