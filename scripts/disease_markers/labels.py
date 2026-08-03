@@ -32,67 +32,58 @@ LUNG_CANCER_LABELS: frozenset[str] = frozenset(
     }
 )
 OTHER_AREA = "Other"
-EXCLUDE_RE = re.compile(
-    r"organoid|cell line|cell-line|ipsc|iPSC|explant|Mus musculus|\bmouse\b|embryo|olfactory|tonsil|myeloma|CRISPR|perturbation",
-    re.IGNORECASE,
+REQUIRED_METADATA_COLUMNS: frozenset[str] = frozenset(
+    {
+        "srx_accession",
+        "disease",
+        "tissue",
+        "organism",
+        "cell_line",
+        "perturbation",
+    }
 )
 MATCHED_ADJACENT_RE = re.compile(
     r"\b(?:adjacent|non[-\s]?involved|uninvolved|tumou?r[-\s]?free|para[-\s]?tumou?r|tumou?r[-\s]?distant)\b",
     re.IGNORECASE,
 )
 HEALTHY_RE = re.compile(
-    r"\b(?:normal|healthy|unaffected|disease[-\s]?free)\b"
+    r"\b(?:normal|healthy|unaffected|disease[-\s]?free|non[-\s]?diseased?)\b"
     r"|"
     r"\bno\s+(?:"
     r"disease|COPD|"
     r"diagnosed\s+disease|specific\s+disease|overt\s+disease|donor\s+disease|"
     r"disease\s+diagnosis|record\s+of\s+lung\s+disease"
-    r")\b"
-    r"|"
-    r"\bnon[-\s]?(?:disease|COPD)\b",
+    r")\b",
     re.IGNORECASE,
 )
 EXPLICIT_CONTROL_RE = re.compile(r"\bcontrol\b", re.IGNORECASE)
-POSITIVE_SPECIMEN_RE = re.compile(
-    r"\b(?:tumou?r|cancer|carcinoma|adenocarcinoma|malignan(?:t|cy)|neoplasm|fibrotic|infected|diseased)\b",
+NONE_DISEASE_RE = re.compile(r"\bnone\b", re.IGNORECASE)
+UNKNOWN_DISEASE_RE = re.compile(
+    r"\b(?:unsure|unknown|not\s+specified|not\s+stated|not\s+reported|not\s+available|"
+    r"none\s+specified|none\s+reported)\b",
     re.IGNORECASE,
 )
-NON_LUNG_TISSUE_RE = re.compile(
-    r"\b(?:blood|PBMCs?|peripheral blood mononuclear cells?|lymph nodes?|bone marrow)\b",
+EXCLUDED_MODEL_RE = re.compile(
+    r"\b(?:organoids?|explants?|ipscs?)\b|cell[-\s]?line|"
+    r"\b(?:A549|PC-?9|WI-?38|Calu-?3|BEAS-?2B|H358|H-?23|HCC\d+|RUES2|H2228|H1975|H838)\b",
     re.IGNORECASE,
 )
-MIXED_SAMPLE_RE = re.compile(
-    r"\bmixed sample\b|\bmultiple donors?\b|\bpooled donors?\b|\bpooled\b.*\bdonors?\b",
+PRIMARY_NOT_MODEL_RE = re.compile(
+    r"\bprimary\b|"
+    r"(?:no|not(?:\s+an?)?)\s+(?:immortalized\s+|established\s+)?cell\s+line",
     re.IGNORECASE,
 )
-SPECIMEN_KEY_TOKENS: tuple[str, ...] = (
+NON_LUNG_MIXED_RE = re.compile(
+    r"\b(?:PBMCs?|peripheral\s+blood(?:\s+mononuclear\s+cells?)?|whole\s+blood|"
+    r"leukocytes?\s+from\s+whole\s+blood)\b",
+    re.IGNORECASE,
+)
+ENA_SPECIMEN_KEY_TOKENS: tuple[str, ...] = (
     "sampling site",
     "tissue",
+    "organism part",
+    "source name",
     "source",
-    "specimen",
-    "sample type",
-)
-ANATOMY_KEY_TOKENS: tuple[str, ...] = ("organ", "anatom")
-STATUS_KEY_TOKENS: tuple[str, ...] = (
-    "disease",
-    "diagnos",
-    "condition",
-    "status",
-    "phenotype",
-    "cohort",
-    "health",
-    "strain",
-    "isolate",
-)
-MIXED_SAMPLE_ATTRIBUTE_KEYS: frozenset[str] = frozenset(
-    {
-        "donor",
-        "donors",
-        "individual",
-        "pool",
-        "pooled",
-        "sample type",
-    }
 )
 
 
@@ -107,6 +98,8 @@ class SampleLabelRow:
     srxAccession: str
     studyAccession: str
     diseaseRaw: str
+    tissueRaw: str
+    cellLineRaw: str
     diseaseArea: str
     diseased: bool | None
     isBiologicalControl: bool
@@ -115,128 +108,102 @@ class SampleLabelRow:
     excludeReason: str | None
 
 
-def _attribute_blob(ctx: ExperimentContext) -> str:
-    bio = ctx.biological
-    parts: list[str] = []
-    if bio.sampleTitle:
-        parts.append(bio.sampleTitle)
-    if bio.tissueType:
-        parts.append(bio.tissueType)
-    if bio.sampleDescription:
-        parts.append(bio.sampleDescription)
-    parts.extend(str(v) for v in bio.sampleAttributes.values())
-    study = ctx.study
-    if study and study.studyTitle:
-        parts.append(study.studyTitle)
-    return " ".join(parts)
-
-
-def _disease_blob(ctx: ExperimentContext) -> str:
-    attrs = ctx.biological.sampleAttributes
-    parts = [
-        str(v) for k, v in attrs.items() if isinstance(v, str) and ("disease" in k.lower() or "diagnos" in k.lower())
-    ]
-    study = ctx.study
-    if study and study.studyTitle:
-        parts.append(study.studyTitle)
-    return " ".join(parts)
-
-
 def _normalized_key(key: str) -> str:
     return re.sub(r"[_-]+", " ", key).strip().lower()
 
 
-def _tissue_blob(ctx: ExperimentContext) -> str:
-    bio = ctx.biological
-    parts: list[str] = []
-    if bio.tissueType:
-        parts.append(bio.tissueType)
-    for key, value in bio.sampleAttributes.items():
-        if not isinstance(value, str):
-            continue
-        normalized_key = _normalized_key(key)
-        if any(token in normalized_key for token in (*SPECIMEN_KEY_TOKENS, *ANATOMY_KEY_TOKENS)):
-            parts.append(value)
-    return " ".join(parts)
+def _as_text(value: object) -> str:
+    if value is None or value is pd.NA:
+        return ""
+    if isinstance(value, float) and math.isnan(value):
+        return ""
+    text = str(value).strip()
+    return "" if text.lower() == "nan" else text
 
 
 def _control_type(text: str) -> ControlType | None:
     if MATCHED_ADJACENT_RE.search(text):
         return ControlType.MATCHED_ADJACENT
-    if HEALTHY_RE.search(text):
+    if HEALTHY_RE.search(text) or NONE_DISEASE_RE.search(text):
         return ControlType.HEALTHY
     if EXPLICIT_CONTROL_RE.search(text):
         return ControlType.EXPLICIT_CONTROL
     return None
 
 
-def _has_positive_disease_evidence(text: str) -> bool:
-    return bool(POSITIVE_SPECIMEN_RE.search(text) or any(pattern.search(text) for _, pattern in DISEASE_MAP))
+def _has_disease_category(text: str) -> bool:
+    return any(pattern.search(text) for _, pattern in DISEASE_MAP)
 
 
-def _classify_evidence_tier(texts: list[str]) -> tuple[bool, bool | None, ControlType | None]:
-    control_types: set[ControlType] = set()
-    positive = False
-    for text in texts:
-        control_type = _control_type(text)
-        if control_type is not None:
-            control_types.add(control_type)
-        elif _has_positive_disease_evidence(text):
-            positive = True
-
-    if not control_types and not positive:
-        return False, None, None
-    if control_types and positive:
-        return True, None, None
-    if positive:
-        return True, True, None
-
-    precedence = (
-        ControlType.MATCHED_ADJACENT,
-        ControlType.HEALTHY,
-        ControlType.EXPLICIT_CONTROL,
-    )
-    control_type = next(candidate for candidate in precedence if candidate in control_types)
-    return True, False, control_type
-
-
-def _disease_status(ctx: ExperimentContext) -> tuple[bool | None, ControlType | None]:
+def _ena_specimen_texts(ctx: ExperimentContext | None) -> list[str]:
+    if ctx is None:
+        return []
     bio = ctx.biological
-    specimen_texts: list[str] = []
-    anatomy_texts: list[str] = []
-    status_texts: list[str] = []
-
+    parts: list[str] = []
     if bio.tissueType:
-        specimen_texts.append(bio.tissueType)
+        parts.append(bio.tissueType)
+    if bio.sampleTitle:
+        parts.append(bio.sampleTitle)
     for key, value in bio.sampleAttributes.items():
         if not isinstance(value, str):
             continue
         normalized_key = _normalized_key(key)
-        if any(token in normalized_key for token in SPECIMEN_KEY_TOKENS):
-            specimen_texts.append(value)
-        elif any(token in normalized_key for token in ANATOMY_KEY_TOKENS):
-            anatomy_texts.append(value)
-        elif any(token in normalized_key for token in STATUS_KEY_TOKENS):
-            status_texts.append(value)
+        if any(token in normalized_key for token in ENA_SPECIMEN_KEY_TOKENS):
+            parts.append(value)
+    return parts
 
-    evidence_tiers = (specimen_texts, anatomy_texts, status_texts)
-    if bio.sampleTitle:
-        evidence_tiers = (*evidence_tiers, [bio.sampleTitle])
 
-    for texts in evidence_tiers:
-        has_evidence, diseased, control_type = _classify_evidence_tier(texts)
-        if has_evidence:
-            return diseased, control_type
+def _disease_status_from_text(text: str) -> tuple[bool | None, ControlType | None]:
+    control_type = _control_type(text)
+    has_disease = _has_disease_category(text)
+    if control_type is ControlType.MATCHED_ADJACENT:
+        return False, control_type
+    if control_type is not None and has_disease:
+        return None, None
+    if control_type is not None:
+        return False, control_type
+    if has_disease:
+        return True, None
     return None, None
 
 
-def _is_mixed_or_pooled(ctx: ExperimentContext) -> bool:
-    bio = ctx.biological
-    parts = [value for value in (ctx.experimentTitle, bio.sampleTitle) if value]
-    for key, value in bio.sampleAttributes.items():
-        if isinstance(value, str) and _normalized_key(key) in MIXED_SAMPLE_ATTRIBUTE_KEYS:
-            parts.append(value)
-    return bool(MIXED_SAMPLE_RE.search(" ".join(parts)))
+def _disease_status_from_parquet(disease: str) -> tuple[bool | None, ControlType | None]:
+    text = disease.strip()
+    if not text:
+        return None, None
+    if MATCHED_ADJACENT_RE.search(text):
+        return False, ControlType.MATCHED_ADJACENT
+    if UNKNOWN_DISEASE_RE.search(text) and not (
+        HEALTHY_RE.search(text) or EXPLICIT_CONTROL_RE.search(text) or NONE_DISEASE_RE.search(text)
+    ):
+        return None, None
+    return _disease_status_from_text(text)
+
+
+def _disease_status(
+    disease: str,
+    ctx: ExperimentContext | None,
+) -> tuple[bool | None, ControlType | None]:
+    for text in _ena_specimen_texts(ctx):
+        diseased, control_type = _disease_status_from_text(text)
+        if diseased is not None or control_type is not None:
+            return diseased, control_type
+    return _disease_status_from_parquet(disease)
+
+
+def _is_excluded_model(tissue: str, cell_line: str) -> bool:
+    blob = f"{tissue} {cell_line}".strip()
+    if not blob:
+        return False
+    if PRIMARY_NOT_MODEL_RE.search(blob) and not re.search(r"\b(?:organoids?|explants?|ipscs?)\b", blob, re.I):
+        return False
+    return bool(EXCLUDED_MODEL_RE.search(blob))
+
+
+def _is_lung_tissue(tissue: str) -> bool:
+    if not tissue or not LUNG_TISSUE_RE.search(tissue):
+        return False
+    return not bool(NON_LUNG_MIXED_RE.search(tissue))
 
 
 def coarse_disease_area(diseaseText: str, fullText: str = "") -> str:
@@ -257,19 +224,18 @@ def coarse_disease_area(diseaseText: str, fullText: str = "") -> str:
 
 
 def _is_eligible(
-    ctx: ExperimentContext,
+    *,
+    organism: str,
+    tissue: str,
+    cell_line: str,
     diseaseArea: str,
     diseased: bool | None,
 ) -> tuple[bool, str | None]:
-    if ctx.biological.scientificName and ctx.biological.scientificName.strip() != "Homo sapiens":
+    if organism and organism.strip() != "Homo sapiens":
         return False, "non_human"
-    blob = _attribute_blob(ctx)
-    if EXCLUDE_RE.search(blob):
+    if _is_excluded_model(tissue, cell_line):
         return False, "excluded_sample_type"
-    if _is_mixed_or_pooled(ctx):
-        return False, "mixed_sample"
-    tissue = _tissue_blob(ctx)
-    if NON_LUNG_TISSUE_RE.search(tissue) or not LUNG_TISSUE_RE.search(tissue):
+    if not _is_lung_tissue(tissue):
         return False, "non_lung"
     if diseaseArea == OTHER_AREA and diseased is not False:
         return False, "unmapped_disease"
@@ -290,29 +256,55 @@ def atlas_success_accessions(atlasCsvPath: Path) -> dict[str, str]:
     return out
 
 
+def _load_sample_metadata(sampleMetadataPath: Path) -> pd.DataFrame:
+    metadata = pd.read_parquet(sampleMetadataPath)
+    missing = REQUIRED_METADATA_COLUMNS - set(metadata.columns)
+    if missing:
+        raise KeyError(f"sample metadata missing required columns: {sorted(missing)}")
+    if not metadata["srx_accession"].is_unique:
+        duplicated = metadata.loc[metadata["srx_accession"].duplicated(), "srx_accession"].tolist()
+        raise ValueError(f"sample metadata has duplicate srx_accession values: {duplicated[:5]}")
+    return metadata.set_index("srx_accession", drop=False)
+
+
 def build_sample_label_table(
     contextsPath: Path,
     atlasCsvPath: Path,
+    sampleMetadataPath: Path,
 ) -> pd.DataFrame:
-    """Build per-SRX labels for atlas samples from contexts and coarse disease rules."""
+    """Build per-SRX labels from scBaseCount sample metadata and atlas success rows."""
     contexts = load_contexts_jsonl(contextsPath)
     atlas_rows = atlas_success_accessions(atlasCsvPath)
+    metadata = _load_sample_metadata(sampleMetadataPath)
+
+    missing = sorted(accession for accession in atlas_rows if accession not in metadata.index)
+    if missing:
+        raise KeyError(f"sample metadata missing {len(missing)} atlas accession(s); examples: {missing[:5]}")
+
     records: list[dict[str, object]] = []
     for accession, study_accession in sorted(atlas_rows.items()):
-        ctx = contexts.get(accession)
-        if ctx is None:
-            continue
-        disease_raw = _disease_blob(ctx)
-        full = _attribute_blob(ctx)
-        area = coarse_disease_area(disease_raw, full)
-        diseased, control_type = _disease_status(ctx)
+        row = metadata.loc[accession]
+        disease_raw = _as_text(row["disease"])
+        tissue_raw = _as_text(row["tissue"])
+        cell_line_raw = _as_text(row["cell_line"])
+        organism = _as_text(row["organism"])
+        area = coarse_disease_area(disease_raw)
+        diseased, control_type = _disease_status(disease_raw, contexts.get(accession))
         is_biological_control = diseased is False and control_type is not None
-        eligible, exclude_reason = _is_eligible(ctx, area, diseased)
+        eligible, exclude_reason = _is_eligible(
+            organism=organism,
+            tissue=tissue_raw,
+            cell_line=cell_line_raw,
+            diseaseArea=area,
+            diseased=diseased,
+        )
         records.append(
             {
                 "srxAccession": accession,
                 "studyAccession": study_accession,
                 "diseaseRaw": disease_raw,
+                "tissueRaw": tissue_raw,
+                "cellLineRaw": cell_line_raw,
                 "diseaseArea": area,
                 "diseased": diseased,
                 "isBiologicalControl": is_biological_control,
@@ -339,6 +331,8 @@ def sample_labels_by_srx(label_table: pd.DataFrame) -> dict[str, SampleLabelRow]
             srxAccession=srx,
             studyAccession=str(row["studyAccession"]),
             diseaseRaw=str(row["diseaseRaw"]),
+            tissueRaw=str(row["tissueRaw"]),
+            cellLineRaw=str(row["cellLineRaw"]),
             diseaseArea=str(row["diseaseArea"]),
             diseased=None
             if diseased_value is None

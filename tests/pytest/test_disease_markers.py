@@ -4,8 +4,6 @@ import pandas as pd
 import pytest
 from disease_markers.labels import (
     ControlType,
-    _disease_status,
-    _is_eligible,
     build_sample_label_table,
     coarse_disease_area,
     sample_labels_by_srx,
@@ -15,29 +13,64 @@ from study_context.models import BiologicalContext, ExperimentContext, StudyCont
 
 def _context(
     *,
-    accession: str = "SRX_TEST",
-    experiment_title: str | None = None,
+    accession: str,
     tissue_type: str | None = None,
     sample_title: str | None = None,
-    sample_description: str | None = None,
     attributes: dict[str, str] | None = None,
-    study_title: str | None = None,
 ) -> ExperimentContext:
-    study = None
-    if study_title is not None:
-        study = StudyContext(studyAccession="PRJ_TEST", studyTitle=study_title)
     return ExperimentContext(
         accession=accession,
-        experimentTitle=experiment_title,
         biological=BiologicalContext(
             scientificName="Homo sapiens",
             tissueType=tissue_type,
             sampleTitle=sample_title,
-            sampleDescription=sample_description,
             sampleAttributes=attributes or {},
         ),
-        study=study,
+        study=StudyContext(studyAccession="PRJ_TEST", studyTitle="Test study"),
     )
+
+
+def _write_label_inputs(
+    tmp_path: Path,
+    *,
+    rows: list[dict[str, object]],
+    contexts: list[ExperimentContext] | None = None,
+) -> tuple[Path, Path, Path]:
+    metadata = pd.DataFrame(rows)
+    metadata_path = tmp_path / "sample_metadata.parquet"
+    metadata.to_parquet(metadata_path, index=False)
+
+    atlas_lines = ["accession,status,studyAccession"]
+    for row in rows:
+        atlas_lines.append(f"{row['srx_accession']},success,PRJ_TEST")
+    atlas_path = tmp_path / "atlas.csv"
+    atlas_path.write_text("\n".join(atlas_lines) + "\n")
+
+    contexts_path = tmp_path / "contexts.jsonl"
+    if contexts:
+        contexts_path.write_text("".join(f"{ctx.model_dump_json()}\n" for ctx in contexts))
+    else:
+        contexts_path.write_text("")
+    return contexts_path, atlas_path, metadata_path
+
+
+def _metadata_row(
+    accession: str,
+    *,
+    disease: str,
+    tissue: str,
+    cell_line: str = "none",
+    organism: str = "Homo sapiens",
+    perturbation: str = "none",
+) -> dict[str, object]:
+    return {
+        "srx_accession": accession,
+        "disease": disease,
+        "tissue": tissue,
+        "organism": organism,
+        "cell_line": cell_line,
+        "perturbation": perturbation,
+    }
 
 
 def test_coarse_disease_area_ipf() -> None:
@@ -48,137 +81,239 @@ def test_coarse_disease_area_normal_tissue_is_other() -> None:
     assert coarse_disease_area("normal lung tissue") == "Other"
 
 
-def test_matched_adjacent_lung_retains_cancer_area() -> None:
-    context = _context(
-        accession="ERX11662359",
-        attributes={
-            "disease": "lung squamous cell carcinoma",
-            "organism part": "lung",
-            "sampling site": "normal tissue adjacent to tumor",
-        },
-        study_title="Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue",
+def test_a549_cell_line_is_excluded_sample_type_not_non_lung(tmp_path: Path) -> None:
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                "SRX12285822",
+                disease="SARS-CoV-2 infection",
+                tissue="lung (A549 cell line, ACE2-transduced)",
+                cell_line="A549 (ACE2-transduced)",
+                perturbation="SARS-CoV-2 infection, MOI 0.01, 24h",
+            )
+        ],
     )
 
-    diseased, control_type = _disease_status(context)
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = table.iloc[0]
 
-    assert coarse_disease_area("lung squamous cell carcinoma") == "Lung Cancer"
-    assert diseased is False
-    assert control_type is ControlType.MATCHED_ADJACENT
-    assert _is_eligible(context, "Lung Cancer", diseased) == (True, None)
+    assert row["diseaseArea"] == "COVID-19 / SARS-CoV-2"
+    assert row["tissueRaw"].lower().startswith("lung")
+    assert bool(row["eligible"]) is False
+    assert row["excludeReason"] == "excluded_sample_type"
 
 
-def test_protocol_text_does_not_make_tumor_a_control() -> None:
-    context = _context(
-        accession="ERX11876748",
-        sample_description="Fresh NSCLC and unaffected autologous lung tissue were processed together.",
-        attributes={
-            "disease": "non-small cell lung adenocarcinoma",
-            "organism part": "lung tumor central margin",
-        },
-        study_title="Transcriptomic profiling of the NSCLC environment",
+def test_matched_adjacent_overrides_parquet_disease_cohort(tmp_path: Path) -> None:
+    accession = "ERX11662359"
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                accession,
+                disease="lung squamous cell carcinoma",
+                tissue="lung",
+                cell_line="unsure",
+            )
+        ],
+        contexts=[
+            _context(
+                accession=accession,
+                attributes={
+                    "organism part": "lung",
+                    "sampling site": "normal tissue adjacent to tumor",
+                },
+            )
+        ],
     )
 
-    assert _disease_status(context) == (True, None)
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = sample_labels_by_srx(table)[accession]
+
+    assert row.diseaseArea == "Lung Cancer"
+    assert row.diseased is False
+    assert row.isBiologicalControl is True
+    assert row.controlType is ControlType.MATCHED_ADJACENT
+    assert row.eligible is True
+    assert row.excludeReason is None
 
 
-def test_unaffected_specimen_is_biological_control() -> None:
-    context = _context(
-        accession="ERX11876755",
-        attributes={
-            "disease": "non-small cell lung adenocarcinoma",
-            "organism part": "lung unaffected",
-        },
-        study_title="Transcriptomic profiling of the NSCLC environment",
+def test_non_diseased_parquet_disease_is_biological_control(tmp_path: Path) -> None:
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                "SRX23825222",
+                disease="non-diseased",
+                tissue="lung",
+                cell_line="not specified",
+            )
+        ],
     )
 
-    assert _disease_status(context) == (False, ControlType.HEALTHY)
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = sample_labels_by_srx(table)["SRX23825222"]
+
+    assert row.diseaseArea == "Other"
+    assert row.diseased is False
+    assert row.isBiologicalControl is True
+    assert row.controlType is ControlType.HEALTHY
+    assert row.eligible is True
 
 
-@pytest.mark.parametrize(
-    ("key", "value"),
-    [
-        ("genotype", "WT"),
-        ("treatment", "vehicle"),
-        ("treatment", "no treatment"),
-        ("status", "baseline"),
-    ],
-)
-def test_experimental_comparator_alone_does_not_prove_non_disease(key: str, value: str) -> None:
-    context = _context(tissue_type="lung", attributes={key: value})
-
-    assert _disease_status(context) == (None, None)
-
-
-def test_normal_lung_without_disease_cohort_is_eligible_control() -> None:
-    context = _context(tissue_type="normal lung")
-    diseased, control_type = _disease_status(context)
-
-    assert diseased is False
-    assert control_type is ControlType.HEALTHY
-    assert coarse_disease_area("") == "Other"
-    assert _is_eligible(context, "Other", diseased) == (True, None)
-
-
-@pytest.mark.parametrize(
-    "tissue_type",
-    ["PBMC", "blood", "PBMC from lung cancer patient", "lung and lymph node", None],
-)
-def test_non_lung_or_unknown_tissue_is_ineligible(tissue_type: str | None) -> None:
-    context = _context(
-        tissue_type=tissue_type,
-        attributes={"disease": "COVID-19"},
-        study_title="COVID-19 study",
+def test_primary_lung_descriptive_cell_line_remains_eligible(tmp_path: Path) -> None:
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                "SRX26735834",
+                disease="Healthy",
+                tissue="Lung",
+                cell_line="Airway epithelium",
+            )
+        ],
     )
 
-    assert _is_eligible(context, "COVID-19 / SARS-CoV-2", True) == (False, "non_lung")
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = table.iloc[0]
+
+    assert bool(row["diseased"]) is False
+    assert bool(row["eligible"]) is True
+    assert row["excludeReason"] is None
 
 
-def test_pooled_donors_are_ineligible_without_per_cell_provenance() -> None:
-    context = _context(
-        experiment_title="Pooled BCR library for Donors 1, 2, and 3",
-        tissue_type="lung",
+def test_pbmc_bal_mixture_is_non_lung(tmp_path: Path) -> None:
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                "SRX11071611",
+                disease="COVID-19",
+                tissue="PBMC (peripheral blood mononuclear cells), BAL (bronchoalveolar lavage)",
+            )
+        ],
     )
 
-    assert _is_eligible(context, "Other", False) == (False, "mixed_sample")
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = table.iloc[0]
+
+    assert bool(row["eligible"]) is False
+    assert row["excludeReason"] == "non_lung"
 
 
-def test_build_sample_label_table_emits_independent_status_fields(tmp_path: Path) -> None:
-    context = _context(
-        accession="ERX11662359",
-        attributes={
-            "disease": "lung squamous cell carcinoma",
-            "organism part": "lung",
-            "sampling site": "normal tissue adjacent to tumor",
-        },
-        study_title="Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue",
+def test_organoid_is_excluded_sample_type(tmp_path: Path) -> None:
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                "SRX_ORG",
+                disease="SARS-CoV-2 infection",
+                tissue="human airway organoid",
+                cell_line="none",
+            )
+        ],
     )
-    contexts_path = tmp_path / "contexts.jsonl"
-    contexts_path.write_text(f"{context.model_dump_json()}\n")
+
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = table.iloc[0]
+
+    assert bool(row["eligible"]) is False
+    assert row["excludeReason"] == "excluded_sample_type"
+
+
+def test_missing_parquet_coverage_fails_fast(tmp_path: Path) -> None:
+    metadata_path = tmp_path / "sample_metadata.parquet"
+    pd.DataFrame(
+        [
+            _metadata_row(
+                "SRX_OTHER",
+                disease="COVID-19",
+                tissue="lung",
+            )
+        ]
+    ).to_parquet(metadata_path, index=False)
     atlas_path = tmp_path / "atlas.csv"
-    atlas_path.write_text("accession,status,studyAccession\nERX11662359,success,PRJ_TEST\n")
+    atlas_path.write_text("accession,status,studyAccession\nSRX_MISSING,success,PRJ_TEST\n")
+    contexts_path = tmp_path / "contexts.jsonl"
+    contexts_path.write_text("")
 
-    table = build_sample_label_table(
-        contexts_path,
-        atlas_path,
+    with pytest.raises(KeyError, match="missing 1 atlas accession"):
+        build_sample_label_table(contexts_path, atlas_path, metadata_path)
+
+
+def test_protocol_text_in_sample_description_does_not_override_tumor(tmp_path: Path) -> None:
+    accession = "ERX11876748"
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                accession,
+                disease="non-small cell lung adenocarcinoma",
+                tissue="lung tumor central margin",
+                cell_line="fibroblast, endothelial cell",
+            )
+        ],
+        contexts=[
+            ExperimentContext(
+                accession=accession,
+                biological=BiologicalContext(
+                    scientificName="Homo sapiens",
+                    sampleDescription="Fresh NSCLC and unaffected autologous lung tissue were processed together.",
+                    sampleAttributes={"organism part": "lung tumor central margin"},
+                ),
+            )
+        ],
     )
+
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
+    row = sample_labels_by_srx(table)[accession]
+
+    assert row.diseased is True
+    assert row.isBiologicalControl is False
+    assert row.controlType is None
+
+
+def test_build_sample_label_table_emits_raw_source_fields(tmp_path: Path) -> None:
+    contexts_path, atlas_path, metadata_path = _write_label_inputs(
+        tmp_path,
+        rows=[
+            _metadata_row(
+                "SRX_OK",
+                disease="idiopathic pulmonary fibrosis",
+                tissue="lung",
+                cell_line="none",
+            )
+        ],
+    )
+
+    table = build_sample_label_table(contexts_path, atlas_path, metadata_path)
 
     assert table["diseased"].dtype == pd.BooleanDtype()
+    assert set(table.columns) >= {
+        "srxAccession",
+        "studyAccession",
+        "diseaseRaw",
+        "tissueRaw",
+        "cellLineRaw",
+        "diseaseArea",
+        "diseased",
+        "isBiologicalControl",
+        "controlType",
+        "eligible",
+        "excludeReason",
+    }
     assert table.to_dict(orient="records") == [
         {
-            "srxAccession": "ERX11662359",
+            "srxAccession": "SRX_OK",
             "studyAccession": "PRJ_TEST",
-            "diseaseRaw": (
-                "lung squamous cell carcinoma Single cell RNA-seq atlas of human NSCLC lesions and non-involved tissue"
-            ),
-            "diseaseArea": "Lung Cancer",
-            "diseased": False,
-            "isBiologicalControl": True,
-            "controlType": "matchedAdjacent",
+            "diseaseRaw": "idiopathic pulmonary fibrosis",
+            "tissueRaw": "lung",
+            "cellLineRaw": "none",
+            "diseaseArea": "IPF / Pulmonary Fibrosis",
+            "diseased": True,
+            "isBiologicalControl": False,
+            "controlType": None,
             "eligible": True,
             "excludeReason": None,
         }
     ]
-    row = sample_labels_by_srx(table)["ERX11662359"]
-    assert row.diseased is False
-    assert row.isBiologicalControl is True
-    assert row.controlType is ControlType.MATCHED_ADJACENT
