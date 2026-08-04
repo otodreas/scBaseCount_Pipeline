@@ -17,6 +17,7 @@ Python packages for the scBaseCount pipeline. Each package is installed into the
 | [`storage/`](storage/) | `download_from_gcs(...)`, `upload_to_r2(...)` | local mirror under `data/`; R2 upload side effect |
 | [`h5ad_concat/`](h5ad_concat/) | `run_h5ad_concat(cfg)` | `output/atlas/data/atlas.h5ad` |
 | [`disease_markers/`](disease_markers/) | `build_sample_label_table(...)` | notebook or ad hoc CSV exports |
+| [`ontology_lookup/`](ontology_lookup/) | `OntologyCache`, `resolve_ontology_field(...)` | `data/ontologies/{mondo\|uberon}/{release}/` |
 | [`shared/`](shared/) | `REPO_ROOT`, `configure_file_logger(...)` | — (utilities only) |
 
 Each pipeline package has its own `README.md` with usage examples, config reference, and output model. `shared` is an internal utility package; it is not called directly from notebooks.

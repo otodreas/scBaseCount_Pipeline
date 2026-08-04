@@ -18,6 +18,7 @@ packages = [
     "scripts/scib_benchmark",
     "scripts/disease_markers",
     "scripts/atlas_postprocessing",
+    "scripts/ontology_lookup",
 ]
 
 [project]
