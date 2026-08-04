@@ -1,4 +1,5 @@
 from disease_markers.labels import (
+    ControlType,
     SampleLabelRow,
     build_sample_label_table,
     coarse_disease_area,
@@ -6,6 +7,7 @@ from disease_markers.labels import (
 )
 
 __all__ = [
+    "ControlType",
     "SampleLabelRow",
     "build_sample_label_table",
     "coarse_disease_area",

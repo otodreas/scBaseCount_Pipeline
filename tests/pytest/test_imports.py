@@ -21,6 +21,7 @@ PACKAGES = [
     "cytetype_runner",
     "annotation_inspector",
     "h5ad_concat",
+    "atlas_postprocessing",
 ]
 
 

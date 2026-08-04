@@ -1,8 +1,7 @@
 import argparse
 from pathlib import Path
 
-import scanpy as sc
-from scib_metrics.benchmark import BatchCorrection, Benchmarker, BioConservation
+from atlas_postprocessing.scib import run_scib_benchmark
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import rel_to_repo
 
@@ -19,6 +18,9 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Re-run benchmark even when scib_results.csv and scib_results.svg exist",
     )
+    parser.add_argument("--batch-key", type=str, default="study_accession", metavar="COL", help="obs batch column")
+    parser.add_argument("--label-key", type=str, default="cell_type", metavar="COL", help="obs label column")
+    parser.add_argument("--jobs", type=int, default=6, metavar="N", help="scIB n_jobs")
     return parser.parse_args()
 
 
@@ -27,28 +29,20 @@ def main() -> None:
     log_run_separator(log)
     log.info("scib benchmark run started")
     log.info(
-        "input=%s out_dir=%s, force=%s",
+        "input=%s out_dir=%s force=%s",
         rel_to_repo(args.input),
         rel_to_repo(args.out_dir),
         args.force,
     )
-    args.out_dir.mkdir(parents=True, exist_ok=True)
-    bm = Benchmarker(
-        adata=sc.read_h5ad(args.input, backed="r"),
-        batch_key="study_accession",
-        label_key="cell_type",
-        bio_conservation_metrics=BioConservation(),
-        batch_correction_metrics=BatchCorrection(),
-        embedding_obsm_keys=["X_pca", "X_pca_harmony"],
-        pre_integrated_embedding_obsm_key="X_pca",
-        n_jobs=6,
+    run_scib_benchmark(
+        args.input,
+        outDir=args.out_dir,
+        batchKey=args.batch_key,
+        labelKey=args.label_key,
+        nJobs=args.jobs,
+        force=args.force,
     )
-    bm.benchmark()
-    log.info("scib benchmark metrics computed")
-    df = bm.get_results()
-    df.to_csv(args.out_dir / "scib_results.csv")
-    bm.plot_results_table(show=False, save_dir=str(args.out_dir))
-    log.info("scib benchmark plot & csv saved")
+    log.info("scib benchmark complete")
 
 
 if __name__ == "__main__":

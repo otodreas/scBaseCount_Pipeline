@@ -40,4 +40,4 @@ Not part of the main pipeline. Use these to verify connectivity or inspect h5ad 
 
 **`analysis/annotation_inspection.ipynb`** — Loads `summary.csv` and `extremes.csv` from [`pipelines/run_annotation_inspection_pipeline.py`](../pipelines/run_annotation_inspection_pipeline.py) for pair-level groupbys and extremes review.
 
-**`analysis/analyze_atlas_DE.ipynb`** — Loads a Harmony atlas h5ad from [`pipelines/run_atlas_harmony.py`](../pipelines/run_atlas_harmony.py), uses `.raw` for full-gene counts, joins [`disease_markers`](../scripts/disease_markers/README.md) sample labels, builds SRX-level pseudobulks with Decoupler, and runs exploratory one-vs-rest PyDESeq2 per cluster.
+**`analysis/analyze_atlas_DE.ipynb`** — Loads a postprocessed atlas h5ad from [`pipelines/run_atlas_postprocessing.py`](../pipelines/run_atlas_postprocessing.py), uses `.raw` for full-gene counts, joins [`disease_markers`](../scripts/disease_markers/README.md) sample labels, builds SRX-level pseudobulks with Decoupler, and runs exploratory one-vs-rest PyDESeq2 per cluster.

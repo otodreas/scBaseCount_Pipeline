@@ -17,6 +17,7 @@ packages = [
     "scripts/umap_plots",
     "scripts/scib_benchmark",
     "scripts/disease_markers",
+    "scripts/atlas_postprocessing",
 ]
 
 [project]
