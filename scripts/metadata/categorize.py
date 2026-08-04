@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import TypedDict
 
@@ -38,6 +39,43 @@ def most_specific_disease_label(diseaseValue: str, otherLabel: str = "Other") ->
     return cats[-1] if cats else otherLabel
 
 
+_COARSE_TOP_LEVEL: frozenset[str] = frozenset(
+    {
+        "IPF / Pulmonary Fibrosis",
+        "COVID-19 / SARS-CoV-2",
+        "Lung Cancer",
+        "COPD",
+        "Cystic Fibrosis",
+        "Interstitial Lung Disease",
+        "Pulmonary Hypertension",
+    }
+)
+_LUNG_CANCER_LABELS: frozenset[str] = frozenset(
+    {
+        "Lung Cancer",
+        "Small Cell Lung Cancer (SCLC)",
+        "Non-small Cell Lung Cancer (NSCLC)",
+        "Lung Adenocarcinoma (LUAD)",
+        "Lung Squamous Cell Carcinoma (LUSC)",
+        "Lung Large Cell Carcinoma (LCC)",
+    }
+)
+
+
+def coarse_disease_area(diseaseText: str, fullText: str = "") -> str:
+    """Return a coarse disease-area label for atlas contrasts."""
+    text = diseaseText if str(diseaseText).strip() else fullText
+    matched = disease_categories_for(text)
+    if not matched:
+        return "Other"
+    for label in matched:
+        if label in _COARSE_TOP_LEVEL:
+            return label
+    if any(label in _LUNG_CANCER_LABELS for label in matched):
+        return "Lung Cancer"
+    return "Other"
+
+
 def _build_accession_disease_categories(samplesDf: pd.DataFrame) -> dict[str, AccessionDiseaseCategory]:
     """Build a {srx_accession: {disease, categories}} mapping from a samples frame.
 
@@ -52,7 +90,14 @@ def _build_accession_disease_categories(samplesDf: pd.DataFrame) -> dict[str, Ac
     out: dict[str, AccessionDiseaseCategory] = {}
     for _, row in samplesDf[["srx_accession", "disease"]].iterrows():
         srx = str(row["srx_accession"])
-        disease = "" if pd.isna(row["disease"]) else str(row["disease"])
+        disease_value = row["disease"]
+        disease = (
+            ""
+            if disease_value is None
+            or disease_value is pd.NA
+            or (isinstance(disease_value, float) and math.isnan(disease_value))
+            else str(disease_value)
+        )
         out[srx] = {"disease": disease, "categories": disease_categories_for(disease)}
     return out
 
