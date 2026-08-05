@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from metadata.categorize import (
+    coarse_disease_area,
     disease_categories_for,
     export_accession_disease_categories,
     most_specific_disease_label,
@@ -24,6 +25,7 @@ __all__ = [
     "QcThresholds",
     "compute_obs_qc",
     "apply_qc",
+    "coarse_disease_area",
     "disease_categories_for",
     "most_specific_disease_label",
     "export_accession_disease_categories",

@@ -1,115 +1,63 @@
 import csv
 import math
-import re
 from dataclasses import dataclass
-from enum import StrEnum
 from pathlib import Path
 
 import pandas as pd
-from metadata.regexes import DISEASE_MAP, LUNG_TISSUE_RE
+from metadata.categorize import coarse_disease_area
+from metadata.specimen import is_excluded_model, is_respiratory_specimen
+from ontology_lookup import (
+    OntologyCache,
+    OntologyLookupConfig,
+    disease_area_from_records,
+    records_for_ids,
+    resolve_ontology_field,
+)
+from study_context.evidence import context_exclude_reason
 from study_context.models import ExperimentContext
 from study_context.utils import load_contexts_jsonl
 
-COARSE_TOP_LEVEL: frozenset[str] = frozenset(
-    {
-        "IPF / Pulmonary Fibrosis",
-        "COVID-19 / SARS-CoV-2",
-        "Lung Cancer",
-        "COPD",
-        "Cystic Fibrosis",
-        "Interstitial Lung Disease",
-        "Pulmonary Hypertension",
-    }
+from disease_markers.status import (
+    ComparatorFamily,
+    ControlType,
+    detect_comparator_candidate,
+    has_paired_opposite,
+    infection_comparator_sets_nondiseased,
+    infer_disease_status,
 )
-LUNG_CANCER_LABELS: frozenset[str] = frozenset(
-    {
-        "Lung Cancer",
-        "Small Cell Lung Cancer (SCLC)",
-        "Non-small Cell Lung Cancer (NSCLC)",
-        "Lung Adenocarcinoma (LUAD)",
-        "Lung Squamous Cell Carcinoma (LUSC)",
-        "Lung Large Cell Carcinoma (LCC)",
-    }
-)
+
 OTHER_AREA = "Other"
 REQUIRED_METADATA_COLUMNS: frozenset[str] = frozenset(
     {
         "srx_accession",
         "disease",
+        "disease_ontology_term_id",
         "tissue",
+        "tissue_ontology_term_id",
         "organism",
         "cell_line",
-        "perturbation",
     }
 )
-MATCHED_ADJACENT_RE = re.compile(
-    r"\b(?:adjacent|non[-\s]?involved|uninvolved|tumou?r[-\s]?free|para[-\s]?tumou?r|tumou?r[-\s]?distant)\b",
-    re.IGNORECASE,
-)
-HEALTHY_RE = re.compile(
-    r"\b(?:normal|healthy|unaffected|disease[-\s]?free|non[-\s]?diseased?)\b"
-    r"|"
-    r"\bno\s+(?:"
-    r"disease|COPD|"
-    r"diagnosed\s+disease|specific\s+disease|overt\s+disease|donor\s+disease|"
-    r"disease\s+diagnosis|record\s+of\s+lung\s+disease"
-    r")\b",
-    re.IGNORECASE,
-)
-EXPLICIT_CONTROL_RE = re.compile(r"\bcontrol\b", re.IGNORECASE)
-NONE_DISEASE_RE = re.compile(r"\bnone\b", re.IGNORECASE)
-UNKNOWN_DISEASE_RE = re.compile(
-    r"\b(?:unsure|unknown|not\s+specified|not\s+stated|not\s+reported|not\s+available|"
-    r"none\s+specified|none\s+reported)\b",
-    re.IGNORECASE,
-)
-EXCLUDED_MODEL_RE = re.compile(
-    r"\b(?:organoids?|explants?|ipscs?)\b|cell[-\s]?line|"
-    r"\b(?:A549|PC-?9|WI-?38|Calu-?3|BEAS-?2B|H358|H-?23|HCC\d+|RUES2|H2228|H1975|H838)\b",
-    re.IGNORECASE,
-)
-PRIMARY_NOT_MODEL_RE = re.compile(
-    r"\bprimary\b|"
-    r"(?:no|not(?:\s+an?)?)\s+(?:immortalized\s+|established\s+)?cell\s+line",
-    re.IGNORECASE,
-)
-NON_LUNG_MIXED_RE = re.compile(
-    r"\b(?:PBMCs?|peripheral\s+blood(?:\s+mononuclear\s+cells?)?|whole\s+blood|"
-    r"leukocytes?\s+from\s+whole\s+blood)\b",
-    re.IGNORECASE,
-)
-ENA_SPECIMEN_KEY_TOKENS: tuple[str, ...] = (
-    "sampling site",
-    "tissue",
-    "organism part",
-    "source name",
-    "source",
-)
 
 
-class ControlType(StrEnum):
-    MATCHED_ADJACENT = "matchedAdjacent"
-    HEALTHY = "healthy"
-    EXPLICIT_CONTROL = "explicitControl"
-
-
-@dataclass(frozen=True)
-class SampleLabelRow:
+@dataclass
+class _DraftLabel:
     srxAccession: str
     studyAccession: str
     diseaseRaw: str
+    diseaseOntologyTermId: str
+    diseaseName: str
     tissueRaw: str
+    tissueOntologyRaw: str
     cellLineRaw: str
     diseaseArea: str
+    diseaseAreaSource: str
     diseased: bool | None
-    isBiologicalControl: bool
-    controlType: ControlType | None
-    eligible: bool
-    excludeReason: str | None
-
-
-def _normalized_key(key: str) -> str:
-    return re.sub(r"[_-]+", " ", key).strip().lower()
+    controlType: str | None
+    excludeReasonDraft: str | None
+    comparatorFamily: ComparatorFamily | None
+    comparatorField: str | None
+    context: ExperimentContext
 
 
 def _as_text(value: object) -> str:
@@ -119,127 +67,6 @@ def _as_text(value: object) -> str:
         return ""
     text = str(value).strip()
     return "" if text.lower() == "nan" else text
-
-
-def _control_type(text: str) -> ControlType | None:
-    if MATCHED_ADJACENT_RE.search(text):
-        return ControlType.MATCHED_ADJACENT
-    if HEALTHY_RE.search(text) or NONE_DISEASE_RE.search(text):
-        return ControlType.HEALTHY
-    if EXPLICIT_CONTROL_RE.search(text):
-        return ControlType.EXPLICIT_CONTROL
-    return None
-
-
-def _has_disease_category(text: str) -> bool:
-    return any(pattern.search(text) for _, pattern in DISEASE_MAP)
-
-
-def _ena_specimen_texts(ctx: ExperimentContext | None) -> list[str]:
-    if ctx is None:
-        return []
-    bio = ctx.biological
-    parts: list[str] = []
-    if bio.tissueType:
-        parts.append(bio.tissueType)
-    if bio.sampleTitle:
-        parts.append(bio.sampleTitle)
-    for key, value in bio.sampleAttributes.items():
-        if not isinstance(value, str):
-            continue
-        normalized_key = _normalized_key(key)
-        if any(token in normalized_key for token in ENA_SPECIMEN_KEY_TOKENS):
-            parts.append(value)
-    return parts
-
-
-def _disease_status_from_text(text: str) -> tuple[bool | None, ControlType | None]:
-    control_type = _control_type(text)
-    has_disease = _has_disease_category(text)
-    if control_type is ControlType.MATCHED_ADJACENT:
-        return False, control_type
-    if control_type is not None and has_disease:
-        return None, None
-    if control_type is not None:
-        return False, control_type
-    if has_disease:
-        return True, None
-    return None, None
-
-
-def _disease_status_from_parquet(disease: str) -> tuple[bool | None, ControlType | None]:
-    text = disease.strip()
-    if not text:
-        return None, None
-    if MATCHED_ADJACENT_RE.search(text):
-        return False, ControlType.MATCHED_ADJACENT
-    if UNKNOWN_DISEASE_RE.search(text) and not (
-        HEALTHY_RE.search(text) or EXPLICIT_CONTROL_RE.search(text) or NONE_DISEASE_RE.search(text)
-    ):
-        return None, None
-    return _disease_status_from_text(text)
-
-
-def _disease_status(
-    disease: str,
-    ctx: ExperimentContext | None,
-) -> tuple[bool | None, ControlType | None]:
-    for text in _ena_specimen_texts(ctx):
-        diseased, control_type = _disease_status_from_text(text)
-        if diseased is not None or control_type is not None:
-            return diseased, control_type
-    return _disease_status_from_parquet(disease)
-
-
-def _is_excluded_model(tissue: str, cell_line: str) -> bool:
-    blob = f"{tissue} {cell_line}".strip()
-    if not blob:
-        return False
-    if PRIMARY_NOT_MODEL_RE.search(blob) and not re.search(r"\b(?:organoids?|explants?|ipscs?)\b", blob, re.I):
-        return False
-    return bool(EXCLUDED_MODEL_RE.search(blob))
-
-
-def _is_lung_tissue(tissue: str) -> bool:
-    if not tissue or not LUNG_TISSUE_RE.search(tissue):
-        return False
-    return not bool(NON_LUNG_MIXED_RE.search(tissue))
-
-
-def coarse_disease_area(diseaseText: str, fullText: str = "") -> str:
-    """Return a coarse disease area independently of specimen disease status."""
-    text = diseaseText if diseaseText.strip() else fullText
-    matched: list[str] = []
-    for label, pattern in DISEASE_MAP:
-        if pattern.search(text):
-            matched.append(label)
-    if not matched:
-        return OTHER_AREA
-    for label in matched:
-        if label in COARSE_TOP_LEVEL:
-            return label
-    if any(label in LUNG_CANCER_LABELS for label in matched):
-        return "Lung Cancer"
-    return OTHER_AREA
-
-
-def _is_eligible(
-    *,
-    organism: str,
-    tissue: str,
-    cell_line: str,
-    diseaseArea: str,
-    diseased: bool | None,
-) -> tuple[bool, str | None]:
-    if organism and organism.strip() != "Homo sapiens":
-        return False, "non_human"
-    if _is_excluded_model(tissue, cell_line):
-        return False, "excluded_sample_type"
-    if not _is_lung_tissue(tissue):
-        return False, "non_lung"
-    if diseaseArea == OTHER_AREA and diseased is not False:
-        return False, "unmapped_disease"
-    return True, None
 
 
 def atlas_success_accessions(atlasCsvPath: Path) -> dict[str, str]:
@@ -267,89 +94,240 @@ def _load_sample_metadata(sampleMetadataPath: Path) -> pd.DataFrame:
     return metadata.set_index("srx_accession", drop=False)
 
 
+def _specimen_exclude_reason(
+    *,
+    organism: str,
+    tissue: str,
+    tissueOntology: str,
+    cellLine: str,
+    disease: str,
+    diseaseArea: str,
+    ctx: ExperimentContext,
+    uberonCache: OntologyCache,
+) -> str | None:
+    if organism and organism.strip() != "Homo sapiens":
+        return "non_human"
+    context_reason = context_exclude_reason(
+        parquetOrganism=organism,
+        parquetTissue=tissue,
+        parquetDisease=disease,
+        parquetDiseaseArea=diseaseArea,
+        ctx=ctx,
+    )
+    if context_reason is not None:
+        return context_reason
+    if is_excluded_model(tissue, cellLine):
+        return "excluded_sample_type"
+    if not is_respiratory_specimen(tissue, tissueOntology, uberonCache):
+        return "non_lung"
+    return None
+
+
+def _eligibility(
+    *,
+    excludeReason: str | None,
+    diseaseArea: str,
+    diseased: bool | None,
+) -> tuple[bool, str | None]:
+    if excludeReason is not None:
+        return False, excludeReason
+    if diseaseArea == OTHER_AREA and diseased is not False:
+        return False, "unmapped_disease"
+    return True, None
+
+
+def _derive_disease_area(
+    *,
+    diseaseOntologyRaw: str,
+    diseaseRaw: str,
+    mondoCache: OntologyCache,
+) -> tuple[str, str, str, tuple[str, ...]]:
+    resolved = resolve_ontology_field(diseaseOntologyRaw, mondoCache)
+    disease_name = "; ".join(resolved.names)
+    records = records_for_ids(resolved.ids, mondoCache)
+    if records:
+        area, source = disease_area_from_records(records)
+        if area != OTHER_AREA:
+            return area, source, disease_name, resolved.ids
+        if source == "conflicting_ontology":
+            return OTHER_AREA, source, disease_name, resolved.ids
+    if diseaseRaw:
+        text_area = coarse_disease_area(diseaseRaw)
+        if text_area != OTHER_AREA:
+            return text_area, "disease_text", disease_name, resolved.ids
+    if resolved.status in {"empty", "invalid", "missing"}:
+        return OTHER_AREA, "missing_ontology", disease_name, resolved.ids
+    return OTHER_AREA, "unmapped_ontology", disease_name, resolved.ids
+
+
+def _apply_study_consensus(draft: list[_DraftLabel]) -> None:
+    by_study: dict[str, list[_DraftLabel]] = {}
+    for record in draft:
+        by_study.setdefault(record.studyAccession, []).append(record)
+
+    for study_records in by_study.values():
+        peer_areas = {
+            record.diseaseArea
+            for record in study_records
+            if record.diseaseArea != OTHER_AREA and record.diseaseAreaSource in {"ontology", "disease_text"}
+        }
+        if len(peer_areas) != 1:
+            continue
+        consensus = next(iter(peer_areas))
+        for record in study_records:
+            if record.diseaseArea == OTHER_AREA and record.diseaseAreaSource in {
+                "missing_ontology",
+                "unmapped_ontology",
+            }:
+                record.diseaseArea = consensus
+                record.diseaseAreaSource = "study_consensus"
+
+
 def build_sample_label_table(
     contextsPath: Path,
     atlasCsvPath: Path,
     sampleMetadataPath: Path,
+    *,
+    ontologyConfig: OntologyLookupConfig | None = None,
 ) -> pd.DataFrame:
-    """Build per-SRX labels from scBaseCount sample metadata and atlas success rows."""
+    """Build per-SRX labels from ontology metadata, with narrow text fallbacks."""
     contexts = load_contexts_jsonl(contextsPath)
     atlas_rows = atlas_success_accessions(atlasCsvPath)
     metadata = _load_sample_metadata(sampleMetadataPath)
+    cfg = ontologyConfig or OntologyLookupConfig()
+    mondo_cache = OntologyCache.for_mondo(cfg)
+    uberon_cache = OntologyCache.for_uberon(cfg)
 
-    missing = sorted(accession for accession in atlas_rows if accession not in metadata.index)
-    if missing:
-        raise KeyError(f"sample metadata missing {len(missing)} atlas accession(s); examples: {missing[:5]}")
+    missing_metadata = sorted(accession for accession in atlas_rows if accession not in metadata.index)
+    if missing_metadata:
+        raise KeyError(
+            f"sample metadata missing {len(missing_metadata)} atlas accession(s); examples: {missing_metadata[:5]}"
+        )
+    missing_contexts = sorted(accession for accession in atlas_rows if accession not in contexts)
+    if missing_contexts:
+        raise KeyError(f"contexts missing {len(missing_contexts)} atlas accession(s); examples: {missing_contexts[:5]}")
 
-    records: list[dict[str, object]] = []
+    draft: list[_DraftLabel] = []
     for accession, study_accession in sorted(atlas_rows.items()):
+        ctx = contexts[accession]
+        context_study = None if ctx.study is None else ctx.study.studyAccession
+        if context_study is not None and context_study != study_accession:
+            raise ValueError(
+                f"study accession mismatch for {accession}: atlas={study_accession!r} context={context_study!r}"
+            )
+
         row = metadata.loc[accession]
         disease_raw = _as_text(row["disease"])
+        disease_ontology_raw = _as_text(row["disease_ontology_term_id"])
         tissue_raw = _as_text(row["tissue"])
+        tissue_ontology_raw = _as_text(row["tissue_ontology_term_id"])
         cell_line_raw = _as_text(row["cell_line"])
         organism = _as_text(row["organism"])
-        area = coarse_disease_area(disease_raw)
-        diseased, control_type = _disease_status(disease_raw, contexts.get(accession))
-        is_biological_control = diseased is False and control_type is not None
-        eligible, exclude_reason = _is_eligible(
+
+        area, area_source, disease_name, _mondo_ids = _derive_disease_area(
+            diseaseOntologyRaw=disease_ontology_raw,
+            diseaseRaw=disease_raw,
+            mondoCache=mondo_cache,
+        )
+        exclude_reason = _specimen_exclude_reason(
             organism=organism,
             tissue=tissue_raw,
-            cell_line=cell_line_raw,
+            tissueOntology=tissue_ontology_raw,
+            cellLine=cell_line_raw,
+            disease=disease_raw,
             diseaseArea=area,
-            diseased=diseased,
+            ctx=ctx,
+            uberonCache=uberon_cache,
         )
-        records.append(
-            {
-                "srxAccession": accession,
-                "studyAccession": study_accession,
-                "diseaseRaw": disease_raw,
-                "tissueRaw": tissue_raw,
-                "cellLineRaw": cell_line_raw,
-                "diseaseArea": area,
-                "diseased": diseased,
-                "isBiologicalControl": is_biological_control,
-                "controlType": None if control_type is None else control_type.value,
-                "eligible": eligible,
-                "excludeReason": exclude_reason,
-            }
+        diseased, control_type = infer_disease_status(
+            disease_raw,
+            ctx,
+            diseaseKnown=area != OTHER_AREA,
         )
+        if exclude_reason == "disease_mismatch":
+            diseased, control_type = None, None
+        family, field_key = detect_comparator_candidate(ctx)
+        draft.append(
+            _DraftLabel(
+                srxAccession=accession,
+                studyAccession=study_accession,
+                diseaseRaw=disease_raw,
+                diseaseOntologyTermId=disease_ontology_raw,
+                diseaseName=disease_name,
+                tissueRaw=tissue_raw,
+                tissueOntologyRaw=tissue_ontology_raw,
+                cellLineRaw=cell_line_raw,
+                diseaseArea=area,
+                diseaseAreaSource=area_source,
+                diseased=diseased,
+                controlType=None if control_type is None else control_type.value,
+                excludeReasonDraft=exclude_reason,
+                comparatorFamily=family,
+                comparatorField=field_key,
+                context=ctx,
+            )
+        )
+
+    _apply_study_consensus(draft)
+
+    by_study: dict[str, list[_DraftLabel]] = {}
+    for record in draft:
+        by_study.setdefault(record.studyAccession, []).append(record)
+
+    records: list[dict[str, object]] = []
+    for study_records in by_study.values():
+        for record in study_records:
+            diseased = record.diseased
+            control_type = record.controlType
+            is_experimental_comparator = False
+            if record.comparatorFamily is not None and record.comparatorField is not None:
+                peers = [peer.context for peer in study_records if peer.srxAccession != record.srxAccession]
+                if has_paired_opposite(
+                    family=record.comparatorFamily,
+                    fieldKey=record.comparatorField,
+                    peerContexts=peers,
+                ):
+                    is_experimental_comparator = True
+                    if infection_comparator_sets_nondiseased(record.comparatorFamily) and diseased is not False:
+                        diseased = False
+                        control_type = None
+
+            eligible, exclude_reason = _eligibility(
+                excludeReason=record.excludeReasonDraft,
+                diseaseArea=record.diseaseArea,
+                diseased=diseased,
+            )
+            records.append(
+                {
+                    "srxAccession": record.srxAccession,
+                    "studyAccession": record.studyAccession,
+                    "diseaseRaw": record.diseaseRaw,
+                    "diseaseOntologyTermId": record.diseaseOntologyTermId or None,
+                    "diseaseName": record.diseaseName or None,
+                    "tissueRaw": record.tissueRaw,
+                    "tissueOntologyRaw": record.tissueOntologyRaw,
+                    "cellLineRaw": record.cellLineRaw,
+                    "diseaseArea": record.diseaseArea,
+                    "diseaseAreaSource": record.diseaseAreaSource,
+                    "diseased": diseased,
+                    "isBiologicalControl": diseased is False and control_type is not None,
+                    "controlType": control_type,
+                    "isExperimentalComparator": is_experimental_comparator,
+                    "eligible": eligible,
+                    "excludeReason": exclude_reason,
+                }
+            )
+
     table = pd.DataFrame.from_records(records)
     if not table.empty:
+        table = table.sort_values("srxAccession").reset_index(drop=True)
         table["diseased"] = table["diseased"].astype("boolean")
     return table
 
 
-def sample_labels_by_srx(label_table: pd.DataFrame) -> dict[str, SampleLabelRow]:
-    """Index label rows by SRX accession."""
-    out: dict[str, SampleLabelRow] = {}
-    for _, row in label_table.iterrows():
-        srx = str(row["srxAccession"])
-        diseased_value = row["diseased"]
-        control_type_value = row["controlType"]
-        exclude_reason_value = row["excludeReason"]
-        out[srx] = SampleLabelRow(
-            srxAccession=srx,
-            studyAccession=str(row["studyAccession"]),
-            diseaseRaw=str(row["diseaseRaw"]),
-            tissueRaw=str(row["tissueRaw"]),
-            cellLineRaw=str(row["cellLineRaw"]),
-            diseaseArea=str(row["diseaseArea"]),
-            diseased=None
-            if diseased_value is None
-            or diseased_value is pd.NA
-            or (isinstance(diseased_value, float) and math.isnan(diseased_value))
-            else bool(diseased_value),
-            isBiologicalControl=bool(row["isBiologicalControl"]),
-            controlType=None
-            if control_type_value is None
-            or control_type_value is pd.NA
-            or (isinstance(control_type_value, float) and math.isnan(control_type_value))
-            else ControlType(str(control_type_value)),
-            eligible=bool(row["eligible"]),
-            excludeReason=None
-            if exclude_reason_value is None
-            or exclude_reason_value is pd.NA
-            or (isinstance(exclude_reason_value, float) and math.isnan(exclude_reason_value))
-            else str(exclude_reason_value),
-        )
-    return out
+__all__ = [
+    "ControlType",
+    "OTHER_AREA",
+    "atlas_success_accessions",
+    "build_sample_label_table",
+]
