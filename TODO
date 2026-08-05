@@ -8,3 +8,4 @@
 - [ ] **build atlas v2 ([plan](.cursor/plans/include_healthy_atlas_v2_e8ae0bcd.plan.md))**
     - if a single SRX_accession passes (its a lung related sample), then all of its companion datasets that belong to the same study (study accession) should also pass. they can be ruled out later due to poor quality
 - [x] Leiden / parameter sweeping for atlas postprocessing (calibration + approved JSON import)
+- [ ] ideally, we would do all our ontology pruning BEFORE making the atlas. any pruning that happens during atlas build would involve genuinely fine grained qc stuff. a lot of information like n_obs is present in the metadata pq, along with tissue and disease ontology.

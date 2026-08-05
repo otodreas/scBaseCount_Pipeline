@@ -1,0 +1,52 @@
+cluster,nCells,nSamples,nStudies,nDiseaseAreas,diseaseAreas,dominantStudy,dominantStudyFraction,nSourceLabels,topSourceLabel,topSourceLabelFraction,nOntologies,topOntology,topOntologyFraction,nDiseasedCells,nNondiseasedCells,nUnknownStatusCells,nInformativeDiseaseAreas,nInformativeStudyOverlaps
+0,1017,223,38,6,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA1208088,0.24287118977384464,17,B cell,0.5988083416087389,17,CL:0000236,0.5988083416087389,921,93,3,5,15
+1,5578,552,60,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1055415,0.14377913230548584,13,"CD4-positive, alpha-beta T cell",0.916245487364621,13,CL:0000624,0.916245487364621,4171,1274,133,6,16
+10,530,60,8,3,"COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Lung Cancer",PRJNA847631,0.8188679245283019,6,macrophage,0.9640151515151515,6,CL:0000235,0.9640151515151515,397,107,26,2,3
+11,2,1,1,1,COVID-19 / SARS-CoV-2,PRJNA847631,1.0,1,macrophage,1.0,1,CL:0000235,1.0,2,0,0,0,0
+12,47,3,3,2,"Interstitial Lung Disease,Lung Cancer",PRJNA945854,0.9148936170212766,9,B cell,0.3404255319148936,9,CL:0000236,0.3404255319148936,47,0,0,0,0
+13,817,259,40,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA973717,0.10648714810281518,21,basophil,0.5960591133004927,21,CL:0000767,0.5960591133004927,672,140,5,6,17
+14,3711,435,51,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1208088,0.2581514416599299,23,adventitial cell,0.2738127544097693,23,CL:0002503,0.2738127544097693,2125,1484,102,6,20
+15,7,1,1,0,,PRJNA691041,1.0,1,basal cell,1.0,1,CL:0000646,1.0,0,7,0,0,0
+16,8,1,1,1,COVID-19 / SARS-CoV-2,PRJNA988459,1.0,3,plasma cell,0.5,3,CL:0000786,0.5,8,0,0,0,0
+17,704,147,58,6,"COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA769143,0.18892045454545456,20,basal cell,0.405982905982906,20,CL:0000646,0.405982905982906,392,305,7,5,8
+18,1,1,1,0,,PRJNA1102355,1.0,1,B cell,1.0,1,CL:0000236,1.0,0,1,0,0,0
+19,2,2,1,0,,PRJNA692173,1.0,1,endothelial cell of artery,1.0,1,CL:1000413,1.0,0,2,0,0,0
+2,23,8,3,2,"IPF / Pulmonary Fibrosis,Lung Cancer",PRJNA1208088,0.8695652173913043,1,"CD4-positive, alpha-beta T cell",1.0,1,CL:0000624,1.0,17,5,1,1,1
+20,2626,470,68,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA945854,0.09367859862909368,19,respiratory tract goblet cell,0.3181644359464627,19,CL:0002370,0.3181644359464627,1663,913,50,6,22
+21,1743,438,82,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA847631,0.1434308663224326,21,plasma cell,0.3195443645083933,21,CL:0000786,0.3195443645083933,1000,661,82,7,21
+22,4,1,1,0,,PRJNA847631,1.0,2,macrophage,0.5,2,CL:0000235,0.5,0,4,0,0,0
+23,729,160,50,6,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA797244,0.1289437585733882,15,basal cell,0.4689655172413793,15,CL:0000646,0.4689655172413793,309,416,4,5,10
+24,1747,456,52,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA945854,0.17115054378935318,21,macrophage,0.31185270425776757,21,CL:0000235,0.31185270425776757,1305,427,15,7,18
+26,4633,562,55,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA563828,0.16835743578674725,17,macrophage,0.8042109832863035,17,CL:0000235,0.8042109832863035,3144,1297,192,6,16
+27,2,1,1,1,COVID-19 / SARS-CoV-2,PRJNA988459,1.0,1,basal cell,1.0,1,CL:0000646,1.0,2,0,0,0,0
+29,1,1,1,1,COVID-19 / SARS-CoV-2,PRJNA847631,1.0,1,respiratory tract goblet cell,1.0,1,CL:0002370,1.0,1,0,0,0,0
+3,134,61,27,4,"COPD,COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Lung Cancer",PRJEB68315,0.3582089552238806,5,"CD4-positive, alpha-beta T cell",0.6791044776119403,5,CL:0000624,0.6791044776119403,82,51,1,2,3
+31,1799,215,60,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA701930,0.10728182323513062,12,basal cell,0.9380234505862647,12,CL:0000646,0.9380234505862647,836,928,35,6,15
+32,122,39,14,5,"COPD,COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA945854,0.5655737704918032,9,basal cell,0.28688524590163933,9,CL:0000646,0.28688524590163933,84,38,0,5,6
+33,32,9,3,1,Lung Cancer,PRJEB71931,0.90625,6,basal cell,0.5625,6,CL:0000646,0.5625,29,3,0,0,0
+34,2454,453,52,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA945854,0.16788916055419723,15,intermediate monocyte,0.23020106688551498,15,CL:0002393,0.23020106688551498,1584,812,58,6,17
+35,173,34,7,3,"COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Lung Cancer",PRJNA1208088,0.8959537572254336,6,"CD4-positive, alpha-beta T cell",0.6428571428571429,6,CL:0000624,0.6428571428571429,73,100,0,1,1
+36,5183,482,43,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1208088,0.24348832722361566,24,capillary endothelial cell,0.5066951290510382,24,CL:0002144,0.5066951290510382,2674,2277,232,6,16
+38,1485,259,36,6,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA1208088,0.24444444444444444,18,pulmonary alveolar type 1 cell,0.7552258934592043,18,CL:0002062,0.7552258934592043,478,889,118,6,12
+39,219,54,23,4,"COPD,COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Lung Cancer",PRJNA847631,0.365296803652968,21,macrophage,0.2372093023255814,21,CL:0000235,0.2372093023255814,184,35,0,1,1
+4,2214,421,54,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1055415,0.10478771454381211,11,"CD8-positive, alpha-beta T cell",0.34751131221719456,11,CL:0000625,0.34751131221719456,1400,757,57,6,17
+43,2549,349,57,6,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA945854,0.19929384072185172,17,lung multiciliated epithelial cell,0.6139088729016786,17,CL:1000271,0.6139088729016786,1263,1244,42,6,18
+44,2401,397,56,6,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA945854,0.2044981257809246,5,lung multiciliated epithelial cell,0.9491242702251876,5,CL:1000271,0.9491242702251876,1489,867,45,6,16
+45,1799,297,59,6,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA667491,0.16842690383546416,15,respiratory tract goblet cell,0.8247480403135499,15,CL:0002370,0.8247480403135499,1040,730,29,5,19
+49,78,14,1,1,COVID-19 / SARS-CoV-2,PRJNA661032,1.0,6,macrophage,0.7948717948717948,6,CL:0000235,0.7948717948717948,78,0,0,0,0
+5,2567,398,56,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1177414,0.13517724970783015,13,"CD4-positive, alpha-beta T cell",0.6236728273692489,13,CL:0000624,0.6236728273692489,1843,673,51,6,17
+51,1,1,1,1,COVID-19 / SARS-CoV-2,PRJNA847631,1.0,1,basal cell,1.0,1,CL:0000646,1.0,1,0,0,0,0
+52,1653,193,51,6,"COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1208088,0.6091954022988506,25,macrophage,0.20622330689444784,25,CL:0000235,0.20622330689444784,693,926,34,5,8
+54,218,17,1,1,IPF / Pulmonary Fibrosis,PRJNA1208088,1.0,11,pulmonary alveolar type 2 cell,0.3761467889908257,11,CL:0002063,0.3761467889908257,155,63,0,1,1
+56,1,1,1,1,Lung Cancer,PRJNA1177414,1.0,1,respiratory tract goblet cell,1.0,1,CL:0002370,1.0,1,0,0,0,0
+59,768,232,34,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1008237,0.2877604166666667,17,endothelial cell of lymphatic vessel,0.6954248366013072,17,CL:0002138,0.6954248366013072,272,472,24,6,13
+6,1349,290,46,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1055415,0.27798369162342473,11,B cell,0.9441964285714286,11,CL:0000236,0.9441964285714286,1197,141,11,6,16
+60,1389,288,39,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJEB71931,0.18142548596112312,22,pericyte,0.3953656770456191,22,CL:0000669,0.3953656770456191,806,553,30,6,18
+63,1,1,1,1,COVID-19 / SARS-CoV-2,PRJNA847631,1.0,1,basal cell,1.0,1,CL:0000646,1.0,1,0,0,0,0
+65,2,1,1,1,Lung Cancer,PRJNA634136,1.0,2,"CD4-positive, alpha-beta T cell",0.5,2,CL:0000624,0.5,2,0,0,0,0
+66,418,8,5,4,"COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA847631,0.8588516746411483,17,macrophage,0.715311004784689,17,CL:0000235,0.715311004784689,416,2,0,2,2
+68,9,1,1,1,Lung Cancer,PRJNA1177414,1.0,1,respiratory tract goblet cell,1.0,1,CL:0002370,1.0,9,0,0,0,0
+7,375,122,21,5,"COPD,COVID-19 / SARS-CoV-2,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer",PRJNA1208088,0.42133333333333334,10,macrophage,0.6129032258064516,10,CL:0000235,0.6129032258064516,137,228,10,3,6
+70,8,2,1,1,COVID-19 / SARS-CoV-2,PRJNA847631,1.0,1,pulmonary alveolar type 2 cell,1.0,1,CL:0002063,1.0,4,4,0,1,1
+8,3629,389,42,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA1208088,0.23532653623587765,26,pulmonary alveolar type 2 cell,0.42163661581137307,26,CL:0002063,0.42163661581137307,1435,1928,266,7,20
+9,5403,500,55,7,"COPD,COVID-19 / SARS-CoV-2,Cystic Fibrosis,IPF / Pulmonary Fibrosis,Interstitial Lung Disease,Lung Cancer,Pulmonary Hypertension",PRJNA945854,0.2178419396631501,19,macrophage,0.7763231718720778,19,CL:0000235,0.7763231718720778,3645,1655,103,6,15

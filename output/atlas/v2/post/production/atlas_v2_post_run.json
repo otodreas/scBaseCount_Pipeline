@@ -1,0 +1,19 @@
+{
+  "input": "output/atlas/v2/atlas_v2.h5ad",
+  "output": "output/atlas/v2/post/production/atlas_v2_post.h5ad",
+  "figsDir": "output/atlas/v2/post/production/figures",
+  "cells": 9310348,
+  "hvgs": 2000,
+  "rawGenes": 36601,
+  "studies": 172,
+  "clustersUncorrected": 110,
+  "clustersHarmony": 74,
+  "resolution": 0.8,
+  "nPcs": 50,
+  "nPcsCompute": 50,
+  "nTopGenes": 2000,
+  "nNeighbors": 15,
+  "parametersJson": "output/atlas/v2/post/parameter_selection/approved_parameters.json",
+  "calibrationSummary": "output/atlas/v2/post/parameter_selection/calibration_summary.json",
+  "sampling": null
+}

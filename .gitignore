@@ -11,6 +11,7 @@ data/
 !data/scbasecount/2026-01-12/star_references/Homo_sapiens/hg38_2020/geneInfo.tab
 !tests/pytest/data/
 tmp/
+.tmp/
 extra/
 output/r2/
 

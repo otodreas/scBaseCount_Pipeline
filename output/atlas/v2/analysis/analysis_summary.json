@@ -1,0 +1,19 @@
+{
+  "eligibleCells": 62365.0,
+  "eligibleSamples": 902.0,
+  "eligibleStudies": 91.0,
+  "clusters": 51.0,
+  "sharedCandidates": 27.0,
+  "diseaseAssociatedCandidates": 8.0,
+  "unexpectedConvergenceCandidates": 11.0,
+  "eligibleContrasts": 11.0,
+  "abundanceRows": 43.0,
+  "globalNmi": 0.508439773,
+  "studyMacroNmi": 0.4993627874,
+  "deSmokeTest": {
+    "cluster": "1",
+    "diseaseArea": "Lung Cancer",
+    "nHits": 15,
+    "note": "Single-contrast smoke test on 100k sample; re-run full candidate set on full atlas before interpretation."
+  }
+}

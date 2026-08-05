@@ -1,0 +1,10 @@
+cluster,diseaseArea,nOverlapStudies,nCaseProfiles,nControlProfiles,nHits,ran
+1,Lung Cancer,3,16,14,16,True
+34,Lung Cancer,2,4,4,0,True
+36,IPF / Pulmonary Fibrosis,2,27,19,157,True
+36,Lung Cancer,2,9,6,0,True
+4,Lung Cancer,2,4,5,0,True
+43,IPF / Pulmonary Fibrosis,2,16,8,0,True
+44,IPF / Pulmonary Fibrosis,2,17,3,66,True
+5,Lung Cancer,3,8,9,1,True
+9,IPF / Pulmonary Fibrosis,2,38,5,54,True
