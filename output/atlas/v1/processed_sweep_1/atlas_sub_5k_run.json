@@ -1,0 +1,32 @@
+{
+  "input": "output/atlas/v1/atlas_sub_5k.h5ad",
+  "output": "output/atlas/v1/processed_sweep_1/atlas_sub_5k.h5ad",
+  "figsDir": "output/atlas/v1/processed_sweep_1/figs",
+  "cells": 5000,
+  "hvgs": 2000,
+  "studies": 101,
+  "clustersUncorrected": 19,
+  "clustersHarmony": 25,
+  "resolution": 1.0,
+  "harmonyResolutions": [
+    0.1,
+    0.2,
+    0.4,
+    0.8,
+    1.5,
+    2.5,
+    4.0
+  ],
+  "harmonyClustersPerResolution": {
+    "0.1": 8,
+    "0.2": 10,
+    "0.4": 14,
+    "0.8": 18,
+    "1.5": 25,
+    "2.5": 31,
+    "4.0": 42
+  },
+  "selectedHarmonyResolution": 1.5,
+  "nPcs": 20,
+  "nTopGenes": 2000
+}

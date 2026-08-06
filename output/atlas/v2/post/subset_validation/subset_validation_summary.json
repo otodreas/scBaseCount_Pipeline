@@ -1,0 +1,29 @@
+{
+  "input": "output/atlas/v2/atlas_v2.h5ad",
+  "outputDir": "output/atlas/v2/post/subset_validation",
+  "parametersJson": "output/atlas/v2/post/parameter_selection/approved_parameters.json",
+  "calibrationSummary": "output/atlas/v2/post/parameter_selection/calibration_summary.json",
+  "resolved": {
+    "nTopGenes": 2000,
+    "nPcs": 50,
+    "nNeighbors": 15,
+    "resolution": 0.8
+  },
+  "sampling": {
+    "sourceCells": 9310348,
+    "sampleCells": 100000,
+    "method": "studyProportional",
+    "stratifyKey": "study_accession",
+    "seed": 0,
+    "nStudies": 172
+  },
+  "subsetH5ad": "output/atlas/v2/post/subset_validation/atlas_pp_subset.h5ad",
+  "runJson": "output/atlas/v2/post/subset_validation/atlas_pp_subset_run.json",
+  "figuresDir": "output/atlas/v2/post/subset_validation/figures",
+  "scib": {
+    "csv": "output/atlas/v2/post/subset_validation/scib/scib_results.csv",
+    "svg": "output/atlas/v2/post/subset_validation/scib/scib_results.svg"
+  },
+  "timingsSeconds": 1582.995,
+  "note": "Review the full scIB metric table before launching full-atlas production. There is no automatic pass/fail threshold."
+}

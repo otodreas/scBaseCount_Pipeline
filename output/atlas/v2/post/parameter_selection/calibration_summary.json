@@ -1,0 +1,102 @@
+{
+  "input": "output/atlas/v2/atlas_v2.h5ad",
+  "calibrationDir": "output/atlas/v2/post/parameter_selection",
+  "cells": 100000,
+  "genes": 36601,
+  "sampling": {
+    "sourceCells": 9310348,
+    "sampleCells": 100000,
+    "method": "studyProportional",
+    "stratifyKey": "study_accession",
+    "seed": 0,
+    "nStudies": 172
+  },
+  "batchKey": "study_accession",
+  "cellTypeKey": "cell_type",
+  "baseline": {
+    "nTopGenes": 2000,
+    "nPcs": 20,
+    "nNeighbors": 15,
+    "resolution": 1.0,
+    "nPcsCompute": 50
+  },
+  "candidates": {
+    "hvg": [
+      1000,
+      2000,
+      4000,
+      8000
+    ],
+    "pc": [
+      10,
+      20,
+      30,
+      50
+    ],
+    "neighbors": [
+      5,
+      10,
+      15,
+      30,
+      50,
+      100
+    ],
+    "resolution": [
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      1.0,
+      1.2,
+      1.4,
+      1.6,
+      1.8,
+      2.0
+    ]
+  },
+  "plateaus": {
+    "hvg": [
+      [
+        1000.0,
+        4000.0
+      ]
+    ],
+    "pc": [
+      [
+        30.0,
+        50.0
+      ]
+    ],
+    "neighbors": [
+      [
+        5.0,
+        15.0
+      ]
+    ],
+    "resolution": [
+      [
+        0.8,
+        0.8
+      ],
+      [
+        2.0,
+        2.0
+      ]
+    ]
+  },
+  "plateauRelativeThreshold": 0.95,
+  "metrics": {
+    "hvg": "output/atlas/v2/post/parameter_selection/metrics/hvg.csv",
+    "pc": "output/atlas/v2/post/parameter_selection/metrics/pc.csv",
+    "neighbors": "output/atlas/v2/post/parameter_selection/metrics/neighbors.csv",
+    "resolution": "output/atlas/v2/post/parameter_selection/metrics/resolution.csv"
+  },
+  "figures": {
+    "hvg": "output/atlas/v2/post/parameter_selection/figures/hvg_weak_prior_agreement.png",
+    "pc": "output/atlas/v2/post/parameter_selection/figures/pc_weak_prior_agreement.png",
+    "neighbors": "output/atlas/v2/post/parameter_selection/figures/neighbors_weak_prior_agreement.png",
+    "resolution": "output/atlas/v2/post/parameter_selection/figures/resolution_matched_jaccard.png"
+  },
+  "timingsSeconds": 1012.452,
+  "note": "Cell-type labels are weak priors, not ground truth. Inspect plateau intervals and copy parameters_template.json to approved_parameters.json only after review."
+}
