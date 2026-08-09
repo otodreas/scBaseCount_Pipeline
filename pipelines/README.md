@@ -484,4 +484,38 @@ uv run python pipelines/compare_atlas_batch_keys.py \
 
 **Log:** `logs/compare_atlas_batch_keys.log`
 
-Downstream atlas DE and disease-area labeling: `[notebooks/analysis/analyze_atlas_DE.ipynb](../notebooks/analysis/analyze_atlas_DE.ipynb)` loads a postprocessed atlas h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from `[disease_markers](../scripts/disease_markers/README.md)`.
+### `run_atlas_de_analysis.py`
+
+Checkpointed disease DE and noteworthy-gene discovery on a postprocessed atlas. Aggregates sparse `.raw` counts by `SRX_accession × leiden_atlas` without building a second full-gene AnnData copy, then runs study-aware DESeq2 contrasts and adaptive shortlist ranking.
+
+**Output default:** `output/atlas/v2/analysis/production/`
+
+| File | Description |
+| --- | --- |
+| `checkpoints/pseudobulk.h5ad` | Sample x Leiden pseudobulk with `psbulk_props` |
+| `noteworthy_gene_shortlist.csv` | Up to ~20 primary review candidates |
+| `noteworthy_gene_extended.csv` | Extended queue capped near 60 |
+| `candidate_thresholds.csv` | Per-class adaptive score cutoffs |
+| `figures/` | Score distributions, heatmaps, volcanoes, evidence panels |
+| `run_summary.json` | Resolved config, counts, and peak memory |
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--stage` | `all` | `aggregate`, `analyze`, or `all` |
+| `--atlas` | production postprocessed atlas | Input h5ad with counts in `.raw` |
+| `--output-dir` | `output/atlas/v2/analysis/production` | Output root |
+| `--memory-reserve-gib` | `256` | RAM reserved beyond the estimated sparse matrix |
+| `--primary-budget` | `20` | Primary shortlist size |
+| `--extended-budget` | `60` | Total review queue cap |
+| `--force-aggregate` | off | Ignore an existing pseudobulk checkpoint |
+
+Example:
+
+```bash
+uv run python pipelines/run_atlas_de_analysis.py --stage all \
+  --atlas output/atlas/v2/post/production/atlas_v2_post.h5ad
+```
+
+**Log:** `logs/atlas_de_analysis.log`
+
+Downstream exploratory sample wrapper: `[notebooks/analysis/analyze_atlas_DE.py](../notebooks/analysis/analyze_atlas_DE.py)` calls the same `disease_markers` modules on the 100k sample.
