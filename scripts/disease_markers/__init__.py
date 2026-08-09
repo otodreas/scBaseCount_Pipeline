@@ -10,6 +10,7 @@ from disease_markers.concordance import (
     concordance_summary,
     source_label_contingency,
 )
+from disease_markers.config import AtlasDeAnalysisConfig
 from disease_markers.labels import OTHER_AREA, build_sample_label_table
 from disease_markers.status import ControlType
 from disease_markers.validation import (
@@ -22,6 +23,7 @@ from disease_markers.validation import (
 )
 
 __all__ = [
+    "AtlasDeAnalysisConfig",
     "ControlType",
     "OTHER_AREA",
     "annotate_obs_with_labels",
