@@ -215,21 +215,30 @@ def embed_uncorrected(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.A
     return adata
 
 
-def run_harmony_on_pcs(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, nPcs: int) -> np.ndarray:
+def run_harmony_on_pcs(
+    adata: sc.AnnData,
+    cfg: AtlasPostprocessingConfig,
+    *,
+    nPcs: int,
+    batchKey: str | None = None,
+) -> np.ndarray:
     """Run Harmony on the first ``nPcs`` PCA dimensions and return the corrected embedding."""
     if "X_pca" not in adata.obsm:
         raise ValueError("adata.obsm['X_pca'] is required before Harmony")
     if nPcs > adata.obsm["X_pca"].shape[1]:
         raise ValueError(f"Requested nPcs ({nPcs}) exceeds computed PCs ({adata.obsm['X_pca'].shape[1]})")
+    resolved_batch_key = cfg.batchKey if batchKey is None else batchKey
+    if resolved_batch_key not in adata.obs:
+        raise ValueError(f"adata.obs is missing batch key {resolved_batch_key!r}")
     pca_prefix = np.asarray(adata.obsm["X_pca"][:, :nPcs])
     harmony_out = harmonypy.run_harmony(
         pca_prefix,
         adata.obs,
-        cfg.batchKey,
+        resolved_batch_key,
         ncores=cfg.nJobs,
     )
     corrected = np.asarray(harmony_out.Z_corr)
-    log.info("Ran Harmony on %s PCs with batch key %s ncores=%s", nPcs, cfg.batchKey, cfg.nJobs)
+    log.info("Ran Harmony on %s PCs with batch key %s ncores=%s", nPcs, resolved_batch_key, cfg.nJobs)
     return corrected
 
 

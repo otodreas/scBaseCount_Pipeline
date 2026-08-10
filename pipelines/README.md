@@ -445,4 +445,43 @@ Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, the
 
 **Log:** `logs/atlas_postprocessing.log`
 
+### `compare_atlas_batch_keys.py`
+
+Fixed-subset comparison of Harmony batch definitions on the existing 100k validation sample. Reuses the shared `X_pca` and study `X_pca_harmony` from subset validation, joins `tech_10x` from `datasets_v2.csv`, builds study×technology and SRX Harmony embeddings, then runs scIB once per evaluation batch key across all embeddings.
+
+**Output default:** `output/atlas/v2/post/batch_key_comparison/`
+
+
+| File | Description |
+| --- | --- |
+| `atlas_pp_batch_comparison.h5ad` | Subset with attached tech metadata and keyed Harmony embeddings |
+| `batch_key_comparison_summary.json` | Baseline checks, join audit, batch cardinalities, scIB paths, timings |
+| `scib/eval_batch=*/scib_results.{csv,svg}` | One scIB report per evaluation batch key |
+| `scib/scib_matrix_long.csv` | Combined long-form metric table |
+
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--subset-h5ad` | subset validation h5ad | Frozen sample with shared PCA |
+| `--subset-run-json` | subset run JSON | Pins nTopGenes/nPcs/nNeighbors/resolution |
+| `--production-run-json` | production run JSON | Confirms the same baseline |
+| `--datasets` | `output/metadata/datasets_v2.csv` | Source of `tech_10x` |
+| `--output-dir` | `output/atlas/v2/post/batch_key_comparison` | Comparison root |
+| `--threads` | `0` | Harmony thread budget |
+| `--scib-jobs` | `6` | scIB n_jobs |
+| `--force-scib` | off | Re-run existing scIB evaluation dirs |
+| `--skip-scib` | off | Write embeddings only |
+| `--reuse-comparison-h5ad` | off | Resume from an existing comparison h5ad |
+
+
+Example:
+
+```sh
+uv run python pipelines/compare_atlas_batch_keys.py \
+  --subset-h5ad output/atlas/v2/post/subset_validation/atlas_pp_subset.h5ad \
+  --output-dir output/atlas/v2/post/batch_key_comparison
+```
+
+**Log:** `logs/compare_atlas_batch_keys.log`
+
 Downstream atlas DE and disease-area labeling: `[notebooks/analysis/analyze_atlas_DE.ipynb](../notebooks/analysis/analyze_atlas_DE.ipynb)` loads a postprocessed atlas h5ad, uses `.raw` for full-gene pseudobulk counts, and joins labels from `[disease_markers](../scripts/disease_markers/README.md)`.
