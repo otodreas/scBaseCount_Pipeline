@@ -1,4 +1,4 @@
-"""Tests for full-atlas aggregation, memory preflight, and specificity helpers."""
+"""Tests for full-atlas aggregation, memory preflight, and adaptive ranking."""
 
 import json
 from pathlib import Path
@@ -15,6 +15,12 @@ from disease_markers.aggregation import (
 )
 from disease_markers.config import AtlasDeAnalysisConfig
 from disease_markers.memory import assert_memory_available, estimate_raw_sparse_bytes
+from disease_markers.ranking import (
+    build_evidence_pools,
+    empirical_percentile_scores,
+    merge_duplicate_evidence,
+    select_review_queue,
+)
 from disease_markers.specificity import gene_specificity_table, tau_specificity
 from scipy import sparse
 
@@ -109,6 +115,98 @@ def test_tau_and_gene_specificity_chunked() -> None:
     assert float(g1["tau"]) > 0.5
 
 
+def test_empirical_percentile_and_review_budget() -> None:
+    values = pd.Series([1.0, 2.0, 3.0, 4.0])
+    scores = empirical_percentile_scores(values)
+    assert scores.iloc[0] == pytest.approx(0.0)
+    assert scores.iloc[-1] == pytest.approx(1.0)
+
+    restricted = pd.DataFrame(
+        {
+            "gene": [f"g{i}" for i in range(10)],
+            "geneSymbol": [f"G{i}" for i in range(10)],
+            "topCluster": [str(i % 3) for i in range(10)],
+            "tau": np.linspace(0.85, 0.99, 10),
+            "meanDetectionTop": np.linspace(0.3, 0.8, 10),
+            "maxDetectionBackground": [0.01] * 10,
+            "nStudiesAgreeTop": [5] * 10,
+            "nStudiesScored": [5] * 10,
+            "detectionDifference": np.linspace(0.2, 0.7, 10),
+            "interpretationStatus": ["resolved"] * 10,
+            "interpretedCellType": ["macrophage"] * 10,
+        }
+    )
+    de_hits = pd.DataFrame(
+        {
+            "gene": [f"d{i}" for i in range(12)],
+            "geneSymbol": [f"D{i}" for i in range(12)],
+            "cluster": [str(i % 4) for i in range(12)],
+            "diseaseArea": ["IPF / Pulmonary Fibrosis" if i % 2 == 0 else "COPD" for i in range(12)],
+            "log2FoldChange": [2.0 if i % 2 == 0 else -2.0 for i in range(12)],
+            "padj": np.linspace(1e-6, 1e-2, 12),
+            "detectionDelta": [0.3 if i % 2 == 0 else -0.3 for i in range(12)],
+            "nStudies": [3] * 12,
+            "interpretationStatus": ["resolved"] * 12,
+            "interpretedCellType": ["macrophage"] * 12,
+        }
+    )
+    pools = build_evidence_pools(
+        restricted=restricted,
+        deHits=de_hits,
+        sharedGenes=pd.DataFrame(),
+        geneClass=pd.DataFrame(),
+        unexpected=pd.DataFrame(),
+        padj=0.05,
+        lfc=1.0,
+        minDetectionDelta=0.15,
+        minTau=0.8,
+        minTargetDetection=0.2,
+        maxBackgroundDetection=0.05,
+        minStudiesForSpecificity=3,
+    )
+    primary, extended, thresholds = select_review_queue(
+        pools,
+        primaryBudget=5,
+        extendedBudget=12,
+        maxPerClassPrimary=3,
+        maxPerClassExtended=6,
+        maxPerGene=1,
+        maxPerCluster=2,
+        maxPerDiseaseArea=4,
+    )
+    assert len(primary) <= 5
+    assert len(primary) + len(extended) <= 12
+    assert not thresholds.empty
+    assert primary["reviewTier"].eq("primary").all()
+
+
+def test_merge_duplicate_evidence_keeps_classes() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "gene": "g1",
+                "geneSymbol": "G1",
+                "cluster": "0",
+                "diseaseArea": "COPD",
+                "proposalClass": "replicatedDiseaseGain",
+                "evidenceScore": 0.9,
+            },
+            {
+                "gene": "g1",
+                "geneSymbol": "G1",
+                "cluster": "0",
+                "diseaseArea": "COPD",
+                "proposalClass": "unexpectedExpression",
+                "evidenceScore": 0.8,
+            },
+        ]
+    )
+    merged = merge_duplicate_evidence(frame)
+    assert len(merged) == 1
+    assert "unexpectedExpression" in merged.iloc[0]["allEvidenceClasses"]
+    assert float(merged.iloc[0]["evidenceScore"]) == pytest.approx(0.9)
+
+
 def test_checkpoint_fingerprint_roundtrip(tmp_path: Path) -> None:
     atlas = tmp_path / "atlas.h5ad"
     contexts = tmp_path / "contexts.jsonl"
@@ -154,3 +252,32 @@ def test_memory_estimate_and_low_memory_gate(tmp_path: Path, monkeypatch: pytest
     monkeypatch.setattr("disease_markers.memory.available_ram_bytes", lambda: 1)
     with pytest.raises(MemoryError):
         assert_memory_available(estimate, reserveBytes=0)
+
+
+def test_select_review_queue_does_not_pad_with_invalid_rows() -> None:
+    pools = {
+        "clusterRestricted": pd.DataFrame(),
+        "replicatedDiseaseGain": pd.DataFrame(
+            {
+                "gene": ["g1"],
+                "geneSymbol": ["G1"],
+                "cluster": ["0"],
+                "diseaseArea": ["COPD"],
+                "proposalClass": ["replicatedDiseaseGain"],
+                "evidenceScore": [0.9],
+                "interpretationStatus": ["resolved"],
+                "interpretedCellType": ["macrophage"],
+            }
+        ),
+        "replicatedDiseaseDepletion": pd.DataFrame(),
+        "sharedDiseaseProgram": pd.DataFrame(),
+        "oppositeDiseaseEffect": pd.DataFrame(),
+        "unexpectedExpression": pd.DataFrame(),
+    }
+    primary, extended, _thresholds = select_review_queue(
+        pools,
+        primaryBudget=20,
+        extendedBudget=60,
+    )
+    assert len(primary) == 1
+    assert extended.empty
