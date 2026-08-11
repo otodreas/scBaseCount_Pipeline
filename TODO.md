@@ -2,7 +2,9 @@
 - [ ] rf merge on atlas, harden leiden sweep methodology (match with small proof of concept runs on individual datasets)
 - [ ] make note of missing/deprioritized doublet detection
 - [ ] get n cells dropped bc low gene count, n cells dropped bc high mito
+- [ ] identify key pathway on atlas to drive home point: see `DailyNotes.md` line 1029
 
+# other
 - [x] Set `verify_md5 = True` in `download_from_r2`[, line 34](scripts/storage/r2.py) to check that downloaded `h5ad` files' md5 hash matches the value stored in metadata on upload
 - [x] Move atlas Harmony workflow into [`atlas_postprocessing`](scripts/atlas_postprocessing) with twin runners [`select_atlas_parameters.py`](pipelines/select_atlas_parameters.py) and [`run_atlas_postprocessing.py`](pipelines/run_atlas_postprocessing.py)
 - [ ] Clarify embedding names in atlas postprocessing. These are confusing, should be consistent
