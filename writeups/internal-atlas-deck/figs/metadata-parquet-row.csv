@@ -1,0 +1,2 @@
+srx_accession,disease,tissue,disease_ontology_term_id,disease_ontology_labels,tissue_ontology_term_id,tissue_ontology_label,obs_count,lib_prep,tech_10x,context_disease
+SRX17412810,"Idiopathic pulmonary fibrosis (IPF), chronic obstructive pulmonary disease (COPD), healthy control",lung,"MONDO:0800504,MONDO:0005002","idiopathic pulmonary fibrosis; chronic obstructive pulmonary disease",UBERON:0002048,lung,7646,10x_Genomics,3_prime_gex,COPD
