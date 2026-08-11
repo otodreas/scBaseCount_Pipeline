@@ -561,6 +561,12 @@
       margin-bottom: 0.85rem;
     }
 
+    .badge--complete {
+      color: #065f46;
+      background: #ecfdf5;
+      border-color: #6ee7b7;
+    }
+
     .metrics {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -648,12 +654,12 @@
     <section class="slide slide--dark active" data-section="open">
       <p class="eyebrow">Nygen / lund university master's project update</p>
       <h1>scBaseCount lung atlas efforts</h1>
-      <p class="lede">Acquisition, weak-prior clustering, integrated atlas batch correction, and disease-marker DE (work in progress).</p>
+      <p class="lede">Acquisition, weak-prior clustering, integrated atlas batch correction, and full-atlas disease-marker discovery.</p>
       <ul class="agenda">
         <li><strong>01</strong> Data acquisition from scBaseCount</li>
         <li><strong>02</strong> Clustering with annotation weak priors</li>
         <li><strong>03</strong> Integrated lung atlas and batch effects</li>
-        <li><strong>04</strong> Disease-marker DE (WIP)</li>
+        <li><strong>04</strong> Disease-marker discovery</li>
       </ul>
       <p class="note" style="color: rgba(255,255,255,0.45); margin-top: 1.5rem;">~15 min · open <span class="mono">writeups/internal-atlas-deck/deck.html</span></p>
     </section>
@@ -667,7 +673,7 @@
         <li>Hard gates on download, QC, and metadata before anything is “in the atlas.”</li>
         <li>Clustering that uses existing <span class="mono">cell_type</span> labels as weak priors, not ground truth.</li>
         <li>Measured batch correction on a multi-study lung concat.</li>
-        <li>Next: study-aware disease discovery on that atlas (DE pipeline is WIP).</li>
+        <li>Study-aware disease discovery that produces a traceable candidate review queue.</li>
       </ul>
     </section>
 
@@ -961,39 +967,74 @@
       </ul>
     </section>
 
-    <!-- 15. DE status -->
+    <!-- 18. DE production -->
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
-      <span class="badge">Work in progress</span>
-      <h2>Status and fallback</h2>
-      <ul>
-        <li><strong>Preferred:</strong> full-atlas discovery on the server → copy figures into <span class="mono">figs/</span>.</li>
-        <li><strong>Fallback for this deck:</strong> local 100k-sample discovery under <span class="mono">agent_analysis</span>.</li>
-        <li>Say out loud: 100k is for method / pipeline demo and hypothesis generation, <strong>not</strong> biological claims.</li>
-      </ul>
-      <!--
-        DE figure swap:
-        Preferred: output/atlas/v2/analysis/production/figures/* → figs/de_evidence.png
-        Fallback:  output/atlas/v2/agent_analysis/figures/heatmap_disease_effects.png → figs/de_evidence.png (current)
-      -->
-    </section>
-
-    <!-- 16. DE evidence -->
-    <section class="slide" data-section="de">
-      <p class="eyebrow">4 · Disease-marker DE</p>
-      <span class="badge">100k sample · WIP</span>
-      <h2>Evidence (swap-ready)</h2>
-      <div class="fig-single">
-        <img src="figs/de_evidence.png" alt="DE evidence heatmap" />
+      <span class="badge badge--complete">Full atlas · completed</span>
+      <h2>Production discovery is complete</h2>
+      <div class="stat-row">
+        <div class="stat"><div class="n">15,075</div><div class="l">pseudobulk profiles</div></div>
+        <div class="stat"><div class="n">93</div><div class="l">same-study contrasts</div></div>
+        <div class="stat"><div class="n">26,515</div><div class="l">DE hits for review</div></div>
       </div>
-      <ul style="margin-top: 0.9rem;">
-        <li>~68k eligible cells · 95 studies · 16 contrasts · 928 DE hits on the 100k sample.</li>
-        <li>Also: restricted-gene and unexpected-expression shortlists for review.</li>
-        <li>If production lands: replace <span class="mono">figs/de_evidence.png</span> and update these numbers from that run’s summary.</li>
+      <ul>
+        <li>Case / control profiles come from overlapping studies; models adjust for study when support allows.</li>
+        <li>The review queue contains 20 primary and 40 extended candidates, plus 7 cluster-restricted genes.</li>
+        <li>Power is uneven: IPF contributes 19,971 hits; cystic fibrosis contrasts use 2 studies; pulmonary hypertension yields 5 hits.</li>
       </ul>
+      <p class="slide-note">Automated shortlist for manual review. Expression evidence alone does not establish novelty or mechanism.</p>
     </section>
 
-    <!-- 17. Close -->
+    <!-- 19. DE evidence -->
+    <section class="slide" data-section="de">
+      <p class="eyebrow">4 · Disease-marker DE</p>
+      <span class="badge badge--complete">Full atlas · study profiles</span>
+      <h2>The effects remain inspectable study by study</h2>
+      <div class="two-col">
+        <div class="fig-panel">
+          <img src="figs/de_ipf_spp1.png" alt="SPP1 detection by study in IPF macrophage cluster 26" />
+          <div class="cap">IPF · macrophage c26 · <span class="mono">SPP1 +2.61</span> · 7/7 studies</div>
+        </div>
+        <div class="fig-panel">
+          <img src="figs/de_lung_cancer_anpep.png" alt="ANPEP detection by study in lung cancer macrophage cluster 9" />
+          <div class="cap">Lung cancer · macrophage c9 · <span class="mono">ANPEP −1.57</span> · 5/5 studies</div>
+        </div>
+      </div>
+      <p class="slide-note">Bars show mean detection within each study. These are traceable candidates, not independent validation.</p>
+    </section>
+
+    <!-- 20. DE investigation leads -->
+    <section class="slide" data-section="de">
+      <p class="eyebrow">4 · Disease-marker DE</p>
+      <span class="badge">Hypotheses · not validated</span>
+      <h2>Three leads worth following up</h2>
+      <p class="lede">The goal is a small, auditable review queue, not a catalogue of significant genes.</p>
+      <div class="callout-grid">
+        <div class="callout callout--alt">
+          <span class="tag">Sanity check</span>
+          <h3>IPF recovers a coherent remodeling axis</h3>
+          <p><span class="mono">POSTN +4.02</span>, <span class="mono">SPP1 +2.61</span> and <span class="mono">MMP7 +2.55</span>, while <span class="mono">SFTPC −3.20</span>. The contrasts span 7–9 studies.</p>
+        </div>
+        <div class="callout">
+          <span class="tag">Lead 1</span>
+          <h3>ANPEP falls in lung-cancer macrophages</h3>
+          <p>Resolved macrophage cluster 9: <span class="mono">log2FC −1.57</span>; detection 26% vs 58% in controls; 5/5 studies agree.</p>
+        </div>
+        <div class="callout">
+          <span class="tag">Lead 2</span>
+          <h3>SCGB1A1 loss is cancer-skewed</h3>
+          <p>Cluster 20: <span class="mono">log2FC −8.34</span> in lung cancer, compared with −1.05 in IPF. First resolve the mixed cluster label.</p>
+        </div>
+        <div class="callout callout--alt">
+          <span class="tag">Lead 3</span>
+          <h3>What is cluster 32?</h3>
+          <p><span class="mono">SYT4</span>, <span class="mono">TMEM151A</span>, <span class="mono">LINC02360</span> and <span class="mono">SERTM1</span> are detected in 20–26% of c32 vs &lt;5% elsewhere, but source labels are mixed.</p>
+        </div>
+      </div>
+      <p class="slide-note">Next checks: leave-one-study-out stability, donor / technology covariates, finer cluster annotation and held-out data.</p>
+    </section>
+
+    <!-- 21. Close -->
     <section class="slide" data-section="close">
       <p class="eyebrow">Takeaways</p>
       <h2>Where we are</h2>
@@ -1001,9 +1042,9 @@
         <li>Acquisition needs hard gates; metadata lies until checked.</li>
         <li>Weak priors guide clustering without becoming truth.</li>
         <li>Harmony improves batch metrics with a modest bio cost.</li>
-        <li>DE discovery is next and currently WIP (full atlas pending / 100k fallback).</li>
+        <li>Full-atlas DE now produces a traceable review queue, not biological claims.</li>
       </ul>
-      <p class="lede" style="margin-top: 1.25rem;">Open: prior vs held-out truth; study-level batch key limits; which DE candidates survive full-atlas replication.</p>
+      <p class="lede" style="margin-top: 1.25rem;">Open: prior vs held-out truth; study-level batch key limits; which candidates survive leave-one-study-out and external validation.</p>
       <p class="note"><strong>Downstream TODO:</strong> run this path on <strong>Scarf</strong>. AnnData-style workflows carry nearly ~100 GB of disk overhead and leave server headroom tight; Scarf’s sparse / out-of-core design is the natural fit once discovery methods stabilize.</p>
     </section>
 
@@ -1011,7 +1052,7 @@
 
   <div class="hud">
     <span class="hint">Oliver Todreas</span>
-    <span id="counter">1 / 17</span>
+    <span id="counter">1 / 21</span>
   </div>
 
   <script>
