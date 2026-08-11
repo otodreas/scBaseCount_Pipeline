@@ -1,0 +1,94 @@
+cluster,diseaseArea,interpretedCellType,interpretationStatus,nOverlapStudies,nCaseProfiles,nControlProfiles,nHits,ran
+0,IPF / Pulmonary Fibrosis,unresolved,unresolved,7,73,41,162,True
+0,Lung Cancer,unresolved,unresolved,5,41,20,250,True
+1,COVID-19 / SARS-CoV-2,"CD4-positive, alpha-beta T cell",resolved,4,51,13,16,True
+1,IPF / Pulmonary Fibrosis,"CD4-positive, alpha-beta T cell",resolved,6,116,52,167,True
+1,Lung Cancer,"CD4-positive, alpha-beta T cell",resolved,5,45,26,300,True
+13,IPF / Pulmonary Fibrosis,unresolved,unresolved,6,104,52,255,True
+13,Lung Cancer,unresolved,unresolved,5,29,19,46,True
+14,COVID-19 / SARS-CoV-2,unresolved,unresolved,2,35,12,84,True
+14,IPF / Pulmonary Fibrosis,unresolved,unresolved,8,123,70,838,True
+14,Lung Cancer,unresolved,unresolved,5,41,25,1143,True
+14,Pulmonary Hypertension,unresolved,unresolved,2,6,6,5,True
+17,COVID-19 / SARS-CoV-2,unresolved,unresolved,4,34,15,10,True
+17,Cystic Fibrosis,unresolved,unresolved,2,9,3,44,True
+17,IPF / Pulmonary Fibrosis,unresolved,unresolved,3,19,11,597,True
+17,Lung Cancer,unresolved,unresolved,3,27,9,0,True
+20,COVID-19 / SARS-CoV-2,unresolved,unresolved,5,47,19,3,True
+20,Cystic Fibrosis,unresolved,unresolved,2,23,5,28,True
+20,IPF / Pulmonary Fibrosis,unresolved,unresolved,8,137,60,3385,True
+20,Lung Cancer,unresolved,unresolved,5,35,15,104,True
+21,COVID-19 / SARS-CoV-2,unresolved,unresolved,7,65,23,27,True
+21,Cystic Fibrosis,unresolved,unresolved,2,20,5,12,True
+21,IPF / Pulmonary Fibrosis,unresolved,unresolved,7,114,50,423,True
+21,Lung Cancer,unresolved,unresolved,5,53,24,43,True
+21,Pulmonary Hypertension,unresolved,unresolved,2,6,6,0,True
+23,COVID-19 / SARS-CoV-2,unresolved,unresolved,4,40,16,15,True
+23,Cystic Fibrosis,unresolved,unresolved,2,22,5,9,True
+23,IPF / Pulmonary Fibrosis,unresolved,unresolved,3,31,11,305,True
+23,Lung Cancer,unresolved,unresolved,2,7,3,2,True
+24,COVID-19 / SARS-CoV-2,unresolved,unresolved,4,47,13,0,True
+24,IPF / Pulmonary Fibrosis,unresolved,unresolved,6,124,50,599,True
+24,Lung Cancer,unresolved,unresolved,5,40,25,209,True
+26,COVID-19 / SARS-CoV-2,macrophage,resolved,3,49,12,38,True
+26,IPF / Pulmonary Fibrosis,macrophage,resolved,6,129,64,804,True
+26,Lung Cancer,macrophage,resolved,5,30,24,300,True
+3,COVID-19 / SARS-CoV-2,unresolved,unresolved,2,10,4,14,True
+3,IPF / Pulmonary Fibrosis,unresolved,unresolved,2,9,2,0,True
+3,Lung Cancer,unresolved,unresolved,3,18,9,19,True
+31,COVID-19 / SARS-CoV-2,basal cell,resolved,5,41,16,1,True
+31,Cystic Fibrosis,basal cell,resolved,2,22,5,32,True
+31,IPF / Pulmonary Fibrosis,basal cell,resolved,7,78,18,403,True
+31,Lung Cancer,basal cell,resolved,3,11,7,132,True
+31,Pulmonary Hypertension,basal cell,resolved,2,4,4,0,True
+32,Lung Cancer,unresolved,unresolved,3,5,5,3,True
+34,COVID-19 / SARS-CoV-2,unresolved,unresolved,3,46,12,24,True
+34,IPF / Pulmonary Fibrosis,unresolved,unresolved,6,114,55,221,True
+34,Lung Cancer,unresolved,unresolved,5,33,26,15,True
+36,COVID-19 / SARS-CoV-2,unresolved,unresolved,2,36,12,89,True
+36,IPF / Pulmonary Fibrosis,unresolved,unresolved,8,127,69,769,True
+36,Lung Cancer,unresolved,unresolved,5,43,26,342,True
+36,Pulmonary Hypertension,unresolved,unresolved,2,6,6,0,True
+38,COVID-19 / SARS-CoV-2,pulmonary alveolar type 1 cell,resolved,2,33,11,2,True
+38,IPF / Pulmonary Fibrosis,pulmonary alveolar type 1 cell,resolved,6,73,58,598,True
+38,Lung Cancer,pulmonary alveolar type 1 cell,resolved,4,12,12,106,True
+39,COVID-19 / SARS-CoV-2,unresolved,unresolved,2,26,5,9,True
+4,COVID-19 / SARS-CoV-2,unresolved,unresolved,3,39,13,5,True
+4,IPF / Pulmonary Fibrosis,unresolved,unresolved,6,92,47,52,True
+4,Lung Cancer,unresolved,unresolved,5,51,31,70,True
+43,COVID-19 / SARS-CoV-2,unresolved,unresolved,5,43,20,21,True
+43,Cystic Fibrosis,unresolved,unresolved,2,23,5,35,True
+43,IPF / Pulmonary Fibrosis,unresolved,unresolved,6,116,52,302,True
+43,Lung Cancer,unresolved,unresolved,3,11,10,18,True
+44,COVID-19 / SARS-CoV-2,lung multiciliated epithelial cell,resolved,5,41,16,12,True
+44,Cystic Fibrosis,lung multiciliated epithelial cell,resolved,2,22,5,51,True
+44,IPF / Pulmonary Fibrosis,lung multiciliated epithelial cell,resolved,7,125,53,1206,True
+44,Lung Cancer,lung multiciliated epithelial cell,resolved,4,13,13,13,True
+45,COVID-19 / SARS-CoV-2,respiratory tract goblet cell,resolved,5,29,15,0,True
+45,Cystic Fibrosis,respiratory tract goblet cell,resolved,2,22,5,23,True
+45,IPF / Pulmonary Fibrosis,respiratory tract goblet cell,resolved,8,116,36,424,True
+45,Lung Cancer,respiratory tract goblet cell,resolved,4,15,14,16,True
+5,COVID-19 / SARS-CoV-2,unresolved,unresolved,3,46,12,0,True
+5,IPF / Pulmonary Fibrosis,unresolved,unresolved,5,76,23,205,True
+5,Lung Cancer,unresolved,unresolved,4,35,23,77,True
+52,COVID-19 / SARS-CoV-2,unresolved,unresolved,5,41,14,7,True
+52,Cystic Fibrosis,unresolved,unresolved,2,12,2,0,True
+52,IPF / Pulmonary Fibrosis,unresolved,unresolved,4,45,43,883,True
+52,Lung Cancer,unresolved,unresolved,2,22,4,6,True
+52,Pulmonary Hypertension,unresolved,unresolved,2,6,5,0,True
+59,IPF / Pulmonary Fibrosis,unresolved,unresolved,5,99,58,196,True
+59,Lung Cancer,unresolved,unresolved,5,30,20,50,True
+6,IPF / Pulmonary Fibrosis,B cell,resolved,6,105,40,115,True
+6,Lung Cancer,B cell,resolved,5,38,21,298,True
+60,COVID-19 / SARS-CoV-2,unresolved,unresolved,2,33,12,4,True
+60,IPF / Pulmonary Fibrosis,unresolved,unresolved,8,100,54,396,True
+60,Lung Cancer,unresolved,unresolved,5,41,20,708,True
+60,Pulmonary Hypertension,unresolved,unresolved,2,6,5,0,True
+7,IPF / Pulmonary Fibrosis,unresolved,unresolved,5,66,46,405,True
+7,Lung Cancer,unresolved,unresolved,2,3,4,0,True
+8,COVID-19 / SARS-CoV-2,unresolved,unresolved,2,34,11,16,True
+8,IPF / Pulmonary Fibrosis,unresolved,unresolved,7,104,63,5449,True
+8,Lung Cancer,unresolved,unresolved,5,28,17,383,True
+9,COVID-19 / SARS-CoV-2,macrophage,resolved,4,52,13,0,True
+9,IPF / Pulmonary Fibrosis,macrophage,resolved,7,123,57,812,True
+9,Lung Cancer,macrophage,resolved,5,26,20,1255,True

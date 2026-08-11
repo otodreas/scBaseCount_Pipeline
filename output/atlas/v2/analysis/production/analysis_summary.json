@@ -1,0 +1,31 @@
+{
+  "atlasPath": "output/atlas/v2/post/production/atlas_v2_post.h5ad",
+  "outputDir": "output/atlas/v2/analysis/production",
+  "pseudobulkProfiles": 15075,
+  "genesScoredForSpecificity": 33794,
+  "restrictedGenes": 7,
+  "eligibleContrasts": 93,
+  "deContrastsRan": 93,
+  "deHits": 26515,
+  "sharedDirectionGenes": 1494,
+  "unexpectedCandidates": 1085,
+  "primaryCandidates": 20,
+  "extendedCandidates": 40,
+  "peakRssBytes": 616894058496,
+  "peakRssGiB": "574.53 GiB",
+  "memoryReserveBytes": 274877906944,
+  "thresholds": {
+    "minCellsPerProfile": 10,
+    "minOverlapStudies": 2,
+    "padj": 0.05,
+    "lfc": 1.0,
+    "minTau": 0.8,
+    "minTargetDetection": 0.2,
+    "maxBackgroundDetection": 0.05,
+    "minDetectionDelta": 0.15,
+    "highPurity": 0.7,
+    "primaryBudget": 20,
+    "extendedBudget": 60
+  },
+  "note": "Automated discovery shortlist for manual review. Expression evidence alone does not establish novelty or mechanism. Source cell_type labels interpret clusters and do not define pseudobulk groups."
+}

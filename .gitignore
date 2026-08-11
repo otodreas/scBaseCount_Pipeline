@@ -27,6 +27,8 @@ output/umap_plots/
 output/atlas/sample20/
 atlas*.h5ad
 atlas_harmony*.h5ad
+checkpoints/
+output/atlas/v2/analysis/production/de_results.parquet
 
 # Logs
 logs/
