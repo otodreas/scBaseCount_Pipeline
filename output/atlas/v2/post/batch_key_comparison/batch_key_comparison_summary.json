@@ -1,0 +1,113 @@
+{
+  "inputSubsetH5ad": "output/atlas/v2/post/subset_validation/atlas_pp_subset.h5ad",
+  "subsetRunJson": "output/atlas/v2/post/subset_validation/atlas_pp_subset_run.json",
+  "productionRunJson": "output/atlas/v2/post/production/atlas_v2_post_run.json",
+  "datasetsPath": "output/metadata/datasets_v2.csv",
+  "outputDir": "output/atlas/v2/post/batch_key_comparison",
+  "comparisonH5ad": "output/atlas/v2/post/batch_key_comparison/atlas_pp_batch_comparison.h5ad",
+  "resolved": {
+    "nTopGenes": 2000,
+    "nPcs": 50,
+    "nNeighbors": 15,
+    "resolution": 0.8
+  },
+  "baselineValidation": {
+    "expected": {
+      "nTopGenes": 2000,
+      "nPcs": 50,
+      "nNeighbors": 15,
+      "resolution": 0.8
+    },
+    "subset": {
+      "nTopGenes": 2000,
+      "nPcs": 50,
+      "nNeighbors": 15,
+      "resolution": 0.8
+    },
+    "production": {
+      "nTopGenes": 2000,
+      "nPcs": 50,
+      "nNeighbors": 15,
+      "resolution": 0.8
+    }
+  },
+  "sampling": {
+    "method": "studyProportional",
+    "nStudies": 172,
+    "sampleCells": 100000,
+    "seed": 0,
+    "sourceCells": 9310348,
+    "stratifyKey": "study_accession"
+  },
+  "joinAudit": {
+    "datasetsPath": "output/metadata/datasets_v2.csv",
+    "reusedComparisonH5ad": true,
+    "nCells": 100000,
+    "nExperiments": 1409,
+    "nStudyTechBatches": 197,
+    "techValues": [
+      "3_prime_gex",
+      "5_prime_gex",
+      "feature_barcoding",
+      "multiome",
+      "not_applicable",
+      "other",
+      "vdj"
+    ]
+  },
+  "batchCardinalities": {
+    "study_accession": 172,
+    "batch_study_tech": 197,
+    "SRX_accession": 1409
+  },
+  "embeddings": {
+    "uncorrected": "X_pca",
+    "harmonyByBatchKey": {
+      "batch_study_tech": "X_pca_harmony__batch_study_tech",
+      "SRX_accession": "X_pca_harmony__SRX_accession",
+      "study_accession": "X_pca_harmony__study_accession"
+    }
+  },
+  "scib": {
+    "skipped": false,
+    "matrixLong": "output/atlas/v2/post/batch_key_comparison/scib/scib_matrix_long.csv",
+    "runs": [
+      {
+        "evalBatchKey": "study_accession",
+        "csv": "output/atlas/v2/post/batch_key_comparison/scib/eval_batch=study_accession/scib_results.csv",
+        "svg": "output/atlas/v2/post/batch_key_comparison/scib/eval_batch=study_accession/scib_results.svg",
+        "embeddingKeys": [
+          "X_pca",
+          "X_pca_harmony__study_accession",
+          "X_pca_harmony__batch_study_tech",
+          "X_pca_harmony__SRX_accession"
+        ]
+      },
+      {
+        "evalBatchKey": "batch_study_tech",
+        "csv": "output/atlas/v2/post/batch_key_comparison/scib/eval_batch=batch_study_tech/scib_results.csv",
+        "svg": "output/atlas/v2/post/batch_key_comparison/scib/eval_batch=batch_study_tech/scib_results.svg",
+        "embeddingKeys": [
+          "X_pca",
+          "X_pca_harmony__study_accession",
+          "X_pca_harmony__batch_study_tech",
+          "X_pca_harmony__SRX_accession"
+        ]
+      },
+      {
+        "evalBatchKey": "SRX_accession",
+        "csv": "output/atlas/v2/post/batch_key_comparison/scib/eval_batch=SRX_accession/scib_results.csv",
+        "svg": "output/atlas/v2/post/batch_key_comparison/scib/eval_batch=SRX_accession/scib_results.svg",
+        "embeddingKeys": [
+          "X_pca",
+          "X_pca_harmony__study_accession",
+          "X_pca_harmony__batch_study_tech",
+          "X_pca_harmony__SRX_accession"
+        ]
+      }
+    ]
+  },
+  "startedAt": "2026-08-11T00:44:17",
+  "timingsSeconds": 6124.821,
+  "note": "Interpret SRX evaluation scores cautiously: SRX often encodes donor, sample, or condition biology in addition to technical effects."
+}
