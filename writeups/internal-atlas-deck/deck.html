@@ -169,6 +169,16 @@
 
     .mono { font-family: var(--font-mono); font-size: 0.92em; }
 
+    .slide a {
+      color: var(--color-primary);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .slide a:hover {
+      border-bottom-color: var(--color-primary-light);
+    }
+
     .flow {
       display: flex;
       flex-wrap: wrap;
@@ -188,6 +198,49 @@
     }
 
     .flow .arrow { border: none; background: transparent; color: var(--color-primary); padding: 0 0.1rem; }
+
+    .flow .callout-step {
+      border-color: var(--color-primary-light);
+      background: #eff6ff;
+      color: var(--color-ink-strong);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18);
+    }
+
+    .filter-callout {
+      margin-top: 1rem;
+      border: 1px solid var(--color-primary-light);
+      border-left-width: 4px;
+      border-radius: 8px;
+      background: #eff6ff;
+      padding: 0.85rem 1rem;
+    }
+
+    .filter-callout .k {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .filter-callout p {
+      font-size: 0.92rem;
+      line-height: 1.45;
+      color: var(--color-ink-soft);
+    }
+
+    .filter-callout ul {
+      margin: 0.45rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .filter-callout li {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin: 0.25rem 0;
+    }
 
     .two-col {
       display: grid;
@@ -223,6 +276,27 @@
       font-family: var(--font-mono);
     }
 
+    .fig-panel .cap a {
+      color: var(--color-primary);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .fig-panel .cap a:hover {
+      border-bottom-color: var(--color-primary-light);
+    }
+
+    .slide-note {
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: var(--color-text-light);
+    }
+
+    .slide-note .mono {
+      font-size: 0.78em;
+    }
+
     .dropzone {
       flex: 1;
       min-height: 200px;
@@ -246,6 +320,232 @@
       color: var(--color-primary);
     }
 
+    .meta-table-wrap {
+      flex: 1;
+      overflow: auto;
+      padding: 0.65rem 0.75rem 0.85rem;
+    }
+
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .meta-table th,
+    .meta-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.45rem 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+      line-height: 1.35;
+    }
+
+    .meta-table th {
+      width: 42%;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 0.72rem;
+      color: var(--color-text-light);
+      letter-spacing: 0.01em;
+    }
+
+    .meta-table td {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      color: var(--color-ink-strong);
+      word-break: break-word;
+    }
+
+    .meta-table tr:last-child th,
+    .meta-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .meta-table tr.hl th,
+    .meta-table tr.hl td {
+      background: #eff6ff;
+    }
+
+    .compare-table-wrap {
+      margin-top: 0.85rem;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 0.55rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .compare-table th {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      background: var(--color-bg-alt);
+    }
+
+    .compare-table td.num {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    .compare-table tr.best td {
+      background: #eff6ff;
+    }
+
+    .compare-table .pos { color: #047857; }
+    .compare-table .neg { color: #b45309; }
+
+    .callout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .callout {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0.85rem 0.95rem;
+      min-height: 0;
+    }
+
+    .callout--alt {
+      background: var(--color-bg-alt);
+    }
+
+    .callout .tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .callout .tag--warn {
+      color: #92400e;
+    }
+
+    .callout h3 {
+      font-family: var(--font-heading);
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--color-ink-strong);
+      margin-bottom: 0.45rem;
+      line-height: 1.3;
+    }
+
+    .callout p,
+    .callout li {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--color-ink-soft);
+    }
+
+    .callout ul {
+      padding-left: 1rem;
+      margin-top: 0.35rem;
+    }
+
+    .callout li + li {
+      margin-top: 0.3rem;
+    }
+
+    .callout .mono {
+      font-size: 0.84em;
+    }
+
+    .flow-chart {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0.85rem 0 1rem;
+    }
+
+    .flow-chart .node {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--color-ink-strong);
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      line-height: 1.35;
+    }
+
+    .flow-chart .node small {
+      display: block;
+      color: var(--color-text-light);
+      font-weight: 400;
+      font-size: 0.68rem;
+      margin-top: 0.15rem;
+    }
+
+    .flow-chart .node--end {
+      border-color: var(--color-primary-light);
+      background: #eff6ff;
+    }
+
+    .flow-chart .arrow {
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      padding: 0 0.1rem;
+    }
+
+    .xml-block {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: var(--color-ink-soft);
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+      overflow: auto;
+      margin: 0.65rem;
+      flex: 1;
+    }
+
+    .xml-block .tag { color: #93c5fd; }
+    .xml-block .attr { color: #fcd34d; }
+    .xml-block .val { color: #86efac; }
+    .xml-block .flag-line {
+      background: rgba(251, 191, 36, 0.18);
+      outline: 1px solid rgba(251, 191, 36, 0.55);
+      border-radius: 4px;
+      padding: 0.15rem 0.35rem;
+      margin: 0.15rem -0.35rem;
+      display: block;
+    }
+    .xml-block .flag-line .val { color: #fde68a; font-weight: 600; }
+
     .badge {
       display: inline-block;
       font-family: var(--font-mono);
@@ -264,6 +564,12 @@
     .metrics {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .metrics2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.75rem;
       margin: 1rem 0;
     }
@@ -340,7 +646,7 @@
 
     <!-- 1. Title -->
     <section class="slide slide--dark active" data-section="open">
-      <p class="eyebrow">Nygen · thesis update</p>
+      <p class="eyebrow">Nygen / lund university master's project update</p>
       <h1>scBaseCount lung atlas efforts</h1>
       <p class="lede">Acquisition, weak-prior clustering, integrated atlas batch correction, and disease-marker DE (work in progress).</p>
       <ul class="agenda">
@@ -369,73 +675,108 @@
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">1 · Data acquisition</p>
       <h2>Pipeline sketch</h2>
-      <p class="lede">From Arc Virtual Cell Atlas / scBaseCount snapshot into a lung-focused concat.</p>
+      <p class="lede">From the scBaseCount snapshot into an integrated lung atlas.</p>
       <div class="flow">
         <span>GCS snapshot</span><span class="arrow">→</span>
         <span>R2 mirror</span><span class="arrow">→</span>
-        <span>Lung metadata filter</span><span class="arrow">→</span>
+        <span class="callout-step">Lung metadata filter</span><span class="arrow">→</span>
         <span>Download + MD5</span><span class="arrow">→</span>
         <span>QC / gene-align</span><span class="arrow">→</span>
-        <span>Concat</span>
+        <span>Concat</span><span class="arrow">→</span>
+        <span>Batch correction</span><span class="arrow">→</span>
+        <span>DE</span>
       </div>
-      <ul style="margin-top: 1.25rem;">
-        <li>Human GeneFull h5ads + sample/obs Parquet metadata.</li>
-        <li>Catalog via lung disease ∩ tissue filters, then concat gates in <span class="mono">h5ad_concat</span>.</li>
-      </ul>
+      <div class="filter-callout">
+        <div class="k">Lung metadata filter → datasets list</div>
+        <p>Builds the accession catalog that concat is allowed to download. Gate is <strong>lung tissue</strong> (plus study size / multi-organ excludes), not disease ∩ tissue. Detail on next slide.</p>
+      </div>
     </section>
 
-    <!-- 4. Scale -->
+    <!-- 4. Datasets selection -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Scale we reached</h2>
+      <h2>How samples enter the datasets list</h2>
+      <p class="lede">Start from human GeneFull <span class="mono">sample_metadata.parquet</span>. Only rows that pass these gates become download candidates for the atlas.</p>
+      <ul>
+        <li>Drop non-SRA/ENA accessions (<span class="mono">NRX*</span>).</li>
+        <li>Keep rows whose <span class="mono">tissue</span> matches a lung regex (lung, airway, BAL, trachea, …). <strong>No disease filter here.</strong></li>
+        <li>Attach <span class="mono">study_accession</span> via ENA <span class="mono">read_experiment</span>.</li>
+        <li>Drop a short list of known multi-organ / broad studies.</li>
+        <li>Drop studies with &lt; 1,000 total cells across their lung samples.</li>
+      </ul>
+      <p class="slide-note">Result: ~1.8k SRXs in the datasets list. COVID+blood never enters (tissue fails). Healthy / control / unsure <em>lung</em> samples can enter. File-level QC still happens later in <span class="mono">h5ad_concat</span>.</p>
+    </section>
+
+    <!-- 5. Scale -->
+    <section class="slide" data-section="acquisition">
+      <p class="eyebrow">1 · Data acquisition</p>
+      <h2>Scale reached</h2>
       <div class="stat-row">
-        <div class="stat"><div class="n">9.3M</div><div class="l">cells in atlas v2</div></div>
+        <div class="stat"><div class="n">9.3M</div><div class="l">cells in the atlas</div></div>
         <div class="stat"><div class="n">1,410</div><div class="l">files concatenated</div></div>
         <div class="stat"><div class="n">172</div><div class="l">studies (batch key)</div></div>
       </div>
       <ul>
-        <li>Earlier lung intersection catalog: ~801 SRX / ~6.1M cells (filter context).</li>
-        <li>v2 pass rate ~78% of attempted files; the rest fail explicit gates (next slides).</li>
+        <li>~78% of attempted files pass concat gates; the rest fail explicit checks (later slide).</li>
       </ul>
     </section>
 
-    <!-- 5. Challenges -->
+    <!-- 6. Challenges -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">1 · Data acquisition</p>
       <h2>Challenges</h2>
       <p class="lede">Metadata and file quality are the bottleneck, not transfer speed.</p>
       <ul>
         <li>Thin / noisy free-text disease and tissue fields; synonymy across studies.</li>
-        <li>Disease–tissue mismatches (e.g. COVID disease labels on non-lung tissue).</li>
+        <li>Lung-disease labels often sit on non-lung tissue (e.g. COVID on blood/PBMC); tissue gate is why those stay out.</li>
         <li><span class="mono">study_accession</span> as batch key collapses donor, disease, and grade into one “batch.”</li>
-        <li>Many files missing all <span class="mono">cell_type</span> (~half of v2 skips).</li>
-        <li>QC can drop large fractions of cells; raw h5ads are counts only (no embeddings).</li>
+        <li>Many files missing all <span class="mono">cell_type</span> (~half of concat skips).</li>
+        <li>QC can drop large fractions of cells.</li>
       </ul>
     </section>
 
     <!-- 6. Metadata vs study -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Metadata row vs linked study</h2>
-      <p class="lede">Free-text atlas fields can disagree with what the linked study actually is. Drop your screenshots into <span class="mono">figs/</span>.</p>
+      <h2>scBaseCount disease labels can disagree with BioSample attributes</h2>
+      <p class="lede"> Many h5ads in <span class="mono">PRJNA563828</span> (IPF Cell Atlas) are present in scBaseCount, but the disease labels in scBaseCount do not always agree with NCBI. Improving disease labelling via NCBI allows for more accurate DGE down the line.</p>
+      <!-- <div class="metrics" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+        <div class="metric"><div class="k">IPF-only</div><div class="v">33</div></div>
+        <div class="metric"><div class="k">COPD-only</div><div class="v">17</div></div>
+        <div class="metric"><div class="k">Control-ish</div><div class="v">18</div></div>
+        <div class="metric"><div class="k">Baggy / study-level</div><div class="v">8</div></div>
+      </div> -->
+      <p class="slide-note" style="margin-top: 0.35rem;">Failure case: <span class="mono">SRX17412810</span> → <span class="mono">SAMN12688818</span> (ENA sample → BioSample efetch). Parquet bags IPF+COPD+control; BioSample says COPD.</p>
       <div class="two-col">
         <div class="fig-panel">
-          <div class="dropzone">
-            Drop parquet / metadata screenshot
-            <code>figs/metadata-parquet-row.png</code>
+          <div class="meta-table-wrap">
+            <table class="meta-table">
+              <tbody>
+                <tr><th>srx_accession</th><td>SRX17412810</td></tr>
+                <tr class="hl"><th>disease</th><td>Idiopathic pulmonary fibrosis (IPF), chronic obstructive pulmonary disease (COPD), healthy control</td></tr>
+                <tr><th>tissue</th><td>lung</td></tr>
+                <tr class="hl"><th>disease_ontology_term_id</th><td>MONDO:0800504 → idiopathic pulmonary fibrosis<br />MONDO:0005002 → chronic obstructive pulmonary disease</td></tr>
+                <tr><th>tissue_ontology_term_id</th><td>UBERON:0002048 → lung</td></tr>
+              </tbody>
+            </table>
           </div>
-          <div class="cap">Left · sample metadata fields</div>
-          <img id="img-meta-parquet" src="figs/metadata-parquet-row.png" alt="Metadata parquet row" hidden />
+          <div class="cap">Parquet · <a href="https://storage.googleapis.com/arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/sample_metadata.parquet" target="_blank" rel="noopener noreferrer">sample_metadata.parquet</a> · minority bag row</div>
         </div>
         <div class="fig-panel">
-          <div class="dropzone">
-            Drop paper / ENA / study screenshot
-            <code>figs/linked-study.png</code>
-          </div>
-          <div class="cap">Right · linked study reality</div>
-          <img id="img-linked-study" src="figs/linked-study.png" alt="Linked study" hidden />
+          <pre class="xml-block" aria-label="BioSample attributes excerpt"><span class="tag">&lt;BioSample</span> <span class="attr">accession</span>=<span class="val">"SAMN12688818"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;Title&gt;</span>192CO scRNAseq<span class="tag">&lt;/Title&gt;</span>
+  <span class="tag">&lt;Attributes&gt;</span>
+    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"source_name"</span><span class="tag">&gt;</span>Whole Lung Dissociate<span class="tag">&lt;/Attribute&gt;</span>
+    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"tissue"</span><span class="tag">&gt;</span>Whole Lung Dissociate<span class="tag">&lt;/Attribute&gt;</span>
+    <span class="flag-line"><span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"disease"</span><span class="tag">&gt;</span><span class="val">COPD</span><span class="tag">&lt;/Attribute&gt;</span></span>
+    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"Sex"</span><span class="tag">&gt;</span>male<span class="tag">&lt;/Attribute&gt;</span>
+    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"age"</span><span class="tag">&gt;</span>66<span class="tag">&lt;/Attribute&gt;</span>
+  <span class="tag">&lt;/Attributes&gt;</span>
+<span class="tag">&lt;/BioSample&gt;</span></pre>
+          <div class="cap">BioSample · <a href="https://www.ncbi.nlm.nih.gov/biosample/SAMN12688818" target="_blank" rel="noopener noreferrer">SAMN12688818</a> · per-sample disease</div>
         </div>
       </div>
+      <p class="slide-note">Why fetch context anyway: clean <span class="mono">IPF</span>/<span class="mono">COPD</span>/<span class="mono">Control</span> strings, mismatch checks on the baggy minority, and study text for CyteType. Path: <span class="mono">study_context</span> → <span class="mono">efetch?db=biosample</span>. Ontologies via <span class="mono">ontology_lookup</span> (MONDO 2026-07-06).</p>
     </section>
 
     <!-- 7. Gates -->
@@ -443,8 +784,8 @@
       <p class="eyebrow">1 · Data acquisition</p>
       <h2>Learnings: curation is a filter stack</h2>
       <ul>
-        <li>Enforce MD5, accession match, ≥1 <span class="mono">cell_type</span>, <span class="mono">minGenesPerCell=200</span>, mito cap, absolute/relative cell floors, STAR gene axis.</li>
-        <li>v2 skip mix: missing labels, too few cells, excessive dropout (~78% pass).</li>
+        <li>Enforce MD5, accession match, ≥1 <span class="mono">cell_type</span>, <span class="mono">minGenesPerCell=200</span>, mito cap, <span class="mono">minCellsAfterQc</span> / <span class="mono">minPctCellsAfterQc</span> (keep ≥50% of cells), STAR gene axis.</li>
+        <li>Skip mix: missing labels, too few cells, excessive dropout (~78% pass).</li>
         <li>Main idea: do not “download the atlas.” Decide what is allowed in, file by file.</li>
       </ul>
     </section>
@@ -504,25 +845,86 @@
       </ul>
     </section>
 
-    <!-- 12. Before / after -->
+    <!-- 12. Why BioProject / PRJNA -->
     <section class="slide" data-section="atlas">
       <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>Quantify, then correct</h2>
+      <h2>Why BioProject (<span class="mono">PRJNA*</span>) matters</h2>
+      <p class="lede">A <a href="https://www.ncbi.nlm.nih.gov/bioproject/docs/faq/#do-i-need-to-make-a-separate-bio" target="_blank" rel="noopener noreferrer">BioProject</a> is a collection of biological data related to a single initiative from one organization or consortium. Accessions look like <span class="mono">PRJNA563828</span>.</p>
+      <ul>
+        <li>That study id is our batch key: cells from the same initiative share lab, protocol, and donor structure.</li>
+        <li>Harmony mixes on <span class="mono">study_accession</span>, and DE prefers same-study diseased vs control contrasts.</li>
+        <li><strong>scBaseCount does not ship this field.</strong> The sample parquet has no BioProject / study column, so we resolve <span class="mono">SRX*</span> → ENA <span class="mono">study_accession</span> ourselves when building the datasets list.</li>
+      </ul>
+      <p class="slide-note">Without that join, “batch” and “same study” are undefined for the atlas. That is the metadata processing the next plots depend on.</p>
+    </section>
+
+    <!-- 13. Batch key scIB comparison -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">3 · Integrated atlas</p>
+      <h2>BioProject is a good batch key (scIB)</h2>
+      <p class="lede">On the 100k study-proportional sample, Harmony keyed by study beats finer keys on the overall tradeoff. Matching eval: correct and score on the same batch definition.</p>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Correction (matched eval)</th>
+              <th>Batch Δ</th>
+              <th>Bio Δ</th>
+              <th>Total Δ</th>
+              <th># batches</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="best">
+              <td>Study</td>
+              <td class="num pos">+0.167</td>
+              <td class="num neg">−0.024</td>
+              <td class="num pos">+0.052</td>
+              <td class="num">172</td>
+            </tr>
+            <tr>
+              <td>Study × tech</td>
+              <td class="num pos">+0.162</td>
+              <td class="num neg">−0.027</td>
+              <td class="num pos">+0.049</td>
+              <td class="num">197</td>
+            </tr>
+            <tr>
+              <td>SRX (experiment)</td>
+              <td class="num pos">+0.089</td>
+              <td class="num neg">−0.037</td>
+              <td class="num pos">+0.013</td>
+              <td class="num">1,409</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul style="margin-top: 0.9rem;">
+        <li>Study and study×tech are nearly the same; finer SRX correction costs more biology for less total gain.</li>
+        <li>Even when scored against SRX, SRX’s batch edge is tiny (0.392 vs 0.389 study) with worse bio (0.496 vs 0.511).</li>
+      </ul>
+      <p class="slide-note">Source: <span class="mono">output/atlas/v2/post/batch_key_comparison/</span>. SRX often mixes technical batch with donor / condition biology.</p>
+    </section>
+
+    <!-- 14. Before / after -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">3 · Integrated atlas</p>
+      <h2>Atlas batch correction by study (PRJNA)</h2>
       <p class="lede">UMAP colored by <span class="mono">cell_type</span>: uncorrected vs Harmony. Interim production plots; replace later with transparent versions under the same filenames.</p>
       <div class="two-col">
         <div class="fig-panel">
-          <img src="figs/umap_cell_type_uncorrected.png" alt="UMAP cell type uncorrected" />
+          <img src="figs/umap_uncorrected.png" alt="UMAP (uncorrected), colored by cell type" />
           <div class="cap">Uncorrected · cell_type</div>
         </div>
         <div class="fig-panel">
-          <img src="figs/umap_cell_type_harmony.png" alt="UMAP cell type Harmony" />
+          <img src="figs/umap_corrected.png" alt="UMAP (Harmony corrected), colored by cell type" />
           <div class="cap">Harmony · cell_type</div>
         </div>
       </div>
-      <div class="metrics">
+      <div class="metrics2">
         <div class="metric"><div class="k">Batch (scIB)</div><div class="v">0.28 → 0.45</div></div>
         <div class="metric"><div class="k">Bio (scIB)</div><div class="v">0.53 → 0.51</div></div>
-        <div class="metric"><div class="k">Total</div><div class="v">0.43 → 0.49</div></div>
+        <!-- <div class="metric"><div class="k">Total</div><div class="v">0.43 → 0.49</div></div> -->
       </div>
       <p class="note">scIB on 100k sample; modest bio cost for clearer batch mixing.</p>
     </section>
@@ -608,7 +1010,7 @@
   </main>
 
   <div class="hud">
-    <span class="hint">← → · space · click</span>
+    <span class="hint">Oliver Todreas</span>
     <span id="counter">1 / 17</span>
   </div>
 
@@ -639,8 +1041,7 @@
       show(index + 1);
     });
 
-    // Reveal screenshot panels when assets exist
-    function tryReveal(imgId, dropSelector) {
+    function tryReveal(imgId) {
       const img = document.getElementById(imgId);
       if (!img) return;
       const probe = new Image();
@@ -653,9 +1054,6 @@
       probe.onerror = () => { img.remove(); };
       probe.src = img.currentSrc || img.src;
     }
-
-    tryReveal("img-meta-parquet");
-    tryReveal("img-linked-study");
   </script>
 </body>
 </html>
