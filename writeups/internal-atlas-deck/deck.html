@@ -788,12 +788,45 @@
     <!-- 7. Gates -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Learnings: curation is a filter stack</h2>
-      <ul>
-        <li>Enforce MD5, accession match, ≥1 <span class="mono">cell_type</span>, <span class="mono">minGenesPerCell=200</span>, mito cap, <span class="mono">minCellsAfterQc</span> / <span class="mono">minPctCellsAfterQc</span> (keep ≥50% of cells), STAR gene axis.</li>
-        <li>Skip mix: missing labels, too few cells, excessive dropout (~78% pass).</li>
-        <li>Main idea: do not “download the atlas.” Decide what is allowed in, file by file.</li>
-      </ul>
+      <h2>QC at a glance</h2>
+      <div class="stat-row" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 1rem;">
+        <div class="stat"><div class="n">1,816 → 1,410</div><div class="l">files attempted → kept (78%)</div></div>
+        <div class="stat"><div class="n">13.0M → 9.31M</div><div class="l">cells attempted → kept (72%)</div></div>
+      </div>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Gate</th>
+              <th>Threshold</th>
+              <th>Atlas impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="best">
+              <td>Missing all <span class="mono">cell_type</span></td>
+              <td>Require ≥1 labeled cell</td>
+              <td class="num neg">238 files · 1,613,931 cells<br />(13.1% / 12.4%)</td>
+            </tr>
+            <tr>
+              <td>Too few cells after QC</td>
+              <td>&lt; 100 cells remain</td>
+              <td class="num neg">100 files · 1,218,710 cells<br />(5.5% / 9.4%)</td>
+            </tr>
+            <tr>
+              <td>Excessive QC dropout</td>
+              <td>Retain &lt; 50% of input cells</td>
+              <td class="num neg">68 files · 294,605 cells<br />(3.7% / 2.3%)</td>
+            </tr>
+            <tr>
+              <td>Per-cell QC (genes / mito)</td>
+              <td>≥200 genes; &lt;20% mito</td>
+              <td class="num neg">576,049 cells (5.8% of kept-file input)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="slide-note">First failing gate only. File-drop cells = <span class="mono">obs_count</span>; % of attempted. Per-cell QC is within kept files only.</p>
     </section>
 
     <!-- 8. Clustering idea + method -->
@@ -867,7 +900,7 @@
     <!-- 13. Batch key scIB comparison -->
     <section class="slide" data-section="atlas">
       <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>BioProject is a good batch key (scIB)</h2>
+      <h2>BioProject is a good batch key</h2>
       <p class="lede">On the 100k study-proportional sample, Harmony keyed by study beats finer keys on the overall tradeoff. Matching eval: correct and score on the same batch definition.</p>
       <div class="compare-table-wrap">
         <table class="compare-table">
@@ -950,7 +983,19 @@
       </ul>
     </section>
 
-    <!-- 14. DE why -->
+    <!-- 14. Atlas ≠ analysis set -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">3 · Integrated atlas</p>
+      <h2>The atlas is not the analysis set</h2>
+      <p class="lede">Atlases are not general-purpose. What stays in depends on the question; disease-marker DE re-filters samples before any contrast runs.</p>
+      <div class="filter-callout">
+        <div class="k">DE eligibility · 1,410 atlas SRXs → 958 kept (67.9%)</div>
+        <p>Dropped for this task: cell lines / organoids / iPSC (<span class="mono">234</span>), unmapped disease (<span class="mono">176</span>), non-lung (<span class="mono">38</span>), non-human (<span class="mono">3</span>), disease mismatch (<span class="mono">1</span>). Labels come from ontology metadata plus BioSample context (<span class="mono">contexts_v2.jsonl</span>). Ineligible samples remain in the atlas; they simply never enter DE.</p>
+      </div>
+      <p class="slide-note">Same idea as batch correction: re-harmonize for the task. Pseudobulk still needs same-study case/control support and ≥10 cells per profile before a contrast runs.</p>
+    </section>
+
+    <!-- 15. DE why -->
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <h2>Why DE on the atlas</h2>
@@ -1003,7 +1048,32 @@
       <p class="slide-note">Bars show mean detection within each study. These are traceable candidates, not independent validation.</p>
     </section>
 
-    <!-- 20. DE investigation leads -->
+    <!-- 20. DE less-familiar leads -->
+    <section class="slide" data-section="de">
+      <p class="eyebrow">4 · Disease-marker DE</p>
+      <span class="badge">Atlas-generated hypotheses · literature checked</span>
+      <h2>Two less familiar signals are worth a focused follow-up</h2>
+      <p class="lede">The potential newness is in the disease context and cell-state localization, not a claim that either gene is newly discovered.</p>
+      <div class="callout-grid">
+        <div class="callout callout--alt">
+          <span class="tag">Cross-disease signal</span>
+          <h3>TMEM45A extends beyond its lung-cancer precedent</h3>
+          <p>Ranked first in the primary review queue: increased across 3 disease areas and 14 clusters, with mean <span class="mono">log2FC +2.11</span>. In cystic fibrosis it rises in resolved goblet c45 (<span class="mono">+3.19</span>) and ciliated c44 (<span class="mono">+2.65</span>), each across 2 overlapping studies.</p>
+        </div>
+        <div class="callout">
+          <span class="tag">Disease divergence</span>
+          <h3>CRIP2 separates fibrotic from tumor macrophages</h3>
+          <p>Within resolved macrophage c26, <span class="mono">CRIP2</span> rises in IPF (<span class="mono">+2.05</span>; 7 studies) but falls in lung cancer (<span class="mono">−1.37</span>; 5 studies). The contrast is more informative than another shared canonical marker.</p>
+        </div>
+      </div>
+      <div class="filter-callout">
+        <div class="k">Why this needs investigation</div>
+        <p><span class="mono">TMEM45A</span> has hypoxia and lung-adenocarcinoma precedent, but its cystic-fibrosis epithelial signal is not established. Recent work implicates <span class="mono">CRIP2</span> in IPF epithelial remodeling, while reference protein staining does not detect it in lung macrophages. The macrophage result could therefore reveal a disease-conditioned state, cell mixture or annotation error.</p>
+      </div>
+      <p class="slide-note">Priority checks: leave-one-study-out stability; donor and technology covariates; raw-count and ambient-RNA review; macrophage co-expression, doublet scoring and spatial or protein validation. These are investigation leads, not novelty or mechanism claims.</p>
+    </section>
+
+    <!-- 21. DE investigation leads -->
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <span class="badge">Hypotheses · not validated</span>
@@ -1034,7 +1104,7 @@
       <p class="slide-note">Next checks: leave-one-study-out stability, donor / technology covariates, finer cluster annotation and held-out data.</p>
     </section>
 
-    <!-- 21. Close -->
+    <!-- 22. Close -->
     <section class="slide" data-section="close">
       <p class="eyebrow">Takeaways</p>
       <h2>Where we are</h2>
@@ -1052,7 +1122,7 @@
 
   <div class="hud">
     <span class="hint">Oliver Todreas</span>
-    <span id="counter">1 / 21</span>
+    <span id="counter">1 / 22</span>
   </div>
 
   <script>

@@ -1,0 +1,12 @@
+{
+  "stage": "aggregate",
+  "atlasPath": "output/atlas/v2/post/production/atlas_v2_post_sample.h5ad",
+  "outputDir": "output/atlas/v2/analysis/smoke_sample",
+  "fingerprintSha": "543461d954e5d85db579f47a4ba90f1171ee0326d151619167021eef2fbef09e",
+  "memoryReserveBytes": 1073741824,
+  "startedAt": "2026-08-07T09:34:33",
+  "pseudobulkProfiles": 1884,
+  "pseudobulkGenes": 36601,
+  "finishedAt": "2026-08-07T09:34:53",
+  "elapsedSeconds": 19.758206
+}
