@@ -300,6 +300,36 @@ uv run python pipelines/run_atlas_concat.py
 
 
 
+## `compare_atlas_candidates.py`
+
+Compares a baseline atlas h5ad against a candidate atlas h5ad (byte identity plus logical cell-set diffs). `--baseline-r2-fallback` and `--candidate-r2-fallback` are required R2 object keys. Each local path is used when the file already exists; otherwise the matching key is downloaded with MD5 verification.
+
+**Output default:** `output/atlas/2026-08-12/atlas_compare_report.json`
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--baseline` | `output/atlas/v2/atlas_v2.h5ad` | Baseline atlas h5ad |
+| `--candidate` | `output/atlas/2026-08-12/atlas.h5ad` | Candidate atlas h5ad |
+| `--baseline-r2-fallback` | required | R2 key if `--baseline` is missing locally |
+| `--candidate-r2-fallback` | required | R2 key if `--candidate` is missing locally |
+| `--baseline-manifest` | `output/atlas/v2/atlas_v2_result.json` | Baseline result JSON |
+| `--candidate-manifest` | `output/atlas/2026-08-12/atlas_result.json` | Candidate result JSON |
+| `--baseline-status-csv` | `output/atlas/v2/atlas_v2.csv` | Baseline status CSV when the manifest has no `files[]` |
+| `--report` | `output/atlas/2026-08-12/atlas_compare_report.json` | Comparison report JSON |
+| `--chunk-size` | `2048` | Obs chunk size for matrix compares |
+
+```sh
+uv run python pipelines/compare_atlas_candidates.py \
+  --baseline-r2-fallback atlas/v2/atlas_v2.h5ad \
+  --candidate-r2-fallback atlas/2026-08-12/atlas.h5ad
+```
+
+**Log:** `logs/atlas_compare.log`
+
+---
+
+
+
 ## Atlas postprocessing parameter selection and production
 
 Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is split into two runners under `[scripts/atlas_postprocessing/](../scripts/atlas_postprocessing/)`:

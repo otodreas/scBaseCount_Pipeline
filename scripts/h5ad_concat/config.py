@@ -6,7 +6,7 @@ from shared.repo import REPO_ROOT
 
 
 class H5adConcatConfig(BaseModel):
-    datasetsPath: Path = REPO_ROOT / "output" / "metadata" / "datasets.csv"
+    datasetsPath: Path | None = None  # default to no datasets path
     cellTypeKey: str = "cell_type"
     # Column added to obs holding the experimental batch key; value is the ENA study accession.
     batchKey: str = "study_accession"
