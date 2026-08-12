@@ -20,10 +20,10 @@ def concat_atlas(
 
 
 def write_atlas(adata: ad.AnnData, cfg: H5adConcatConfig, log: logging.Logger) -> Path:
-    """Write the atlas to cfg.outputPath with gzip, overwriting any existing file."""
+    """Write the atlas to cfg.outputPath; refuse to overwrite an existing file."""
     cfg.outputPath.parent.mkdir(parents=True, exist_ok=True)
     if cfg.outputPath.exists():
-        cfg.outputPath.unlink()
+        raise FileExistsError(f"Local atlas already exists: {cfg.outputPath}")
     adata.write_h5ad(cfg.outputPath, compression=cfg.compression)
     log.info("Wrote atlas to %s", cfg.outputPath)
     return cfg.outputPath

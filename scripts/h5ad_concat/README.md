@@ -107,6 +107,7 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 | `conserveLayers`     | `False`                         | Reindex every layer (e.g. STARsolo UniqueAndMult matrices) onto the reference axis instead of `X` only |
 | `minGenesPerCell`    | `200`                           | Minimum genes detected per cell |
 | `maxPctMito`         | `0.2`                           | Maximum mitochondrial read fraction per cell, as a fraction in (0, 1]; `1.0` keeps every cell |
+| `maxPctRibo`         | `1.0`                           | Maximum ribosomal read fraction per cell, as a fraction in (0, 1]; `1.0` keeps every cell |
 | `maxPctHb`           | `1.0`                           | Hemoglobin read fraction ceiling in (0, 1]; `1.0` records the metric without filtering |
 | `minCellsPerGene`    | `0`                             | Minimum cells expressing a gene; set `0` to disable |
 | `minCellsAfterQc`    | `100`                           | Absolute floor: minimum cells remaining after QC or file is skipped |
@@ -122,26 +123,30 @@ Each file is checked before it enters the concat. Failing files are recorded in 
 - `outputPath`: local atlas `.h5ad` path, or the result manifest path when the upload succeeds
 - `nObs`, `nVars`: shape of merged object
 - `nFilesConcatenated`: count of files that passed validation
+- `nFilesSkipped`: count of rejected files
 - `studiesSeen`: unique `studyAccession` values in the merged atlas
-- `skipped`: list of rejected files with `r2Key`, `accession`, and `reason`
-- `statusCsvPath`: local path to the per-file status CSV written during the run
+- `skipped`: list of rejected files with `r2Key`, `accession`, `reason`, optional `studyAccession`, and optional `qc`
+- `cellFilterOrder`: sequential per-cell filter names used for drop attribution
+- `qcSummary`: aggregate QC totals for concatenated files and all QC-processed files
+- `files`: per-file records matching the JSONL log, including sequential `qc.nCellsDroppedByFilter`
+- `fileLogPath`: local path to the append-safe per-file JSONL log written during the run
 - `configPath`: local path to the config manifest written after the run
 - `atlasR2Key`: R2 object key when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
-- `atlasStatusR2Key`: R2 object key for the status CSV when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
+- `atlasFileLogR2Key`: R2 object key for the file log when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
 - `atlasConfigR2Key`: R2 object key for the config manifest when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
 - `atlasResultR2Key`: R2 object key for the result manifest when `uploadAtlas` is enabled and upload succeeds; otherwise `None`
 - `conserveLayers`: whether alignment reindexed all layers onto the reference axis for this run
 
-A run writes up to four files next to the atlas output path (`cfg.outputPath`, default `output/atlas/data/atlas.h5ad`), all locally regardless of upload. R2 upload is optional: when `uploadAtlas` is true and upload verifies, each file is uploaded to R2 under the atlas key stem and the local `.h5ad` is deleted.
+A run writes up to four files next to the atlas output path (`cfg.outputPath`, default `output/atlas/data/atlas.h5ad`), all locally regardless of upload. R2 upload is optional: when `uploadAtlas` is true and upload verifies, each file is uploaded to R2 under the atlas key stem and the local `.h5ad` is deleted only after the atlas `gcs-md5` metadata matches the pre-upload local MD5. The pipeline refuses to start when `outputPath` already exists, or when `uploadAtlas` is set and `atlasR2Key` already exists.
 
 | Output | Local file | R2 key when `uploadAtlas` | Written | Contents |
 | ------ | ---------- | ------------------------- | ------- | -------- |
 | Config | `atlas_config.json` | `{stem}_config.json` | At run start | The `H5adConcatConfig` used for the run |
-| Status | `atlas.csv` | `{stem}.csv` | Row per file during the loop | Per-file `accession`, `r2Key`, `status` (`success` or `skip`), `reason`, `studyAccession` |
+| File log | `atlas_files.jsonl` | `{stem}_files.jsonl` | One JSON object per file during the loop | Per-file record with `accession`, `studyAccession`, `r2Key`, `status`, `skipReason`, and `qc` |
 | Atlas | `atlas.h5ad` (deleted after successful upload) | `atlasR2Key` (the configured key) | After concatenation | Merged gzip-compressed AnnData |
-| Result | `atlas_result.json` | `{stem}_result.json` | After concatenation | The `H5adConcatResult` |
+| Result | `atlas_result.json` | `{stem}_result.json` | After concatenation | The `H5adConcatResult` including `files` and `qcSummary` |
 
-The config manifest is written up front and the status CSV is flushed row by row during the loop, so both survive an interrupted or failed run (including when every file is rejected). The atlas and result manifest are written only once concatenation succeeds. Together these make the run inputs and outputs readable without pulling the atlas from R2. When the atlas is uploaded, `outputPath` in the result points at the result manifest instead of the deleted local `.h5ad`.
+The config manifest is written up front and the file log is flushed record by record during the loop, so both survive an interrupted or failed run (including when every file is rejected). The atlas and result manifest are written only once concatenation succeeds. Together these make the run inputs and outputs readable without pulling the atlas from R2. When the atlas is uploaded, `outputPath` in the result points at the result manifest instead of the deleted local `.h5ad`.
 
 Logs append to `logs/h5ad_concat.log`. Each run logs a start line and a completion line; `KeyboardInterrupt` (Ctrl-C) is logged as an interruption before the exception is re-raised.
 
@@ -155,7 +160,7 @@ Per-file QC filters low-quality cells and genes while preserving raw counts in `
 
 Each file is reindexed to the canonical `geneInfoPath` Ensembl-ID axis before concat, so the atlas gene space is fixed at 36,601 genes in reference order and the concat join is a no-op. Sparse-gene filtering is deferred downstream (`minCellsPerGene` defaults to `0`).
 
-QC records `pct_counts_mt`, `pct_counts_ribo`, and `pct_counts_hb` per cell. Only mitochondrial fraction filters by default (`maxPctMito`), because ribosomal and hemoglobin fractions are strongly tied to cell state and tissue and can vary by study; filtering on them risks removing biology and reintroducing study-correlated bias. Ribosomal fraction is recorded only, and hemoglobin filtering is opt-in via `maxPctHb`.
+QC records `pct_counts_mt`, `pct_counts_ribo`, and `pct_counts_hb` per cell. Mitochondrial filtering is on by default (`maxPctMito`). Ribosomal and hemoglobin filtering are opt-in via `maxPctRibo` and `maxPctHb` (both default to `1.0`, which keeps every cell under the strict `<` comparison). Cell drops are attributed sequentially in the order `minGenesPerCell`, `maxPctMito`, `maxPctRibo`, `maxPctHb`.
 
 ## Cell-count gates and the dropout denominator
 

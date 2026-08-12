@@ -288,7 +288,7 @@ Concatenates raw scBaseCount h5ads into one merged atlas via `[h5ad_concat](../s
 
 Reads `output/metadata/datasets.csv` by default (config `datasetsPath`).
 
-**Output:** `output/atlas/data/` (`atlas.h5ad`, `atlas_config.json`, `atlas.csv`, `atlas_result.json`)
+**Output:** `output/atlas/data/` (`atlas.h5ad`, `atlas_config.json`, `atlas_files.jsonl`, `atlas_result.json`)
 
 **Log:** `logs/h5ad_concat.log`
 
