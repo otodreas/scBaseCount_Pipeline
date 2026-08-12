@@ -63,6 +63,9 @@ docs/zotero_pdfs/
 # Symlinks
 cluster_validation_sandbox/datasets_summary
 
+# IP
+logos/
+
 # Other
 docs/resources/project_plan/v2/PH_notes.md
 docs/status_updates/
