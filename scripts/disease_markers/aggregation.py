@@ -57,7 +57,7 @@ def build_aggregate_fingerprint(
     payload = {
         "atlas": _file_fingerprint(cfg.atlasPath),
         "contexts": _file_fingerprint(cfg.contextsPath),
-        "atlasCsv": _file_fingerprint(cfg.atlasCsvPath),
+        "atlasManifest": _file_fingerprint(cfg.atlasManifestPath),
         "sampleMetadata": _file_fingerprint(Path(samplePath)),
         "sampleKey": cfg.sampleKey,
         "studyKey": cfg.studyKey,
@@ -244,7 +244,7 @@ def aggregate_atlas(cfg: AtlasDeAnalysisConfig, *, reuseCheckpoint: bool = True)
     log_memory("post-load", logger=log)
     reject_dense_cell_matrix(adata.raw.X if adata.raw is not None else adata.X, label="loaded atlas")
 
-    label_table = build_sample_label_table(cfg.contextsPath, cfg.atlasCsvPath, MetadataConfig().sampleParquetPath)
+    label_table = build_sample_label_table(cfg.contextsPath, cfg.atlasManifestPath, MetadataConfig().sampleParquetPath)
     label_table.to_csv(cfg.outputDir / "sample_labels.csv", index=False)
 
     annotated = annotate_obs_with_labels(

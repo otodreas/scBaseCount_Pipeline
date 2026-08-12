@@ -210,18 +210,34 @@ def test_merge_duplicate_evidence_keeps_classes() -> None:
 def test_checkpoint_fingerprint_roundtrip(tmp_path: Path) -> None:
     atlas = tmp_path / "atlas.h5ad"
     contexts = tmp_path / "contexts.jsonl"
-    atlas_csv = tmp_path / "atlas.csv"
+    atlas_manifest = tmp_path / "atlas_result.json"
     gene_info = tmp_path / "geneInfo.tab"
     sample_meta = tmp_path / "samples.parquet"
-    for path in (atlas, contexts, atlas_csv, gene_info):
+    for path in (atlas, contexts, gene_info):
         path.write_text("x")
+    atlas_manifest.write_text(
+        json.dumps(
+            {
+                "files": [
+                    {
+                        "accession": "SRX1",
+                        "studyAccession": "STUDY1",
+                        "r2Key": "prefix/SRX1.h5ad",
+                        "status": "success",
+                        "skipReason": None,
+                        "qc": None,
+                    }
+                ]
+            }
+        )
+    )
     pd.DataFrame({"srxAccession": ["SRX1"]}).to_parquet(sample_meta)
 
     cfg = AtlasDeAnalysisConfig(
         atlasPath=atlas,
         outputDir=tmp_path / "out",
         contextsPath=contexts,
-        atlasCsvPath=atlas_csv,
+        atlasManifestPath=atlas_manifest,
         geneInfoPath=gene_info,
     )
     cfg.outputDir.mkdir(parents=True, exist_ok=True)

@@ -6,10 +6,11 @@ load_dotenv(REPO_ROOT / ".env")
 
 cfg = H5adConcatConfig(
     datasetsPath=REPO_ROOT / "output/metadata/datasets_v2.csv",
-    atlasR2Key="atlas/v2/atlas_v2.h5ad",
+    atlasR2Key="atlas/2026-08-12/atlas.h5ad",
     uploadAtlas=True,
     minPctCellsAfterQc=0.5,
-    outputPath=REPO_ROOT / "output/atlas/v2/atlas_v2.h5ad",
+    maxPctRibo=0.5,
+    outputPath=REPO_ROOT / "output/atlas/2026-08-12/atlas.h5ad",
 )
 
 print("Atlas concat pipeline started")
