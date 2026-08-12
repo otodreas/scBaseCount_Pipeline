@@ -115,6 +115,22 @@ def _metadata_row(
     }
 
 
+def _write_atlas_manifest(path: Path, rows: list[tuple[str, str, str]]) -> None:
+    """Write a minimal post-cutover result manifest. rows are (accession, status, study)."""
+    files = [
+        {
+            "accession": accession,
+            "studyAccession": study,
+            "r2Key": f"prefix/{accession}.h5ad",
+            "status": status,
+            "skipReason": None if status == "success" else "download_failed",
+            "qc": None,
+        }
+        for accession, status, study in rows
+    ]
+    path.write_text(json.dumps({"files": files}) + "\n")
+
+
 def _write_label_inputs(
     tmp_path: Path,
     *,
@@ -124,12 +140,16 @@ def _write_label_inputs(
     metadata_path = tmp_path / "sample_metadata.parquet"
     pd.DataFrame(rows).to_parquet(metadata_path, index=False)
 
-    atlas_lines = ["accession,status,studyAccession"]
-    for row, ctx in zip(rows, contexts, strict=True):
-        study = "PRJ_TEST" if ctx.study is None else ctx.study.studyAccession
-        atlas_lines.append(f"{row['srx_accession']},success,{study}")
-    atlas_path = tmp_path / "atlas.csv"
-    atlas_path.write_text("\n".join(atlas_lines) + "\n")
+    atlas_rows = [
+        (
+            str(row["srx_accession"]),
+            "success",
+            "PRJ_TEST" if ctx.study is None else ctx.study.studyAccession,
+        )
+        for row, ctx in zip(rows, contexts, strict=True)
+    ]
+    atlas_path = tmp_path / "atlas_result.json"
+    _write_atlas_manifest(atlas_path, atlas_rows)
 
     contexts_path = tmp_path / "contexts.jsonl"
     contexts_path.write_text("".join(f"{ctx.model_dump_json()}\n" for ctx in contexts))
@@ -562,8 +582,8 @@ def test_missing_parquet_coverage_fails_fast(tmp_path: Path) -> None:
     ontology_cfg = _write_ontology_cache(tmp_path)
     metadata_path = tmp_path / "sample_metadata.parquet"
     pd.DataFrame([_metadata_row("SRX_OTHER", disease="COVID-19", tissue="lung")]).to_parquet(metadata_path, index=False)
-    atlas_path = tmp_path / "atlas.csv"
-    atlas_path.write_text("accession,status,studyAccession\nSRX_MISSING,success,PRJ_TEST\n")
+    atlas_path = tmp_path / "atlas_result.json"
+    _write_atlas_manifest(atlas_path, [("SRX_MISSING", "success", "PRJ_TEST")])
     contexts_path = tmp_path / "contexts.jsonl"
     contexts_path.write_text(_context(accession="SRX_MISSING").model_dump_json() + "\n")
 
@@ -575,8 +595,8 @@ def test_missing_context_coverage_fails_fast(tmp_path: Path) -> None:
     ontology_cfg = _write_ontology_cache(tmp_path)
     metadata_path = tmp_path / "sample_metadata.parquet"
     pd.DataFrame([_metadata_row("SRX_OK", disease="COVID-19", tissue="lung")]).to_parquet(metadata_path, index=False)
-    atlas_path = tmp_path / "atlas.csv"
-    atlas_path.write_text("accession,status,studyAccession\nSRX_OK,success,PRJ_TEST\n")
+    atlas_path = tmp_path / "atlas_result.json"
+    _write_atlas_manifest(atlas_path, [("SRX_OK", "success", "PRJ_TEST")])
     contexts_path = tmp_path / "contexts.jsonl"
     contexts_path.write_text("")
 

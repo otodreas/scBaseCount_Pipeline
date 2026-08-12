@@ -19,7 +19,7 @@ from metadata.config import MetadataConfig
 
 label_table = build_sample_label_table(
     Path("output/context/contexts_v2.jsonl"),
-    Path("output/atlas/v2/atlas_v2.csv"),
+    Path("output/atlas/v2/atlas_v2_result.json"),
     MetadataConfig().sampleParquetPath,
 )
 obs = annotate_obs_with_labels(adata.obs, label_table)
