@@ -62,6 +62,20 @@ obs["cell_type"].value_counts()
 
 Both lookups push the SRX filter into the Parquet scan, so no full-file load is needed.
 
+## Why free-text tissue (not Uberon) for the lung gate
+
+The atlas accession list (`output/metadata/datasets_v2.csv`, built by `pipelines/build_datasets_v2.py`) and this package’s tissue match both use free-text `tissue` with `LUNG_TISSUE_RE`, not `tissue_ontology_term_id`.
+
+On the human GeneFull `sample_metadata.parquet` snapshot (non-`NRX`, n=34,794):
+
+| Field | Unusable / uncertain | Share |
+|-------|----------------------|------:|
+| Free-text `tissue` null or `""` | 0 | 0% |
+| Free-text `tissue` unsure-like (`unsure`, `not_applicable`, `none`, …) | 4,197 (of which 4,052 are exact `unsure`) | 12.1% |
+| `tissue_ontology_term_id` null or `""` | 10,671 | 30.7% |
+
+Free-text tissue is almost never blank; uncertainty shows up mainly as the label `unsure`. Missing Uberon IDs are far more common (~31% null or empty) than unsure-like free-text labels (~12%). Gating on free text therefore keeps coverage where ontology terms are absent. Downstream labeling can still prefer Uberon when an ID is present (`is_respiratory_specimen` in `specimen.py`).
+
 ## Filter logic
 
 Filtering is applied in three steps:

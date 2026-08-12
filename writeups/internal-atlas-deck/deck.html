@@ -713,6 +713,28 @@
       <p class="slide-note">Result: ~1.8k SRXs in the datasets list. COVID+blood never enters (tissue fails). Healthy / control / unsure <em>lung</em> samples can enter. File-level QC still happens later in <span class="mono">h5ad_concat</span>.</p>
     </section>
 
+    <!-- 4b. Why free-text tissue -->
+    <section class="slide" data-section="acquisition">
+      <p class="eyebrow">1 · Data acquisition</p>
+      <h2>Why the lung gate uses free-text tissue</h2>
+      <p class="lede">Uberon would be cleaner when present. On this scBaseCount snapshot it is missing much more often than free-text tissue is uncertain.</p>
+      <div class="stat-row" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <div class="stat">
+          <div class="n">12%</div>
+          <div class="l">free-text <span class="mono">tissue</span> unsure-like<br />(4,197 / 34,794; almost all <span class="mono">unsure</span>; 0 null or blank)</div>
+        </div>
+        <div class="stat">
+          <div class="n">31%</div>
+          <div class="l"><span class="mono">tissue_ontology_term_id</span> null or empty<br />(10,671 / 34,794)</div>
+        </div>
+      </div>
+      <ul>
+        <li>Gate on free-text lung regex so samples without Uberon still enter when the tissue string is usable.</li>
+        <li>Later steps can still use Uberon when an ID exists.</li>
+      </ul>
+      <p class="slide-note">Human GeneFull <span class="mono">sample_metadata.parquet</span>, non-<span class="mono">NRX</span> rows. Unsure-like = <span class="mono">unsure</span>, <span class="mono">not_applicable</span>, <span class="mono">none</span>, and similar placeholders.</p>
+    </section>
+
     <!-- 5. Scale -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">1 · Data acquisition</p>
