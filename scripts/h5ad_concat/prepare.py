@@ -7,7 +7,7 @@ from storage import download_from_r2
 
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
-from h5ad_concat.models import SkipReason
+from h5ad_concat.models import QcStats, SkipReason
 from h5ad_concat.qc import QC_VAR_KEYS, apply_qc_gate
 from h5ad_concat.reference import GeneReference, align_to_reference
 
@@ -42,8 +42,8 @@ def prepare_adata(
     cfg: H5adConcatConfig,
     reference: GeneReference,
     log: logging.Logger,
-) -> tuple[ad.AnnData, str]:
-    """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession)."""
+) -> tuple[ad.AnnData, str, QcStats | None]:
+    """Download, validate, enrich one h5ad in memory; return (AnnData, studyAccession, qcStats)."""
     raw_path = cfg.cacheDir / "raw" / f"{accession}.h5ad"
 
     # Attempt to download the file and verify with MD5
@@ -69,20 +69,27 @@ def prepare_adata(
     try:
         validate_single_accession(adata, accession, cfg)
 
+        qc_stats: QcStats | None = None
         if cfg.preprocess:
             adata, qc_stats = apply_qc_gate(adata, cfg)
+            dropped_by_filter = ", ".join(f"{name}={count}" for name, count in qc_stats.nCellsDroppedByFilter.items())
             log.info(
-                "%s: QC kept %d/%d cells (%.1f%% retained)",
+                "%s: QC kept %d/%d cells (%.1f%% retained); dropped by filter: %s",
                 accession,
                 qc_stats.nCellsAfter,
                 qc_stats.nCellsBefore,
                 qc_stats.pctCellsAfter * 100.0,
+                dropped_by_filter,
             )
 
         if cell_type_all_missing(adata, cfg.cellTypeKey):
-            raise FileRejected(SkipReason.cell_type_all_missing)
+            raise FileRejected(SkipReason.cell_type_all_missing, qc=qc_stats)
 
-        adata, align_stats = align_to_reference(adata, reference, conserve_layers=cfg.conserveLayers)
+        try:
+            adata, align_stats = align_to_reference(adata, reference, conserve_layers=cfg.conserveLayers)
+        except FileRejected as exc:
+            raise FileRejected(exc.reason, qc=qc_stats) from exc
+
         dropped_qc_stats = [key for key in align_stats.droppedVarKeys if key in QC_VAR_KEYS]
         dropped_annotations = [key for key in align_stats.droppedVarKeys if key not in QC_VAR_KEYS]
         log.info(
@@ -97,7 +104,7 @@ def prepare_adata(
 
         adata.obs[cfg.batchKey] = study_accession
         fill_cell_type(adata, cfg)
-        return adata, study_accession
+        return adata, study_accession, qc_stats
 
     finally:
         safe_delete(raw_path, log)
