@@ -66,6 +66,19 @@ cluster_validation_sandbox/datasets_summary
 # IP
 logos/
 
+# LaTeX (docs/report)
+docs/report/*.aux
+docs/report/*.log
+docs/report/*.fls
+docs/report/*.fdb_latexmk
+docs/report/*.synctex.gz
+docs/report/*.synctex.gz(busy)
+docs/report/*.bbl
+docs/report/*.blg
+docs/report/*.out
+docs/report/*.toc
+docs/report/report.pdf
+
 # Other
 docs/resources/project_plan/v2/PH_notes.md
 docs/status_updates/
