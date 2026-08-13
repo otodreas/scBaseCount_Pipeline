@@ -78,6 +78,10 @@ docs/report/*.blg
 docs/report/*.out
 docs/report/*.toc
 docs/report/report.pdf
+texput.log
+*.fdb_latexmk
+*.fls
+Project_Plan_v2.log
 
 # Other
 docs/resources/project_plan/v2/PH_notes.md
