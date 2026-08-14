@@ -1,12 +1,10 @@
-from dataclasses import dataclass
-
 import anndata as ad
 import pandas as pd
 import scanpy as sc
 
 from h5ad_concat.config import H5adConcatConfig
 from h5ad_concat.exceptions import FileRejected
-from h5ad_concat.models import SkipReason
+from h5ad_concat.models import CELL_FILTER_ORDER, PostFilterMedians, QcStats, SkipReason
 
 _QC_GENE_FLAGS = ("mt", "ribo", "hb")
 
@@ -30,19 +28,6 @@ def _gene_names(adata: ad.AnnData) -> pd.Series:
     return pd.Series(raw, index=adata.var_names, dtype="string").str.upper()
 
 
-@dataclass
-class QcStats:
-    nCellsBefore: int
-    nCellsAfter: int
-    nGenesBefore: int
-    nGenesAfter: int
-    medianGenesPerCell: float
-    medianPctMito: float
-    medianPctRibo: float
-    medianPctHb: float
-    pctCellsAfter: float
-
-
 def flag_qc_genes(adata: ad.AnnData) -> None:
     """Set adata.var flags mt, ribo, and hb from gene names for QC metric computation."""
     names = _gene_names(adata)
@@ -52,41 +37,73 @@ def flag_qc_genes(adata: ad.AnnData) -> None:
     adata.var["hb"] = names.str.match(r"^HB[ABDEGMQZ]\d?$").to_numpy()
 
 
+def _drop_cells_by_fraction(adata: ad.AnnData, obs_key: str, max_fraction: float) -> tuple[ad.AnnData, int]:
+    """Keep cells with obs_key strictly below max_fraction * 100; return filtered adata and drop count."""
+    keep = adata.obs[obs_key] < max_fraction * 100
+    n_dropped = int((~keep).sum())
+    if n_dropped == 0:
+        return adata, 0
+    return adata[keep].copy(), n_dropped
+
+
 def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData, QcStats]:
-    """Filter low-quality cells and genes; raise FileRejected when no cells remain."""
+    """Filter low-quality cells and genes; raise FileRejected when remaining cells fail file-level gates."""
     n_cells_before = adata.n_obs
     n_genes_before = adata.n_vars
+    n_cells_dropped_by_filter = {name: 0 for name in CELL_FILTER_ORDER}
 
     flag_qc_genes(adata)
     sc.pp.calculate_qc_metrics(adata, qc_vars=list(_QC_GENE_FLAGS), inplace=True, log1p=False)
+
+    before_min_genes = adata.n_obs
     sc.pp.filter_cells(adata, min_genes=cfg.minGenesPerCell)
+    n_cells_dropped_by_filter["minGenesPerCell"] = before_min_genes - adata.n_obs
+
+    n_genes_dropped_min_cells = 0
     if cfg.minCellsPerGene > 0:
+        before_genes = adata.n_vars
         sc.pp.filter_genes(adata, min_cells=cfg.minCellsPerGene)
-    # scanpy reports pct_counts_* on a 0-100 scale; config ceilings are fractions in (0, 1] where 1.0 is a no-op.
-    adata = adata[adata.obs["pct_counts_mt"] < cfg.maxPctMito * 100].copy()
-    adata = adata[adata.obs["pct_counts_hb"] < cfg.maxPctHb * 100].copy()
+        n_genes_dropped_min_cells = before_genes - adata.n_vars
+
+    # scanpy reports pct_counts_* on a 0-100 scale; config ceilings are fractions in (0, 1].
+    adata, n_dropped_mito = _drop_cells_by_fraction(adata, "pct_counts_mt", cfg.maxPctMito)
+    n_cells_dropped_by_filter["maxPctMito"] = n_dropped_mito
+
+    adata, n_dropped_ribo = _drop_cells_by_fraction(adata, "pct_counts_ribo", cfg.maxPctRibo)
+    n_cells_dropped_by_filter["maxPctRibo"] = n_dropped_ribo
+
+    adata, n_dropped_hb = _drop_cells_by_fraction(adata, "pct_counts_hb", cfg.maxPctHb)
+    n_cells_dropped_by_filter["maxPctHb"] = n_dropped_hb
 
     n_cells_after = adata.n_obs
+    n_cells_dropped = n_cells_before - n_cells_after
     pct_cells_after = n_cells_after / n_cells_before if n_cells_before > 0 else 0.0
-
-    if n_cells_after < cfg.minCellsAfterQc:
-        raise FileRejected(SkipReason.too_few_cells)
-    if pct_cells_after < cfg.minPctCellsAfterQc:
-        raise FileRejected(SkipReason.excessive_cell_dropout)
 
     median_genes = float(adata.obs["n_genes_by_counts"].median()) if n_cells_after > 0 else 0.0
     median_mito = float(adata.obs["pct_counts_mt"].median()) if n_cells_after > 0 else 0.0
     median_ribo = float(adata.obs["pct_counts_ribo"].median()) if n_cells_after > 0 else 0.0
     median_hb = float(adata.obs["pct_counts_hb"].median()) if n_cells_after > 0 else 0.0
 
-    return adata, QcStats(
+    stats = QcStats(
         nCellsBefore=n_cells_before,
         nCellsAfter=n_cells_after,
+        nCellsDropped=n_cells_dropped,
+        nCellsDroppedByFilter=n_cells_dropped_by_filter,
         nGenesBefore=n_genes_before,
         nGenesAfter=adata.n_vars,
-        medianGenesPerCell=median_genes,
-        medianPctMito=median_mito,
-        medianPctRibo=median_ribo,
-        medianPctHb=median_hb,
+        nGenesDroppedByFilter={"minCellsPerGene": n_genes_dropped_min_cells},
         pctCellsAfter=pct_cells_after,
+        postFilterMedians=PostFilterMedians(
+            nGenesByCounts=median_genes,
+            pctCountsMito=median_mito,
+            pctCountsRibo=median_ribo,
+            pctCountsHb=median_hb,
+        ),
     )
+
+    if n_cells_after < cfg.minCellsAfterQc:
+        raise FileRejected(SkipReason.too_few_cells, qc=stats)
+    if pct_cells_after < cfg.minPctCellsAfterQc:
+        raise FileRejected(SkipReason.excessive_cell_dropout, qc=stats)
+
+    return adata, stats

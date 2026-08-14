@@ -39,6 +39,8 @@ class H5adConcatConfig(BaseModel):
     minGenesPerCell: int = Field(default=200, ge=0)
     # Maximum mitochondrial read fraction per cell, as a fraction in (0, 1]; 1.0 keeps every cell.
     maxPctMito: float = Field(default=0.2, gt=0.0, le=1.0)
+    # Maximum ribosomal read fraction per cell, as a fraction in (0, 1]; 1.0 keeps every cell.
+    maxPctRibo: float = Field(default=1.0, gt=0.0, le=1.0)
     # Hemoglobin read fraction ceiling, as a fraction in (0, 1]; 1.0 records pct_counts_hb without filtering.
     maxPctHb: float = Field(default=1.0, gt=0.0, le=1.0)
     # Minimum cells expressing a gene; 0 disables the filter.
