@@ -237,7 +237,11 @@ The scale and heterogenaiety of single-cell RNA sequencing (scRNA-seq) datasets 
 \end{eqnarray}
 
 \section*{Materials and methods}
-\subsection*{Etiam eget sapien nibh}
+\subsection*{Data aquisition}
+scBaseCount data, which includes expression matrices, are hosted on Google Cloud Platform in Google Cloud Storage (GCS) buckets~\cite{youngblutScBaseCountAIAgentcurated2025}. We used the \texttt{2026-01-12} snapshot of scBaseCount. Before downloading any matrices, we identified a subset of the available matrices that represented lung tissue. We accomplished this by filtering scBaseCount's tissue metadata using a regular expression containing lung-like words, such as "lung," "pulmonary," "alveolus/i/ar." The datasets whose metadata passed that filter were sequentially fetched from GCS and their md5 hashes computed on disk. Due to the extensive cumulative size of the datasets, the datasets themselves, along with the newly computed hashes, were uploaded to a Cloudflare R2 bucket that is internally owned and maintained, before being cleared from disk. We re-computed the hash whenever a dataset was downloaded from R2 for local computing to ensure file provenance between scBaseCount and our local datasets.
+\subsection*{Quality control \& atlas construction}
+
+\subsection*{Embedding \& batch correction}
 
 % For figure citations, please use "Fig" instead of "Figure".
 Nulla mi mi, Fig~\ref{fig1} venenatis sed ipsum varius, volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at justo vitae nulla elementum commodo eu id massa. In vitae diam ac augue semper tincidunt eu ut eros. Fusce fringilla erat porttitor lectus cursus, \nameref{S1_Video} vel sagittis arcu lobortis. Aliquam in enim semper, aliquam massa id, cursus neque. Praesent faucibus semper libero.
