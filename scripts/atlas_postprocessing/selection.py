@@ -3,7 +3,12 @@ import time
 from typing import Any
 
 import scanpy as sc
-from cluster_validation.metrics import matched_jaccard
+from cluster_validation import (
+    ResolutionSelection,
+    default_resolutions,
+    pick_n_pcs,
+    select_resolution_on_graph,
+)
 from shared.repo import rel_to_repo
 
 from atlas_postprocessing.artifacts import write_json, write_metric_csv, write_parameters_template
@@ -12,26 +17,16 @@ from atlas_postprocessing.core import (
     build_neighbors,
     load_and_normalize,
     run_harmony_on_pcs,
-    run_leiden,
     scale_and_pca,
     select_hvgs,
 )
-from atlas_postprocessing.metrics import cross_study_macro_cell_type_neighbor_agreement, extract_plateaus
-from atlas_postprocessing.plots import plot_sweep_metric
+from atlas_postprocessing.plots import plot_resolution_selection
 from atlas_postprocessing.sampling import sample_metadata
 
 log = logging.getLogger(__name__)
 
-
-def validate_candidate_lists(cfg: AtlasPostprocessingConfig) -> None:
-    for name, values in (
-        ("hvgCandidates", cfg.hvgCandidates),
-        ("pcCandidates", cfg.pcCandidates),
-        ("neighborCandidates", cfg.neighborCandidates),
-        ("resolutionCandidates", cfg.resolutionCandidates),
-    ):
-        if len(values) < 2:
-            raise ValueError(f"{name} must contain at least two values, got {values!r}")
+FIXED_N_TOP_GENES = 2000
+FIXED_N_NEIGHBORS = 15
 
 
 def _require_cell_type(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> None:
@@ -39,189 +34,32 @@ def _require_cell_type(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> Non
         raise ValueError(f"adata.obs is missing cell type key {cfg.cellTypeKey!r}")
 
 
-def _log_candidate(sweep: str, index: int, total: int, value: object, n_obs: int, n_vars: int) -> float:
-    log.info(
-        "START %s candidate %s/%s value=%s cells=%s genes=%s",
-        sweep,
-        index,
-        total,
-        value,
-        f"{n_obs:,}",
-        f"{n_vars:,}",
-    )
-    return time.perf_counter()
-
-
-def _log_candidate_done(sweep: str, index: int, total: int, value: object, started: float, metric: float) -> None:
-    log.info(
-        "DONE %s candidate %s/%s value=%s metric=%.4f in %.1fs",
-        sweep,
-        index,
-        total,
-        value,
-        metric,
-        time.perf_counter() - started,
-    )
-
-
-def _agreement_on_harmony_graph(
-    adata: sc.AnnData,
-    cfg: AtlasPostprocessingConfig,
-    *,
-    nPcs: int,
-    nNeighbors: int,
-) -> tuple[float, float]:
-    if adata.n_obs <= nNeighbors:
-        raise ValueError(f"nNeighbors ({nNeighbors}) must be < n_obs ({adata.n_obs})")
-    adata.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata, cfg, nPcs=nPcs)
-    build_neighbors(adata, nNeighbors=nNeighbors, nPcs=nPcs, useRep="X_pca_harmony")
-    return cross_study_macro_cell_type_neighbor_agreement(
-        adata,
-        batchKey=cfg.batchKey,
-        cellTypeKey=cfg.cellTypeKey,
-    )
-
-
-def sweep_hvgs(adata_norm: sc.AnnData, cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
+def _resolution_rows(sel: ResolutionSelection, resolutions: list[float]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    total = len(cfg.hvgCandidates)
-    for index, n_top in enumerate(cfg.hvgCandidates, start=1):
-        started = _log_candidate("hvg", index, total, n_top, adata_norm.n_obs, adata_norm.n_vars)
-        adata = adata_norm.copy()
-        adata = select_hvgs(adata, cfg, nTopGenes=n_top)
-        adata = scale_and_pca(adata, cfg, nPcsCompute=max(cfg.nPcsCompute, cfg.nPcs))
-        score, coverage = _agreement_on_harmony_graph(
-            adata,
-            cfg,
-            nPcs=cfg.nPcs,
-            nNeighbors=cfg.nNeighbors,
-        )
-        _log_candidate_done("hvg", index, total, n_top, started, score)
-        rows.append(
-            {
-                "nTopGenes": n_top,
-                "weakPriorAgreement": score,
-                "eligibleCoverage": coverage,
-                "nVars": int(adata.n_vars),
-            }
-        )
-
-    values = [float(r["nTopGenes"]) for r in rows]
-    scores = [float(r["weakPriorAgreement"]) for r in rows]
-    plateaus = extract_plateaus(values, scores, relativeThreshold=cfg.plateauRelativeThreshold)
-    return {"rows": rows, "values": values, "scores": scores, "plateaus": plateaus}
-
-
-def sweep_pcs(adata_norm: sc.AnnData, cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
-    max_pcs = max(cfg.pcCandidates)
-    n_comps = max(cfg.nPcsCompute, max_pcs, cfg.nPcs)
-    adata = adata_norm.copy()
-    adata = select_hvgs(adata, cfg, nTopGenes=cfg.nTopGenes)
-    adata = scale_and_pca(adata, cfg, nPcsCompute=n_comps)
-
-    rows: list[dict[str, Any]] = []
-    total = len(cfg.pcCandidates)
-    for index, n_pcs in enumerate(cfg.pcCandidates, start=1):
-        started = _log_candidate("pc", index, total, n_pcs, adata.n_obs, adata.n_vars)
-        score, coverage = _agreement_on_harmony_graph(
-            adata,
-            cfg,
-            nPcs=n_pcs,
-            nNeighbors=cfg.nNeighbors,
-        )
-        _log_candidate_done("pc", index, total, n_pcs, started, score)
-        rows.append(
-            {
-                "nPcs": n_pcs,
-                "weakPriorAgreement": score,
-                "eligibleCoverage": coverage,
-            }
-        )
-
-    values = [float(r["nPcs"]) for r in rows]
-    scores = [float(r["weakPriorAgreement"]) for r in rows]
-    plateaus = extract_plateaus(values, scores, relativeThreshold=cfg.plateauRelativeThreshold)
-    return {"rows": rows, "values": values, "scores": scores, "plateaus": plateaus}
-
-
-def _baseline_harmony_adata(adata_norm: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.AnnData:
-    adata = adata_norm.copy()
-    adata = select_hvgs(adata, cfg, nTopGenes=cfg.nTopGenes)
-    adata = scale_and_pca(adata, cfg, nPcsCompute=max(cfg.nPcsCompute, cfg.nPcs))
-    adata.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata, cfg, nPcs=cfg.nPcs)
-    return adata
-
-
-def sweep_neighbors(adata_harmony: sc.AnnData, cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
-    rows: list[dict[str, Any]] = []
-    total = len(cfg.neighborCandidates)
-    for index, n_neighbors in enumerate(cfg.neighborCandidates, start=1):
-        started = _log_candidate("neighbors", index, total, n_neighbors, adata_harmony.n_obs, adata_harmony.n_vars)
-        if n_neighbors >= adata_harmony.n_obs:
-            raise ValueError(f"neighbor candidate {n_neighbors} must be < n_obs ({adata_harmony.n_obs})")
-        build_neighbors(
-            adata_harmony,
-            nNeighbors=n_neighbors,
-            nPcs=cfg.nPcs,
-            useRep="X_pca_harmony",
-        )
-        score, coverage = cross_study_macro_cell_type_neighbor_agreement(
-            adata_harmony,
-            batchKey=cfg.batchKey,
-            cellTypeKey=cfg.cellTypeKey,
-        )
-        _log_candidate_done("neighbors", index, total, n_neighbors, started, score)
-        rows.append(
-            {
-                "nNeighbors": n_neighbors,
-                "weakPriorAgreement": score,
-                "eligibleCoverage": coverage,
-            }
-        )
-
-    values = [float(r["nNeighbors"]) for r in rows]
-    scores = [float(r["weakPriorAgreement"]) for r in rows]
-    plateaus = extract_plateaus(values, scores, relativeThreshold=cfg.plateauRelativeThreshold)
-    return {"rows": rows, "values": values, "scores": scores, "plateaus": plateaus}
-
-
-def sweep_resolutions(adata_harmony: sc.AnnData, cfg: AtlasPostprocessingConfig) -> dict[str, Any]:
-    build_neighbors(
-        adata_harmony,
-        nNeighbors=cfg.nNeighbors,
-        nPcs=cfg.nPcs,
-        useRep="X_pca_harmony",
-    )
-    ref_labels = adata_harmony.obs[cfg.cellTypeKey].values
-    rows: list[dict[str, Any]] = []
-    total = len(cfg.resolutionCandidates)
-    for index, resolution in enumerate(cfg.resolutionCandidates, start=1):
-        started = _log_candidate("resolution", index, total, resolution, adata_harmony.n_obs, adata_harmony.n_vars)
-        key = f"leiden_{resolution}"
-        run_leiden(adata_harmony, resolution=resolution, keyAdded=key)
-        score = matched_jaccard(adata_harmony.obs[key].values, ref_labels)
-        n_clusters = int(adata_harmony.obs[key].nunique())
-        _log_candidate_done("resolution", index, total, resolution, started, score)
+    for idx, resolution in enumerate(resolutions):
         rows.append(
             {
                 "resolution": resolution,
-                "matchedJaccard": score,
-                "nClusters": n_clusters,
+                "matchedJaccard": float(sel.jaccArr[idx]),
+                "nClusters": int(sel.kArr[idx]),
             }
         )
-
-    values = [float(r["resolution"]) for r in rows]
-    scores = [float(r["matchedJaccard"]) for r in rows]
-    plateaus = extract_plateaus(values, scores, relativeThreshold=cfg.plateauRelativeThreshold)
-    return {"rows": rows, "values": values, "scores": scores, "plateaus": plateaus}
+    return rows
 
 
 def run_calibration(
     cfg: AtlasPostprocessingConfig,
     adata: sc.AnnData | None = None,
 ) -> dict[str, Any]:
-    """Sweep HVG/PC/neighbor/resolution on a representative subset and write diagnostics."""
-    validate_candidate_lists(cfg)
+    """Calibrate atlas graph parameters with cluster-validation selection on a Harmony graph."""
+    if cfg.nTopGenes != FIXED_N_TOP_GENES:
+        raise ValueError(f"Atlas calibration fixes nTopGenes={FIXED_N_TOP_GENES}, got {cfg.nTopGenes}")
+    if cfg.nNeighbors != FIXED_N_NEIGHBORS:
+        raise ValueError(f"Atlas calibration fixes nNeighbors={FIXED_N_NEIGHBORS}, got {cfg.nNeighbors}")
+    resolutions = list(cfg.resolutionCandidates) if cfg.resolutionCandidates else default_resolutions()
+    if len(resolutions) < 2:
+        raise ValueError(f"resolutionCandidates must contain at least two values, got {resolutions!r}")
+
     cfg.calibrationDir.mkdir(parents=True, exist_ok=True)
     metrics_dir = cfg.calibrationDir / "metrics"
     figures_dir = cfg.calibrationDir / "figures"
@@ -229,148 +67,146 @@ def run_calibration(
     figures_dir.mkdir(parents=True, exist_ok=True)
 
     log.info(
-        "Weak-prior labels (%s) are not ground truth; optimizing them can suppress novel subdivisions",
+        "Weak-prior labels (%s) are not ground truth; the matched-Jaccard argmax is advisory only",
         cfg.cellTypeKey,
     )
 
     started_all = time.perf_counter()
     adata_norm = load_and_normalize(cfg, adata=adata)
     _require_cell_type(adata_norm, cfg)
-    for n_neighbors in cfg.neighborCandidates:
-        if n_neighbors >= adata_norm.n_obs:
-            raise ValueError(f"neighbor candidate {n_neighbors} must be < n_obs ({adata_norm.n_obs})")
+    if cfg.nNeighbors >= adata_norm.n_obs:
+        raise ValueError(f"nNeighbors ({cfg.nNeighbors}) must be < n_obs ({adata_norm.n_obs})")
 
-    log.info("START hvg sweep (%s candidates)", len(cfg.hvgCandidates))
-    hvg = sweep_hvgs(adata_norm, cfg)
-    log.info("DONE hvg sweep")
+    log.info("START fixed HVG selection nTopGenes=%s", cfg.nTopGenes)
+    adata_hvg = select_hvgs(adata_norm, cfg, nTopGenes=cfg.nTopGenes)
+    log.info("DONE fixed HVG selection")
 
-    log.info("START pc sweep (%s candidates)", len(cfg.pcCandidates))
-    pc = sweep_pcs(adata_norm, cfg)
-    log.info("DONE pc sweep")
-
-    log.info("START baseline Harmony embedding for neighbor/resolution sweeps")
-    adata_harmony = _baseline_harmony_adata(adata_norm, cfg)
-    log.info("DONE baseline Harmony embedding")
-
-    log.info("START neighbors sweep (%s candidates)", len(cfg.neighborCandidates))
-    neighbors = sweep_neighbors(adata_harmony, cfg)
-    log.info("DONE neighbors sweep")
-
-    log.info("START resolution sweep (%s candidates)", len(cfg.resolutionCandidates))
-    resolution = sweep_resolutions(adata_harmony, cfg)
-    log.info("DONE resolution sweep")
-
-    write_metric_csv(
-        metrics_dir / "hvg.csv",
-        hvg["rows"],
-        ["nTopGenes", "weakPriorAgreement", "eligibleCoverage", "nVars"],
+    log.info("START scale + PCA nPcsCompute=%s", cfg.nPcsCompute)
+    adata_pca = scale_and_pca(adata_hvg, cfg, nPcsCompute=cfg.nPcsCompute)
+    n_pcs, cumvar = pick_n_pcs(
+        adata_pca.uns["pca"]["variance_ratio"],
+        nPcsMin=cfg.nPcsMin,
+        nPcsCompute=cfg.nPcsCompute,
+        nPcsCumvarTarget=cfg.nPcsCumvarTarget,
     )
-    write_metric_csv(
-        metrics_dir / "pc.csv",
-        pc["rows"],
-        ["nPcs", "weakPriorAgreement", "eligibleCoverage"],
+    log.info("DONE PCA; selected nPcs=%s cumvar=%.2f%%", n_pcs, cumvar)
+
+    log.info("START Harmony + neighbors for resolution selection")
+    adata_pca.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata_pca, cfg, nPcs=n_pcs)
+    build_neighbors(
+        adata_pca,
+        nNeighbors=cfg.nNeighbors,
+        nPcs=n_pcs,
+        useRep="X_pca_harmony",
     )
-    write_metric_csv(
-        metrics_dir / "neighbors.csv",
-        neighbors["rows"],
-        ["nNeighbors", "weakPriorAgreement", "eligibleCoverage"],
+    log.info("DONE Harmony + neighbors")
+
+    log.info("START shared resolution selection (%s candidates)", len(resolutions))
+    adata_pca, sel = select_resolution_on_graph(
+        adata_pca,
+        resolutions=resolutions,
+        weakPriorKey=cfg.cellTypeKey,
     )
+    log.info(
+        "DONE resolution selection; recommended=%s matchedJaccard=%.4f nClusters=%s",
+        sel.selectedResolution,
+        float(sel.jaccArr[sel.bestIdx]),
+        int(sel.kArr[sel.bestIdx]),
+    )
+
+    rows = _resolution_rows(sel, resolutions)
     write_metric_csv(
         metrics_dir / "resolution.csv",
-        resolution["rows"],
+        rows,
         ["resolution", "matchedJaccard", "nClusters"],
     )
-
-    plot_sweep_metric(
-        values=hvg["values"],
-        scores=hvg["scores"],
-        plateaus=hvg["plateaus"],
-        xlabel="nTopGenes",
-        ylabel="cross-study macro cell-type neighbor agreement",
-        title="HVG sweep (weak prior)",
-        outPath=figures_dir / "hvg_weak_prior_agreement.png",
-        baseline=float(cfg.nTopGenes),
-    )
-    plot_sweep_metric(
-        values=pc["values"],
-        scores=pc["scores"],
-        plateaus=pc["plateaus"],
-        xlabel="nPcs",
-        ylabel="cross-study macro cell-type neighbor agreement",
-        title="PC sweep (weak prior)",
-        outPath=figures_dir / "pc_weak_prior_agreement.png",
-        baseline=float(cfg.nPcs),
-    )
-    plot_sweep_metric(
-        values=neighbors["values"],
-        scores=neighbors["scores"],
-        plateaus=neighbors["plateaus"],
-        xlabel="nNeighbors",
-        ylabel="cross-study macro cell-type neighbor agreement",
-        title="Neighbor sweep (weak prior)",
-        outPath=figures_dir / "neighbors_weak_prior_agreement.png",
-        baseline=float(cfg.nNeighbors),
-    )
-    plot_sweep_metric(
-        values=resolution["values"],
-        scores=resolution["scores"],
-        plateaus=resolution["plateaus"],
-        xlabel="resolution",
-        ylabel="matched Jaccard",
-        title="Resolution sweep (weak prior)",
+    plot_resolution_selection(
+        resolutions=resolutions,
+        jaccArr=sel.jaccArr.tolist(),
+        kArr=sel.kArr.tolist(),
+        selectedResolution=sel.selectedResolution,
         outPath=figures_dir / "resolution_matched_jaccard.png",
-        baseline=float(cfg.resolution),
     )
 
+    # Keep candidates compatible with validate_approved_against_calibration:
+    # fixed graph values are singletons; any evaluated resolution may be approved.
+    candidates = {
+        "hvg": [cfg.nTopGenes],
+        "pc": [n_pcs],
+        "neighbors": [cfg.nNeighbors],
+        "resolution": resolutions,
+    }
+    recommendation = {
+        "nTopGenes": cfg.nTopGenes,
+        "nPcs": n_pcs,
+        "nNeighbors": cfg.nNeighbors,
+        "resolution": sel.selectedResolution,
+        "matchedJaccard": float(sel.jaccArr[sel.bestIdx]),
+        "nClusters": int(sel.kArr[sel.bestIdx]),
+        "method": "matched_jaccard_argmax",
+        "note": "Advisory only; copy parameters_template.json to approved_parameters.json after review.",
+    }
     summary = {
         "input": rel_to_repo(cfg.inputH5ad),
         "calibrationDir": rel_to_repo(cfg.calibrationDir),
         "cells": int(adata_norm.n_obs),
         "genes": int(adata_norm.n_vars),
+        "hvgs": int(adata_hvg.n_vars),
         "sampling": sample_metadata(adata_norm),
         "batchKey": cfg.batchKey,
         "cellTypeKey": cfg.cellTypeKey,
+        "graphMethod": {
+            "nTopGenes": cfg.nTopGenes,
+            "nNeighbors": cfg.nNeighbors,
+            "nPcsCompute": cfg.nPcsCompute,
+            "nPcsMin": cfg.nPcsMin,
+            "nPcsCumvarTarget": cfg.nPcsCumvarTarget,
+            "selectedNPcs": n_pcs,
+            "selectedCumvarPercent": cumvar,
+            "batchCorrection": "harmony",
+            "harmonyBatchKey": cfg.batchKey,
+            "useRep": "X_pca_harmony",
+        },
         "baseline": {
             "nTopGenes": cfg.nTopGenes,
-            "nPcs": cfg.nPcs,
+            "nPcs": n_pcs,
             "nNeighbors": cfg.nNeighbors,
-            "resolution": cfg.resolution,
+            "resolution": sel.selectedResolution,
             "nPcsCompute": cfg.nPcsCompute,
         },
-        "candidates": {
-            "hvg": cfg.hvgCandidates,
-            "pc": cfg.pcCandidates,
-            "neighbors": cfg.neighborCandidates,
-            "resolution": cfg.resolutionCandidates,
-        },
-        "plateaus": {
-            "hvg": hvg["plateaus"],
-            "pc": pc["plateaus"],
-            "neighbors": neighbors["plateaus"],
-            "resolution": resolution["plateaus"],
-        },
-        "plateauRelativeThreshold": cfg.plateauRelativeThreshold,
+        "candidates": candidates,
+        "recommendation": recommendation,
         "metrics": {
-            "hvg": rel_to_repo(metrics_dir / "hvg.csv"),
-            "pc": rel_to_repo(metrics_dir / "pc.csv"),
-            "neighbors": rel_to_repo(metrics_dir / "neighbors.csv"),
             "resolution": rel_to_repo(metrics_dir / "resolution.csv"),
         },
         "figures": {
-            "hvg": rel_to_repo(figures_dir / "hvg_weak_prior_agreement.png"),
-            "pc": rel_to_repo(figures_dir / "pc_weak_prior_agreement.png"),
-            "neighbors": rel_to_repo(figures_dir / "neighbors_weak_prior_agreement.png"),
             "resolution": rel_to_repo(figures_dir / "resolution_matched_jaccard.png"),
         },
         "timingsSeconds": round(time.perf_counter() - started_all, 3),
         "note": (
             "Cell-type labels are weak priors, not ground truth. "
-            "Inspect plateau intervals and copy parameters_template.json to approved_parameters.json "
-            "only after review."
+            "The matched-Jaccard argmax is advisory. Copy parameters_template.json to "
+            "approved_parameters.json only after review."
         ),
     }
     summary_path = cfg.calibrationDir / "calibration_summary.json"
     write_json(summary_path, summary)
-    write_parameters_template(cfg, summary_path)
+
+    template_cfg = cfg.model_copy(
+        update={
+            "nTopGenes": cfg.nTopGenes,
+            "nPcs": n_pcs,
+            "nNeighbors": cfg.nNeighbors,
+            "resolution": sel.selectedResolution,
+        }
+    )
+    write_parameters_template(template_cfg, summary_path)
     log.info("Calibration complete. Outputs under %s", rel_to_repo(cfg.calibrationDir))
+    log.info(
+        "Recommended parameters: nTopGenes=%s nPcs=%s nNeighbors=%s resolution=%s",
+        recommendation["nTopGenes"],
+        recommendation["nPcs"],
+        recommendation["nNeighbors"],
+        recommendation["resolution"],
+    )
     return summary

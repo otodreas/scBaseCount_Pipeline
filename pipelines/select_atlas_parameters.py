@@ -15,7 +15,7 @@ from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.core import apply_thread_settings, run_postprocessing, timed
 from atlas_postprocessing.sampling import SAMPLE_SEED, sample_metadata, sample_study_proportional
 from atlas_postprocessing.scib import run_scib_benchmark
-from atlas_postprocessing.selection import run_calibration
+from atlas_postprocessing.selection import FIXED_N_NEIGHBORS, FIXED_N_TOP_GENES, run_calibration
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import rel_to_repo
 
@@ -52,13 +52,16 @@ def _parse_args() -> argparse.Namespace:
     d = _DEFAULT_CFG
     parser = argparse.ArgumentParser(
         description=(
-            "Calibrate atlas postprocessing parameters on a study-proportional sample of the full atlas, "
-            "or validate an approved set on the same sampling policy."
+            "Calibrate atlas postprocessing parameters with cluster-validation selection on a "
+            "Harmony graph, or validate an approved set on the same sampling policy."
         )
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    calibrate = sub.add_parser("calibrate", help="Sweep HVG/PC/neighbor/resolution and write diagnostics")
+    calibrate = sub.add_parser(
+        "calibrate",
+        help="Fix HVGs/neighbors, choose PCs by cumvar, sweep resolutions, write advisory recommendation",
+    )
     _add_shared_args(calibrate)
     calibrate.add_argument(
         "--output-dir",
@@ -67,47 +70,23 @@ def _parse_args() -> argparse.Namespace:
         metavar="PATH",
         help="Calibration output root (metrics/, figures/, JSON manifests)",
     )
-    calibrate.add_argument("--n-top-genes", type=int, default=d.nTopGenes, metavar="N", help="Baseline HVGs")
-    calibrate.add_argument("--n-pcs", type=int, default=d.nPcs, metavar="N", help="Baseline PCs")
-    calibrate.add_argument("--n-pcs-compute", type=int, default=d.nPcsCompute, metavar="N", help="PCs computed by PCA")
-    calibrate.add_argument("--n-neighbors", type=int, default=d.nNeighbors, metavar="N", help="Baseline neighbors")
     calibrate.add_argument(
-        "--resolution", type=float, default=d.resolution, metavar="R", help="Baseline Leiden resolution"
-    )
-    calibrate.add_argument(
-        "--hvg-candidates",
+        "--n-pcs-compute",
         type=int,
-        nargs="+",
-        default=d.hvgCandidates,
+        default=d.nPcsCompute,
         metavar="N",
-        help="HVG candidate list",
-    )
-    calibrate.add_argument(
-        "--pc-candidates",
-        type=int,
-        nargs="+",
-        default=d.pcCandidates,
-        metavar="N",
-        help="PC candidate list",
-    )
-    calibrate.add_argument(
-        "--neighbor-candidates",
-        type=int,
-        nargs="+",
-        default=d.neighborCandidates,
-        metavar="N",
-        help="Neighbor candidate list",
+        help="PCs computed by PCA before the adaptive chooser",
     )
     calibrate.add_argument(
         "--resolution-candidates",
         type=float,
         nargs="+",
-        default=d.resolutionCandidates,
+        default=None,
         metavar="R",
-        help="Leiden resolution candidate list",
+        help="Leiden resolution candidate list (default: cluster-validation 0.1..1.9 step 0.1)",
     )
 
-    validate = sub.add_parser("validate", help="Run approved parameters on the sample and scIB-benchmark Harmony")
+    validate = sub.add_parser("validate", help="Run approved parameters on the sample, RF-merge, and scIB-benchmark")
     _add_shared_args(validate)
     validate.add_argument(
         "--parameters-json",
@@ -134,25 +113,20 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _cfg_from_calibrate_args(args: argparse.Namespace) -> AtlasPostprocessingConfig:
-    return _DEFAULT_CFG.model_copy(
-        update={
-            "inputH5ad": args.input,
-            "calibrationDir": args.output_dir,
-            "batchKey": args.batch_key,
-            "cellTypeKey": args.cell_type_key,
-            "nTopGenes": args.n_top_genes,
-            "nPcs": args.n_pcs,
-            "nPcsCompute": args.n_pcs_compute,
-            "nNeighbors": args.n_neighbors,
-            "resolution": args.resolution,
-            "hvgCandidates": list(args.hvg_candidates),
-            "pcCandidates": list(args.pc_candidates),
-            "neighborCandidates": list(args.neighbor_candidates),
-            "resolutionCandidates": list(args.resolution_candidates),
-            "writePlots": False,
-            "nJobs": args.threads,
-        }
-    )
+    update: dict = {
+        "inputH5ad": args.input,
+        "calibrationDir": args.output_dir,
+        "batchKey": args.batch_key,
+        "cellTypeKey": args.cell_type_key,
+        "nTopGenes": FIXED_N_TOP_GENES,
+        "nNeighbors": FIXED_N_NEIGHBORS,
+        "nPcsCompute": args.n_pcs_compute,
+        "writePlots": False,
+        "nJobs": args.threads,
+    }
+    if args.resolution_candidates is not None:
+        update["resolutionCandidates"] = list(args.resolution_candidates)
+    return _DEFAULT_CFG.model_copy(update=update)
 
 
 def _cfg_from_validate_args(args: argparse.Namespace) -> AtlasPostprocessingConfig:
@@ -182,6 +156,9 @@ def _cfg_from_validate_args(args: argparse.Namespace) -> AtlasPostprocessingConf
         cfg.nNeighbors,
         cfg.resolution,
     )
+    recommendation = summary.get("recommendation") or {}
+    if recommendation:
+        log.info("Calibration recommendation: %s", recommendation)
     log.info("Calibration summary baseline: %s", summary.get("baseline"))
     return cfg
 
@@ -234,6 +211,9 @@ def _run_validate(args: argparse.Namespace) -> None:
     )
 
     parameters = load_approved_parameters(args.parameters_json)
+    summary = validate_approved_against_calibration(parameters, parametersPath=args.parameters_json)
+    recommendation = summary.get("recommendation") or {}
+    rf_merge = adata.uns.get("rfMerge")
     validation_summary = {
         "input": rel_to_repo(cfg.inputH5ad),
         "outputDir": rel_to_repo(args.output_dir),
@@ -245,6 +225,16 @@ def _run_validate(args: argparse.Namespace) -> None:
             "nNeighbors": cfg.nNeighbors,
             "resolution": cfg.resolution,
         },
+        "recommendation": recommendation,
+        "approvedVersusRecommendedResolution": {
+            "approved": cfg.resolution,
+            "recommended": recommendation.get("resolution"),
+            "matchesRecommendation": (
+                recommendation.get("resolution") is not None
+                and abs(float(recommendation["resolution"]) - float(cfg.resolution)) < 1e-9
+            ),
+        },
+        "rfMerge": rf_merge,
         "sampling": sample_metadata(adata),
         "subsetH5ad": rel_to_repo(cfg.outputH5ad),
         "runJson": rel_to_repo(cfg.outputH5ad.with_name(f"{cfg.outputH5ad.stem}_run.json")),
@@ -255,12 +245,18 @@ def _run_validate(args: argparse.Namespace) -> None:
         },
         "timingsSeconds": round(time.perf_counter() - started, 3),
         "note": (
-            "Review the full scIB metric table before launching full-atlas production. "
-            "There is no automatic pass/fail threshold."
+            "Review the full scIB metric table and RF merge diagnostics before launching "
+            "full-atlas production. There is no automatic pass/fail threshold."
         ),
     }
     write_json(args.output_dir / "subset_validation_summary.json", validation_summary)
     log.info("Validation summary: %s", json.dumps(validation_summary["resolved"]))
+    if rf_merge:
+        log.info(
+            "RF merge: %s -> %s clusters",
+            rf_merge.get("nClustersPreMerge"),
+            rf_merge.get("nClustersPostMerge"),
+        )
 
 
 def main() -> None:

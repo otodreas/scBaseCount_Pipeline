@@ -182,15 +182,38 @@ def test_validation_workflow_keeps_both_graphs(tmp_path: Path) -> None:
     adata = _tiny_counts_adata()
     adata.obsm["X_pca"] = np.zeros((adata.n_obs, cfg.nPcsCompute), dtype=np.float32)
 
+    def _fake_prepare(loaded, _cfg, returnPreScaleFeatures=False):
+        features = np.zeros((loaded.n_obs, max(loaded.n_vars, 1)), dtype=np.float32)
+        if returnPreScaleFeatures:
+            return loaded, features
+        return loaded
+
+    def _fake_harmony(loaded, _cfg, parallelUmap=False):
+        del parallelUmap
+        loaded.obs["leiden_atlas"] = pd.Categorical(["0"] * loaded.n_obs)
+        loaded.obs["leiden_uncorrected"] = "0"
+        return loaded
+
+    merge_info = MagicMock(
+        nClustersPreMerge=1,
+        nClustersPostMerge=1,
+        labelMap={"0": "0"},
+        mergedGroups={"0": ["0"]},
+        classes=np.array(["0"]),
+        conf=np.ones((1, 1), dtype=np.float64),
+    )
+
+    def _fake_rf_merge(loaded, **kwargs):
+        del kwargs
+        loaded.obs["leiden_merged"] = loaded.obs["leiden_atlas"].astype(str)
+        return loaded, merge_info
+
     with (
-        patch("atlas_postprocessing.core.prepare_pca", side_effect=lambda loaded, _cfg: loaded),
+        patch("atlas_postprocessing.core.prepare_pca", side_effect=_fake_prepare),
         patch("atlas_postprocessing.core.embed_uncorrected", side_effect=lambda loaded, _cfg: loaded) as uncorrected,
-        patch(
-            "atlas_postprocessing.core.integrate_harmony", side_effect=lambda loaded, _cfg, parallelUmap=False: loaded
-        ) as harmony,
+        patch("atlas_postprocessing.core.integrate_harmony", side_effect=_fake_harmony) as harmony,
+        patch("atlas_postprocessing.core.apply_rf_merge", side_effect=_fake_rf_merge),
     ):
-        adata.obs["leiden_atlas"] = "0"
-        adata.obs["leiden_uncorrected"] = "0"
         run_postprocessing(cfg, adata=adata, workflow="validation")
 
     uncorrected.assert_called_once()

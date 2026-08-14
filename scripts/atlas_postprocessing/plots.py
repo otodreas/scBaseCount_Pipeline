@@ -93,35 +93,40 @@ def save_scree_plot(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> Path:
     return scree_path
 
 
-def plot_sweep_metric(
+def plot_resolution_selection(
     *,
-    values: list[float],
-    scores: list[float],
-    plateaus: list[tuple[float, float]],
-    xlabel: str,
-    ylabel: str,
-    title: str,
+    resolutions: list[float],
+    jaccArr: list[float],
+    kArr: list[int],
+    selectedResolution: float,
     outPath: Path,
-    baseline: float | None = None,
 ) -> Path:
-    """Plot one metric against candidate values and shade plateau intervals."""
+    """Plot cluster counts and matched-Jaccard scores with the advisory argmax marked."""
+    if len(resolutions) != len(jaccArr) or len(resolutions) != len(kArr):
+        raise ValueError("resolutions, jaccArr, and kArr must have the same length")
     outPath.parent.mkdir(parents=True, exist_ok=True)
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.plot(values, scores, marker="o", color="steelblue")
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_title(title)
+    best_idx = resolutions.index(selectedResolution)
 
-    y_min, y_max = ax.get_ylim()
-    for start, end in plateaus:
-        ax.axvspan(start, end, color="green", alpha=0.15, label="plateau" if start == plateaus[0][0] else None)
-    if baseline is not None:
-        ax.axvline(baseline, color="gray", linestyle="--", linewidth=1, label=f"baseline={baseline}")
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    axes[0].plot(resolutions, kArr, marker="o", ms=4, color="steelblue")
+    axes[0].axvline(selectedResolution, color="red", linestyle="--", label=f"argmax = {selectedResolution}")
+    axes[0].set_xlabel("Resolution")
+    axes[0].set_ylabel("# clusters")
+    axes[0].set_title("Clusters per resolution")
+    axes[0].legend(fontsize=8)
 
-    ax.set_ylim(y_min, y_max)
-    handles, labels = ax.get_legend_handles_labels()
-    if handles:
-        ax.legend(loc="best", fontsize=8)
+    axes[1].plot(resolutions, jaccArr, marker="o", ms=4, color="darkorange", label="matched Jaccard")
+    axes[1].axvline(selectedResolution, color="red", linestyle="--", label=f"argmax = {selectedResolution}")
+    axes[1].scatter([selectedResolution], [jaccArr[best_idx]], color="red", zorder=5, s=60)
+    axes[1].set_xlabel("Resolution")
+    axes[1].set_ylabel("Matched Jaccard")
+    axes[1].set_title("Resolution selection (advisory)")
+    axes[1].legend(fontsize=8)
+
+    fig.suptitle(
+        f"Atlas resolution selection\nselected = {selectedResolution}  "
+        f"(k = {kArr[best_idx]}, jaccard = {jaccArr[best_idx]:.4f})"
+    )
     fig.tight_layout()
     fig.savefig(outPath, dpi=150, bbox_inches="tight")
     plt.close(fig)

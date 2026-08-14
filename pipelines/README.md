@@ -307,69 +307,68 @@ Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is 
 1. `[select_atlas_parameters.py](select_atlas_parameters.py)` loads the **full atlas** (`--input`), replaces the in-memory object with a study-proportional representative sample of size `--sample-cells`, then calibrates or validates on that sample.
 2. `[run_atlas_postprocessing.py](run_atlas_postprocessing.py)` runs one resolved parameter set on the full atlas (or any chosen input). It does not sample.
 
-Sampling is deterministic (seed `0`), stratified by `--batch-key` (default `study_accession`). Every study gets at least one cell when `N` is at least the study count; remaining slots use largest-remainder proportions by study size. Requests smaller than the study count, or larger than the atlas, are rejected. The full atlas is loaded into memory once per command, so plan RAM for the whole object even though sweeps run on the sample.
+Sampling is deterministic (seed `0`), stratified by `--batch-key` (default `study_accession`). Every study gets at least one cell when `N` is at least the study count; remaining slots use largest-remainder proportions by study size. Requests smaller than the study count, or larger than the atlas, are rejected. The full atlas is loaded into memory once per command, so plan RAM for the whole object even though selection runs on the sample.
 
-Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/v2/post/`. Full-atlas production builds **only** the Harmony-corrected neighbor graph, UMAP, and Leiden partition. Subset validation still builds both the uncorrected and Harmony-corrected embeddings so scIB can compare `X_pca` vs `X_pca_harmony`.
+Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/<date>/post/` (legacy `v2` paths remain valid). Full-atlas production builds **only** the Harmony-corrected neighbor graph, UMAP, and Leiden partition. Subset validation still builds both the uncorrected and Harmony-corrected embeddings so scIB can compare `X_pca` vs `X_pca_harmony`, then RF-merges the approved Leiden partition.
 
 ### Recommended workflow
 
 ```sh
 # 1) Calibrate on a study-proportional sample of the full atlas
 uv run python pipelines/select_atlas_parameters.py calibrate \
-  --input output/atlas/v2/atlas_v2.h5ad \
+  --input output/atlas/2026-08-12/atlas.h5ad \
   --sample-cells 100000 \
-  --output-dir output/atlas/v2/post/parameter_selection
+  --output-dir output/atlas/2026-08-12/post/parameter_selection/cluster_validation
 
-# 2) Inspect metrics/figures, copy the template, edit the four values
-cp output/atlas/v2/post/parameter_selection/parameters_template.json \
-   output/atlas/v2/post/parameter_selection/approved_parameters.json
+# 2) Inspect metrics/figures, copy the template, optionally edit resolution
+cp output/atlas/2026-08-12/post/parameter_selection/cluster_validation/parameters_template.json \
+   output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json
 
-# 3) Validate the approved set on a fresh sample with the same policy + scIB
+# 3) Validate the approved set on a fresh sample with RF merge + scIB
 uv run python pipelines/select_atlas_parameters.py validate \
-  --input output/atlas/v2/atlas_v2.h5ad \
+  --input output/atlas/2026-08-12/atlas.h5ad \
   --sample-cells 100000 \
-  --parameters-json output/atlas/v2/post/parameter_selection/approved_parameters.json \
-  --output-dir output/atlas/v2/post/subset_validation
+  --parameters-json output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json \
+  --output-dir output/atlas/2026-08-12/post/subset_validation
 
-# 4) After reviewing scIB, run production on the full atlas with the same approved JSON
+# 4) After reviewing scIB and RF diagnostics, run production on the full atlas
 uv run python pipelines/run_atlas_postprocessing.py \
-  --input output/atlas/v2/atlas_v2.h5ad \
-  --output output/atlas/v2/post/production/atlas_v2_post.h5ad \
-  --parameters-json output/atlas/v2/post/parameter_selection/approved_parameters.json
+  --input output/atlas/2026-08-12/atlas.h5ad \
+  --output output/atlas/2026-08-12/post/production/atlas_post.h5ad \
+  --parameters-json output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json
 ```
 
-Calibration sweeps one parameter family at a time around the configured baseline (HVGs, PCs, neighbors, Leiden resolution). It does not auto-select final values. Cell-type labels are used as weak priors for diagnostics only.
+Calibration matches the cluster-validation control flow on a Harmony graph: fixed 2,000 batch-aware HVGs, adaptive PC count (50 computed, min 15, 50% cumvar target), fixed 15 neighbors, and a matched-Jaccard resolution sweep over `0.1..1.9` step `0.1`. The argmax is advisory only. Cell-type labels are weak priors for scoring, not ground truth. Create `approved_parameters.json` manually; the runner never writes it.
 
-For this atlas, `100000` cells is the recommended balance between representation and calibration cost. Use `50000` for a faster preliminary sweep or `200000` to check parameter stability with stronger rare-population coverage. Samples above `250000` are usually unnecessary unless the selected parameter region changes materially between the 100k and 200k runs. Use the same sample size for calibration and validation.
+For this atlas, `100000` cells is the recommended balance between representation and calibration cost. Use `50000` for a faster preliminary run or `200000` to check stability with stronger rare-population coverage. Use the same sample size for calibration and validation.
 
 Approved JSON shape (`AtlasPostprocessingParameters`, camelCase):
 
 ```json
 {
   "nTopGenes": 2000,
-  "nPcs": 20,
+  "nPcs": 18,
   "nNeighbors": 15,
-  "resolution": 1.0,
-  "calibrationSummary": "output/atlas/v2/post/parameter_selection/calibration_summary.json"
+  "resolution": 0.8,
+  "calibrationSummary": "output/atlas/2026-08-12/post/parameter_selection/cluster_validation/calibration_summary.json"
 }
 ```
 
-`--parameters-json` is authoritative for those four tuning knobs. Do not combine it with `--n-top-genes`, `--n-pcs`, `--n-neighbors`, or `--resolution`. Scalar overrides remain valid when `--parameters-json` is omitted.
+`--parameters-json` is authoritative for those four tuning knobs. Do not combine it with `--n-top-genes`, `--n-pcs`, `--n-neighbors`, or `--resolution`. Scalar overrides remain valid when `--parameters-json` is omitted. Approved HVG/PC/neighbor values must match the singleton candidates recorded by calibration; any evaluated resolution may be approved.
 
 ### `select_atlas_parameters.py calibrate`
 
-Loads the full atlas from `--input`, samples `--sample-cells` in memory, then sweeps on that sample.
+Loads the full atlas from `--input`, samples `--sample-cells` in memory, then runs the fixed graph + resolution selection on that sample.
 
 **Output root default:** `output/atlas/v2/post/parameter_selection/`
 
 
-| File                                                                           | Description                                                                                         |
-| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `calibration_summary.json`                                                     | Baseline, candidates, plateau intervals, coverage, timings, artifact paths, and `sampling` metadata |
-| `parameters_template.json`                                                     | Editable starting point for approved parameters                                                     |
-| `metrics/{hvg,pc,neighbors,resolution}.csv`                                    | One metric table per sweep                                                                          |
-| `figures/*_weak_prior_agreement.png`, `figures/resolution_matched_jaccard.png` | Single-metric plateau plots                                                                         |
-
+| File                                     | Description                                                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `calibration_summary.json`               | Fixed graph method, candidates, advisory recommendation, timings, artifact paths, sampling metadata |
+| `parameters_template.json`               | Editable starting point seeded with resolved graph values and recommended resolution                 |
+| `metrics/resolution.csv`                 | Matched Jaccard and cluster counts per resolution                                                    |
+| `figures/resolution_matched_jaccard.png` | Resolution selection diagnostic with the advisory argmax marked                                      |
 
 
 | Flag             | Required | Description                                              |
@@ -378,7 +377,7 @@ Loads the full atlas from `--input`, samples `--sample-cells` in memory, then sw
 | `--sample-cells` | yes      | Exact cell count for the in-memory representative sample |
 
 
-Default candidate lists: HVGs `1000 2000 4000 8000`; PCs `10 20 30 50`; neighbors `5 10 15 30 50 100`; resolutions `0.2` through `2.0` step `0.2`. Override with `--hvg-candidates`, `--pc-candidates`, `--neighbor-candidates`, `--resolution-candidates`. Baseline defaults: `--n-top-genes 2000`, `--n-pcs 20`, `--n-neighbors 15`, `--resolution 1.0`, `--n-pcs-compute 50`.
+Fixed method values: HVGs `2000`, neighbors `15`, PC chooser `nPcsCompute=50`, `nPcsMin=15`, `nPcsCumvarTarget=0.5`. Default resolutions follow cluster validation (`0.1` through `1.9` step `0.1`). Override the grid with `--resolution-candidates`.
 
 `sampling` in `calibration_summary.json` records `sourceCells`, `sampleCells`, `method` (`studyProportional`), `stratifyKey`, `seed` (`0`), and `nStudies`. `input` remains the full atlas path.
 
@@ -386,19 +385,18 @@ Default candidate lists: HVGs `1000 2000 4000 8000`; PCs `10 20 30 50`; neighbor
 
 ### `select_atlas_parameters.py validate`
 
-Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one dual-embedding validation pass with the approved JSON (uncorrected + Harmony graphs), then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
+Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one dual-embedding validation pass with the approved JSON (uncorrected + Harmony graphs), RF-merges `leiden_atlas` into `leiden_merged` on normalized pre-scale HVGs, then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table and RF diagnostics before production; there is no automatic pass/fail gate.
 
 **Output root default:** `output/atlas/v2/post/subset_validation/`
 
 
-| File                                             | Description                                             |
-| ------------------------------------------------ | ------------------------------------------------------- |
-| `atlas_pp_subset.h5ad`                           | Processed sample                                        |
-| `atlas_pp_subset_run.json`                       | Run summary including `sampling` metadata               |
-| `subset_validation_summary.json`                 | Approved values, sampling metadata, scIB paths, timings |
-| `figures/`                                       | Scree + atlas-scale UMAPs                               |
-| `scib/scib_results.csv`, `scib/scib_results.svg` | scIB report                                             |
-
+| File                                             | Description                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------ |
+| `atlas_pp_subset.h5ad`                           | Processed sample with `leiden_atlas` and `leiden_merged`                 |
+| `atlas_pp_subset_run.json`                       | Run summary including `sampling` and `clustersMerged`                    |
+| `subset_validation_summary.json`                 | Approved vs recommended resolution, RF diagnostics, sampling, scIB paths |
+| `figures/`                                       | Scree + atlas-scale UMAPs                                                |
+| `scib/scib_results.csv`, `scib/scib_results.svg` | scIB report                                                              |
 
 
 | Flag                | Required | Description                                              |
@@ -406,7 +404,6 @@ Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs
 | `--input`           | yes      | Full atlas h5ad                                          |
 | `--sample-cells`    | yes      | Exact cell count for the in-memory representative sample |
 | `--parameters-json` | yes      | Approved parameter JSON from calibration review          |
-
 
 
 

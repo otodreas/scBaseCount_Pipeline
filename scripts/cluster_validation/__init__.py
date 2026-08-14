@@ -5,6 +5,9 @@ from cluster_validation.config import ClusterValidationConfig, default_resolutio
 from cluster_validation.embedding import pick_n_pcs
 from cluster_validation.merge import (
     MERGED_CLUSTER_KEY,
+    RF_N_ESTIMATORS,
+    RF_N_SPLITS,
+    RF_RANDOM_STATE,
     MergeInfo,
     apply_rf_merge,
     merge_by_confusion,
@@ -24,6 +27,9 @@ __all__ = [
     "ResolutionSelection",
     "MergeInfo",
     "MERGED_CLUSTER_KEY",
+    "RF_N_ESTIMATORS",
+    "RF_N_SPLITS",
+    "RF_RANDOM_STATE",
     "default_resolutions",
     "pick_n_pcs",
     "select_resolution_on_graph",
