@@ -5,7 +5,6 @@ import datetime
 import scanpy as sc
 from shared.logger import configure_file_logger
 
-from cluster_validation.clustering import sweep_leiden
 from cluster_validation.config import ClusterValidationConfig
 from cluster_validation.data import load_dataset
 from cluster_validation.embedding import embed_dataset
@@ -13,7 +12,7 @@ from cluster_validation.merge import merge_clusters
 from cluster_validation.metrics import compute_metrics
 from cluster_validation.models import ClusterValidationResult
 from cluster_validation.preprocess import preprocess
-from cluster_validation.resolution import select_resolution
+from cluster_validation.resolution import select_resolution_on_graph
 from cluster_validation.viz import plot_all
 
 _log = configure_file_logger("cluster_validation.log", __name__)
@@ -44,8 +43,11 @@ def run_cluster_validation_on_adata(
 
     adata, prep_stats = preprocess(adata, cfg)
     adata, n_pcs, cumvar = embed_dataset(adata, cfg)
-    adata, n_clusters = sweep_leiden(adata, cfg)
-    adata, sel = select_resolution(adata, cfg, n_clusters, prep_stats.kFiltered)
+    adata, sel = select_resolution_on_graph(
+        adata,
+        resolutions=cfg.resolutions,
+        weakPriorKey=cfg.weakPriorKey,
+    )
     adata, merge_info = merge_clusters(adata, cfg, sel)
     metric_arrays = compute_metrics(adata, cfg, sel, merge_info)
 
