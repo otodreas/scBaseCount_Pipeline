@@ -57,6 +57,9 @@ def run_h5ad_concat(cfg: H5adConcatConfig) -> H5adConcatResult:
     """Download, validate, and concatenate h5ad files from R2 into a local atlas."""
     ensure_atlas_targets_absent(cfg)
 
+    if cfg.datasetsPath is None:
+        raise ValueError("datasetsPath is required")
+
     inputs = load_concat_inputs(cfg.datasetsPath)
     _log.info("Starting h5ad_concat run: %d input(s)", len(inputs))
 

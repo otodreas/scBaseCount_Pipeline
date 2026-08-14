@@ -40,7 +40,13 @@ def _parse_args() -> argparse.Namespace:
         "--output-dir", type=Path, default=d.outputDir, metavar="PATH", help="Analysis output directory"
     )
     parser.add_argument("--contexts", type=Path, default=d.contextsPath, metavar="PATH", help="contexts JSONL")
-    parser.add_argument("--atlas-csv", type=Path, default=d.atlasCsvPath, metavar="PATH", help="Atlas accession CSV")
+    parser.add_argument(
+        "--atlas-manifest",
+        type=Path,
+        default=d.atlasManifestPath,
+        metavar="PATH",
+        help="Atlas result manifest JSON",
+    )
     parser.add_argument("--gene-info", type=Path, default=d.geneInfoPath, metavar="PATH", help="STAR geneInfo.tab")
     parser.add_argument(
         "--memory-reserve-gib",
@@ -62,7 +68,7 @@ def build_config(args: argparse.Namespace) -> AtlasDeAnalysisConfig:
             "atlasPath": args.atlas,
             "outputDir": args.output_dir,
             "contextsPath": args.contexts,
-            "atlasCsvPath": args.atlas_csv,
+            "atlasManifestPath": args.atlas_manifest,
             "geneInfoPath": args.gene_info,
             "memoryReserveBytes": int(args.memory_reserve_gib * 1024**3),
             "primaryBudget": args.primary_budget,

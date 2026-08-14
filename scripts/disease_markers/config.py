@@ -11,7 +11,7 @@ class AtlasDeAnalysisConfig(BaseModel):
     atlasPath: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "production" / "atlas_v2_post.h5ad"
     outputDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "analysis" / "production"
     contextsPath: Path = REPO_ROOT / "output" / "context" / "contexts_v2.jsonl"
-    atlasCsvPath: Path = REPO_ROOT / "output" / "atlas" / "v2" / "atlas_v2.csv"
+    atlasManifestPath: Path = REPO_ROOT / "output" / "atlas" / "v2" / "atlas_v2_result.json"
     geneInfoPath: Path = (
         REPO_ROOT
         / "data"

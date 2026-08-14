@@ -1,4 +1,4 @@
-import csv
+import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
@@ -69,17 +69,19 @@ def _as_text(value: object) -> str:
     return "" if text.lower() == "nan" else text
 
 
-def atlas_success_accessions(atlasCsvPath: Path) -> dict[str, str]:
-    """Return {experiment_accession: study_accession} for rows with status success."""
+def atlas_success_accessions(atlasManifestPath: Path) -> dict[str, str]:
+    """Return {experiment_accession: study_accession} for successful files in the result manifest."""
+    payload = json.loads(atlasManifestPath.read_text())
+    if "files" not in payload:
+        raise ValueError(f"{atlasManifestPath} missing files[]; expected a post-cutover atlas result manifest")
     out: dict[str, str] = {}
-    with atlasCsvPath.open(newline="") as handle:
-        for row in csv.DictReader(handle):
-            if row.get("status") != "success":
-                continue
-            accession = row.get("accession") or ""
-            study = row.get("studyAccession") or ""
-            if accession:
-                out[accession] = study
+    for row in payload.get("files", []):
+        if row.get("status") != "success":
+            continue
+        accession = row.get("accession") or ""
+        study = row.get("studyAccession") or ""
+        if accession:
+            out[accession] = study
     return out
 
 
@@ -185,14 +187,14 @@ def _apply_study_consensus(draft: list[_DraftLabel]) -> None:
 
 def build_sample_label_table(
     contextsPath: Path,
-    atlasCsvPath: Path,
+    atlasManifestPath: Path,
     sampleMetadataPath: Path,
     *,
     ontologyConfig: OntologyLookupConfig | None = None,
 ) -> pd.DataFrame:
     """Build per-SRX labels from ontology metadata, with narrow text fallbacks."""
     contexts = load_contexts_jsonl(contextsPath)
-    atlas_rows = atlas_success_accessions(atlasCsvPath)
+    atlas_rows = atlas_success_accessions(atlasManifestPath)
     metadata = _load_sample_metadata(sampleMetadataPath)
     cfg = ontologyConfig or OntologyLookupConfig()
     mondo_cache = OntologyCache.for_mondo(cfg)
