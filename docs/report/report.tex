@@ -85,8 +85,12 @@
 % textcomp package and marvosym package for additional characters
 \usepackage{textcomp,marvosym}
 
-% cite package, to clean up citations in the main text. Do not remove.
-\usepackage{cite}
+% APA 7th author-date citations (biblatex-apa). Compile with biber, not bibtex.
+% \parencite{key} -> (Author, Year); \textcite{key} -> Author (Year).
+\usepackage[american]{babel}
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+\addbibresource{references.bib}
 
 % Use nameref to cite supporting information files (see Supporting Information section for more info)
 \usepackage{nameref,hyperref}
@@ -136,16 +140,6 @@
 % Captions will be left justified
 \usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
 \renewcommand{\figurename}{Fig}
-
-% Please use the included `plos2025.bst` as your BibTeX style
-\bibliographystyle{plos2025}
-
-% Remove brackets from numbering in List of References
-\makeatletter
-\renewcommand{\@biblabel}[1]{\quad#1.}
-\makeatother
-
-
 
 % Header and Footer with logo
 \usepackage{lastpage,fancyhdr,graphicx}
@@ -229,7 +223,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta er
 % Use "Eq" instead of "Equation" for equation citations.
 % INTRODUCTION
 \section*{Introduction}
-The scale and heterogenaiety of single-cell RNA sequencing (scRNA-seq) datasets are rapidly expanding~\cite{lueckenBenchmarkingAtlaslevelData2022,muellerBuildingOptimizedSinglecell2026}. Multiple scientific efforts have been undertaken in integrating collections of scRNA-seq datasets with improvements in sequencing technology and analysis methods~\cite{rozenblatt-rosenHumanCellAtlas2017}. The Sequence Read Archive (SRA) is the largest repository of scRNA-seq data~\cite{youngblutScBaseCountAIAgentcurated2025} and is complex by nature because a wide array of laboratories and organizations might contribute to it~\cite{leinonenSequenceReadArchive2011}. The Gene Expression Omnibus (GEO) is also community-derived while enforcing reporting standards relating to data and metadata~\cite{cloughGeneExpressionOmnibus2016}. Other initiatives, such as the Human Cell Atlas~\cite{rozenblatt-rosenHumanCellAtlas2017} and CZ CELLxGENE Discover~\cite{czicellscienceprogramCZCELLxGENEDiscover2025}, aim to balance scalability with accommodation for efficient meta-analysis, by combining standardization of cell matrices and extensive metadata with community driven contribution~\cite{czicellscienceprogramCZCELLxGENEDiscover2025}. The recent development of scBaseCount has attempted to address the need for consistent processing in these aggregated collections of scRNA-seq data by leveraging agentic AI-driven metadata unification to uniformly process scRNA-seq datasets in the resource~\cite{youngblutScBaseCountAIAgentcurated2025}. 
+The scale and heterogenaiety of single-cell RNA sequencing (scRNA-seq) datasets are rapidly expanding~\parencite{lueckenBenchmarkingAtlaslevelData2022,muellerBuildingOptimizedSinglecell2026}. Multiple scientific efforts have been undertaken in integrating collections of scRNA-seq datasets with improvements in sequencing technology and analysis methods~\parencite{rozenblatt-rosenHumanCellAtlas2017}. The Sequence Read Archive (SRA) is the largest repository of scRNA-seq data~\parencite{youngblutScBaseCountAIAgentcurated2025} and is complex by nature because a wide array of laboratories and organizations might contribute to it~\parencite{leinonenSequenceReadArchive2011}. The Gene Expression Omnibus (GEO) is also community-derived while enforcing reporting standards relating to data and metadata~\parencite{cloughGeneExpressionOmnibus2016}. Other initiatives, such as the Human Cell Atlas~\parencite{rozenblatt-rosenHumanCellAtlas2017} and CZ CELLxGENE Discover~\parencite{czicellscienceprogramCZCELLxGENEDiscover2025}, aim to balance scalability with accommodation for efficient meta-analysis, by combining standardization of cell matrices and extensive metadata with community driven contribution~\parencite{czicellscienceprogramCZCELLxGENEDiscover2025}. The recent development of scBaseCount has attempted to address the need for consistent processing in these aggregated collections of scRNA-seq data by leveraging agentic AI-driven metadata unification to uniformly process scRNA-seq datasets in the resource~\parencite{youngblutScBaseCountAIAgentcurated2025}. 
 
 \begin{eqnarray}
 \label{eq:schemeP}
@@ -237,9 +231,9 @@ The scale and heterogenaiety of single-cell RNA sequencing (scRNA-seq) datasets 
 \end{eqnarray}
 
 \section*{Materials and methods}
-Building an integrated lung atlas using scBaseCount data required developing robust single-cell workflows in Python using Scanpy~\cite{wolfSCANPYLargescaleSinglecell2018}.
+Building an integrated lung atlas using scBaseCount data required developing robust single-cell workflows in Python using Scanpy~\parencite{wolfSCANPYLargescaleSinglecell2018}. Continuing,
 \subsection*{Data aquisition}
-scBaseCount data, which includes expression matrices, are hosted on Google Cloud Platform in Google Cloud Storage (GCS) buckets~\cite{youngblutScBaseCountAIAgentcurated2025}. We used the \texttt{2026-01-12} snapshot of scBaseCount. Before downloading any matrices, we identified a subset of the available matrices that represented lung tissue. We accomplished this by filtering scBaseCount's tissue metadata using a regular expression containing lung-like words, such as "lung," "pulmonary," "alveolus/i/ar." The datasets whose metadata passed that filter were sequentially fetched from GCS and their md5 hashes computed on disk. Due to the extensive cumulative size of the datasets, the datasets themselves, along with the newly computed hashes, were uploaded to a Cloudflare R2 bucket that is internally owned and maintained, before being cleared from disk. We re-computed the hash whenever a dataset was downloaded from R2 for local computing to ensure file provenance between scBaseCount and our local datasets.
+scBaseCount data, which includes expression matrices, are hosted on Google Cloud Platform in Google Cloud Storage (GCS) buckets~\parencite{youngblutScBaseCountAIAgentcurated2025}. We used the \texttt{2026-01-12} snapshot of scBaseCount. Before downloading any matrices, we identified a subset of the available matrices that represented lung tissue. We accomplished this by filtering scBaseCount's tissue metadata using a regular expression containing lung-like words, such as “lung,” “pulmonary,” “alveolus/i/ar.” The datasets whose metadata passed that filter were sequentially fetched from GCS and their md5 hashes computed on disk. Due to the extensive cumulative size of the datasets, the datasets themselves, along with the newly computed hashes, were uploaded to a Cloudflare R2 bucket that is internally owned and maintained, before being cleared from disk. We re-computed the hash whenever a dataset was downloaded from R2 for local computing to ensure file provenance between scBaseCount and our local datasets.
 \subsection*{Quality control \& atlas construction}
 Datasets gathered from scBaseCount were 
 
@@ -345,20 +339,8 @@ section in your article during the production process.
 
 \nolinenumbers
 
-% Please compile your BiBTeX database using the "plos2025.bst" BibTeX style.
-% This file is part of the current package.
-% A sample BibTeX file is also included as "plos_bibtex_sample.bib".
-%
-% or
-%
-% Type in your references following Vancouver style and reference formatting instructions
-% available at https://journals.plos.org/plosone/s/submission-guidelines#loc-references
-% \begin{thebibliography}{}
-% \bibitem{}
-% Text
-% \end{thebibliography}
-
-\bibliography{references}
+% Compile with biber (pdflatex -> biber -> pdflatex -> pdflatex).
+\printbibliography
 
 \end{document}
 

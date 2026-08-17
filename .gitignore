@@ -77,6 +77,8 @@ docs/report/*.bbl
 docs/report/*.blg
 docs/report/*.out
 docs/report/*.toc
+docs/report/*.bcf
+docs/report/*.run.xml
 docs/report/report.pdf
 texput.log
 *.fdb_latexmk
