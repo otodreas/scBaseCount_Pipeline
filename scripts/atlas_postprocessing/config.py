@@ -17,6 +17,7 @@ class AtlasPostprocessingParameters(BaseModel):
 
 
 class AtlasPostprocessingConfig(BaseModel):
+    # TODO: improve default values -- input and output should not have hardcoded defaults, figs should end up in output_h5ad.parent/figs/, ...
     inputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v2" / "atlas.h5ad"
     outputH5ad: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "production" / "atlas_pp.h5ad"
     figsDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "production" / "figures"
