@@ -68,6 +68,7 @@ def fetch_read_experiment_records(
     accession: str,
     fields: str = "all",
 ) -> list[dict[str, str]]:
+    """Fetch read experiment records from ENA. This includes BioProject accession."""
     url = f"{PORTAL_BASE}/filereport?accession={accession}&result=read_experiment&fields={fields}&format=json"
     return json.loads(_http_get(url))
 

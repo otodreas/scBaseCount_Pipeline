@@ -52,14 +52,15 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
     n_genes_before = adata.n_vars
     n_cells_dropped_by_filter = {name: 0 for name in CELL_FILTER_ORDER}
 
-    flag_qc_genes(adata)
+    flag_qc_genes(adata)  # mentioned in methods--flag ribo/mito/hb with scanpy advised regex
     sc.pp.calculate_qc_metrics(adata, qc_vars=list(_QC_GENE_FLAGS), inplace=True, log1p=False)
 
     before_min_genes = adata.n_obs
-    sc.pp.filter_cells(adata, min_genes=cfg.minGenesPerCell)
+    sc.pp.filter_cells(adata, min_genes=cfg.minGenesPerCell)  # mentioned in methods
     n_cells_dropped_by_filter["minGenesPerCell"] = before_min_genes - adata.n_obs
 
     n_genes_dropped_min_cells = 0
+    # this filter is not applied in the atlas build--it erases real biology that might materialize at atlas scale
     if cfg.minCellsPerGene > 0:
         before_genes = adata.n_vars
         sc.pp.filter_genes(adata, min_cells=cfg.minCellsPerGene)
@@ -101,6 +102,7 @@ def apply_qc_gate(adata: ad.AnnData, cfg: H5adConcatConfig) -> tuple[ad.AnnData,
         ),
     )
 
+    # mentioned in methods
     if n_cells_after < cfg.minCellsAfterQc:
         raise FileRejected(SkipReason.too_few_cells, qc=stats)
     if pct_cells_after < cfg.minPctCellsAfterQc:
