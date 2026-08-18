@@ -10,8 +10,11 @@ from atlas_postprocessing.artifacts import (
 )
 from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.core import run_postprocessing
+from dotenv import load_dotenv
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import rel_to_repo
+
+load_dotenv()
 
 _LOG_FILENAME = "atlas_postprocessing.log"
 log = configure_file_logger(_LOG_FILENAME, __name__)
