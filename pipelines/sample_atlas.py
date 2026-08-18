@@ -1,3 +1,7 @@
+"""This file is made obsolete by the select_atlas_parameters pipeline, which
+calls atlas_postprocessing.sampling.sample_study_proportional.
+"""
+
 from pathlib import Path
 
 import scanpy as sc

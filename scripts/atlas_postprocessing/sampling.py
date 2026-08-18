@@ -89,7 +89,7 @@ def sample_study_proportional(
     n: int,
     stratifyKey: str,
     seed: int = SAMPLE_SEED,
-) -> sc.AnnData:
+) -> sc.AnnData:  # mentioned in methods
     """Return an exact-size study-proportional sample without replacement.
 
     Every study receives at least one cell when ``n`` is at least the study count.
