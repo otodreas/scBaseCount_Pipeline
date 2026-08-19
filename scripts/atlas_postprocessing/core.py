@@ -103,7 +103,7 @@ def scale_and_pca(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, nPcsComp
             f"({min(adata.n_obs - 1, adata.n_vars - 1)}) for shape {(adata.n_obs, adata.n_vars)}"
         )
     sc.pp.scale(adata, max_value=cfg.scaleMaxValue)
-    sc.tl.pca(adata, n_comps=n_comps, svd_solver="auto")
+    sc.pp.pca(adata, n_comps=n_comps, svd_solver="auto")
     log.info("Computed %s PCs", n_comps)
     return adata
 
