@@ -230,7 +230,7 @@ def test_run_calibration_writes_singleton_candidates_and_no_approved_file(tmp_pa
 
 
 def _add_pca(adata: sc.AnnData, n_comps: int) -> sc.AnnData:
-    sc.tl.pca(adata, n_comps=min(n_comps, adata.n_obs - 1, adata.n_vars - 1), svd_solver="arpack")
+    sc.pp.pca(adata, n_comps=min(n_comps, adata.n_obs - 1, adata.n_vars - 1), svd_solver="arpack")
     return adata
 
 

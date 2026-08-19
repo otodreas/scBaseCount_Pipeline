@@ -46,7 +46,7 @@ def test_scale_and_pca_uses_auto_svd_solver() -> None:
 
     with (
         patch("atlas_postprocessing.core.sc.pp.scale"),
-        patch("atlas_postprocessing.core.sc.tl.pca") as pca,
+        patch("atlas_postprocessing.core.sc.pp.pca") as pca,
     ):
         scale_and_pca(adata, cfg)
 
