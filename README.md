@@ -6,8 +6,8 @@ A pipeline for large-scale scRNA-seq cluster labeling assessment, built on the A
 
 # Requirements
 
-- Python >= 3.12.12
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
+- Python >= 3.12.12 (installed automatically by uv)
 
 # Repository layout
 The repo splits reusable code, batch orchestration, and interactive analysis:
