@@ -262,26 +262,26 @@ Figure caption text here, please use this space for the figure panel description
 
 % Results and Discussion can be combined.
 \section*{Results}
-The atlas contained X,XXX datasets from X,XXX eligible datasets, spanning XXX NCBI BioProject accessions. After filtering, the atlas contained X,XXX,XXX barcodes, down from X,XXX,XXX barcodes (Table~\ref{table1}). 
+The atlas contained X,XXX datasets from X,XXX eligible datasets, spanning XXX BioProject accessions. After filtering, the atlas contained X,XXX,XXX barcodes, down from X,XXX,XXX barcodes (Table~\ref{table1}). 
 
 (TODO: go one sentence deeper, cite n batch keys, perhaps in previous table)  (TODO: include table: thresholds, remaining cells/datasets pre and post, etc)
 
 % Place tables after the first paragraph in which they are cited.
 \begin{table}[!ht] 
 \centering
-\caption{\textbf{Atlas contained X,XXX datasets (X,XXX,XXX barcodes) across XXX NCBI BioProject accessions, of X,XXX eligible datasets (X,XXX,XXX barcodes) following filtering.}}
-\begin{tabular}{|l+l|l|l|l|l|l|l|}
+\caption{\textbf{Atlas contained X,XXX datasets (X,XXX,XXX barcodes) across XXX BioProject accessions, of X,XXX eligible datasets (X,XXX,XXX barcodes) following filtering.}}
+\begin{tabular}{|l|l|l|}
 \hline
-\multicolumn{4}{|l|}{\textbf{Heading1}} & \multicolumn{4}{|l|}{\textbf{Heading2}}\\ \thickhline
-$cell1 row1$ & cell2 row 1 & cell3 row 1 & cell4 row 1 & cell5 row 1 & cell6 row 1 & cell7 row 1 & cell8 row 1\\ \hline
-$cell1 row2$ & cell2 row 2 & cell3 row 2 & cell4 row 2 & cell5 row 2 & cell6 row 2 & cell7 row 2 & cell8 row 2\\ \hline
-$cell1 row3$ & cell2 row 3 & cell3 row 3 & cell4 row 3 & cell5 row 3 & cell6 row 3 & cell7 row 3 & cell8 row 3\\ \hline
-$cell1 row3$ & cell2 row 3 & cell3 row 3 & cell4 row 3 & cell5 row 3 & cell6 row 3 & cell7 row 3 & cell8 row 3\\ \hline
-$cell1 row3$ & cell2 row 3 & cell3 row 3 & cell4 row 3 & cell5 row 3 & cell6 row 3 & cell7 row 3 & cell8 row 3\\ \hline
-$cell1 row3$ & cell2 row 3 & cell3 row 3 & cell4 row 3 & cell5 row 3 & cell6 row 3 & cell7 row 3 & cell8 row 3\\ \hline
-$cell1 row3$ & cell2 row 3 & cell3 row 3 & cell4 row 3 & cell5 row 3 & cell6 row 3 & cell7 row 3 & cell8 row 3\\ \hline
+Filter & Datasets dropped, $n$ (\%) & Barcodes dropped, $n$ (\%)\\ \thickhline
+MD5 hash (mismatch) & 0 (0) & X,XXX (X)\\ \hline
+CZ CELLxGENE \texttt{cell_type} (labels absent) & XXX (X) & XX,XXX (X)\\ \hline
+Min.\ genes per cell ($<$ 200) & --- & X,XXX (X)\\ \hline
+Max.\ mitochondrial fraction ($\geq$ 20\%) & --- & XXX (X)\\ \hline
+Max.\ ribosomal fraction ($\geq$ 50\%) & --- & XX (X)\\ \hline
+Min.\ cells remaining ($<$ 100) & XX (X) & XX,XXX (X)\\ \hline
+Min.\ fraction of cells remaining ($<$ 50\%) & XX (X) & XX,XXX (X)\\ \hline
 \end{tabular}
-\begin{flushleft} A total of the XXX datasets were dropped. Of those, 0 were dropped due to MD5 hash mismatch, XXX (X\% total datasets) were dropped due to fully absent CZ CELLxGENE \texttt{cell_type} labels, XXX (X\% total datasets) were dropped for excessive cell dropout following filtering, of which XX (X\% total datasets) were dropped for retaining fewer than 100 cells, and XX (X\% total datasets) were dropped for retaining less than 50\% of cells following filtering. Of the XX,XXX barcodes that were dropped, X,XXX (X\% total barcodes) were dropped for gene counts of less than 200, XXX (X\% total barcodes) were dropped for having 20\% or more of total gene count being mitochondrial, and XX (X\% total barcodes) for having 50\% or more of total gene counts being ribosomal.
+\begin{flushleft} A total of the XXX datasets were dropped. Of those, 0 were dropped due to MD5 hash mismatch, XXX (X\% total datasets) were dropped due to fully absent CZ CELLxGENE \texttt{cell_type} labels. Of the XX,XXX barcodes that were dropped, X,XXX (X\% total barcodes) were dropped for gene counts of less than 200, XXX (X\% total barcodes) were dropped for having 20\% or more of total gene count being mitochondrial, and XX (X\% total barcodes) for having 50\% or more of total gene counts being ribosomal. Following filtering, datasets dropped for excessive barcode dropout. XX (X\% total datasets) were dropped for retaining fewer than 100 cells, and XX (X\% total datasets) were dropped for retaining less than 50\% of cells following filtering. 
 \end{flushleft}
 \label{table1}
 \end{table}
