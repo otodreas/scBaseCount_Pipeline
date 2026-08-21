@@ -35,28 +35,25 @@ def matched_jaccard(
     cl_idx = {c: i for i, c in enumerate(clusters)}
     ct_idx = {t: j for j, t in enumerate(celltypes)}
 
-    contingency = np.zeros((k, m), dtype=np.float64)
+    union = np.zeros((k, m), dtype=np.float64)
     for cl, ct in zip(cluster_labels, ref_labels, strict=True):
         # +1 for every barcode that is identified by a certain cl-ct pair
-        contingency[cl_idx[cl], ct_idx[ct]] += 1
+        union[cl_idx[cl], ct_idx[ct]] += 1
 
-    cl_sizes = contingency.sum(axis=1)  # number of barcodes in each cluster
-    ct_sizes = contingency.sum(axis=0)  # number of barcodes in each cell type
+    cl_sizes = union.sum(axis=1)  # number of barcodes in each cluster
+    ct_sizes = union.sum(axis=0)  # number of barcodes in each cell type
     # compute jaccard matrix (IoU matrix)
-    jaccard = (
-        contingency  # union
-        / (
-            cl_sizes[:, None]
-            + ct_sizes[None, :]  # intersection
-            - contingency  # union must be subtracted to avoid double counting
-            + 1e-10  # avoid division by zero
-        )
+    jaccard_matrix = union / (
+        cl_sizes[:, None]
+        + ct_sizes[None, :]  # intersection
+        - union  # union must be subtracted to avoid double counting
+        + 1e-10  # avoid division by zero
     )
 
     # find the indices for thebest match for each cluster
-    row_ind, col_ind = linear_sum_assignment(-jaccard)  # use negative jaccard since scipy wants to MINIMIZE cost
-    # return the cost of the assignment (see scipy docs https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html#id2)
-    return float(jaccard[row_ind, col_ind].sum())
+    row_ind, col_ind = linear_sum_assignment(-jaccard_matrix)  # use negative jaccard since scipy wants to MINIMIZE cost
+    # return the negative cost of the assignment (see scipy docs https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html#id2)
+    return float(jaccard_matrix[row_ind, col_ind].sum())
 
 
 @dataclass
