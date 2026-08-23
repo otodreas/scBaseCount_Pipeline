@@ -139,10 +139,11 @@
 \textwidth 5.25in
 \textheight 8.75in
 
-% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Bold the 'Fig #' in the caption and separate it from the title/caption with a period
 % Captions will be left justified
 \usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
-\renewcommand{\figurename}{Fig}
+\DeclareCaptionLabelFormat{figlabel}{Fig~#2}
+\captionsetup[figure]{labelformat=figlabel}
 
 % Header and Footer with logo
 \usepackage{lastpage,fancyhdr,graphicx}
@@ -204,7 +205,7 @@ Parashar Dhapola\textsuperscript{2}
 % "Conclusion" sections per journal requirements.
 %
 \section*{Abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+The abundance of nucleotide sequence data has grown into the order of trillions of bases. As public archives grow in scale, so too does their fragmentation and complexity, meaning that disease-focused meta-analyses remain difficult to accomplish. We identified the need for producing atlas-scale datasets that both incorporate work spanning studies and are uniformly processed and targeted to disease areas. Here, we develop a reproducible pipeline for building a lung disease-specific, integrated, and study-aware atlas from a broad, AI-curated atlas of single-cell RNA sequencing (scRNA-seq) data. We present an, analysis-ready atlas that successfully integrates XXX,XXX,XXX cells across X,XXX files and XXX distinct scientific projects, preserving cell-type structure and reducing batch effects.
 
 
 % Please keep the Author Summary between 150 and 200 words. Use first person.
@@ -215,8 +216,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta er
 % What did the researchers do and find?
 % What do these findings mean?
 %
-\section*{Author summary}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+% \section*{Author summary}
+% Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
 
 
 \clearpage
@@ -228,10 +229,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta er
 \section*{Introduction}
 The scale and heterogenaiety of single-cell RNA sequencing (scRNA-seq) datasets are rapidly expanding~\parencite{lueckenBenchmarkingAtlaslevelData2022,muellerBuildingOptimizedSinglecell2026}. Multiple scientific efforts have been undertaken in integrating collections of scRNA-seq datasets with improvements in sequencing technology and analysis methods~\parencite{rozenblatt-rosenHumanCellAtlas2017}. The Sequence Read Archive (SRA) is the largest repository of scRNA-seq data~\parencite{youngblutScBaseCountAIAgentcurated2025} and is complex by nature because a wide array of laboratories and organizations might contribute to it~\parencite{leinonenSequenceReadArchive2011}. The Gene Expression Omnibus (GEO) is also community-derived while enforcing reporting standards relating to data and metadata~\parencite{cloughGeneExpressionOmnibus2016}. Other initiatives, such as the Human Cell Atlas~\parencite{rozenblatt-rosenHumanCellAtlas2017} and CZ CELLxGENE Discover~\parencite{czicellscienceprogramCZCELLxGENEDiscover2025}, aim to balance scalability with accommodation for efficient meta-analysis, by combining standardization of cell matrices and extensive metadata with community driven contribution~\parencite{czicellscienceprogramCZCELLxGENEDiscover2025}. The recent development of scBaseCount has attempted to address the need for consistent processing in these aggregated collections of scRNA-seq data by leveraging agentic AI-driven metadata unification to uniformly process scRNA-seq datasets in the resource~\parencite{youngblutScBaseCountAIAgentcurated2025}. 
 
-\begin{eqnarray}
-\label{eq:schemeP}
-	\mathrm{P_Y} = \underbrace{H(Y_n) - H(Y_n|\mathbf{V}^{Y}_{n})}_{S_Y} + \underbrace{H(Y_n|\mathbf{V}^{Y}_{n})- H(Y_n|\mathbf{V}^{X,Y}_{n})}_{T_{X\rightarrow Y}},
-\end{eqnarray}
+% \begin{eqnarray}
+% \label{eq:schemeP}
+% 	\mathrm{P_Y} = \underbrace{H(Y_n) - H(Y_n|\mathbf{V}^{Y}_{n})}_{S_Y} + \underbrace{H(Y_n|\mathbf{V}^{Y}_{n})- H(Y_n|\mathbf{V}^{X,Y}_{n})}_{T_{X\rightarrow Y}},
+% \end{eqnarray}
 
 \section*{Materials and methods}
 Building an integrated lung atlas using scBaseCount data required developing robust single-cell workflows in Python using Scanpy~\parencite{wolfSCANPYLargescaleSinglecell2018}. We enforced observability through extensive logging configured with the Python logger.
@@ -253,18 +254,11 @@ To vizualise and cluster the data, we computed the nearest neighbors distance ma
 
 To test our clustering methodology, we implemented it as a set of importable functions and applied them to datasets corresponding with single SRA experiment accessions before applying it to the atlas. We took a stratified sample of 100,000 cells, where strata are BioProjects and counts per stratum are proportional to each BioProject's share of the full atlas (with at least one cell per BioProject). We benchmarked the batch key using scIB~\parencite{lueckenBenchmarkingAtlaslevelData2022}.
 
-% Place figure captions after the first paragraph in which they are cited.
-\begin{figure}[!h]
-\caption{\textbf{Bold the figure title.}
-Figure caption text here, please use this space for the figure panel descriptions instead of using subfigure commands. A: Lorem ipsum dolor sit amet. B: Consectetur adipiscing elit.}
-\label{fig1}
-\end{figure}
-
 % Results and Discussion can be combined.
 \section*{Results}
-The atlas contained X,XXX datasets from X,XXX eligible datasets, spanning XXX BioProject accessions. After filtering, the atlas contained X,XXX,XXX barcodes, down from X,XXX,XXX barcodes (Table~\ref{table1}). 
+ek
 
-(TODO: go one sentence deeper, cite n batch keys, perhaps in previous table)  (TODO: include table: thresholds, remaining cells/datasets pre and post, etc)
+The atlas contained X,XXX datasets from X,XXX eligible datasets, spanning XXX BioProject accessions. After filtering, the atlas contained X,XXX,XXX barcodes, down from X,XXX,XXX barcodes (Table~\ref{table1}). The atlas contained XX CZ CELLxGENE \texttt{cell_type} labels (Fig~\ref{fig1}).
 
 % Place tables after the first paragraph in which they are cited.
 \begin{table}[!ht] 
@@ -287,36 +281,36 @@ Min.\ fraction of cells remaining ($<$ 50\%) & XX (X) & XX,XXX (X)\\ \hline
 \end{table}
 
 \vspace*{-10pt}
+
+
+% Place figure captions after the first paragraph in which they are cited.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.48\textwidth]{figs/umap_uncorrected.png}
+\includegraphics[width=0.48\textwidth]{figs/umap_corrected.png}
+\caption{\textbf{Single-file integrated lung disease atlas derived from scBaseCount.}
+UMAP of the integrated atlas colored by CZ CELLxGENE \texttt{cell_type}. A: Uncorrected embedding. B: Harmony-corrected embedding (batch key: BioProject).}
+\label{fig1}
+\end{figure}
+
+On atlas scale, batch effect removal per CZ CELLxGENE \texttt{cell_type} label, measured by the k-nearest-neighbor batch effect test (kBET) proposed by~\textcite{buttnerTestMetricAssessing2019} and implemented by~\textcite{lueckenBenchmarkingAtlaslevelData2022} was lower from the uncorrected PCs compared to the batch corrected PCs, the latter using NCBI BioSample as batch key (TODO:decide whether to cite all scib metrics in text). The aggregate biological conservation score proposed by~\textcite{lueckenBenchmarkingAtlaslevelData2022} decreased from 0.53 to 0.51 as a result of batch correction, while the batch correction aggregate score increased from 0.28 to 0.45 (Fig~\ref{fig2}).
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{figs/scib_results.pdf}
+\caption{\textbf{Batch correction metrics before and after Harmonization of PCs.}
+Benchmark results on a stratified atlas subset comparing uncorrected PCs and Harmony-corrected PCs (batch key: NCBI BioSample). Aggregate biological conservation decreased from 0.53 to 0.51; aggregate batch correction increased from 0.28 to 0.45. kBET was lower for uncorrected than batch-corrected embeddings.}
+\label{fig2}
+\end{figure}
+
+Sweeping leiden
+
 %PLOS does not support heading levels beyond the 3rd (no 4th level headings).
-\subsection*{\lorem\ and \ipsum\ nunc blandit a tortor}
-\subsubsection*{3rd level heading} 
-Maecenas convallis mauris sit amet sem ultrices gravida.
-
-\begin{enumerate}
-	\item react
-	\item diffuse free particles
-	\item increment time by dt and go to 1
-\end{enumerate}
-
-
-\subsection*{Sed ac quam id nisi malesuada congue}
-
-Nulla mi mi, venenatis sed ipsum varius, volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-\begin{itemize}
-	\item First bulleted item.
-	\item Second bulleted item.
-	\item Third bulleted item.
-\end{itemize}
-
 \section*{Discussion}
 Nulla mi mi, venenatis sed ipsum varius, Table~\ref{table1} volutpat euismod diam.
 
 \section*{Conclusion}
 
-CO\textsubscript{2} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque. Quisque augue sem, tincidunt sit amet feugiat eget, ullamcorper sed velit. 
-
-Sed non aliquet felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo justo ac dui pretium imperdiet. Sed suscipit iaculis mi at feugiat. Ut neque ipsum, luctus id lacus ut, laoreet scelerisque urna. Phasellus venenatis, tortor nec vestibulum mattis, massa tortor interdum felis, nec pellentesque metus tortor nec nisl. Ut ornare mauris tellus, vel dapibus arcu suscipit sed. Nam condimentum sem eget mollis euismod. Nullam dui urna, gravida venenatis dui et, tincidunt sodales ex. Nunc est dui, sodales sed mauris nec, auctor sagittis leo. Aliquam tincidunt, ex in facilisis elementum, libero lectus luctus est, non vulputate nisl augue at dolor. For more information, see \nameref{S1_Appendix}.
 
 \section*{Supporting information}
 

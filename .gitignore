@@ -79,7 +79,7 @@ docs/report/*.out
 docs/report/*.toc
 docs/report/*.bcf
 docs/report/*.run.xml
-docs/report/report.pdf
+# docs/report/report.pdf
 texput.log
 *.fdb_latexmk
 *.fls
