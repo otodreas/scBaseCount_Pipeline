@@ -304,7 +304,7 @@ UMAP of the integrated atlas colored by CZ CELLxGENE \texttt{cell_type}. A: Unco
 
 On atlas scale, batch effect removal per CZ CELLxGENE \texttt{cell_type} label, measured by the k-nearest-neighbor batch effect test (kBET) proposed by~\textcite{buttnerTestMetricAssessing2019} and implemented by~\textcite{lueckenBenchmarkingAtlaslevelData2022} was lower from the uncorrected PCs compared to the batch corrected PCs, the latter using NCBI BioSample as batch key (TODO:decide whether to cite all scib metrics in text). The aggregate biological conservation score proposed by~\textcite{lueckenBenchmarkingAtlaslevelData2022} decreased from 0.53 to 0.51 as a result of batch correction, while the batch correction aggregate score increased from 0.28 to 0.45 (Fig~\ref{fig2}).
 
-It is clear that bat
+The difference in magnitude between the aggregate batch correction and biological conservation scores suggest that Harmony has a greater impact in mixing batch labels than it does disrupting the graph. While this result may differ for different atlas datasets, Harmony has been shown to perform consistently at the level of foundation models such as scGPT and Geneformer, abeit more consistently, in particular when those foundation models are configured for zero-shot batch correction~\parencite{cuiScGPTBuildingFoundation2024,theodorisTransferLearningEnables2023,liuEvaluatingUtilitiesFoundation2026,kedzierskaZeroshotEvaluationReveals2025}.
 
 \begin{figure}[!h]
 \centering
