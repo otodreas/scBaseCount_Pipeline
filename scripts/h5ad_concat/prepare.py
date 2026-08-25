@@ -72,6 +72,9 @@ def prepare_adata(
         qc_stats: QcStats | None = None
         if cfg.preprocess:
             adata, qc_stats = apply_qc_gate(adata, cfg)
+            # QcStats.nCellsDroppedByFilter is a dict of filter name to number of cells dropped by that filter see h5ad_concat > models > CELL_FILTER_ORDER.
+            # Generate descriptive string of filter below
+            # TODO: make each qc stat accessible, instead of a member of a string
             dropped_by_filter = ", ".join(f"{name}={count}" for name, count in qc_stats.nCellsDroppedByFilter.items())
             log.info(
                 "%s: QC kept %d/%d cells (%.1f%% retained); dropped by filter: %s",
@@ -87,7 +90,7 @@ def prepare_adata(
 
         try:
             adata, align_stats = align_to_reference(adata, reference, conserve_layers=cfg.conserveLayers)
-        except FileRejected as exc:
+        except FileRejected as exc:  # align to reference raises FileRejected error for SkipReason.gene_axis_mismatch
             raise FileRejected(exc.reason, qc=qc_stats) from exc
 
         dropped_qc_stats = [key for key in align_stats.droppedVarKeys if key in QC_VAR_KEYS]

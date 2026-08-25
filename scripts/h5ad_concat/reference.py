@@ -24,7 +24,10 @@ class AlignStats:
 
 
 def load_gene_reference(path: Path) -> GeneReference:
-    """Load the STAR geneInfo.tab reference and return a GeneReference."""
+    """Load the STAR geneInfo.tab reference and return a GeneReference.
+    The file is missing a header row as its hosted on scBaseCount. There, the header is just
+    `36601` (n genes). We add a header row with the column names `ensembl_id`, `gene_symbol`, and `biotype`.
+    """
     table = pd.read_csv(
         path,
         sep="\t",
@@ -45,13 +48,7 @@ def align_to_reference(
 ) -> tuple[ad.AnnData, AlignStats]:
     """Reindex adata onto the canonical reference gene axis and raise FileRejected on zero overlap.
 
-    anndata's Reindexer maps the file's gene columns onto the reference axis in one sparse matmul:
-    it reorders shared genes, drops file genes absent from the reference, and zero-fills reference
-    genes absent from the file. The file's own var columns are indexed on its gene axis and cannot
-    survive the reindex, so the canonical reference annotations, which already line up with the
-    reindexed matrix, replace them. reference.var is shared across files, hence the copy.
-    AlignStats.droppedVarKeys records the discarded file var columns (per-file QC stats and gene
-    annotations absent from the reference) so callers can log what the reindex throws away.
+    Use anndata's Reindexer to map the AnnData gene columns onto the reference axis
 
     By default only X is carried over. Set conserve_layers to also reindex every layer of adata
     (for example the STARsolo UniqueAndMult matrices) onto the reference axis and keep them.
