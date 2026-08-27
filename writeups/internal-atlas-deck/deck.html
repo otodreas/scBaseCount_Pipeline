@@ -249,6 +249,15 @@
       margin-top: 0.75rem;
     }
 
+    .two-col.fig-pair .fig-panel {
+      min-height: 0;
+    }
+
+    .two-col.fig-pair .fig-panel img {
+      max-height: min(42vh, 360px);
+      object-fit: contain;
+    }
+
     .fig-panel {
       border: 1px solid var(--color-border);
       border-radius: 10px;
@@ -414,6 +423,109 @@
     .compare-table .pos { color: #047857; }
     .compare-table .neg { color: #b45309; }
 
+    .iou-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 1rem;
+      margin-top: 0.85rem;
+      align-items: start;
+    }
+
+    .iou-formula {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      background: var(--color-bg-alt);
+      padding: 0.85rem 0.95rem;
+    }
+
+    .iou-formula .eq {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--color-ink-strong);
+      margin: 0.35rem 0 0.7rem;
+    }
+
+    .iou-formula p,
+    .iou-formula li {
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .iou-formula ul {
+      padding-left: 1.05rem;
+      margin-top: 0.4rem;
+    }
+
+    .iou-table-wrap {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      overflow: auto;
+      background: #fff;
+    }
+
+    .iou-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .iou-table th,
+    .iou-table td {
+      padding: 0.4rem 0.45rem;
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+    }
+
+    .iou-table th:last-child,
+    .iou-table td:last-child { border-right: none; }
+
+    .iou-table th {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      background: var(--color-bg-alt);
+    }
+
+    .iou-table th.stub,
+    .iou-table td.stub {
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--color-ink-strong);
+      background: var(--color-bg-alt);
+      white-space: nowrap;
+    }
+
+    .iou-table td.num {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .iou-table td.match {
+      background: #eff6ff;
+      box-shadow: inset 0 0 0 2px var(--color-primary-light);
+      color: var(--color-ink-strong);
+    }
+
+    .iou-table td.dim { color: #9ca3af; font-weight: 500; }
+
+    .iou-table tr:last-child th,
+    .iou-table tr:last-child td { border-bottom: none; }
+
+    .iou-table caption {
+      caption-side: bottom;
+      text-align: left;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.72rem;
+      color: var(--color-text-light);
+      font-family: var(--font-mono);
+    }
+
     .callout-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -435,7 +547,8 @@
     }
 
     .card .tag,
-    .callout .tag {
+    .callout .tag,
+    .iou-formula .tag {
       display: inline-block;
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -843,7 +956,7 @@
     }
 
     @media (max-width: 800px) {
-      .two-col, .stat-row, .metrics, .cards-2x2, .cards-3 { grid-template-columns: 1fr; }
+      .two-col, .stat-row, .metrics, .cards-2x2, .cards-3, .iou-grid { grid-template-columns: 1fr; }
       .loss-row, .funnel-row, .bio-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -918,8 +1031,8 @@
     <!-- 4. Agent + GCS + pipeline -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">02 · Acquisition</p>
-      <h2>scBaseCount is an agent pipeline. We sit on top of it.</h2>
-      <p class="lede">Youngblut et al.: discover public 10X runs, extract metadata, align with one STAR reference. GCS hosts the snapshot; size forced an R2 mirror and local delete.</p>
+      <h2>Limitation of scope of scBaseCount</h2>
+      <p class="lede">Youngblut et al.: discover public 10X runs, extract metadata, align with one STAR reference. We built on top of it.</p>
       <div class="flow-chart">
         <div class="node">Discover 10X<small>SRA / ENA</small></div>
         <span class="arrow">→</span>
@@ -941,7 +1054,7 @@
       <p class="cite">Youngblut et al. 2025; Amid et al. 2020. Report Methods (Data acquisition).</p>
     </section>
 
-    <!-- 5. Biospecimen -->
+    <!-- 5. Biospecimen
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">02 · Acquisition</p>
       <h2>A biospecimen is what got sequenced, not the patient</h2>
@@ -957,21 +1070,7 @@
         </div>
       </div>
       <p class="cite">Barrett et al. 2012. Report Methods (BioProject as batch key).</p>
-    </section>
-
-    <!-- 6. Funnel + scale -->
-    <section class="slide" data-section="acquisition">
-      <p class="eyebrow">02 · Acquisition</p>
-      <h2>From the 2026-01-12 release to the atlas</h2>
-      <div class="funnel">
-        <div class="funnel-row"><div class="n">35,266</div><p>datasets in the human GeneFull release</p></div>
-        <div class="funnel-row"><div class="n">2,396</div><p>free-text tissue matched lung (after dropping 472 non-SRA/ENA)</p></div>
-        <div class="funnel-row"><div class="n">1,816</div><p>eligible after multi-organ and small-study gates · 13,013,643 barcodes</p></div>
-        <div class="funnel-row end"><div class="n">1,410</div><p>concatenated · 9,307,963 barcodes · 172 BioProjects · 61 <span class="mono">cell_type</span> labels</p></div>
-      </div>
-      <p class="cite">Report Results and Table 1. Mean 7,166 / median 5,112 barcodes per eligible accession. 406 files dropped by file-level gates.</p>
-    </section>
-
+    </section> -->
     <!-- 7. Agent failure -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">02 · Acquisition</p>
@@ -1006,9 +1105,9 @@
       <p class="slide-note">Illustration of the mismatch class in the report Discussion, not a Table 1 count. That is why we look up ENA / BioSample instead of trusting the agent field alone.</p>
     </section>
 
-    <!-- 8. QC -->
+    <!-- QC -->
     <section class="slide" data-section="qc">
-      <p class="eyebrow">03 · Quality control</p>
+      <p class="eyebrow">02 · Quality control</p>
       <h2>Largest cell loss: fewer than 200 genes</h2>
       <p class="lede">1,816 → 1,410 files. 13,013,643 → 9,307,963 barcodes. Among every file that reached QC, the gene-count floor dropped the most cells.</p>
       <div class="loss-bars">
@@ -1037,58 +1136,167 @@
       <p class="cite">Luecken &amp; Theis 2019. Report Table 1 and Results (concatenated-only drops).</p>
     </section>
 
-    <!-- 9. Clustering -->
+    <!-- Funnel + scale -->
+    <section class="slide" data-section="acquisition">
+      <p class="eyebrow">02 · Acquisition</p>
+      <h2>From the 2026-01-12 release to the atlas</h2>
+      <div class="funnel">
+        <div class="funnel-row"><div class="n">35,266</div><p>datasets in the human GeneFull release</p></div>
+        <div class="funnel-row"><div class="n">2,396</div><p>free-text tissue matched lung (after dropping 472 non-SRA/ENA)</p></div>
+        <div class="funnel-row"><div class="n">1,816</div><p>eligible after multi-organ and small-study gates · 13,013,643 barcodes</p></div>
+        <div class="funnel-row end"><div class="n">1,410</div><p>concatenated · 9,307,963 barcodes · 172 studies · 61 <span class="mono">cell_type</span> labels</p></div>
+      </div>
+      <p class="cite">Report Results and Table 1. Mean 7,166 / median 5,112 barcodes per eligible accession. 406 files dropped by file-level gates.</p>
+    </section>
+
+    <!-- Uncorrected atlas: why batch correction -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">03 · Integration · report Fig 1A</p>
+      <h2>Concatenation is not integration</h2>
+      <p class="lede">UMAP of the concatenated atlas, no batch correction, colored by CZ CELLxGENE <span class="mono">cell_type</span>. Shared types split apart. That is the reason to correct.</p>
+      <div class="fig-full">
+        <img src="figs/umap_uncorrected.png" alt="Uncorrected atlas UMAP colored by cell type" />
+      </div>
+      <p class="cite">Report Fig 1A. 9,307,963 barcodes, 61 labels. scBaseCount has no batch key coarser than SRA experiment accession.</p>
+    </section>
+
+    <!-- BioProject -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">03 · Integration</p>
+      <h2>scBaseCount has no batch key. We used BioProject.</h2>
+      <p class="lede">The release has nothing coarser than SRA experiment accession (one file, one batch). That is too fine: it mixes technical batch with donor and condition.</p>
+      <ul>
+        <li>A BioProject is one initiative from one organization or consortium (for example <span class="mono">PRJNA563828</span>).</li>
+        <li>A BioSample is the tube that went on the sequencer. Same patient, three tubes: three biospecimens. Harmony here mixes on the initiative, not on the tube.</li>
+        <li>scBaseCount does not ship BioProject. We resolve SRX → ENA <span class="mono">study_accession</span>, then Harmony corrects PCs on that column.</li>
+      </ul>
+      <p class="cite">Barrett et al. 2012; Amid et al. 2020; Korsunsky et al. 2019. Report Methods (Embedding and batch correction).</p>
+    </section>
+
+    <!-- Corrected atlas -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">03 · Integration · report Fig 1B</p>
+      <h2>After Harmony: cell-type structure is still there</h2>
+      <p class="lede">Same pipeline, PCs corrected with BioProject as the batch key. Colored by <span class="mono">cell_type</span>, not by cluster ID. B and T lymphocytes, for example, sit in coherent regions.</p>
+      <div class="fig-full">
+        <img src="figs/umap_corrected.png" alt="Harmony-corrected atlas UMAP colored by cell type" />
+      </div>
+      <p class="cite">Report Fig 1B. Harmony: Korsunsky et al. 2019.</p>
+    </section>
+
+    <!-- Clustering -->
     <section class="slide" data-section="clustering">
       <p class="eyebrow">03 · Clustering</p>
-      <h2>The source files have no clusters. Here is how we clustered.</h2>
-      <p class="lede"><span class="mono">cell_type</span> is a weak prior on Leiden resolution, not ground truth. Tested on five files, then a 100k subset, then the atlas.</p>
+      <h2>Clustering methodology overview</h2>
+      <p class="lede">Leiden runs on the Harmony-corrected graph. For each cluster–<span class="mono">cell_type</span> pair we count overlapping cells, convert that to IoU, then Hungarian picks a one-to-one match. The sweep score is the <em>sum</em> of those matched IoUs.</p>
       <div class="flow">
-        <span>2,000 HVGs · 50 PCs</span><span class="arrow">→</span>
+        <span>2,000 HVGs · 50 PCs · Harmony</span><span class="arrow">→</span>
         <span>Leiden 0.1–2.0</span><span class="arrow">→</span>
         <span>Hungarian Jaccard vs <span class="mono">cell_type</span></span>
       </div>
-      <div class="stat-row">
-        <div class="stat"><div class="n">5 files</div><div class="l">25th–75th percentile of cell count (3,413–9,419); selected resolutions 0.1–1.5</div></div>
-        <div class="stat"><div class="n">0.8</div><div class="l">favoured on SRX24313469 and on the 100k BioProject-stratified subset (21 clusters)</div></div>
-        <div class="stat"><div class="n">71</div><div class="l">Leiden clusters on the Harmony-corrected atlas</div></div>
+      <div class="iou-grid">
+        <div class="iou-formula">
+          <span class="tag">One pair</span>
+          <p class="eq">IoU = ∩ / (n<sub>cluster</sub> + n<sub>type</sub> − ∩)</p>
+          <p>Cluster 0 ∩ macrophage = <strong>80</strong> cells. Cluster 0 has 90 cells; macrophage has 85.</p>
+          <p class="eq">80 / (90 + 85 − 80) = 0.84</p>
+          <ul>
+            <li>Each matrix cell is that overlap count, not a correlation.</li>
+            <li>Hungarian keeps one highlighted pair per cluster and per type.</li>
+            <li>Score for this matching: 0.84 + 0.67 + 0.75 = 2.26 (can exceed 1).</li>
+          </ul>
+        </div>
+        <div class="iou-table-wrap">
+          <table class="iou-table">
+            <caption>Worked example of <span class="mono">matched_jaccard</span>. Cells = overlap count. Highlighted = Hungarian match (IoU in parentheses). Not SRX24313469.</caption>
+            <thead>
+              <tr>
+                <th class="stub">Leiden \ type</th>
+                <th>Macrophage</th>
+                <th>T cell</th>
+                <th>B cell</th>
+                <th>n cluster</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="stub">cluster 0</td>
+                <td class="num match">80 <span class="dim">(0.84)</span></td>
+                <td class="num dim">10</td>
+                <td class="num dim">0</td>
+                <td class="num">90</td>
+              </tr>
+              <tr>
+                <td class="stub">cluster 1</td>
+                <td class="num dim">5</td>
+                <td class="num match">70 <span class="dim">(0.67)</span></td>
+                <td class="num dim">5</td>
+                <td class="num">80</td>
+              </tr>
+              <tr>
+                <td class="stub">cluster 2</td>
+                <td class="num dim">0</td>
+                <td class="num dim">15</td>
+                <td class="num match">60 <span class="dim">(0.75)</span></td>
+                <td class="num">75</td>
+              </tr>
+              <tr>
+                <td class="stub">n type</td>
+                <td class="num">85</td>
+                <td class="num">95</td>
+                <td class="num">65</td>
+                <td class="num">245</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <p class="cite">Traag et al. 2019; Wolf et al. 2018; Luecken &amp; Theis 2019. Report Methods and Results. Silhouette was never the selector.</p>
+      <p class="cite">Virtanen et al. 2020; Traag et al. 2019. Report Methods. Same assignment as <span class="mono">linear_sum_assignment(-J)</span> in <span class="mono">scripts/cluster_validation/metrics.py</span>.</p>
     </section>
 
-    <!-- 10. Fig 3 -->
+    <!-- Fig 3A-B -->
     <section class="slide" data-section="clustering">
-      <p class="eyebrow">03 · Clustering · report Fig 3A</p>
-      <h2>One file, then the same rule at atlas scale</h2>
-      <p class="lede"><span class="mono">SRX24313469</span> (67th percentile). Jaccard-selected resolution 0.8.</p>
-      <div class="fig-full">
-        <img src="figs/umap_selected_SRX24313469.png" alt="UMAP of Leiden clusters vs cell type for SRX24313469" />
-      </div>
-      <p class="cite">Report Fig 3A. Sweep and agreement metrics: Fig 3C–D, not shown here.</p>
-    </section>
-
-    <!-- 11. Batch UMAPs -->
-    <section class="slide" data-section="atlas">
-      <p class="eyebrow">03 · Integration · report Fig 1</p>
-      <h2>Uncorrected first, then Harmony with cell type</h2>
-      <p class="lede">scBaseCount has no batch key coarser than SRX. We used BioProject. Left: why correction. Right: cell-type structure after Harmony.</p>
-      <div class="two-col">
+      <p class="eyebrow">03 · Clustering · report Fig 3A–B</p>
+      <h2><span class="mono">SRX24313469</span>: Leiden clustering method</h2>
+      <p class="lede">Example dataset: 67th percentile of cell count.</p>
+      <div class="two-col fig-pair">
         <div class="fig-panel">
-          <img src="figs/umap_uncorrected.png" alt="Uncorrected atlas UMAP colored by cell type" />
-          <div class="cap">A · Uncorrected · <span class="mono">cell_type</span></div>
+          <img src="figs/umap_selected_SRX24313469.png" alt="UMAP of Leiden clusters vs cell type for SRX24313469" />
+          <div class="cap">Fig 3A · Leiden 0.8 vs CZ CELLxGENE <span class="mono">cell_type</span></div>
         </div>
         <div class="fig-panel">
-          <img src="figs/umap_corrected.png" alt="Harmony-corrected atlas UMAP colored by cell type" />
-          <div class="cap">B · Harmony (BioProject) · <span class="mono">cell_type</span></div>
+          <img src="figs/composition_bars_SRX24313469.png" alt="Cluster and cell-type composition for SRX24313469" />
+          <div class="cap">Fig 3B · cluster and cell-type composition</div>
         </div>
       </div>
-      <p class="cite">Korsunsky et al. 2019; Barrett et al. 2012. Report Fig 1. 9,307,963 barcodes, 61 labels.</p>
+      <p class="cite">Report Fig 3. Same release as the atlas.</p>
     </section>
 
-    <!-- 12. scIB + good -->
+    <!-- Fig 3C-D -->
+    <section class="slide" data-section="clustering">
+      <p class="eyebrow">03 · Clustering · report Fig 3C–D</p>
+      <h2>The Leiden sweep</h2>
+      <p class="lede">Resolutions 0.1–2.0 in steps of 0.1. Keep the resolution that maximizes Hungarian-matched Jaccard against <span class="mono">cell_type</span>. On this file that peak is 0.8.</p>
+      <div class="two-col fig-pair">
+        <div class="fig-panel">
+          <img src="figs/resolution_sweep_SRX24313469.png" alt="Leiden resolution sweep for SRX24313469" />
+          <div class="cap">Fig 3C · cluster count and matched Jaccard vs resolution</div>
+        </div>
+        <!--
+        <div class="fig-panel">
+          <img src="figs/homogeneity_completeness_nmi_vscore_ari_vs_resolution_SRX24313469.png" alt="Cluster similarity metrics vs Leiden resolution for SRX24313469" />
+          <div class="cap">Fig 3D · homogeneity, completeness, V-measure, NMI, ARI</div>
+        </div>
+        -->
+      </div>
+      <p class="cite">Report Fig 3C.</p>
+    </section>
+
+    <!-- scIB -->
     <section class="slide" data-section="atlas">
       <p class="eyebrow">03 · Integration · report Fig 2</p>
       <h2>This is what “good” meant</h2>
-      <p class="lede">Mix studies without flattening cell types. scIB on a 100k BioProject-stratified subset. Harmony on the same key we evaluate for batch, so the batch gain is not independent proof. Cell-type conservation is scored against CXG labels, which barely moved.</p>
+      <p class="lede">Mix studies without flattening cell types. scIB on a 100k BioProject-stratified subset. The batch gain uses the same key Harmony was told to mix, so it is not independent proof. Cell-type conservation is scored against CXG labels, which barely moved.</p>
       <div class="stat-row">
         <div class="stat"><div class="n">0.28 → 0.45</div><div class="l">batch-correction aggregate (+0.17)</div></div>
         <div class="stat"><div class="n">0.53 → 0.51</div><div class="l">biological conservation (−0.02)</div></div>
@@ -1100,7 +1308,7 @@
       <p class="cite">Luecken et al. 2022; Korsunsky et al. 2019. Report Fig 2 and Results.</p>
     </section>
 
-    <!-- 13. Limits -->
+    <!-- Limits -->
     <section class="slide" data-section="limits">
       <p class="eyebrow">04 · Limits</p>
       <h2>Atlases are not general-purpose</h2>
@@ -1271,7 +1479,7 @@
 
   <div class="hud">
     <span class="hint">Oliver Todreas</span>
-    <span id="counter">1 / 14</span>
+    <span id="counter">1 / 16</span>
   </div>
 
   <script>
