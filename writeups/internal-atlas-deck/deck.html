@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>scBaseCount Lung Atlas — Internal Deck</title>
+  <title>scBaseCount lung atlas (internal deck)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -434,6 +434,7 @@
       background: var(--color-bg-alt);
     }
 
+    .card .tag,
     .callout .tag {
       display: inline-block;
       font-family: var(--font-mono);
@@ -642,8 +643,208 @@
 
     .hud .hint { opacity: 0.8; }
 
+    .cite {
+      margin-top: 0.75rem;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--color-text-light);
+    }
+
+    .cards {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 0.85rem;
+    }
+
+    .cards-2x2 { grid-template-columns: 1fr 1fr; }
+    .cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0.85rem 0.95rem;
+      min-height: 0;
+    }
+
+    .card--ours {
+      border-color: var(--color-primary-light);
+      background: #eff6ff;
+    }
+
+    .card h3 {
+      font-family: var(--font-heading);
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--color-ink-strong);
+      margin: 0.25rem 0 0.4rem;
+      line-height: 1.3;
+    }
+
+    .card p,
+    .card li {
+      font-size: 0.86rem;
+      line-height: 1.45;
+      color: var(--color-ink-soft);
+    }
+
+    .card ul {
+      padding-left: 1rem;
+      margin-top: 0.3rem;
+    }
+
+    .card li + li { margin-top: 0.25rem; }
+
+    .loss-bars {
+      margin-top: 0.9rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .loss-row {
+      display: grid;
+      grid-template-columns: 13.5rem 1fr auto;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    .loss-row .name {
+      font-size: 0.82rem;
+      line-height: 1.3;
+      color: var(--color-ink-soft);
+    }
+
+    .loss-track {
+      height: 0.72rem;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .loss-fill {
+      height: 100%;
+      background: #93c5fd;
+      border-radius: 999px;
+      min-width: 3px;
+    }
+
+    .loss-row.top .loss-fill { background: var(--color-primary); }
+    .loss-row.top .name,
+    .loss-row.top .n { font-weight: 600; color: var(--color-ink-strong); }
+
+    .loss-row .n {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--color-text);
+    }
+
+    .funnel {
+      display: grid;
+      gap: 0.4rem;
+      margin-top: 0.9rem;
+    }
+
+    .funnel-row {
+      display: grid;
+      grid-template-columns: 9.5rem 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.5rem 0.7rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .funnel-row.end {
+      border-color: var(--color-primary-light);
+      background: #eff6ff;
+    }
+
+    .funnel-row .n {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--color-primary);
+    }
+
+    .funnel-row p {
+      font-size: 0.88rem;
+      margin: 0;
+    }
+
+    .quote {
+      margin-top: 1rem;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--color-primary);
+      background: var(--color-bg-alt);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .quote p {
+      font-size: 1.05rem;
+      color: var(--color-ink-strong);
+      line-height: 1.45;
+    }
+
+    .fig-full {
+      margin-top: 0.6rem;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .fig-full img {
+      width: 100%;
+      max-height: min(58vh, 480px);
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+
+    .bio-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.65rem 1rem;
+      margin-top: 1rem;
+      align-items: center;
+    }
+
+    .bio-person {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-ink-strong);
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 1.1rem 1rem;
+      text-align: center;
+      min-width: 8.5rem;
+    }
+
+    .skip-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+
+    .skip-pills span {
+      font-size: 0.82rem;
+      border: 1px dashed #c5cad3;
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      color: var(--color-ink-soft);
+      background: #fff;
+    }
+
     @media (max-width: 800px) {
-      .two-col, .stat-row, .metrics { grid-template-columns: 1fr; }
+      .two-col, .stat-row, .metrics, .cards-2x2, .cards-3 { grid-template-columns: 1fr; }
+      .loss-row, .funnel-row, .bio-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -652,129 +853,130 @@
 
     <!-- 1. Title -->
     <section class="slide slide--dark active" data-section="open">
-      <p class="eyebrow">Nygen / lund university master's project update</p>
-      <h1>scBaseCount lung atlas efforts</h1>
-      <p class="lede">Acquisition, weak-prior clustering, integrated atlas batch correction, and full-atlas disease-marker discovery.</p>
+      <p class="eyebrow">Nygen / Lund University master's project</p>
+      <h1>An integrated lung atlas from agent-curated scBaseCount files</h1>
+      <p class="lede">From public 10X matrices to one lung object: quality control, clustering from weak cell-type priors, study-level Harmony.</p>
       <ul class="agenda">
-        <li><strong>01</strong> Data acquisition from scBaseCount</li>
-        <li><strong>02</strong> Clustering with annotation weak priors</li>
-        <li><strong>03</strong> Integrated lung atlas and batch effects</li>
-        <li><strong>04</strong> Disease-marker discovery</li>
+        <li><strong>01</strong> Data landscape</li>
+        <li><strong>02</strong> Data acquisition</li>
+        <li><strong>03</strong> Methodology and results</li>
+        <li><strong>04</strong> Limits and next steps</li>
       </ul>
-      <p class="note" style="color: rgba(255,255,255,0.45); margin-top: 1.5rem;">~15 min · open <span class="mono">writeups/internal-atlas-deck/deck.html</span></p>
+      <p class="note" style="color: rgba(255,255,255,0.45); margin-top: 1.5rem;">~15 min · numbers and figures from the report unless noted</p>
     </section>
 
-    <!-- 2. Why -->
-    <section class="slide" data-section="open">
-      <p class="eyebrow">Why this work</p>
-      <h2>Public atlases are large, noisy, and unevenly labeled</h2>
-      <p class="lede">We need a reproducible path from scBaseCount files to an integrated lung view, without treating imperfect labels as truth.</p>
-      <ul>
-        <li>Hard gates on download, QC, and metadata before anything is “in the atlas.”</li>
-        <li>Clustering that uses existing <span class="mono">cell_type</span> labels as weak priors, not ground truth.</li>
-        <li>Measured batch correction on a multi-study lung concat.</li>
-        <li>Study-aware disease discovery that produces a traceable candidate review queue.</li>
-      </ul>
+    <!-- 2. Landscape -->
+    <section class="slide" data-section="landscape">
+      <p class="eyebrow">01 · Landscape</p>
+      <h2>What came before scBaseCount</h2>
+      <p class="lede">Three public models. None of them ingest SRA as a uniformly processed 10X store. scBaseCount still has a job across all three.</p>
+      <div class="cards cards-2x2">
+        <div class="card">
+          <span class="tag">GEO</span>
+          <h3>Loose schemas</h3>
+          <p>Depositors choose how much metadata to send. Many records are thin as sample context. Missing <span class="mono">cell_type</span> often starts here.</p>
+        </div>
+        <div class="card">
+          <span class="tag">CELLxGENE</span>
+          <h3>Community-contributed</h3>
+          <p>Standardized cell-level metadata on submission. Strong for exploration. Not a reprocessing of SRA as a whole.</p>
+        </div>
+        <div class="card">
+          <span class="tag">HCA / HLCA</span>
+          <h3>Lab-harmonized</h3>
+          <p>Selected studies, consensus cell-type maps. The Human Lung Cell Atlas is curated, not exhaustive of SRA.</p>
+        </div>
+        <div class="card card--ours">
+          <span class="tag">scBaseCount</span>
+          <h3>Agent-curated, uniform matrices</h3>
+          <p>AI discovery and metadata extraction, one STAR reference, one <span class="mono">h5ad</span> per SRX. No clusters. No tissue cut. No batch correction.</p>
+        </div>
+      </div>
+      <p class="cite">Clough &amp; Barrett 2016; CZI Cell Science Program 2025; Rozenblatt-Rosen et al. 2017; Sikkema et al. 2023; Youngblut et al. 2025. Report Introduction.</p>
     </section>
 
-    <!-- 3. Pipeline -->
+    <!-- 3. Data source + lung -->
+    <section class="slide" data-section="landscape">
+      <p class="eyebrow">01 · Landscape</p>
+      <h2>Part of scBaseCount already passed through CELLxGENE</h2>
+      <p class="lede">Say this now: it is why some files have <span class="mono">cell_type</span>, why others do not, and why we cut the store to lung.</p>
+      <div class="two-col">
+        <div class="card">
+          <span class="tag">Labels and holes</span>
+          <h3>CXG in, GEO often empty</h3>
+          <p>Portal submissions carry cell-level labels. Those become our clustering prior and the key we use to ask whether Harmony erased biology. GEO-style records often never had that field. A file with no usable <span class="mono">cell_type</span> never enters the atlas: 238 files, 1,509,128 barcodes (Table 1).</p>
+        </div>
+        <div class="card">
+          <span class="tag">Why lung</span>
+          <h3>2.6M cases · 1.9M deaths (2024)</h3>
+          <p>Lung cancer was estimated the most frequent cancer and the leading cause of cancer death. IPF sits in the same tissue with high mortality. The construction problem is still: pick the tissue, share a gene axis, integrate without erasing cell types.</p>
+        </div>
+      </div>
+      <p class="cite">CZI Cell Science Program 2025; Sung et al. 2026; Chakraborty et al. 2022. Report Introduction and Table 1.</p>
+    </section>
+
+    <!-- 4. Agent + GCS + pipeline -->
     <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Pipeline sketch</h2>
-      <p class="lede">From the scBaseCount snapshot into an integrated lung atlas.</p>
-      <div class="flow">
+      <p class="eyebrow">02 · Acquisition</p>
+      <h2>scBaseCount is an agent pipeline. We sit on top of it.</h2>
+      <p class="lede">Youngblut et al.: discover public 10X runs, extract metadata, align with one STAR reference. GCS hosts the snapshot; size forced an R2 mirror and local delete.</p>
+      <div class="flow-chart">
+        <div class="node">Discover 10X<small>SRA / ENA</small></div>
+        <span class="arrow">→</span>
+        <div class="node">Extract metadata<small>tissue, disease, free text</small></div>
+        <span class="arrow">→</span>
+        <div class="node">Uniform STAR<small>GeneFull, one gene axis</small></div>
+        <span class="arrow">→</span>
+        <div class="node node--end">One file per SRX<small>no clusters, no Harmony</small></div>
+      </div>
+      <div class="flow" style="margin-top: 1rem;">
         <span>GCS snapshot</span><span class="arrow">→</span>
-        <span>R2 mirror</span><span class="arrow">→</span>
-        <span class="callout-step">Lung metadata filter</span><span class="arrow">→</span>
-        <span>Download + MD5</span><span class="arrow">→</span>
+        <span>R2 + MD5</span><span class="arrow">→</span>
+        <span class="callout-step">Lung tissue filter</span><span class="arrow">→</span>
         <span>QC / gene-align</span><span class="arrow">→</span>
         <span>Concat</span><span class="arrow">→</span>
-        <span>Batch correction</span><span class="arrow">→</span>
-        <span>DE</span>
+        <span>Harmony + Leiden</span>
       </div>
-      <div class="filter-callout">
-        <div class="k">Lung metadata filter → datasets list</div>
-        <p>Builds the accession catalog that concat is allowed to download. Gate is <strong>lung tissue</strong> (plus study size / multi-organ excludes), not disease ∩ tissue. Detail on next slide.</p>
-      </div>
+      <p class="slide-note">Lung gate: free-text tissue regex; drop <span class="mono">NRX*</span>; attach BioProject via ENA; drop seven multi-organ studies and studies with ≤1,000 cells. Not a disease filter. Report Methods.</p>
+      <p class="cite">Youngblut et al. 2025; Amid et al. 2020. Report Methods (Data acquisition).</p>
     </section>
 
-    <!-- 4. Datasets selection -->
+    <!-- 5. Biospecimen -->
     <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>How samples enter the datasets list</h2>
-      <p class="lede">Start from human GeneFull <span class="mono">sample_metadata.parquet</span>. Only rows that pass these gates become download candidates for the atlas.</p>
-      <ul>
-        <li>Drop non-SRA/ENA accessions (<span class="mono">NRX*</span>).</li>
-        <li>Keep rows whose <span class="mono">tissue</span> matches a lung regex (lung, airway, BAL, trachea, …). <strong>No disease filter here.</strong></li>
-        <li>Attach <span class="mono">study_accession</span> via ENA <span class="mono">read_experiment</span>.</li>
-        <li>Drop a short list of known multi-organ / broad studies.</li>
-        <li>Drop studies with &lt; 1,000 total cells across their lung samples.</li>
-      </ul>
-      <p class="slide-note">Result: ~1.8k SRXs in the datasets list. COVID+blood never enters (tissue fails). Healthy / control / unsure <em>lung</em> samples can enter. File-level QC still happens later in <span class="mono">h5ad_concat</span>.</p>
-    </section>
-
-    <!-- 4b. Why free-text tissue -->
-    <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Why the lung gate uses free-text tissue</h2>
-      <p class="lede">Uberon would be cleaner when present. On this scBaseCount snapshot it is missing much more often than free-text tissue is uncertain.</p>
-      <div class="stat-row" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
-        <div class="stat">
-          <div class="n">12%</div>
-          <div class="l">free-text <span class="mono">tissue</span> unsure-like<br />(4,197 / 34,794; almost all <span class="mono">unsure</span>; 0 null or blank)</div>
-        </div>
-        <div class="stat">
-          <div class="n">31%</div>
-          <div class="l"><span class="mono">tissue_ontology_term_id</span> null or empty<br />(10,671 / 34,794)</div>
+      <p class="eyebrow">02 · Acquisition</p>
+      <h2>A biospecimen is what got sequenced, not the patient</h2>
+      <p class="lede">Same person, same tumor, three tubes: three biospecimens. BioSample is the tube. BioProject is the initiative. Harmony in this atlas mixes on BioProject.</p>
+      <div class="bio-grid">
+        <div class="bio-person">One patient<br />one tumor</div>
+        <div class="flow-chart" style="margin: 0;">
+          <div class="node">Tube A<small>BioSample 1</small></div>
+          <div class="node">Tube B<small>BioSample 2</small></div>
+          <div class="node">Tube C<small>BioSample 3</small></div>
+          <span class="arrow">→</span>
+          <div class="node node--end">Three SRX files<small>what went on the sequencer</small></div>
         </div>
       </div>
-      <ul>
-        <li>Gate on free-text lung regex so samples without Uberon still enter when the tissue string is usable.</li>
-        <li>Later steps can still use Uberon when an ID exists.</li>
-      </ul>
-      <p class="slide-note">Human GeneFull <span class="mono">sample_metadata.parquet</span>, non-<span class="mono">NRX</span> rows. Unsure-like = <span class="mono">unsure</span>, <span class="mono">not_applicable</span>, <span class="mono">none</span>, and similar placeholders.</p>
+      <p class="cite">Barrett et al. 2012. Report Methods (BioProject as batch key).</p>
     </section>
 
-    <!-- 5. Scale -->
+    <!-- 6. Funnel + scale -->
     <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Scale reached</h2>
-      <div class="stat-row">
-        <div class="stat"><div class="n">9.3M</div><div class="l">cells in the atlas</div></div>
-        <div class="stat"><div class="n">1,410</div><div class="l">files concatenated</div></div>
-        <div class="stat"><div class="n">172</div><div class="l">studies (batch key)</div></div>
+      <p class="eyebrow">02 · Acquisition</p>
+      <h2>From the 2026-01-12 release to the atlas</h2>
+      <div class="funnel">
+        <div class="funnel-row"><div class="n">35,266</div><p>datasets in the human GeneFull release</p></div>
+        <div class="funnel-row"><div class="n">2,396</div><p>free-text tissue matched lung (after dropping 472 non-SRA/ENA)</p></div>
+        <div class="funnel-row"><div class="n">1,816</div><p>eligible after multi-organ and small-study gates · 13,013,643 barcodes</p></div>
+        <div class="funnel-row end"><div class="n">1,410</div><p>concatenated · 9,307,963 barcodes · 172 BioProjects · 61 <span class="mono">cell_type</span> labels</p></div>
       </div>
-      <ul>
-        <li>~78% of attempted files pass concat gates; the rest fail explicit checks (later slide).</li>
-      </ul>
+      <p class="cite">Report Results and Table 1. Mean 7,166 / median 5,112 barcodes per eligible accession. 406 files dropped by file-level gates.</p>
     </section>
 
-    <!-- 6. Challenges -->
+    <!-- 7. Agent failure -->
     <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>Challenges</h2>
-      <p class="lede">Metadata and file quality are the bottleneck, not transfer speed.</p>
-      <ul>
-        <li>Thin / noisy free-text disease and tissue fields; synonymy across studies.</li>
-        <li>Lung-disease labels often sit on non-lung tissue (e.g. COVID on blood/PBMC); tissue gate is why those stay out.</li>
-        <li><span class="mono">study_accession</span> as batch key collapses donor, disease, and grade into one “batch.”</li>
-        <li>Many files missing all <span class="mono">cell_type</span> (~half of concat skips).</li>
-        <li>QC can drop large fractions of cells.</li>
-      </ul>
-    </section>
-
-    <!-- 6. Metadata vs study -->
-    <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>scBaseCount disease labels can disagree with BioSample attributes</h2>
-      <p class="lede"> Many h5ads in <span class="mono">PRJNA563828</span> (IPF Cell Atlas) are present in scBaseCount, but the disease labels in scBaseCount do not always agree with NCBI. Improving disease labelling via NCBI allows for more accurate DGE down the line.</p>
-      <!-- <div class="metrics" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
-        <div class="metric"><div class="k">IPF-only</div><div class="v">33</div></div>
-        <div class="metric"><div class="k">COPD-only</div><div class="v">17</div></div>
-        <div class="metric"><div class="k">Control-ish</div><div class="v">18</div></div>
-        <div class="metric"><div class="k">Baggy / study-level</div><div class="v">8</div></div>
-      </div> -->
-      <p class="slide-note" style="margin-top: 0.35rem;">Failure case: <span class="mono">SRX17412810</span> → <span class="mono">SAMN12688818</span> (ENA sample → BioSample efetch). Parquet bags IPF+COPD+control; BioSample says COPD.</p>
+      <p class="eyebrow">02 · Acquisition</p>
+      <h2>The agent is useful, and it can still miss</h2>
+      <p class="lede"><span class="mono">SRX17412810</span>: scBaseCount bags IPF, COPD, and healthy control. The BioSample for that tube says COPD.</p>
       <div class="two-col">
         <div class="fig-panel">
           <div class="meta-table-wrap">
@@ -788,236 +990,152 @@
               </tbody>
             </table>
           </div>
-          <div class="cap">Parquet · <a href="https://storage.googleapis.com/arc-institute-virtual-cell-atlas/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/sample_metadata.parquet" target="_blank" rel="noopener noreferrer">sample_metadata.parquet</a> · minority bag row</div>
+          <div class="cap">Parquet · bagged study-level disease</div>
         </div>
         <div class="fig-panel">
           <pre class="xml-block" aria-label="BioSample attributes excerpt"><span class="tag">&lt;BioSample</span> <span class="attr">accession</span>=<span class="val">"SAMN12688818"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;Title&gt;</span>192CO scRNAseq<span class="tag">&lt;/Title&gt;</span>
   <span class="tag">&lt;Attributes&gt;</span>
-    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"source_name"</span><span class="tag">&gt;</span>Whole Lung Dissociate<span class="tag">&lt;/Attribute&gt;</span>
     <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"tissue"</span><span class="tag">&gt;</span>Whole Lung Dissociate<span class="tag">&lt;/Attribute&gt;</span>
     <span class="flag-line"><span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"disease"</span><span class="tag">&gt;</span><span class="val">COPD</span><span class="tag">&lt;/Attribute&gt;</span></span>
-    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"Sex"</span><span class="tag">&gt;</span>male<span class="tag">&lt;/Attribute&gt;</span>
-    <span class="tag">&lt;Attribute</span> <span class="attr">attribute_name</span>=<span class="val">"age"</span><span class="tag">&gt;</span>66<span class="tag">&lt;/Attribute&gt;</span>
   <span class="tag">&lt;/Attributes&gt;</span>
 <span class="tag">&lt;/BioSample&gt;</span></pre>
           <div class="cap">BioSample · <a href="https://www.ncbi.nlm.nih.gov/biosample/SAMN12688818" target="_blank" rel="noopener noreferrer">SAMN12688818</a> · per-sample disease</div>
         </div>
       </div>
-      <p class="slide-note">Why fetch context anyway: clean <span class="mono">IPF</span>/<span class="mono">COPD</span>/<span class="mono">Control</span> strings, mismatch checks on the baggy minority, and study text for CyteType. Path: <span class="mono">study_context</span> → <span class="mono">efetch?db=biosample</span>. Ontologies via <span class="mono">ontology_lookup</span> (MONDO 2026-07-06).</p>
+      <p class="slide-note">Illustration of the mismatch class in the report Discussion, not a Table 1 count. That is why we look up ENA / BioSample instead of trusting the agent field alone.</p>
     </section>
 
-    <!-- 7. Gates -->
-    <section class="slide" data-section="acquisition">
-      <p class="eyebrow">1 · Data acquisition</p>
-      <h2>QC at a glance</h2>
-      <div class="stat-row" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 1rem;">
-        <div class="stat"><div class="n">1,816 → 1,410</div><div class="l">files attempted → kept (78%)</div></div>
-        <div class="stat"><div class="n">13.0M → 9.31M</div><div class="l">cells attempted → kept (72%)</div></div>
+    <!-- 8. QC -->
+    <section class="slide" data-section="qc">
+      <p class="eyebrow">03 · Quality control</p>
+      <h2>Largest cell loss: fewer than 200 genes</h2>
+      <p class="lede">1,816 → 1,410 files. 13,013,643 → 9,307,963 barcodes. Among every file that reached QC, the gene-count floor dropped the most cells.</p>
+      <div class="loss-bars">
+        <div class="loss-row top">
+          <div class="name">Min. genes (&lt; 200)</div>
+          <div class="loss-track"><div class="loss-fill" style="width: 100%"></div></div>
+          <div class="n">1,600,056 · 12.3%</div>
+        </div>
+        <div class="loss-row">
+          <div class="name">No <span class="mono">cell_type</span> (file gate)</div>
+          <div class="loss-track"><div class="loss-fill" style="width: 94%"></div></div>
+          <div class="n">1,509,128 · 11.6%</div>
+        </div>
+        <div class="loss-row">
+          <div class="name">Mito ≥ 20%</div>
+          <div class="loss-track"><div class="loss-fill" style="width: 32%"></div></div>
+          <div class="n">517,018 · 4.0%</div>
+        </div>
+        <div class="loss-row">
+          <div class="name">Ribo, &lt;100 cells, &lt;50% kept</div>
+          <div class="loss-track"><div class="loss-fill" style="width: 5%"></div></div>
+          <div class="n">2,775 + 1,169 + 75,534</div>
+        </div>
       </div>
-      <div class="compare-table-wrap">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th>Gate</th>
-              <th>Threshold</th>
-              <th>Atlas impact</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="best">
-              <td>Missing all <span class="mono">cell_type</span></td>
-              <td>Require ≥1 labeled cell</td>
-              <td class="num neg">238 files · 1,613,931 cells<br />(13.1% / 12.4%)</td>
-            </tr>
-            <tr>
-              <td>Too few cells after QC</td>
-              <td>&lt; 100 cells remain</td>
-              <td class="num neg">100 files · 1,218,710 cells<br />(5.5% / 9.4%)</td>
-            </tr>
-            <tr>
-              <td>Excessive QC dropout</td>
-              <td>Retain &lt; 50% of input cells</td>
-              <td class="num neg">68 files · 294,605 cells<br />(3.7% / 2.3%)</td>
-            </tr>
-            <tr>
-              <td>Per-cell QC (genes / mito)</td>
-              <td>≥200 genes; &lt;20% mito</td>
-              <td class="num neg">576,049 cells (5.8% of kept-file input)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="slide-note">First failing gate only. File-drop cells = <span class="mono">obs_count</span>; % of attempted. Per-cell QC is within kept files only.</p>
+      <p class="slide-note">Table 1 denominators. Inside the 1,410 kept files, mito dominates (430,729 vs 145,320 gene-floor). Followed Luecken &amp; Theis 2019; skipped doublet detection and HVG sweeps.</p>
+      <p class="cite">Luecken &amp; Theis 2019. Report Table 1 and Results (concatenated-only drops).</p>
     </section>
 
-    <!-- 8. Clustering idea + method -->
+    <!-- 9. Clustering -->
     <section class="slide" data-section="clustering">
-      <p class="eyebrow">2 · Clustering</p>
-      <h2>Annotations as weak priors, not truth</h2>
-      <p class="lede"><span class="mono">cell_type</span> labels are CELLxGENE / CXG-aligned curated labels. Useful structure, not ground truth. Using them as both prior and sole evaluation creates circularity.</p>
+      <p class="eyebrow">03 · Clustering</p>
+      <h2>The source files have no clusters. Here is how we clustered.</h2>
+      <p class="lede"><span class="mono">cell_type</span> is a weak prior on Leiden resolution, not ground truth. Tested on five files, then a 100k subset, then the atlas.</p>
       <div class="flow">
-        <span>QC → HVG → PCA</span><span class="arrow">→</span>
-        <span>Leiden sweep</span><span class="arrow">→</span>
-        <span>Hungarian Jaccard vs prior</span><span class="arrow">→</span>
-        <span>RF merge</span><span class="arrow">→</span>
-        <span class="mono">leiden_merged</span>
+        <span>2,000 HVGs · 50 PCs</span><span class="arrow">→</span>
+        <span>Leiden 0.1–2.0</span><span class="arrow">→</span>
+        <span>Hungarian Jaccard vs <span class="mono">cell_type</span></span>
       </div>
-      <p class="note">Resolution chosen by maximizing matched Jaccard against the weak prior.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">5 files</div><div class="l">25th–75th percentile of cell count (3,413–9,419); selected resolutions 0.1–1.5</div></div>
+        <div class="stat"><div class="n">0.8</div><div class="l">favoured on SRX24313469 and on the 100k BioProject-stratified subset (21 clusters)</div></div>
+        <div class="stat"><div class="n">71</div><div class="l">Leiden clusters on the Harmony-corrected atlas</div></div>
+      </div>
+      <p class="cite">Traag et al. 2019; Wolf et al. 2018; Luecken &amp; Theis 2019. Report Methods and Results. Silhouette was never the selector.</p>
     </section>
 
-    <!-- 9. What it buys -->
+    <!-- 10. Fig 3 -->
     <section class="slide" data-section="clustering">
-      <p class="eyebrow">2 · Clustering</p>
-      <h2>What this buys you</h2>
-      <ul>
-        <li>Resolution adapts to label granularity without hard-coding a single value.</li>
-        <li>RF out-of-fold merges collapse unstable splits.</li>
-        <li>Agreement metrics (NMI, ARI, NSE, …) show when priors are coarse bins vs when clusters carve finer structure.</li>
-      </ul>
-    </section>
-
-    <!-- 10. Evidence light -->
-    <section class="slide" data-section="clustering">
-      <p class="eyebrow">2 · Clustering</p>
-      <h2>Evidence snapshot</h2>
-      <ul>
-        <li>Clustering + CyteType at scale on the order of ~113 accessions in writeups.</li>
-        <li>Pattern: tight priors (e.g. neutrophils) align well; broad bins systematically disagree and invite splits.</li>
-        <li>Depth for Q&amp;A: CyteScore / CyteOnto comparisons and per-type NSE.</li>
-      </ul>
-    </section>
-
-    <!-- 11. Integration design -->
-    <section class="slide" data-section="atlas">
-      <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>Integration design</h2>
-      <p class="lede">One lung atlas, batch key <span class="mono">study_accession</span>.</p>
-      <div class="flow">
-        <span>Normalize</span><span class="arrow">→</span>
-        <span>HVG</span><span class="arrow">→</span>
-        <span>PCA</span><span class="arrow">→</span>
-        <span>Harmony</span><span class="arrow">→</span>
-        <span>Neighbors / UMAP / Leiden</span>
+      <p class="eyebrow">03 · Clustering · report Fig 3A</p>
+      <h2>One file, then the same rule at atlas scale</h2>
+      <p class="lede"><span class="mono">SRX24313469</span> (67th percentile). Jaccard-selected resolution 0.8.</p>
+      <div class="fig-full">
+        <img src="figs/umap_selected_SRX24313469.png" alt="UMAP of Leiden clusters vs cell type for SRX24313469" />
       </div>
-      <ul style="margin-top: 1.25rem;">
-        <li>Calibrate on a 100k study-proportional sample → scIB validate → Harmony production on the full atlas.</li>
-        <li>Caveat baked in: study-level batches fold biology (donor, disease) into “batch.”</li>
-      </ul>
+      <p class="cite">Report Fig 3A. Sweep and agreement metrics: Fig 3C–D, not shown here.</p>
     </section>
 
-    <!-- 12. Why BioProject / PRJNA -->
+    <!-- 11. Batch UMAPs -->
     <section class="slide" data-section="atlas">
-      <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>Why BioProject (<span class="mono">PRJNA*</span>) matters</h2>
-      <p class="lede">A <a href="https://www.ncbi.nlm.nih.gov/bioproject/docs/faq/#do-i-need-to-make-a-separate-bio" target="_blank" rel="noopener noreferrer">BioProject</a> is a collection of biological data related to a single initiative from one organization or consortium. Accessions look like <span class="mono">PRJNA563828</span>.</p>
-      <ul>
-        <li>That study id is our batch key: cells from the same initiative share lab, protocol, and donor structure.</li>
-        <li>Harmony mixes on <span class="mono">study_accession</span>, and DE prefers same-study diseased vs control contrasts.</li>
-        <li><strong>scBaseCount does not ship this field.</strong> The sample parquet has no BioProject / study column, so we resolve <span class="mono">SRX*</span> → ENA <span class="mono">study_accession</span> ourselves when building the datasets list.</li>
-      </ul>
-      <p class="slide-note">Without that join, “batch” and “same study” are undefined for the atlas. That is the metadata processing the next plots depend on.</p>
-    </section>
-
-    <!-- 13. Batch key scIB comparison -->
-    <section class="slide" data-section="atlas">
-      <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>BioProject is a good batch key</h2>
-      <p class="lede">On the 100k study-proportional sample, Harmony keyed by study beats finer keys on the overall tradeoff. Matching eval: correct and score on the same batch definition.</p>
-      <div class="compare-table-wrap">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th>Correction (matched eval)</th>
-              <th>Batch Δ</th>
-              <th>Bio Δ</th>
-              <th>Total Δ</th>
-              <th># batches</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="best">
-              <td>Study</td>
-              <td class="num pos">+0.167</td>
-              <td class="num neg">−0.024</td>
-              <td class="num pos">+0.052</td>
-              <td class="num">172</td>
-            </tr>
-            <tr>
-              <td>Study × tech</td>
-              <td class="num pos">+0.162</td>
-              <td class="num neg">−0.027</td>
-              <td class="num pos">+0.049</td>
-              <td class="num">197</td>
-            </tr>
-            <tr>
-              <td>SRX (experiment)</td>
-              <td class="num pos">+0.089</td>
-              <td class="num neg">−0.037</td>
-              <td class="num pos">+0.013</td>
-              <td class="num">1,409</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <ul style="margin-top: 0.9rem;">
-        <li>Study and study×tech are nearly the same; finer SRX correction costs more biology for less total gain.</li>
-        <li>Even when scored against SRX, SRX’s batch edge is tiny (0.392 vs 0.389 study) with worse bio (0.496 vs 0.511).</li>
-      </ul>
-      <p class="slide-note">Source: <span class="mono">output/atlas/v2/post/batch_key_comparison/</span>. SRX often mixes technical batch with donor / condition biology.</p>
-    </section>
-
-    <!-- 14. Before / after -->
-    <section class="slide" data-section="atlas">
-      <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>Atlas batch correction by study (PRJNA)</h2>
-      <p class="lede">UMAP colored by <span class="mono">cell_type</span>: uncorrected vs Harmony. Interim production plots; replace later with transparent versions under the same filenames.</p>
+      <p class="eyebrow">03 · Integration · report Fig 1</p>
+      <h2>Uncorrected first, then Harmony with cell type</h2>
+      <p class="lede">scBaseCount has no batch key coarser than SRX. We used BioProject. Left: why correction. Right: cell-type structure after Harmony.</p>
       <div class="two-col">
         <div class="fig-panel">
-          <img src="figs/umap_uncorrected.png" alt="UMAP (uncorrected), colored by cell type" />
-          <div class="cap">Uncorrected · cell_type</div>
+          <img src="figs/umap_uncorrected.png" alt="Uncorrected atlas UMAP colored by cell type" />
+          <div class="cap">A · Uncorrected · <span class="mono">cell_type</span></div>
         </div>
         <div class="fig-panel">
-          <img src="figs/umap_corrected.png" alt="UMAP (Harmony corrected), colored by cell type" />
-          <div class="cap">Harmony · cell_type</div>
+          <img src="figs/umap_corrected.png" alt="Harmony-corrected atlas UMAP colored by cell type" />
+          <div class="cap">B · Harmony (BioProject) · <span class="mono">cell_type</span></div>
         </div>
       </div>
-      <div class="metrics2">
-        <div class="metric"><div class="k">Batch (scIB)</div><div class="v">0.28 → 0.45</div></div>
-        <div class="metric"><div class="k">Bio (scIB)</div><div class="v">0.53 → 0.51</div></div>
-        <!-- <div class="metric"><div class="k">Total</div><div class="v">0.43 → 0.49</div></div> -->
-      </div>
-      <p class="note">scIB on 100k sample; modest bio cost for clearer batch mixing.</p>
+      <p class="cite">Korsunsky et al. 2019; Barrett et al. 2012. Report Fig 1. 9,307,963 barcodes, 61 labels.</p>
     </section>
 
-    <!-- 13. Production knobs -->
+    <!-- 12. scIB + good -->
     <section class="slide" data-section="atlas">
-      <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>Production outcome</h2>
+      <p class="eyebrow">03 · Integration · report Fig 2</p>
+      <h2>This is what “good” meant</h2>
+      <p class="lede">Mix studies without flattening cell types. scIB on a 100k BioProject-stratified subset. Harmony on the same key we evaluate for batch, so the batch gain is not independent proof. Cell-type conservation is scored against CXG labels, which barely moved.</p>
       <div class="stat-row">
-        <div class="stat"><div class="n">9.3M</div><div class="l">cells · 172 studies</div></div>
-        <div class="stat"><div class="n">2k / 15 / 0.8</div><div class="l">HVG · neighbors · Leiden res</div></div>
-        <div class="stat"><div class="n">74</div><div class="l"><span class="mono">leiden_atlas</span> clusters</div></div>
+        <div class="stat"><div class="n">0.28 → 0.45</div><div class="l">batch-correction aggregate (+0.17)</div></div>
+        <div class="stat"><div class="n">0.53 → 0.51</div><div class="l">biological conservation (−0.02)</div></div>
+        <div class="stat"><div class="n">2,000 / 50 / 0.8</div><div class="l">HVGs · PCs · Leiden · 71 clusters</div></div>
+      </div>
+      <div class="fig-full">
+        <img src="figs/scib_results.svg" alt="scIB batch correction metrics before and after Harmony" />
+      </div>
+      <p class="cite">Luecken et al. 2022; Korsunsky et al. 2019. Report Fig 2 and Results.</p>
+    </section>
+
+    <!-- 13. Limits -->
+    <section class="slide" data-section="limits">
+      <p class="eyebrow">04 · Limits</p>
+      <h2>Atlases are not general-purpose</h2>
+      <div class="quote">
+        <p>Batch effects force a new sample cut, and often a new correction, for each task. This object is a lung starting point, not an answer key.</p>
+      </div>
+      <div class="stat-row" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <div class="stat"><div class="n">Hundreds of GB</div><div class="l">cloud storage to hold the matrices</div></div>
+        <div class="stat"><div class="n">Order of TB</div><div class="l">memory: concat keeps the atlas in RAM until write-out</div></div>
       </div>
       <ul>
-        <li>UMAPs show source <span class="mono">cell_type</span> on the integrated embedding, not cluster IDs.</li>
-        <li>Approved knobs from parameter selection + subset scIB validation.</li>
+        <li>Donor, disease, and grade can still sit inside BioProject. A disease contrast should not pretend those are gone.</li>
+        <li>Agent metadata can disagree with BioSample. Re-check the tube for any label-dependent question.</li>
+        <li>No wall-clock runtimes in the report. Doublets and HVG method were not prioritized.</li>
       </ul>
+      <p class="cite">Luecken et al. 2022; Mueller et al. 2026. Report Discussion. The atlas can support cluster-level disease questions; those contrasts are not this talk.</p>
     </section>
 
-    <!-- 14. Atlas ≠ analysis set -->
-    <section class="slide" data-section="atlas">
-      <p class="eyebrow">3 · Integrated atlas</p>
-      <h2>The atlas is not the analysis set</h2>
-      <p class="lede">Atlases are not general-purpose. What stays in depends on the question; disease-marker DE re-filters samples before any contrast runs.</p>
-      <div class="filter-callout">
-        <div class="k">DE eligibility · 1,410 atlas SRXs → 958 kept (67.9%)</div>
-        <p>Dropped for this task: cell lines / organoids / iPSC (<span class="mono">234</span>), unmapped disease (<span class="mono">176</span>), non-lung (<span class="mono">38</span>), non-human (<span class="mono">3</span>), disease mismatch (<span class="mono">1</span>). Labels come from ontology metadata plus BioSample context (<span class="mono">contexts_v2.jsonl</span>). Ineligible samples remain in the atlas; they simply never enter DE.</p>
-      </div>
-      <p class="slide-note">Same idea as batch correction: re-harmonize for the task. Pseudobulk still needs same-study case/control support and ≥10 cells per profile before a contrast runs.</p>
+    <!-- 14. Close -->
+    <section class="slide" data-section="close">
+      <p class="eyebrow">Takeaways</p>
+      <h2>Where we are</h2>
+      <ul>
+        <li>GEO, CELLxGENE, and HCA each solve a different archive problem. scBaseCount still supplies uniform 10X matrices at SRA scale, including agent holes.</li>
+        <li>Largest eligible-set cell loss: gene-count floor (1,600,056). Inside kept files: mitochondrial fraction.</li>
+        <li>Resolution calibrated on five files, then 100k, then the atlas: Leiden 0.8, 71 clusters.</li>
+        <li>Harmony on BioProject: scIB batch 0.28 → 0.45, bio 0.53 → 0.51.</li>
+        <li>The atlas is not general-purpose. Re-harmonize for the next task.</li>
+      </ul>
+      <p class="cite">Youngblut et al. 2025; Luecken &amp; Theis 2019; Luecken et al. 2022; Korsunsky et al. 2019. Report Table 1, Fig 1–3.</p>
     </section>
 
-    <!-- 15. DE why -->
+    <!--
+    DEMOTED: disease-marker DE (why)
+    Parked per rewrite notes: DGE is not the close of this talk.
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <h2>Why DE on the atlas</h2>
@@ -1033,8 +1151,24 @@
         <li>Also screen restricted genes and unexpected expression candidates.</li>
       </ul>
     </section>
+    -->
 
-    <!-- 18. DE production -->
+    <!--
+    DEMOTED: The atlas is not the analysis set (DE eligibility counts)
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">3 · Integrated atlas</p>
+      <h2>The atlas is not the analysis set</h2>
+      <p class="lede">Atlases are not general-purpose. What stays in depends on the question; disease-marker DE re-filters samples before any contrast runs.</p>
+      <div class="filter-callout">
+        <div class="k">DE eligibility · 1,410 atlas SRXs → 958 kept (67.9%)</div>
+        <p>Dropped for this task: cell lines / organoids / iPSC (234), unmapped disease (176), non-lung (38), non-human (3), disease mismatch (1). Labels come from ontology metadata plus BioSample context (contexts_v2.jsonl). Ineligible samples remain in the atlas; they simply never enter DE.</p>
+      </div>
+      <p class="slide-note">Same idea as batch correction: re-harmonize for the task. Pseudobulk still needs same-study case/control support and ≥10 cells per profile before a contrast runs.</p>
+    </section>
+    -->
+
+    <!--
+    DEMOTED: DE production
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <span class="badge badge--complete">Full atlas · completed</span>
@@ -1051,8 +1185,10 @@
       </ul>
       <p class="slide-note">Automated shortlist for manual review. Expression evidence alone does not establish novelty or mechanism.</p>
     </section>
+    -->
 
-    <!-- 19. DE evidence -->
+    <!--
+    DEMOTED: DE evidence
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <span class="badge badge--complete">Full atlas · study profiles</span>
@@ -1060,17 +1196,19 @@
       <div class="two-col">
         <div class="fig-panel">
           <img src="figs/de_ipf_spp1.png" alt="SPP1 detection by study in IPF macrophage cluster 26" />
-          <div class="cap">IPF · macrophage c26 · <span class="mono">SPP1 +2.61</span> · 7/7 studies</div>
+          <div class="cap">IPF · macrophage c26 · SPP1 +2.61 · 7/7 studies</div>
         </div>
         <div class="fig-panel">
           <img src="figs/de_lung_cancer_anpep.png" alt="ANPEP detection by study in lung cancer macrophage cluster 9" />
-          <div class="cap">Lung cancer · macrophage c9 · <span class="mono">ANPEP −1.57</span> · 5/5 studies</div>
+          <div class="cap">Lung cancer · macrophage c9 · ANPEP −1.57 · 5/5 studies</div>
         </div>
       </div>
       <p class="slide-note">Bars show mean detection within each study. These are traceable candidates, not independent validation.</p>
     </section>
+    -->
 
-    <!-- 20. DE less-familiar leads -->
+    <!--
+    DEMOTED: DE less-familiar leads
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <span class="badge">Atlas-generated hypotheses · literature checked</span>
@@ -1080,22 +1218,24 @@
         <div class="callout callout--alt">
           <span class="tag">Cross-disease signal</span>
           <h3>TMEM45A extends beyond its lung-cancer precedent</h3>
-          <p>Ranked first in the primary review queue: increased across 3 disease areas and 14 clusters, with mean <span class="mono">log2FC +2.11</span>. In cystic fibrosis it rises in resolved goblet c45 (<span class="mono">+3.19</span>) and ciliated c44 (<span class="mono">+2.65</span>), each across 2 overlapping studies.</p>
+          <p>Ranked first in the primary review queue: increased across 3 disease areas and 14 clusters, with mean log2FC +2.11. In cystic fibrosis it rises in resolved goblet c45 (+3.19) and ciliated c44 (+2.65), each across 2 overlapping studies.</p>
         </div>
         <div class="callout">
           <span class="tag">Disease divergence</span>
           <h3>CRIP2 separates fibrotic from tumor macrophages</h3>
-          <p>Within resolved macrophage c26, <span class="mono">CRIP2</span> rises in IPF (<span class="mono">+2.05</span>; 7 studies) but falls in lung cancer (<span class="mono">−1.37</span>; 5 studies). The contrast is more informative than another shared canonical marker.</p>
+          <p>Within resolved macrophage c26, CRIP2 rises in IPF (+2.05; 7 studies) but falls in lung cancer (−1.37; 5 studies). The contrast is more informative than another shared canonical marker.</p>
         </div>
       </div>
       <div class="filter-callout">
         <div class="k">Why this needs investigation</div>
-        <p><span class="mono">TMEM45A</span> has hypoxia and lung-adenocarcinoma precedent, but its cystic-fibrosis epithelial signal is not established. Recent work implicates <span class="mono">CRIP2</span> in IPF epithelial remodeling, while reference protein staining does not detect it in lung macrophages. The macrophage result could therefore reveal a disease-conditioned state, cell mixture or annotation error.</p>
+        <p>TMEM45A has hypoxia and lung-adenocarcinoma precedent, but its cystic-fibrosis epithelial signal is not established. Recent work implicates CRIP2 in IPF epithelial remodeling, while reference protein staining does not detect it in lung macrophages. The macrophage result could therefore reveal a disease-conditioned state, cell mixture or annotation error.</p>
       </div>
       <p class="slide-note">Priority checks: leave-one-study-out stability; donor and technology covariates; raw-count and ambient-RNA review; macrophage co-expression, doublet scoring and spatial or protein validation. These are investigation leads, not novelty or mechanism claims.</p>
     </section>
+    -->
 
-    <!-- 21. DE investigation leads -->
+    <!--
+    DEMOTED: DE investigation leads
     <section class="slide" data-section="de">
       <p class="eyebrow">4 · Disease-marker DE</p>
       <span class="badge">Hypotheses · not validated</span>
@@ -1105,46 +1245,33 @@
         <div class="callout callout--alt">
           <span class="tag">Sanity check</span>
           <h3>IPF recovers a coherent remodeling axis</h3>
-          <p><span class="mono">POSTN +4.02</span>, <span class="mono">SPP1 +2.61</span> and <span class="mono">MMP7 +2.55</span>, while <span class="mono">SFTPC −3.20</span>. The contrasts span 7–9 studies.</p>
+          <p>POSTN +4.02, SPP1 +2.61 and MMP7 +2.55, while SFTPC −3.20. The contrasts span 7–9 studies.</p>
         </div>
         <div class="callout">
           <span class="tag">Lead 1</span>
           <h3>ANPEP falls in lung-cancer macrophages</h3>
-          <p>Resolved macrophage cluster 9: <span class="mono">log2FC −1.57</span>; detection 26% vs 58% in controls; 5/5 studies agree.</p>
+          <p>Resolved macrophage cluster 9: log2FC −1.57; detection 26% vs 58% in controls; 5/5 studies agree.</p>
         </div>
         <div class="callout">
           <span class="tag">Lead 2</span>
           <h3>SCGB1A1 loss is cancer-skewed</h3>
-          <p>Cluster 20: <span class="mono">log2FC −8.34</span> in lung cancer, compared with −1.05 in IPF. First resolve the mixed cluster label.</p>
+          <p>Cluster 20: log2FC −8.34 in lung cancer, compared with −1.05 in IPF. First resolve the mixed cluster label.</p>
         </div>
         <div class="callout callout--alt">
           <span class="tag">Lead 3</span>
           <h3>What is cluster 32?</h3>
-          <p><span class="mono">SYT4</span>, <span class="mono">TMEM151A</span>, <span class="mono">LINC02360</span> and <span class="mono">SERTM1</span> are detected in 20–26% of c32 vs &lt;5% elsewhere, but source labels are mixed.</p>
+          <p>SYT4, TMEM151A, LINC02360 and SERTM1 are detected in 20–26% of c32 vs &lt;5% elsewhere, but source labels are mixed.</p>
         </div>
       </div>
       <p class="slide-note">Next checks: leave-one-study-out stability, donor / technology covariates, finer cluster annotation and held-out data.</p>
     </section>
-
-    <!-- 22. Close -->
-    <section class="slide" data-section="close">
-      <p class="eyebrow">Takeaways</p>
-      <h2>Where we are</h2>
-      <ul>
-        <li>Acquisition needs hard gates; metadata lies until checked.</li>
-        <li>Weak priors guide clustering without becoming truth.</li>
-        <li>Harmony improves batch metrics with a modest bio cost.</li>
-        <li>Full-atlas DE now produces a traceable review queue, not biological claims.</li>
-      </ul>
-      <p class="lede" style="margin-top: 1.25rem;">Open: prior vs held-out truth; study-level batch key limits; which candidates survive leave-one-study-out and external validation.</p>
-      <p class="note"><strong>Downstream TODO:</strong> run this path on <strong>Scarf</strong>. AnnData-style workflows carry nearly ~100 GB of disk overhead and leave server headroom tight; Scarf’s sparse / out-of-core design is the natural fit once discovery methods stabilize.</p>
-    </section>
+    -->
 
   </main>
 
   <div class="hud">
     <span class="hint">Oliver Todreas</span>
-    <span id="counter">1 / 22</span>
+    <span id="counter">1 / 14</span>
   </div>
 
   <script>
@@ -1187,6 +1314,8 @@
       probe.onerror = () => { img.remove(); };
       probe.src = img.currentSrc || img.src;
     }
+
+    show(0);
   </script>
 </body>
 </html>
