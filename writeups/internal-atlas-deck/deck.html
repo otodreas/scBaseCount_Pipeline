@@ -918,6 +918,10 @@
       background: #fff;
     }
 
+    .fig-full.fig-tall img {
+      max-height: min(62vh, 540px);
+    }
+
     .bio-grid {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -1011,14 +1015,7 @@
     <!-- 3. Data source + lung -->
     <section class="slide" data-section="landscape">
       <p class="eyebrow">01 · Landscape</p>
-      <h2>Part of scBaseCount already passed through CELLxGENE</h2>
-      <p class="lede">Say this now: it is why some files have <span class="mono">cell_type</span>, why others do not, and why we cut the store to lung.</p>
-      <div class="two-col">
-        <div class="card">
-          <span class="tag">Labels and holes</span>
-          <h3>CXG in, GEO often empty</h3>
-          <p>Portal submissions carry cell-level labels. Those become our clustering prior and the key we use to ask whether Harmony erased biology. GEO-style records often never had that field. A file with no usable <span class="mono">cell_type</span> never enters the atlas: 238 files, 1,509,128 barcodes (Table 1).</p>
-        </div>
+      <h2>Why we built on top of scBaseCount</h2>
         <div class="card">
           <span class="tag">Why lung</span>
           <h3>2.6M cases · 1.9M deaths (2024)</h3>
@@ -1031,8 +1028,8 @@
     <!-- 4. Agent + GCS + pipeline -->
     <section class="slide" data-section="acquisition">
       <p class="eyebrow">02 · Acquisition</p>
-      <h2>Limitation of scope of scBaseCount</h2>
-      <p class="lede">Youngblut et al.: discover public 10X runs, extract metadata, align with one STAR reference. We built on top of it.</p>
+      <h2>Why we built on top of scBaseCount (contd.)</h2>
+      <p class="lede">Youngblut et al.: discover public 10X runs, extract metadata, align with one STAR reference. We built an automated solution for concatenationg and QC-ing datasets, applying batch correction and clustering.</p>
       <div class="flow-chart">
         <div class="node">Discover 10X<small>SRA / ENA</small></div>
         <span class="arrow">→</span>
@@ -1048,7 +1045,8 @@
         <span class="callout-step">Lung tissue filter</span><span class="arrow">→</span>
         <span>QC / gene-align</span><span class="arrow">→</span>
         <span>Concat</span><span class="arrow">→</span>
-        <span>Harmony + Leiden</span>
+        <span>Batch correction</span><span class="arrow">→</span>
+        <span>Clustering</span>
       </div>
       <p class="slide-note">Lung gate: free-text tissue regex; drop <span class="mono">NRX*</span>; attach BioProject via ENA; drop seven multi-organ studies and studies with ≤1,000 cells. Not a disease filter. Report Methods.</p>
       <p class="cite">Youngblut et al. 2025; Amid et al. 2020. Report Methods (Data acquisition).</p>
@@ -1152,7 +1150,7 @@
     <!-- Uncorrected atlas: why batch correction -->
     <section class="slide" data-section="atlas">
       <p class="eyebrow">03 · Integration · report Fig 1A</p>
-      <h2>Concatenation is not integration</h2>
+      <h2>Concatenating QC'd count matrices results in fragmented atlas</h2>
       <p class="lede">UMAP of the concatenated atlas, no batch correction, colored by CZ CELLxGENE <span class="mono">cell_type</span>. Shared types split apart. That is the reason to correct.</p>
       <div class="fig-full">
         <img src="figs/umap_uncorrected.png" alt="Uncorrected atlas UMAP colored by cell type" />
@@ -1163,11 +1161,10 @@
     <!-- BioProject -->
     <section class="slide" data-section="atlas">
       <p class="eyebrow">03 · Integration</p>
-      <h2>scBaseCount has no batch key. We used BioProject.</h2>
-      <p class="lede">The release has nothing coarser than SRA experiment accession (one file, one batch). That is too fine: it mixes technical batch with donor and condition.</p>
+      <h2>Atlas batch key search</h2>
+      <p class="lede">The release has nothing coarser than SRA experiment accession (one file, one batch). We sought to identify a coarser key that would mix studies without flattening cell types.</p>
       <ul>
         <li>A BioProject is one initiative from one organization or consortium (for example <span class="mono">PRJNA563828</span>).</li>
-        <li>A BioSample is the tube that went on the sequencer. Same patient, three tubes: three biospecimens. Harmony here mixes on the initiative, not on the tube.</li>
         <li>scBaseCount does not ship BioProject. We resolve SRX → ENA <span class="mono">study_accession</span>, then Harmony corrects PCs on that column.</li>
       </ul>
       <p class="cite">Barrett et al. 2012; Amid et al. 2020; Korsunsky et al. 2019. Report Methods (Embedding and batch correction).</p>
@@ -1184,11 +1181,27 @@
       <p class="cite">Report Fig 1B. Harmony: Korsunsky et al. 2019.</p>
     </section>
 
+    <!-- scIB -->
+    <section class="slide" data-section="atlas">
+      <p class="eyebrow">03 · Integration · report Fig 2</p>
+      <h2>Batch correction metrics using scIB</h2>
+      <p class="lede">Mix studies without flattening cell types. scIB on a 100k BioProject-stratified subset. Cell-type conservation is scored against CXG labels, which barely moved.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">0.28 → 0.45</div><div class="l">batch-correction aggregate (+0.17)</div></div>
+        <div class="stat"><div class="n">0.53 → 0.51</div><div class="l">biological conservation (−0.02)</div></div>
+        <!-- <div class="stat"><div class="n">2,000 / 50 / 0.8</div><div class="l">HVGs · PCs · Leiden · 71 clusters</div></div> -->
+      </div>
+      <div class="fig-full">
+        <img src="figs/scib_results.svg" alt="scIB batch correction metrics before and after Harmony" />
+      </div>
+      <p class="cite">Luecken et al. 2022; Korsunsky et al. 2019. Report Fig 2 and Results.</p>
+    </section>
+
     <!-- Clustering -->
     <section class="slide" data-section="clustering">
       <p class="eyebrow">03 · Clustering</p>
-      <h2>Clustering methodology overview</h2>
-      <p class="lede">Leiden runs on the Harmony-corrected graph. For each cluster–<span class="mono">cell_type</span> pair we count overlapping cells, convert that to IoU, then Hungarian picks a one-to-one match. The sweep score is the <em>sum</em> of those matched IoUs.</p>
+      <h2>Selecting a clustering resolution</h2>
+      <p class="lede">Leiden clustering runs at a set of resolutions. For each cluster–<span class="mono">cell_type</span> pair we compute the Jaccard index (IoU), then we select the optimal assignment using linear sum assignment. The sweep score is the <em>sum</em> of those matched IoUs.</p>
       <div class="flow">
         <span>2,000 HVGs · 50 PCs · Harmony</span><span class="arrow">→</span>
         <span>Leiden 0.1–2.0</span><span class="arrow">→</span>
@@ -1257,7 +1270,7 @@
     <!-- Fig 3A-B -->
     <section class="slide" data-section="clustering">
       <p class="eyebrow">03 · Clustering · report Fig 3A–B</p>
-      <h2><span class="mono">SRX24313469</span>: Leiden clustering method</h2>
+      <h2>Leiden sweep applied to an example dataset</h2>
       <p class="lede">Example dataset: 67th percentile of cell count.</p>
       <div class="two-col fig-pair">
         <div class="fig-panel">
@@ -1274,10 +1287,10 @@
 
     <!-- Fig 3C-D -->
     <section class="slide" data-section="clustering">
-      <p class="eyebrow">03 · Clustering · report Fig 3C–D</p>
+      <p class="eyebrow">03 · Clustering · report Fig 3C</p>
       <h2>The Leiden sweep</h2>
       <p class="lede">Resolutions 0.1–2.0 in steps of 0.1. Keep the resolution that maximizes Hungarian-matched Jaccard against <span class="mono">cell_type</span>. On this file that peak is 0.8.</p>
-      <div class="two-col fig-pair">
+      <div class="fig-full">
         <div class="fig-panel">
           <img src="figs/resolution_sweep_SRX24313469.png" alt="Leiden resolution sweep for SRX24313469" />
           <div class="cap">Fig 3C · cluster count and matched Jaccard vs resolution</div>
@@ -1292,23 +1305,31 @@
       <p class="cite">Report Fig 3C.</p>
     </section>
 
-    <!-- scIB -->
-    <section class="slide" data-section="atlas">
-      <p class="eyebrow">03 · Integration · report Fig 2</p>
-      <h2>This is what “good” meant</h2>
-      <p class="lede">Mix studies without flattening cell types. scIB on a 100k BioProject-stratified subset. The batch gain uses the same key Harmony was told to mix, so it is not independent proof. Cell-type conservation is scored against CXG labels, which barely moved.</p>
-      <div class="stat-row">
-        <div class="stat"><div class="n">0.28 → 0.45</div><div class="l">batch-correction aggregate (+0.17)</div></div>
-        <div class="stat"><div class="n">0.53 → 0.51</div><div class="l">biological conservation (−0.02)</div></div>
-        <div class="stat"><div class="n">2,000 / 50 / 0.8</div><div class="l">HVGs · PCs · Leiden · 71 clusters</div></div>
-      </div>
+    <!-- Fig 3A-B -->
+    <section class="slide" data-section="clustering">
+      <p class="eyebrow">03 · Clustering</p>
+      <h2>Leiden sweep applied to the atlas (100,000 cell study-stratified sample)</h2>
+      <p class="lede">The same methodology was applied to a 100,000 cell study-stratified sample of the atlas. The resolution that maximizes Hungarian-matched Jaccard against <span class="mono">cell_type</span> is 0.8.</p>
       <div class="fig-full">
-        <img src="figs/scib_results.svg" alt="scIB batch correction metrics before and after Harmony" />
+        <img src="figs/resolution_matched_jaccard_atlas.png" alt="Leiden resolution sweep for atlas sample" />
+        <!-- <div class="cap">Leiden resolution sweep for atlas sample</div> -->
       </div>
-      <p class="cite">Luecken et al. 2022; Korsunsky et al. 2019. Report Fig 2 and Results.</p>
+      <!-- <p class="cite">Report Fig 3C.</p> -->
     </section>
 
-    <!-- Limits -->
+    <!-- RF merge -->
+    <section class="slide" data-section="clustering">
+      <p class="eyebrow">03 · Clustering</p>
+      <h2>RF merge on the example file, not on the atlas</h2>
+      <p class="lede">Method to account for overclustering not yet applied on atlas.</p>
+      <div class="fig-full fig-tall">
+        <img src="figs/umap_merged_SRX24313469.png" alt="UMAP of Leiden 0.8, RF-merged clusters, and cell type for SRX24313469" />
+      </div>
+      <p class="slide-note">RF merge is not inside the Hungarian score. Expression confusion is not the same as <span class="mono">cell_type</span> matching: 7 merged clusters vs 8 types. The [1, 8, 9] group is still T cell / B cell / plasma on the type panel. Atlas at resolution 0.8: 71 clusters vs 61 types.</p>
+      <p class="cite">Same 14 Aug run as report Fig 3A. Methods leave RF merge as TODO. <span class="mono">scripts/cluster_validation/merge.py</span>.</p>
+    </section>
+
+    <!-- Limits
     <section class="slide" data-section="limits">
       <p class="eyebrow">04 · Limits</p>
       <h2>Atlases are not general-purpose</h2>
@@ -1322,21 +1343,23 @@
       <ul>
         <li>Donor, disease, and grade can still sit inside BioProject. A disease contrast should not pretend those are gone.</li>
         <li>Agent metadata can disagree with BioSample. Re-check the tube for any label-dependent question.</li>
-        <li>No wall-clock runtimes in the report. Doublets and HVG method were not prioritized.</li>
+        <li>Runtime is in the matter of single day to multiple days. Doublets and HVG method were not prioritized.</li>
       </ul>
       <p class="cite">Luecken et al. 2022; Mueller et al. 2026. Report Discussion. The atlas can support cluster-level disease questions; those contrasts are not this talk.</p>
-    </section>
+    </section> -->
 
     <!-- 14. Close -->
     <section class="slide" data-section="close">
       <p class="eyebrow">Takeaways</p>
-      <h2>Where we are</h2>
+      <h2>Limitations and potential next steps</h2>
       <ul>
         <li>GEO, CELLxGENE, and HCA each solve a different archive problem. scBaseCount still supplies uniform 10X matrices at SRA scale, including agent holes.</li>
-        <li>Largest eligible-set cell loss: gene-count floor (1,600,056). Inside kept files: mitochondrial fraction.</li>
-        <li>Resolution calibrated on five files, then 100k, then the atlas: Leiden 0.8, 71 clusters.</li>
-        <li>Harmony on BioProject: scIB batch 0.28 → 0.45, bio 0.53 → 0.51.</li>
-        <li>The atlas is not general-purpose. Re-harmonize for the next task.</li>
+        <li>Large cell counts enable analyses of rare cell types and states. Compiling atlases for research-specific tasks has promise but is not practical with scBaseCount alone.</li>
+        <li>Runtimes and disk + memory overhead requirements make this workflow cumbersome</li>
+        <li>No doublet detection or HVG count and method optimization</li>
+        <li>RF cluster merge shown on single files; not applied to the atlas (71 clusters vs 61 types)</li>
+        <li>DGE analysis not performed</li>
+
       </ul>
       <p class="cite">Youngblut et al. 2025; Luecken &amp; Theis 2019; Luecken et al. 2022; Korsunsky et al. 2019. Report Table 1, Fig 1–3.</p>
     </section>
