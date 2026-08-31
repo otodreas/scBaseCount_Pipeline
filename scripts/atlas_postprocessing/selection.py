@@ -35,6 +35,7 @@ def _require_cell_type(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> Non
 
 
 def _resolution_rows(sel: ResolutionSelection, resolutions: list[float]) -> list[dict[str, Any]]:
+    """Convert resolution selection to a list of rows for writing to a CSV file."""
     rows: list[dict[str, Any]] = []
     for idx, resolution in enumerate(resolutions):
         rows.append(
@@ -66,6 +67,7 @@ def run_calibration(
     metrics_dir.mkdir(parents=True, exist_ok=True)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
+    # Allows the user to stay in the loop and approve the parameters before running the pipeline.
     log.info(
         "Weak-prior labels (%s) are not ground truth; the matched-Jaccard argmax is advisory only",
         cfg.cellTypeKey,
@@ -114,12 +116,14 @@ def run_calibration(
         int(sel.kArr[sel.bestIdx]),
     )
 
+    # Write resolution selection metrics to CSV.
     rows = _resolution_rows(sel, resolutions)
     write_metric_csv(
         metrics_dir / "resolution.csv",
         rows,
         ["resolution", "matchedJaccard", "nClusters"],
     )
+    # Plot resolution selection metrics.
     plot_resolution_selection(
         resolutions=resolutions,
         jaccArr=sel.jaccArr.tolist(),

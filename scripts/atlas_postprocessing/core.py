@@ -142,11 +142,12 @@ def build_neighbors(
     *,
     nNeighbors: int,
     nPcs: int | None = None,
-    useRep: str | None = None,
+    useRep: str | None = None,  # which feature representation to use for neighbor calculation
 ) -> None:
     """Build a neighbor graph with explicit neighborhood size and optional representation."""
     kwargs: dict[str, int | str] = {"n_neighbors": nNeighbors}
     if useRep is not None:
+        # Without this, Scanpy uses .X or X_pca and ignores the named .obsm key
         kwargs["use_rep"] = useRep
         if nPcs is not None:
             kwargs["n_pcs"] = nPcs
@@ -259,13 +260,14 @@ def run_harmony_on_pcs(
     resolved_batch_key = cfg.batchKey if batchKey is None else batchKey
     if resolved_batch_key not in adata.obs:
         raise ValueError(f"adata.obs is missing batch key {resolved_batch_key!r}")
-    pca_prefix = np.asarray(adata.obsm["X_pca"][:, :nPcs])
+    pca_prefix = np.asarray(adata.obsm["X_pca"][:, :nPcs])  # subset to the first ``nPcs`` PCs
     harmony_out = harmonypy.run_harmony(
-        pca_prefix,
-        adata.obs,
-        resolved_batch_key,
+        pca_prefix,  # PCA embedding matrix
+        adata.obs,  # metadata
+        resolved_batch_key,  # batch key
         ncores=cfg.nJobs,
     )
+    # Correct the embedding matrix (per harmony docs)
     corrected = np.asarray(harmony_out.Z_corr)
     log.info("Ran Harmony on %s PCs with batch key %s ncores=%s", nPcs, resolved_batch_key, cfg.nJobs)
     return corrected
@@ -281,6 +283,7 @@ def integrate_harmony(
     validate_graph_settings(cfg, adata.n_obs)
 
     def _store_harmony() -> None:
+        """store corrected embedding matrix in adata.obsm["X_pca_harmony"]"""
         adata.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata, cfg, nPcs=cfg.nPcs)
 
     timed("Harmony correction", _store_harmony)
@@ -293,14 +296,15 @@ def integrate_harmony(
             useRep="X_pca_harmony",
         ),
     )
-    if parallelUmap:
-        timed("Harmony UMAP", lambda: run_umap_parallel(adata, cfg))
-    else:
-        timed("Harmony UMAP", lambda: run_umap_deterministic(adata))
     timed(
         "Harmony Leiden",
         lambda: run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_atlas"),
     )
+    # Compute UMAP regardless of if cfg.writePlots is True or False so that they can still be plotted later
+    if parallelUmap:
+        timed("Harmony UMAP", lambda: run_umap_parallel(adata, cfg))
+    else:
+        timed("Harmony UMAP", lambda: run_umap_deterministic(adata))
     return adata
 
 

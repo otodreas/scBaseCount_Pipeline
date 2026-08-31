@@ -1,3 +1,15 @@
+# Report wrap-up
+
+- week 1
+   - [ ] code review
+   - [ ] atlas run
+   - [ ] git tag
+   - [ ] clean readme
+- week 2
+   - [ ] report review, update figs
+   - [ ] powerpoint presentation
+
+
 # atlas wrap-up
 - [ ] rf merge on atlas, harden leiden sweep methodology (match with small proof of concept runs on individual datasets)
 - [ ] make note of missing/deprioritized doublet detection
