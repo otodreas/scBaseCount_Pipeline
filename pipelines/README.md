@@ -309,7 +309,7 @@ Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is 
 
 Sampling is deterministic (seed `0`), stratified by `--batch-key` (default `study_accession`). Every study gets at least one cell when `N` is at least the study count; remaining slots use largest-remainder proportions by study size. Requests smaller than the study count, or larger than the atlas, are rejected. The full atlas is loaded into memory once per command, so plan RAM for the whole object even though selection runs on the sample.
 
-Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/<date>/post/` (legacy `v2` paths remain valid). Full-atlas production builds **only** the Harmony-corrected neighbor graph, UMAP, and Leiden partition. Subset validation still builds both the uncorrected and Harmony-corrected embeddings so scIB can compare `X_pca` vs `X_pca_harmony`, then RF-merges the approved Leiden partition.
+Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/<date>/post/` (legacy `v2` paths remain valid). Full-atlas production builds **only** the Harmony-corrected neighbor graph, UMAP, and Leiden partition. Subset validation still builds both the uncorrected and Harmony-corrected embeddings so scIB can compare `X_pca` vs `X_pca_harmony`.
 
 ### Recommended workflow
 
@@ -324,14 +324,14 @@ uv run python pipelines/select_atlas_parameters.py calibrate \
 cp output/atlas/2026-08-12/post/parameter_selection/cluster_validation/parameters_template.json \
    output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json
 
-# 3) Validate the approved set on a fresh sample with RF merge + scIB
+# 3) Validate the approved set on a fresh sample with scIB
 uv run python pipelines/select_atlas_parameters.py validate \
   --input output/atlas/2026-08-12/atlas.h5ad \
   --sample-cells 100000 \
   --parameters-json output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json \
   --output-dir output/atlas/2026-08-12/post/subset_validation
 
-# 4) After reviewing scIB and RF diagnostics, run production on the full atlas
+# 4) After reviewing scIB, run production on the full atlas
 uv run python pipelines/run_atlas_postprocessing.py \
   --input output/atlas/2026-08-12/atlas.h5ad \
   --output output/atlas/2026-08-12/post/production/atlas_post.h5ad \
@@ -385,16 +385,16 @@ Fixed method values: HVGs `2000`, neighbors `15`, PC chooser `nPcsCompute=50`, `
 
 ### `select_atlas_parameters.py validate`
 
-Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one dual-embedding validation pass with the approved JSON (uncorrected + Harmony graphs), RF-merges `leiden_atlas` into `leiden_merged` on normalized pre-scale HVGs, then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table and RF diagnostics before production; there is no automatic pass/fail gate.
+Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs one dual-embedding validation pass with the approved JSON (uncorrected + Harmony graphs), then scIB on `X_pca` vs `X_pca_harmony`. Review the full scIB table before production; there is no automatic pass/fail gate.
 
 **Output root default:** `output/atlas/v2/post/subset_validation/`
 
 
 | File                                             | Description                                                              |
 | ------------------------------------------------ | ------------------------------------------------------------------------ |
-| `atlas_pp_subset.h5ad`                           | Processed sample with `leiden_atlas` and `leiden_merged`                 |
-| `atlas_pp_subset_run.json`                       | Run summary including `sampling` and `clustersMerged`                    |
-| `subset_validation_summary.json`                 | Approved vs recommended resolution, RF diagnostics, sampling, scIB paths |
+| `atlas_pp_subset.h5ad`                           | Processed sample with `leiden_atlas`                                     |
+| `atlas_pp_subset_run.json`                       | Run summary including `sampling` and `clustersMerged` (`null`)           |
+| `subset_validation_summary.json`                 | Approved vs recommended resolution, sampling, scIB paths                 |
 | `figures/`                                       | Scree + atlas-scale UMAPs                                                |
 | `scib/scib_results.csv`, `scib/scib_results.svg` | scIB report                                                              |
 

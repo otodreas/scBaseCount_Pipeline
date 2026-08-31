@@ -9,13 +9,6 @@ import harmonypy
 import numba
 import numpy as np
 import scanpy as sc
-from cluster_validation import (
-    MERGED_CLUSTER_KEY,
-    RF_N_ESTIMATORS,
-    RF_N_SPLITS,
-    RF_RANDOM_STATE,
-    apply_rf_merge,
-)
 from shared.repo import rel_to_repo
 from sklearn.utils import check_array, check_random_state
 from storage.r2 import upload_to_r2, verify_upload
@@ -108,33 +101,11 @@ def scale_and_pca(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, nPcsComp
     return adata
 
 
-def capture_pre_scale_features(adata: sc.AnnData) -> np.ndarray:
-    """Dense copy of the current expression matrix before scaling mutates ``.X``."""
-    x = adata.X
-    if hasattr(x, "toarray"):
-        return np.asarray(x.toarray())
-    return np.asarray(x).copy()
-
-
-def prepare_pca(
-    adata: sc.AnnData,
-    cfg: AtlasPostprocessingConfig,
-    *,
-    returnPreScaleFeatures: bool = False,
-) -> sc.AnnData | tuple[sc.AnnData, np.ndarray]:
-    """Select HVGs, scale, and compute PCA without building a neighbor graph.
-
-    When ``returnPreScaleFeatures`` is true, also return a dense copy of the
-    normalized HVG matrix captured before ``sc.pp.scale()``.
-    """
+def prepare_pca(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.AnnData:
+    """Select HVGs, scale, and compute PCA without building a neighbor graph."""
     validate_graph_settings(cfg, adata.n_obs)
     adata = select_hvgs(adata, cfg)
-    features = capture_pre_scale_features(adata) if returnPreScaleFeatures else None
-    adata = scale_and_pca(adata, cfg)
-    if returnPreScaleFeatures:
-        assert features is not None
-        return adata, features
-    return adata
+    return scale_and_pca(adata, cfg)
 
 
 def build_neighbors(
@@ -367,63 +338,26 @@ def run_postprocessing(
     loaded = timed("load + normalize", lambda: load_and_normalize(cfg, adata=adata))
     validate_graph_settings(cfg, loaded.n_obs)
 
-    pre_scale_features: np.ndarray | None = None
     if workflow == "validation":
-        prepared = timed(
-            "HVG + PCA",
-            lambda: prepare_pca(loaded, cfg, returnPreScaleFeatures=True),
-        )
-        assert isinstance(prepared, tuple)
-        loaded, pre_scale_features = prepared
+        loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
         loaded = timed("uncorrected embedding", lambda: embed_uncorrected(loaded, cfg))
         loaded = timed(
             "harmony integration",
             lambda: integrate_harmony(loaded, cfg, parallelUmap=False),
         )
         if cfg.cellTypeKey not in loaded.obs:
-            raise ValueError(f"adata.obs is missing weak prior key {cfg.cellTypeKey!r}")
-        assert pre_scale_features is not None
-        weak_prior = loaded.obs[cfg.cellTypeKey].values if cfg.rfBalanceWeakPrior else None
-        loaded, merge_info = timed(
-            "RF merge approved Leiden partition",
-            lambda: apply_rf_merge(
-                loaded,
-                featureMatrix=pre_scale_features,
-                clusterKey="leiden_atlas",
-                mergeThreshold=cfg.mergeThreshold,
-                mergedKey=MERGED_CLUSTER_KEY,
-                nEstimators=RF_N_ESTIMATORS,
-                nSplits=RF_N_SPLITS,
-                randomState=RF_RANDOM_STATE,
-                weakPriorLabels=weak_prior,
-                minCellsPerCluster=3,
-            ),
-        )
-        loaded.uns["rfMerge"] = {
-            "clusterKey": "leiden_atlas",
-            "mergedKey": MERGED_CLUSTER_KEY,
-            "mergeThreshold": cfg.mergeThreshold,
-            "rfBalanceWeakPrior": cfg.rfBalanceWeakPrior,
-            "nEstimators": RF_N_ESTIMATORS,
-            "nSplits": RF_N_SPLITS,
-            "randomState": RF_RANDOM_STATE,
-            "nClustersPreMerge": merge_info.nClustersPreMerge,
-            "nClustersPostMerge": merge_info.nClustersPostMerge,
-            "labelMap": merge_info.labelMap,
-            "mergedGroups": merge_info.mergedGroups,
-            "confClasses": [str(c) for c in merge_info.classes],
-            "confMatrix": merge_info.conf.tolist(),
-            "featureMatrix": "normalized_log1p_hvg_before_scale",
-        }
+            raise ValueError(f"adata.obs is missing validation label key {cfg.cellTypeKey!r}")
     elif workflow == "production":
         loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
-        assert isinstance(loaded, sc.AnnData)
         loaded = timed(
             "harmony integration",
             lambda: integrate_harmony(loaded, cfg, parallelUmap=True),
         )
     else:
         raise ValueError(f"Unknown workflow {workflow!r}")
+
+    # RF merge of leiden_atlas (cluster_validation.merge.apply_rf_merge) could run here
+    # for validation and production, after Harmony Leiden and before plots/save.
 
     if cfg.writePlots:
         timed("scree plot", lambda: save_scree_plot(loaded, cfg))

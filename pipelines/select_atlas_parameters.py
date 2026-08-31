@@ -86,7 +86,7 @@ def _parse_args() -> argparse.Namespace:
         help="Leiden resolution candidate list (default: cluster-validation 0.1..1.9 step 0.1)",
     )
 
-    validate = sub.add_parser("validate", help="Run approved parameters on the sample, RF-merge, and scIB-benchmark")
+    validate = sub.add_parser("validate", help="Run approved parameters on the sample and scIB-benchmark")
     _add_shared_args(validate)
     validate.add_argument(
         "--parameters-json",
@@ -197,6 +197,7 @@ def _run_validate(args: argparse.Namespace) -> None:
         lambda: run_postprocessing(cfg, adata=sampled, workflow="validation"),
         logger=log,
     )
+    # RF merge of leiden_atlas could run here before scIB.
     timed(
         "scIB benchmark",
         lambda: run_scib_benchmark(
@@ -213,7 +214,6 @@ def _run_validate(args: argparse.Namespace) -> None:
     parameters = load_approved_parameters(args.parameters_json)
     summary = validate_approved_against_calibration(parameters, parametersPath=args.parameters_json)
     recommendation = summary.get("recommendation") or {}
-    rf_merge = adata.uns.get("rfMerge")
     validation_summary = {
         "input": rel_to_repo(cfg.inputH5ad),
         "outputDir": rel_to_repo(args.output_dir),
@@ -234,7 +234,7 @@ def _run_validate(args: argparse.Namespace) -> None:
                 and abs(float(recommendation["resolution"]) - float(cfg.resolution)) < 1e-9
             ),
         },
-        "rfMerge": rf_merge,
+        "rfMerge": None,  # not implemented at time of submission
         "sampling": sample_metadata(adata),
         "subsetH5ad": rel_to_repo(cfg.outputH5ad),
         "runJson": rel_to_repo(cfg.outputH5ad.with_name(f"{cfg.outputH5ad.stem}_run.json")),
@@ -245,18 +245,12 @@ def _run_validate(args: argparse.Namespace) -> None:
         },
         "timingsSeconds": round(time.perf_counter() - started, 3),
         "note": (
-            "Review the full scIB metric table and RF merge diagnostics before launching "
-            "full-atlas production. There is no automatic pass/fail threshold."
+            "Review the full scIB metric table before launching full-atlas production. "
+            "There is no automatic pass/fail threshold."
         ),
     }
     write_json(args.output_dir / "subset_validation_summary.json", validation_summary)
     log.info("Validation summary: %s", json.dumps(validation_summary["resolved"]))
-    if rf_merge:
-        log.info(
-            "RF merge: %s -> %s clusters",
-            rf_merge.get("nClustersPreMerge"),
-            rf_merge.get("nClustersPostMerge"),
-        )
 
 
 def main() -> None:
