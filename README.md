@@ -17,34 +17,174 @@ The repo splits reusable code, batch orchestration, and interactive analysis:
 - `[pipelines/](pipelines/)`: Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See `[pipelines/README.md](pipelines/README.md)`.
 - `[notebooks/](notebooks/)`: Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See `[notebooks/README.md](notebooks/README.md)`.
 
+# Resources required
+
+The following resources are required to replicate the work presented in [the report](docs/report/report.pdf)
+- Data access
+    - Google Cloud account and a billing project subscribed to the Virtual Cell Atlas Marketplace dataset
+    - Access to the populated R2 raw-data mirror described below
+- Compute
+    - Ca 100 GB disk space
+    - 1 CPU core
+    - Ca 2 TB RAM
+    - Persistent shell session (eg tmux) or detached process (eg nohup)
 
 
-# Data access
-
-
-
-## Google Cloud
+## Data access
+### Google Cloud
 
 A Google Cloud account and project is required to download data programmatically. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in `[uv.lock](uv.lock)`).
 
-## Cloudflare R2
+The historical GCS-to-R2 transfers, including their repository snapshots, input CSVs, and run manifests, are recorded in [`output/migration/README.md`](output/migration/README.md).
+
+### Cloudflare R2
 
 Processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see `[.env.example](.env.example)`).
 
-## Optional API keys
+### Optional API keys
 
-NCBI and CyteType API keys reduce rate limiting when fetching study metadata and running annotations.
+NCBI and CyteType API keys support workflows outside the report. Neither is required for the steps below.
 
-# Setup
+# Reproducibility
 
+If you have access to the resources required, you can reproduce the work presented in [the report](docs/report/report.pdf) by following the steps below.
+
+## Setup
 ```sh
 git clone git@github.com:otodreas/scBaseCount_Pipeline.git
 cd scBaseCount_Pipeline
 uv sync --locked --group dev
+```
+
+### Install pre-commit and pre-push hooks (optional)
+```sh
 git config core.hooksPath .githooks   # once per clone
 ```
 
 `[.githooks/pre-commit](.githooks/pre-commit)` runs ruff and nbstripout on staged files; `[.githooks/pre-push](.githooks/pre-push)` runs the cluster validation regression test when `scripts/cluster_validation/` changed. Both are optional local help; [CI](.github/workflows/ci.yml) enforces ruff, pytest, and stripped `notebooks/` on `main`.
+
+## Run the pipeline
+
+Run every command from the repository root. These steps use the current pipeline implementation with the parameters reported in the paper: 2,000 HVGs, 50 computed and retained PCs, 15 neighbors, Leiden resolution 0.8, and BioProject (`study_accession`) as the Harmony batch key.
+
+### 1. Configure cloud access
+
+```sh
+cp .env.example .env
+```
+
+Fill the R2 variables in `.env`. The atlas constructor reads raw `h5ad` files from R2 keys derived from their GCS URIs, so it requires the populated mirror created by the migrations recorded in [`output/migration/README.md`](output/migration/README.md). Each object must retain its `gcs-md5` metadata.
+
+The current migration helper still uses the anonymous GCS access that worked for the historical transfers. It does not implement Arc's current Requester Pays flow, so it cannot initialize a new mirror from the Marketplace bucket as written.
+
+### 2. Prepare the fixed inputs
+
+The exact 1,816-accession input catalog used by the atlas build is committed at [`output/metadata/datasets_v2.csv`](output/metadata/datasets_v2.csv). The release metadata used to generate that catalog is committed at:
+
+```text
+data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/scbasecount_2026-01-12_metadata_GeneFull_Homo_sapiens_sample_metadata.parquet
+```
+
+The matching scBaseCount STAR gene list is committed at:
+
+```text
+data/scbasecount/2026-01-12/star_references/Homo_sapiens/hg38_2020/geneInfo.tab
+```
+
+To rerun the accession selection against the live ENA API instead of using the committed catalog:
+
+```sh
+uv run python pipelines/build_datasets_v2.py
+```
+
+This live lookup can differ if ENA records have changed. Use the committed CSV when reproducing the reported accession set.
+
+### 3. Reproduce the five-dataset clustering check
+
+```sh
+uv run python pipelines/run_clustering_pipeline.py \
+  --datasets tests/quantiles_datasets.csv \
+  --r2-prefix report_cluster_validation \
+  --workers 1
+```
+
+This runs the Jaccard and Hungarian-matching Leiden sweep on the five cell-count quantiles used for the clustering-method check. Results are written under `output/clustering_pipeline/`. The current single-dataset grid ends at 1.9, although the report describes 2.0 as inclusive.
+
+### 4. Build the QC-filtered atlas
+
+```sh
+uv run python pipelines/run_atlas_concat.py
+```
+
+The configured run applies the report's cell and file filters, aligns every input to `geneInfo.tab`, concatenates the passing datasets, and uploads the atlas to `atlas/2026-08-12/atlas.h5ad` in R2. A successful upload removes the local atlas. Restore it to the canonical downstream path with:
+
+```sh
+uv run python - <<'PY'
+from pathlib import Path
+
+from dotenv import load_dotenv
+from shared.repo import REPO_ROOT
+from storage import download_from_r2
+
+load_dotenv(REPO_ROOT / ".env")
+download_from_r2(
+    "atlas/2026-08-12/atlas.h5ad",
+    Path("output/atlas/v2/atlas_v2.h5ad"),
+    verify_md5=True,
+)
+PY
+```
+
+The concatenation manifest should report 1,410 accepted datasets, 172 BioProjects, and 9,307,963 cells.
+
+### 5. Calibrate on the deterministic 100,000-cell sample
+
+```sh
+uv run python pipelines/select_atlas_parameters.py calibrate \
+  --input output/atlas/v2/atlas_v2.h5ad \
+  --sample-cells 100000 \
+  --output-dir output/atlas/v2/post/parameter_selection \
+  --n-top-genes 2000 \
+  --n-pcs 50 \
+  --n-pcs-compute 50 \
+  --n-neighbors 15 \
+  --resolution 0.8 \
+  --resolution-candidates 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 \
+                          1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 \
+  --threads 1
+
+cp output/atlas/v2/post/parameter_selection/parameters_template.json \
+   output/atlas/v2/post/parameter_selection/approved_parameters.json
+```
+
+### 6. Validate Harmony and run scIB
+
+```sh
+uv run python pipelines/select_atlas_parameters.py validate \
+  --input output/atlas/v2/atlas_v2.h5ad \
+  --sample-cells 100000 \
+  --parameters-json output/atlas/v2/post/parameter_selection/approved_parameters.json \
+  --output-dir output/atlas/v2/post/subset_validation \
+  --threads 1 \
+  --scib-jobs 1 \
+  --force-scib
+```
+
+This writes the uncorrected and Harmony-corrected subset embeddings, Leiden partitions, and scIB results under `output/atlas/v2/post/subset_validation/`.
+
+### 7. Process the full atlas
+
+```sh
+uv run python pipelines/run_atlas_postprocessing.py \
+  --input output/atlas/v2/atlas_v2.h5ad \
+  --output output/atlas/v2/post/production/atlas_v2_post.h5ad \
+  --figs-dir output/atlas/v2/post/production/figures \
+  --parameters-json output/atlas/v2/post/parameter_selection/approved_parameters.json \
+  --n-pcs-compute 50 \
+  --threads 1
+```
+
+The current production runner writes the Harmony-corrected graph, UMAP, and `leiden_atlas` partition. Its parallel UMAP optimizer is unseeded, so the full-atlas UMAP coordinates will not be byte-for-byte identical between runs. The deterministic subset validation produces both embeddings used for the scIB comparison. These current-code steps reproduce the analysis flow, not the archived full-atlas uncorrected UMAP or byte-identical report figures.
 
 # On the work presented
 
