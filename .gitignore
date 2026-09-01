@@ -9,6 +9,7 @@ __pycache__/
 # Data/cache
 data/
 !data/scbasecount/2026-01-12/star_references/Homo_sapiens/hg38_2020/geneInfo.tab
+!data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/scbasecount_2026-01-12_metadata_GeneFull_Homo_sapiens_sample_metadata.parquet
 !tests/pytest/data/
 tmp/
 .tmp/
