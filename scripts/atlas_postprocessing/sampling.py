@@ -7,7 +7,6 @@ import scanpy as sc
 
 log = logging.getLogger(__name__)
 
-# SAMPLE_SEED = 0
 SAMPLE_METHOD = "studyProportional"
 SAMPLE_UNS_KEY = "parameterSelectionSample"
 
