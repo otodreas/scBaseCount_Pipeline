@@ -20,7 +20,7 @@ def matched_jaccard(
     clusterLabels: NDArray[Any] | list[Any],
     refLabels: NDArray[Any] | list[Any],
 ) -> float:
-    """Hungarian-matched sum of pairwise Jaccard scores between clusters and reference labels."""
+    """Sum pairwise Jaccard scores under the optimal one-to-one assignment."""
     cluster_labels = np.asarray(clusterLabels)
     ref_labels = np.asarray(refLabels)
     if cluster_labels.size == 0 or ref_labels.size == 0:
@@ -35,23 +35,24 @@ def matched_jaccard(
     cl_idx = {c: i for i, c in enumerate(clusters)}
     ct_idx = {t: j for j, t in enumerate(celltypes)}
 
-    union = np.zeros((k, m), dtype=np.float64)
+    overlap_counts = np.zeros((k, m), dtype=np.float64)
     for cl, ct in zip(cluster_labels, ref_labels, strict=True):
-        # +1 for every barcode that is identified by a certain cl-ct pair
-        union[cl_idx[cl], ct_idx[ct]] += 1
+        # Add each cell to its Leiden-cluster and reference-label pair.
+        overlap_counts[cl_idx[cl], ct_idx[ct]] += 1
 
-    cl_sizes = union.sum(axis=1)  # number of barcodes in each cluster
-    ct_sizes = union.sum(axis=0)  # number of barcodes in each cell type
-    # compute jaccard matrix (IoU matrix)
-    jaccard_matrix = union / (
+    cl_sizes = overlap_counts.sum(axis=1)  # Cells in each Leiden cluster.
+    ct_sizes = overlap_counts.sum(axis=0)  # Cells with each reference label.
+    # Convert each pair's overlap count into a Jaccard index (aka IoU).
+    jaccard_matrix = overlap_counts / (
         cl_sizes[:, None]
         + ct_sizes[None, :]  # intersection
-        - union  # union must be subtracted to avoid double counting
-        + 1e-10  # avoid division by zero
+        - overlap_counts  # union must be subtracted to avoid double counting
+        + 1e-10  # Avoid division by zero.
     )
 
-    # find the indices for thebest match for each cluster
-    row_ind, col_ind = linear_sum_assignment(-jaccard_matrix)  # use negative jaccard since scipy wants to MINIMIZE cost
+    # Find indices for the optimal one-to-one assignment.
+    # SciPy minimizes cost, so negate Jaccard scores to maximize the matched sum.
+    row_ind, col_ind = linear_sum_assignment(-jaccard_matrix)
     # return the negative cost of the assignment (see scipy docs https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html#id2)
     return float(jaccard_matrix[row_ind, col_ind].sum())
 

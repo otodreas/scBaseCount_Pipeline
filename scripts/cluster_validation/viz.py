@@ -81,7 +81,7 @@ def plot_resolution_sweep(
     axes[1].scatter([sel], [jacc_arr[best_idx]], color="red", zorder=5, s=60)
     axes[1].set_xlabel("Resolution")
     axes[1].set_ylabel("Jaccard score")
-    axes[1].set_title("Jaccard score (Hungarian matched)")
+    axes[1].set_title("Matched Jaccard score")
     axes[1].legend(fontsize=8)
 
     plt.suptitle(

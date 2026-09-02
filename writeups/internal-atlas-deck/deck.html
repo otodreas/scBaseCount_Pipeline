@@ -423,7 +423,7 @@
     .compare-table .pos { color: #047857; }
     .compare-table .neg { color: #b45309; }
 
-    .iou-grid {
+    .jaccard-grid {
       display: grid;
       grid-template-columns: 1fr 1.15fr;
       gap: 1rem;
@@ -431,14 +431,14 @@
       align-items: start;
     }
 
-    .iou-formula {
+    .jaccard-formula {
       border: 1px solid var(--color-border);
       border-radius: 10px;
       background: var(--color-bg-alt);
       padding: 0.85rem 0.95rem;
     }
 
-    .iou-formula .eq {
+    .jaccard-formula .eq {
       font-family: var(--font-mono);
       font-size: 0.92rem;
       font-weight: 600;
@@ -446,42 +446,42 @@
       margin: 0.35rem 0 0.7rem;
     }
 
-    .iou-formula p,
-    .iou-formula li {
+    .jaccard-formula p,
+    .jaccard-formula li {
       font-size: 0.82rem;
       line-height: 1.45;
     }
 
-    .iou-formula ul {
+    .jaccard-formula ul {
       padding-left: 1.05rem;
       margin-top: 0.4rem;
     }
 
-    .iou-table-wrap {
+    .jaccard-table-wrap {
       border: 1px solid var(--color-border);
       border-radius: 10px;
       overflow: auto;
       background: #fff;
     }
 
-    .iou-table {
+    .jaccard-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.78rem;
     }
 
-    .iou-table th,
-    .iou-table td {
+    .jaccard-table th,
+    .jaccard-table td {
       padding: 0.4rem 0.45rem;
       text-align: center;
       border-bottom: 1px solid var(--color-border);
       border-right: 1px solid var(--color-border);
     }
 
-    .iou-table th:last-child,
-    .iou-table td:last-child { border-right: none; }
+    .jaccard-table th:last-child,
+    .jaccard-table td:last-child { border-right: none; }
 
-    .iou-table th {
+    .jaccard-table th {
       font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.03em;
@@ -490,8 +490,8 @@
       background: var(--color-bg-alt);
     }
 
-    .iou-table th.stub,
-    .iou-table td.stub {
+    .jaccard-table th.stub,
+    .jaccard-table td.stub {
       text-align: left;
       font-family: var(--font-mono);
       font-size: 0.72rem;
@@ -501,23 +501,23 @@
       white-space: nowrap;
     }
 
-    .iou-table td.num {
+    .jaccard-table td.num {
       font-family: var(--font-mono);
       font-weight: 600;
     }
 
-    .iou-table td.match {
+    .jaccard-table td.match {
       background: #eff6ff;
       box-shadow: inset 0 0 0 2px var(--color-primary-light);
       color: var(--color-ink-strong);
     }
 
-    .iou-table td.dim { color: #9ca3af; font-weight: 500; }
+    .jaccard-table td.dim { color: #9ca3af; font-weight: 500; }
 
-    .iou-table tr:last-child th,
-    .iou-table tr:last-child td { border-bottom: none; }
+    .jaccard-table tr:last-child th,
+    .jaccard-table tr:last-child td { border-bottom: none; }
 
-    .iou-table caption {
+    .jaccard-table caption {
       caption-side: bottom;
       text-align: left;
       padding: 0.45rem 0.55rem;
@@ -548,7 +548,7 @@
 
     .card .tag,
     .callout .tag,
-    .iou-formula .tag {
+    .jaccard-formula .tag {
       display: inline-block;
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -960,7 +960,7 @@
     }
 
     @media (max-width: 800px) {
-      .two-col, .stat-row, .metrics, .cards-2x2, .cards-3, .iou-grid { grid-template-columns: 1fr; }
+      .two-col, .stat-row, .metrics, .cards-2x2, .cards-3, .jaccard-grid { grid-template-columns: 1fr; }
       .loss-row, .funnel-row, .bio-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -1201,27 +1201,27 @@
     <section class="slide" data-section="clustering">
       <p class="eyebrow">03 · Clustering</p>
       <h2>Selecting a clustering resolution</h2>
-      <p class="lede">Leiden clustering runs at a set of resolutions. For each cluster–<span class="mono">cell_type</span> pair we compute the Jaccard index (IoU), then we select the optimal assignment using linear sum assignment. The sweep score is the <em>sum</em> of those matched IoUs.</p>
+      <p class="lede">Leiden clustering runs at a set of resolutions. For each cluster–<span class="mono">cell_type</span> pair we compute the Jaccard index, also known as intersection over union or IoU, then select the optimal matching using SciPy's linear sum assignment. The sweep score is the <em>sum</em> of those matched Jaccard indices.</p>
       <div class="flow">
         <span>2,000 HVGs · 50 PCs · Harmony</span><span class="arrow">→</span>
         <span>Leiden 0.1–2.0</span><span class="arrow">→</span>
-        <span>Hungarian Jaccard vs <span class="mono">cell_type</span></span>
+        <span>SciPy linear sum assignment vs <span class="mono">cell_type</span></span>
       </div>
-      <div class="iou-grid">
-        <div class="iou-formula">
+      <div class="jaccard-grid">
+        <div class="jaccard-formula">
           <span class="tag">One pair</span>
-          <p class="eq">IoU = ∩ / (n<sub>cluster</sub> + n<sub>type</sub> − ∩)</p>
+          <p class="eq">Jaccard = ∩ / (n<sub>cluster</sub> + n<sub>type</sub> − ∩)</p>
           <p>Cluster 0 ∩ macrophage = <strong>80</strong> cells. Cluster 0 has 90 cells; macrophage has 85.</p>
           <p class="eq">80 / (90 + 85 − 80) = 0.84</p>
           <ul>
             <li>Each matrix cell is that overlap count, not a correlation.</li>
-            <li>Hungarian keeps one highlighted pair per cluster and per type.</li>
+            <li>The assignment keeps one highlighted pair per cluster and per type.</li>
             <li>Score for this matching: 0.84 + 0.67 + 0.75 = 2.26 (can exceed 1).</li>
           </ul>
         </div>
-        <div class="iou-table-wrap">
-          <table class="iou-table">
-            <caption>Worked example of <span class="mono">matched_jaccard</span>. Cells = overlap count. Highlighted = Hungarian match (IoU in parentheses). Not SRX24313469.</caption>
+        <div class="jaccard-table-wrap">
+          <table class="jaccard-table">
+            <caption>Worked example of <span class="mono">matched_jaccard</span>. Cells = overlap count. Highlighted = assignment match (Jaccard in parentheses). Not SRX24313469.</caption>
             <thead>
               <tr>
                 <th class="stub">Leiden \ type</th>
@@ -1289,7 +1289,7 @@
     <section class="slide" data-section="clustering">
       <p class="eyebrow">03 · Clustering · report Fig 3C</p>
       <h2>The Leiden sweep</h2>
-      <p class="lede">Resolutions 0.1–2.0 in steps of 0.1. Keep the resolution that maximizes Hungarian-matched Jaccard against <span class="mono">cell_type</span>. On this file that peak is 0.8.</p>
+      <p class="lede">Resolutions 0.1–2.0 in steps of 0.1. Keep the resolution that maximizes matched Jaccard against <span class="mono">cell_type</span>. On this file that peak is 0.8.</p>
       <div class="fig-full">
         <div class="fig-panel">
           <img src="figs/resolution_sweep_SRX24313469.png" alt="Leiden resolution sweep for SRX24313469" />
@@ -1309,7 +1309,7 @@
     <section class="slide" data-section="clustering">
       <p class="eyebrow">03 · Clustering</p>
       <h2>Leiden sweep applied to the atlas (100,000 cell study-stratified sample)</h2>
-      <p class="lede">The same methodology was applied to a 100,000 cell study-stratified sample of the atlas. The resolution that maximizes Hungarian-matched Jaccard against <span class="mono">cell_type</span> is 0.8.</p>
+      <p class="lede">The same methodology was applied to a 100,000 cell study-stratified sample of the atlas. The resolution that maximizes matched Jaccard against <span class="mono">cell_type</span> is 0.8.</p>
       <div class="fig-full">
         <img src="figs/resolution_matched_jaccard_atlas.png" alt="Leiden resolution sweep for atlas sample" />
         <!-- <div class="cap">Leiden resolution sweep for atlas sample</div> -->
@@ -1325,7 +1325,7 @@
       <div class="fig-full fig-tall">
         <img src="figs/umap_merged_SRX24313469.png" alt="UMAP of Leiden 0.8, RF-merged clusters, and cell type for SRX24313469" />
       </div>
-      <p class="slide-note">RF merge is not inside the Hungarian score. Expression confusion is not the same as <span class="mono">cell_type</span> matching: 7 merged clusters vs 8 types. The [1, 8, 9] group is still T cell / B cell / plasma on the type panel. Atlas at resolution 0.8: 71 clusters vs 61 types.</p>
+      <p class="slide-note">RF merge is not inside the matched Jaccard score. Expression confusion is not the same as <span class="mono">cell_type</span> matching: 7 merged clusters vs 8 types. The [1, 8, 9] group is still T cell / B cell / plasma on the type panel. Atlas at resolution 0.8: 71 clusters vs 61 types.</p>
       <p class="cite">Same 14 Aug run as report Fig 3A. Methods leave RF merge as TODO. <span class="mono">scripts/cluster_validation/merge.py</span>.</p>
     </section>
 

@@ -1,6 +1,6 @@
 # cluster_validation
 
-Standalone pipeline that takes a raw scRNA-seq `AnnData` object and returns a biologically-informed cluster partition. Resolution is selected by matching Leiden clusters to a `cell_type` weak prior using Jaccard similarity and the Hungarian algorithm. Over-clustered partitions are reduced by merging indistinguishable clusters using a random forest out-of-fold confusion step.
+Standalone pipeline that takes a raw scRNA-seq `AnnData` object and returns a biologically-informed cluster partition. Resolution is selected by matching Leiden clusters to a `cell_type` weak prior using the Jaccard index and SciPy's linear sum assignment. Over-clustered partitions are reduced by merging indistinguishable clusters using a random forest out-of-fold confusion step.
 
 ## Usage
 
@@ -28,7 +28,7 @@ The pipeline writes the final `AnnData` to `output/clustering/data/{srx}_cluster
 | Preprocess | `preprocess.py` | Filter rare cell types (`minCellsPerType`), QC, HVG selection, normalisation |
 | Embed | `embedding.py` | PCA, select PCs by cumulative variance target, neighbors graph, UMAP |
 | Sweep | `clustering.py` | Leiden clustering at each resolution in `resolutions`; one `obs` column per resolution |
-| Select resolution | `resolution.py` | Jaccard matrix + Hungarian assignment; pick resolution maximising matched Jaccard sum |
+| Select resolution | `resolution.py` | Jaccard matrix + SciPy linear sum assignment; pick resolution maximising matched Jaccard sum |
 | Merge | `merge.py` | RF OOF confusion on HVG matrix; union-find merges pairs above `mergeThreshold`; writes `leiden_merged` |
 | Metrics | `metrics.py` | Silhouette, homogeneity, completeness, NMI, V-score, ARI across all resolutions |
 | Cell type metrics | `cell_type_metrics.py` | Normalized Shannon entropy and KL divergence per cell type across datasets |
@@ -40,9 +40,53 @@ The pipeline writes the final `AnnData` to `output/clustering/data/{srx}_cluster
 For each resolution in the sweep:
 
 1. Build a contingency table between Leiden clusters and `cell_type` reference labels.
-2. Convert each cell to a Jaccard (IoU) value: `J[i, j] = intersection / union`.
-3. Run the Hungarian algorithm (`scipy.optimize.linear_sum_assignment` on `-J`) to find the optimal one-to-one assignment.
+2. Convert each cluster-label pair to a Jaccard index (also known as intersection over union, or IoU): `J[i, j] = intersection / union`.
+3. Run `scipy.optimize.linear_sum_assignment` on `-J` to find the optimal one-to-one assignment.
 4. The penalised score is the sum of matched Jaccard values. The resolution that maximises this score is selected.
+
+#### Computing the Jaccard index
+
+For a Leiden cluster \(C\) and a weak-prior cell type \(T\):
+
+$$
+J(C,T)
+= \frac{|C \cap T|}{|C \cup T|}
+= \frac{|C \cap T|}{|C| + |T| - |C \cap T|}
+$$
+
+Suppose cluster 0 contains 90 cells, the macrophage label contains 85 cells, and they overlap by 80 cells. Their Jaccard index is:
+
+$$
+\frac{80}{90 + 85 - 80} = 0.84
+$$
+
+The same calculation is applied to every cluster and cell-type pair. Each matrix entry shows the overlap cell count followed by its Jaccard index in parentheses:
+
+| Leiden cluster | Macrophage | T cell | B cell | Cluster total |
+|---|---:|---:|---:|---:|
+| cluster 0 | 80 (0.84) | 10 (0.06) | 0 (0.00) | 90 |
+| cluster 1 | 5 (0.03) | 70 (0.67) | 5 (0.04) | 80 |
+| cluster 2 | 0 (0.00) | 15 (0.10) | 60 (0.75) | 75 |
+| Type total | 85 | 95 | 65 | 245 |
+
+SciPy's [`linear_sum_assignment`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html) minimizes the total cost of a one-to-one assignment. Here the Jaccard matrix is negated before it is passed to SciPy, so minimizing the negative values is equivalent to maximizing the sum of the matched Jaccard indices. The returned row and column indices identify the optimal cluster-to-cell-type pairs, whose original positive Jaccard indices are then summed.
+
+The selected one-to-one assignment is highlighted in the same matrix:
+
+| Leiden cluster | Macrophage | T cell | B cell | Cluster total |
+|---|---:|---:|---:|---:|
+| cluster 0 | **80 (0.84)** | 10 (0.06) | 0 (0.00) | 90 |
+| cluster 1 | 5 (0.03) | **70 (0.67)** | 5 (0.04) | 80 |
+| cluster 2 | 0 (0.00) | 15 (0.10) | **60 (0.75)** | 75 |
+| Type total | 85 | 95 | 65 | 245 |
+
+Bold cells show the optimal one-to-one assignment. The matched-Jaccard score is the sum of those assignments:
+
+$$
+0.84 + 0.67 + 0.75 = 2.26
+$$
+
+The score can exceed 1 because it sums several Jaccard indices.
 
 ### RF cluster merging
 
@@ -131,7 +175,7 @@ ClusterValidationResult
 ├── mergedGroups            dict[str, list[str]]
 ├── resolutions             list[float]
 ├── kArr                    list[int]    cluster count at each resolution
-├── jaccArr                 list[float]  Hungarian Jaccard score at each resolution
+├── jaccArr                 list[float]  matched Jaccard score at each resolution
 ├── silhouetteArr           list[list]   [[resolution, value], ...]
 ├── homogeneityArr          list[list]
 ├── completenessArr         list[list]

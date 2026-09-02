@@ -120,7 +120,7 @@ uv run python pipelines/run_clustering_pipeline.py \
   --workers 1
 ```
 
-This runs the Jaccard and Hungarian-matching Leiden sweep on the five cell-count quantiles used for the clustering-method check, followed by the single-dataset random-forest merge. Results are written under `output/clustering_pipeline/`. The current single-dataset grid ends at 1.9, although the report describes 2.0 as inclusive. The atlas workflow below uses the selected Leiden partition directly and does not apply the random-forest merge.
+This runs the Leiden sweep on the five cell-count quantiles used for the clustering-method check, scoring each partition by the Jaccard sum selected through SciPy's linear sum assignment. It then applies the single-dataset random-forest merge. Results are written under `output/clustering_pipeline/`. The current single-dataset grid ends at 1.9, although the report describes 2.0 as inclusive. The atlas workflow below uses the selected Leiden partition directly and does not apply the random-forest merge.
 
 ### 4. Build the QC-filtered atlas
 
@@ -145,7 +145,7 @@ uv run python pipelines/select_atlas_parameters.py calibrate \
   --threads 1
 ```
 
-Calibration now follows the single-dataset graph rules on the Harmony-corrected representation: 2,000 HVGs and 15 neighbors are fixed, while the retained PC count is selected from 15–50 by cumulative explained variance. It sweeps the shared resolution grid from 0.1 through 1.9, then writes `metrics/resolution.csv`, a resolution diagnostic, `calibration_summary.json`, and `parameters_template.json`. The matched-Jaccard maximum is advisory.
+Calibration now follows the single-dataset graph rules on the Harmony-corrected representation: 2,000 HVGs and 15 neighbors are fixed, while the retained PC count is selected from 15–50 by cumulative explained variance. It sweeps the shared resolution grid from 0.1 through 1.9, then writes `metrics/resolution.csv`, a resolution diagnostic, `calibration_summary.json`, and `parameters_template.json`. The matched-Jaccard maximum is advisory. See the worked Jaccard calculation in [`scripts/cluster_validation/README.md`](scripts/cluster_validation/README.md#computing-the-jaccard-index).
 
 Review those artifacts, then create the approved parameter file:
 
