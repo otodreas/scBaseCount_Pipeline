@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 import numpy as np
@@ -14,6 +12,9 @@ from cluster_validation.config import ClusterValidationConfig
 from cluster_validation.resolution import ResolutionSelection
 
 MERGED_CLUSTER_KEY = "leiden_merged"
+RF_N_ESTIMATORS = 300
+RF_N_SPLITS = 3
+RF_RANDOM_STATE = 42
 
 
 @dataclass
@@ -27,73 +28,51 @@ class MergeInfo:
     mergedKey: str = MERGED_CLUSTER_KEY
 
 
-def merge_clusters(
-    adata: sc.AnnData,
-    cfg: ClusterValidationConfig,
-    sel: ResolutionSelection,
-) -> tuple[sc.AnnData, MergeInfo]:
-    X_hvg = adata.X[:, adata.var.highly_variable.values]
-    if hasattr(X_hvg, "toarray"):
-        X_hvg = X_hvg.toarray()
-
-    weak_prior = adata.obs[cfg.weakPriorKey].values if cfg.rfBalanceWeakPrior else None
-    conf, classes = _rf_pairwise_confusion(
-        X_hvg,
-        adata.obs[sel.clusterKey].values,
-        weak_prior_labels=weak_prior,
-    )
-
-    merged_labels, label_map = _merge_by_confusion(adata.obs[sel.clusterKey].values, conf, classes, cfg.mergeThreshold)
-    adata.obs[MERGED_CLUSTER_KEY] = pd.Categorical(merged_labels)
-
-    merged_groups: dict[str, list[str]] = {}
-    for original, merged in label_map.items():
-        merged_groups.setdefault(str(merged), []).append(str(original))
-
-    return adata, MergeInfo(
-        conf=conf,
-        classes=classes,
-        labelMap={str(k): str(v) for k, v in label_map.items()},
-        mergedGroups=merged_groups,
-        nClustersPreMerge=len(classes),
-        nClustersPostMerge=int(adata.obs[MERGED_CLUSTER_KEY].nunique()),
-    )
-
-
-def _rf_pairwise_confusion(
-    X: NDArray[np.float32],
-    cluster_labels: NDArray[np.str_],
-    n_estimators: int = 300,
-    n_splits: int = 3,
-    random_state: int = 42,
-    weak_prior_labels: NDArray | None = None,
+def rf_pairwise_confusion(
+    X: NDArray[np.floating],
+    clusterLabels: NDArray | list,
+    *,
+    nEstimators: int = RF_N_ESTIMATORS,
+    nSplits: int = RF_N_SPLITS,
+    randomState: int = RF_RANDOM_STATE,
+    weakPriorLabels: NDArray | None = None,
 ) -> tuple[NDArray[np.float64], NDArray]:
+    """Out-of-fold Random Forest confusion among cluster labels.
+
+    Rows are true clusters and columns are predicted clusters. Each row is
+    normalized to sum to one (or left as zeros when a class has no cells).
+    """
+    X_arr = np.asarray(X)
     le = LabelEncoder()
-    y = le.fit_transform(cluster_labels)
+    y = le.fit_transform(np.asarray(clusterLabels))
     n_classes = len(le.classes_)
     min_class_size = int(np.bincount(y).min())
-    n_splits = min(n_splits, min_class_size)
+    if min_class_size < 2:
+        raise ValueError(
+            f"Each cluster must have at least 2 cells for stratified folds; min class size is {min_class_size}"
+        )
+    n_splits = min(nSplits, min_class_size)
 
     w_full: NDArray[np.float64] | None = None
-    if weak_prior_labels is not None:
-        s = pd.Series(np.asarray(weak_prior_labels))
+    if weakPriorLabels is not None:
+        s = pd.Series(np.asarray(weakPriorLabels))
         vc = s.value_counts(dropna=False)
         cnt = s.map(vc).replace(0, 1).astype(float)
         w_full = (1.0 / cnt).to_numpy(dtype=np.float64)
         w_full *= len(w_full) / w_full.sum()
 
-    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=randomState)
     oof_preds = np.zeros(len(y), dtype=int)
 
-    for train_idx, test_idx in skf.split(X, y):
-        rf = RandomForestClassifier(n_estimators=n_estimators, n_jobs=-1, random_state=random_state)
+    for train_idx, test_idx in skf.split(X_arr, y):
+        rf = RandomForestClassifier(n_estimators=nEstimators, n_jobs=-1, random_state=randomState)
         if w_full is None:
-            rf.fit(X[train_idx], y[train_idx])
+            rf.fit(X_arr[train_idx], y[train_idx])
         else:
-            rf.fit(X[train_idx], y[train_idx], sample_weight=w_full[train_idx])
-        oof_preds[test_idx] = rf.predict(X[test_idx])
+            rf.fit(X_arr[train_idx], y[train_idx], sample_weight=w_full[train_idx])
+        oof_preds[test_idx] = rf.predict(X_arr[test_idx])
 
-    conf = np.zeros((n_classes, n_classes))
+    conf = np.zeros((n_classes, n_classes), dtype=np.float64)
     for true, pred in zip(y, oof_preds, strict=True):
         conf[true, pred] += 1
     row_sums = conf.sum(axis=1, keepdims=True)
@@ -102,12 +81,13 @@ def _rf_pairwise_confusion(
     return conf, le.classes_
 
 
-def _merge_by_confusion(
-    cluster_labels: NDArray[np.str_],
+def merge_by_confusion(
+    clusterLabels: NDArray | list,
     conf: NDArray[np.float64],
     classes: NDArray,
     threshold: float,
-) -> tuple[NDArray[np.str_], dict]:
+) -> tuple[NDArray, dict]:
+    """Transitively merge clusters when either directional confusion exceeds ``threshold``."""
     n = len(classes)
     parent = list(range(n))
 
@@ -134,5 +114,80 @@ def _merge_by_confusion(
             counter += 1
 
     label_to_merged = {classes[i]: root_map[find(i)] for i in range(n)}
-    merged = np.vectorize(label_to_merged.get)(np.asarray(cluster_labels))
+    merged = np.vectorize(label_to_merged.get)(np.asarray(clusterLabels))
     return merged, label_to_merged
+
+
+def apply_rf_merge(
+    adata: sc.AnnData,
+    *,
+    featureMatrix: NDArray[np.floating],
+    clusterKey: str,
+    mergeThreshold: float = 0.2,
+    mergedKey: str = MERGED_CLUSTER_KEY,
+    nEstimators: int = RF_N_ESTIMATORS,
+    nSplits: int = RF_N_SPLITS,
+    randomState: int = RF_RANDOM_STATE,
+    weakPriorLabels: NDArray | None = None,
+    minCellsPerCluster: int = 3,
+) -> tuple[sc.AnnData, MergeInfo]:
+    """Merge clusters with RF out-of-fold confusion on an explicit feature matrix."""
+    if clusterKey not in adata.obs:
+        raise ValueError(f"adata.obs is missing cluster key {clusterKey!r}")
+    if featureMatrix.shape[0] != adata.n_obs:
+        raise ValueError(f"featureMatrix rows ({featureMatrix.shape[0]}) must equal adata.n_obs ({adata.n_obs})")
+
+    cluster_labels = adata.obs[clusterKey].values
+    counts = pd.Series(cluster_labels).value_counts()
+    undersized = counts[counts < minCellsPerCluster]
+    if not undersized.empty:
+        detail = ", ".join(f"{label}={int(n)}" for label, n in undersized.items())
+        raise ValueError(
+            f"Each cluster must have at least {minCellsPerCluster} cells for RF merge; undersized: {detail}"
+        )
+
+    conf, classes = rf_pairwise_confusion(
+        featureMatrix,
+        cluster_labels,
+        nEstimators=nEstimators,
+        nSplits=nSplits,
+        randomState=randomState,
+        weakPriorLabels=weakPriorLabels,
+    )
+    merged_labels, label_map = merge_by_confusion(cluster_labels, conf, classes, mergeThreshold)
+    adata.obs[mergedKey] = pd.Categorical(merged_labels)
+
+    merged_groups: dict[str, list[str]] = {}
+    for original, merged in label_map.items():
+        merged_groups.setdefault(str(merged), []).append(str(original))
+
+    return adata, MergeInfo(
+        conf=conf,
+        classes=classes,
+        labelMap={str(k): str(v) for k, v in label_map.items()},
+        mergedGroups=merged_groups,
+        nClustersPreMerge=len(classes),
+        nClustersPostMerge=int(adata.obs[mergedKey].nunique()),
+        mergedKey=mergedKey,
+    )
+
+
+def merge_clusters(
+    adata: sc.AnnData,
+    cfg: ClusterValidationConfig,
+    sel: ResolutionSelection,
+) -> tuple[sc.AnnData, MergeInfo]:
+    X_hvg = adata.X[:, adata.var.highly_variable.values]
+    if hasattr(X_hvg, "toarray"):
+        X_hvg = X_hvg.toarray()
+
+    weak_prior = adata.obs[cfg.weakPriorKey].values if cfg.rfBalanceWeakPrior else None
+    return apply_rf_merge(
+        adata,
+        featureMatrix=np.asarray(X_hvg),
+        clusterKey=sel.clusterKey,
+        mergeThreshold=cfg.mergeThreshold,
+        weakPriorLabels=weak_prior,
+        # Historical per-dataset path allowed StratifiedKFold to shrink to min class size.
+        minCellsPerCluster=2,
+    )
