@@ -7,7 +7,7 @@ import scanpy as sc
 
 log = logging.getLogger(__name__)
 
-SAMPLE_SEED = 0
+# SAMPLE_SEED = 0
 SAMPLE_METHOD = "studyProportional"
 SAMPLE_UNS_KEY = "parameterSelectionSample"
 
@@ -88,7 +88,7 @@ def sample_study_proportional(
     *,
     n: int,
     stratifyKey: str,
-    seed: int = SAMPLE_SEED,
+    seed: int,
 ) -> sc.AnnData:  # mentioned in methods
     """Return an exact-size study-proportional sample without replacement.
 

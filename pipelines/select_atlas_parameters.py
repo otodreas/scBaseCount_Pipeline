@@ -13,7 +13,7 @@ from atlas_postprocessing.artifacts import (
 )
 from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.core import apply_thread_settings, run_postprocessing, timed
-from atlas_postprocessing.sampling import SAMPLE_SEED, sample_metadata, sample_study_proportional
+from atlas_postprocessing.sampling import sample_metadata, sample_study_proportional
 from atlas_postprocessing.scib import run_scib_benchmark
 from atlas_postprocessing.selection import FIXED_N_NEIGHBORS, FIXED_N_TOP_GENES, run_calibration
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
@@ -163,22 +163,28 @@ def _cfg_from_validate_args(args: argparse.Namespace) -> AtlasPostprocessingConf
     return cfg
 
 
-def _load_and_sample(cfg: AtlasPostprocessingConfig, sampleCells: int) -> sc.AnnData:
+def _load_and_sample(cfg: AtlasPostprocessingConfig, sampleCells: int, command: str) -> sc.AnnData:
     """Load the full atlas once and overwrite the in-memory object with a representative sample."""
     adata = timed("load full atlas", lambda: sc.read_h5ad(cfg.inputH5ad), logger=log)
+
+    # Use a different random seed for calibrate and validate.
+    seed = 1234 if command == "calibrate" else 6789
+
     log.info(
-        "Full atlas loaded: %s cells x %s genes (%s studies)",
+        "Full atlas loaded: %s cells x %s genes (%s studies) with random seed %s",
         f"{adata.n_obs:,}",
         f"{adata.n_vars:,}",
         adata.obs[cfg.batchKey].nunique() if cfg.batchKey in adata.obs else "?",
+        seed,
     )
+
     adata = timed(
         "study-proportional sample",
         lambda: sample_study_proportional(
             adata,
             n=sampleCells,
             stratifyKey=cfg.batchKey,
-            seed=SAMPLE_SEED,
+            seed=seed,
         ),
         logger=log,
     )
@@ -191,7 +197,7 @@ def _run_validate(args: argparse.Namespace) -> None:
     scib_dir = args.output_dir / "scib"
 
     started = time.perf_counter()
-    sampled = _load_and_sample(cfg, args.sample_cells)
+    sampled = _load_and_sample(cfg, args.sample_cells, args.command)
     adata = timed(
         "approved subset postprocessing",
         lambda: run_postprocessing(cfg, adata=sampled, workflow="validation"),
@@ -264,7 +270,7 @@ def main() -> None:
         cfg = _cfg_from_calibrate_args(args)
         apply_thread_settings(cfg)
         log.info("config: %s", cfg.model_dump_json())
-        sampled = _load_and_sample(cfg, args.sample_cells)
+        sampled = _load_and_sample(cfg, args.sample_cells, args.command)
         run_calibration(cfg, adata=sampled)
     elif args.command == "validate":
         _run_validate(args)

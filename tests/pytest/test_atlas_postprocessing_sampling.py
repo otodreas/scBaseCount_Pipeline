@@ -8,7 +8,6 @@ from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.core import load_and_normalize
 from atlas_postprocessing.sampling import (
     SAMPLE_METHOD,
-    SAMPLE_SEED,
     SAMPLE_UNS_KEY,
     _allocate_study_counts,
     sample_metadata,
@@ -49,7 +48,7 @@ def test_allocate_rejects_over_total() -> None:
 
 def test_sample_study_proportional_exact_size_and_metadata() -> None:
     adata = _make_adata({"A": 40, "B": 35, "C": 25})
-    sampled = sample_study_proportional(adata, n=20, stratifyKey="study_accession", seed=SAMPLE_SEED)
+    sampled = sample_study_proportional(adata, n=20, stratifyKey="study_accession", seed=0)
     assert sampled.n_obs == 20
     assert sampled.obs["study_accession"].nunique() == 3
     meta = sample_metadata(sampled)
@@ -58,7 +57,7 @@ def test_sample_study_proportional_exact_size_and_metadata() -> None:
     assert meta["sampleCells"] == 20
     assert meta["method"] == SAMPLE_METHOD
     assert meta["stratifyKey"] == "study_accession"
-    assert meta["seed"] == SAMPLE_SEED
+    assert meta["seed"] == 0
     assert meta["nStudies"] == 3
     assert SAMPLE_UNS_KEY in sampled.uns
 
@@ -82,7 +81,7 @@ def test_sample_proportional_prefers_larger_studies() -> None:
 def test_sample_rejects_missing_key() -> None:
     adata = _make_adata({"A": 5, "B": 5})
     with pytest.raises(ValueError, match="missing stratify key"):
-        sample_study_proportional(adata, n=4, stratifyKey="missing")
+        sample_study_proportional(adata, n=4, stratifyKey="missing", seed=0)
 
 
 def test_load_and_normalize_uses_preloaded_adata() -> None:
