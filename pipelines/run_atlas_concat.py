@@ -4,6 +4,9 @@ from shared.repo import REPO_ROOT
 
 load_dotenv(REPO_ROOT / ".env")
 
+# Fields not defined here are left as their default values.
+# See the definition of H5adConcatConfig in scripts/h5ad_concat/config.py for details.
+# There, you will find qc settings.
 cfg = H5adConcatConfig(
     datasetsPath=REPO_ROOT / "output/metadata/datasets_v2.csv",
     atlasR2Key="atlas/2026-08-12/atlas.h5ad",

@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, model_validator
 from shared.repo import REPO_ROOT
 
 
+# Note: some fields are defined in pipelines/run_atlas_concat.py
 class H5adConcatConfig(BaseModel):
     datasetsPath: Path | None = None
     cellTypeKey: str = "cell_type"
