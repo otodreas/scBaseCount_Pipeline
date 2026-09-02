@@ -46,7 +46,7 @@ def test_scale_and_pca_uses_auto_svd_solver() -> None:
 
     with (
         patch("atlas_postprocessing.core.sc.pp.scale"),
-        patch("atlas_postprocessing.core.sc.tl.pca") as pca,
+        patch("atlas_postprocessing.core.sc.pp.pca") as pca,
     ):
         scale_and_pca(adata, cfg)
 
@@ -182,20 +182,27 @@ def test_validation_workflow_keeps_both_graphs(tmp_path: Path) -> None:
     adata = _tiny_counts_adata()
     adata.obsm["X_pca"] = np.zeros((adata.n_obs, cfg.nPcsCompute), dtype=np.float32)
 
+    def _fake_harmony(loaded, _cfg, parallelUmap=False):
+        del parallelUmap
+        loaded.obs["leiden_atlas"] = pd.Categorical(["0"] * loaded.n_obs)
+        loaded.obs["leiden_uncorrected"] = "0"
+        return loaded
+
     with (
         patch("atlas_postprocessing.core.prepare_pca", side_effect=lambda loaded, _cfg: loaded),
         patch("atlas_postprocessing.core.embed_uncorrected", side_effect=lambda loaded, _cfg: loaded) as uncorrected,
-        patch(
-            "atlas_postprocessing.core.integrate_harmony", side_effect=lambda loaded, _cfg, parallelUmap=False: loaded
-        ) as harmony,
+        patch("atlas_postprocessing.core.integrate_harmony", side_effect=_fake_harmony) as harmony,
     ):
-        adata.obs["leiden_atlas"] = "0"
-        adata.obs["leiden_uncorrected"] = "0"
-        run_postprocessing(cfg, adata=adata, workflow="validation")
+        result = run_postprocessing(cfg, adata=adata, workflow="validation")
 
     uncorrected.assert_called_once()
     harmony.assert_called_once()
     assert harmony.call_args.kwargs["parallelUmap"] is False
+    assert "leiden_merged" not in result.obs
+    assert "rfMerge" not in result.uns
+    summary = json.loads((tmp_path / "out_run.json").read_text())
+    assert summary["workflow"] == "validation"
+    assert summary["clustersMerged"] is None
 
 
 def test_make_atlas_plots_production_writes_harmony_only(tmp_path: Path) -> None:

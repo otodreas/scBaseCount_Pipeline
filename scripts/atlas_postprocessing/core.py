@@ -96,7 +96,7 @@ def scale_and_pca(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, nPcsComp
             f"({min(adata.n_obs - 1, adata.n_vars - 1)}) for shape {(adata.n_obs, adata.n_vars)}"
         )
     sc.pp.scale(adata, max_value=cfg.scaleMaxValue)
-    sc.tl.pca(adata, n_comps=n_comps, svd_solver="auto")
+    sc.pp.pca(adata, n_comps=n_comps, svd_solver="auto")
     log.info("Computed %s PCs", n_comps)
     return adata
 
@@ -113,11 +113,12 @@ def build_neighbors(
     *,
     nNeighbors: int,
     nPcs: int | None = None,
-    useRep: str | None = None,
+    useRep: str | None = None,  # which feature representation to use for neighbor calculation
 ) -> None:
     """Build a neighbor graph with explicit neighborhood size and optional representation."""
     kwargs: dict[str, int | str] = {"n_neighbors": nNeighbors}
     if useRep is not None:
+        # Without this, Scanpy uses .X or X_pca and ignores the named .obsm key
         kwargs["use_rep"] = useRep
         if nPcs is not None:
             kwargs["n_pcs"] = nPcs
@@ -230,13 +231,14 @@ def run_harmony_on_pcs(
     resolved_batch_key = cfg.batchKey if batchKey is None else batchKey
     if resolved_batch_key not in adata.obs:
         raise ValueError(f"adata.obs is missing batch key {resolved_batch_key!r}")
-    pca_prefix = np.asarray(adata.obsm["X_pca"][:, :nPcs])
+    pca_prefix = np.asarray(adata.obsm["X_pca"][:, :nPcs])  # subset to the first ``nPcs`` PCs
     harmony_out = harmonypy.run_harmony(
-        pca_prefix,
-        adata.obs,
-        resolved_batch_key,
+        pca_prefix,  # PCA embedding matrix
+        adata.obs,  # metadata
+        resolved_batch_key,  # batch key
         ncores=cfg.nJobs,
     )
+    # Correct the embedding matrix (per harmony docs)
     corrected = np.asarray(harmony_out.Z_corr)
     log.info("Ran Harmony on %s PCs with batch key %s ncores=%s", nPcs, resolved_batch_key, cfg.nJobs)
     return corrected
@@ -252,6 +254,7 @@ def integrate_harmony(
     validate_graph_settings(cfg, adata.n_obs)
 
     def _store_harmony() -> None:
+        """store corrected embedding matrix in adata.obsm["X_pca_harmony"]"""
         adata.obsm["X_pca_harmony"] = run_harmony_on_pcs(adata, cfg, nPcs=cfg.nPcs)
 
     timed("Harmony correction", _store_harmony)
@@ -264,14 +267,15 @@ def integrate_harmony(
             useRep="X_pca_harmony",
         ),
     )
-    if parallelUmap:
-        timed("Harmony UMAP", lambda: run_umap_parallel(adata, cfg))
-    else:
-        timed("Harmony UMAP", lambda: run_umap_deterministic(adata))
     timed(
         "Harmony Leiden",
         lambda: run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_atlas"),
     )
+    # Compute UMAP regardless of if cfg.writePlots is True or False so that they can still be plotted later
+    if parallelUmap:
+        timed("Harmony UMAP", lambda: run_umap_parallel(adata, cfg))
+    else:
+        timed("Harmony UMAP", lambda: run_umap_deterministic(adata))
     return adata
 
 
@@ -285,6 +289,7 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, workflow: W
         calibration_summary = load_approved_parameters(cfg.parametersJson).calibrationSummary
 
     clusters_uncorrected = int(adata.obs["leiden_uncorrected"].nunique()) if "leiden_uncorrected" in adata.obs else None
+    clusters_merged = int(adata.obs["leiden_merged"].nunique()) if "leiden_merged" in adata.obs else None
     summary = {
         "input": rel_to_repo(cfg.inputH5ad),
         "output": rel_to_repo(cfg.outputH5ad),
@@ -296,6 +301,7 @@ def save_atlas(adata: sc.AnnData, cfg: AtlasPostprocessingConfig, *, workflow: W
         "studies": int(adata.obs[cfg.batchKey].nunique()),
         "clustersUncorrected": clusters_uncorrected,
         "clustersHarmony": int(adata.obs["leiden_atlas"].nunique()),
+        "clustersMerged": clusters_merged,
         "resolution": cfg.resolution,
         "nPcs": cfg.nPcs,
         "nPcsCompute": cfg.nPcsCompute,
@@ -331,21 +337,27 @@ def run_postprocessing(
     apply_thread_settings(cfg)
     loaded = timed("load + normalize", lambda: load_and_normalize(cfg, adata=adata))
     validate_graph_settings(cfg, loaded.n_obs)
-    loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
 
     if workflow == "validation":
+        loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
         loaded = timed("uncorrected embedding", lambda: embed_uncorrected(loaded, cfg))
         loaded = timed(
             "harmony integration",
             lambda: integrate_harmony(loaded, cfg, parallelUmap=False),
         )
+        if cfg.cellTypeKey not in loaded.obs:
+            raise ValueError(f"adata.obs is missing validation label key {cfg.cellTypeKey!r}")
     elif workflow == "production":
+        loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
         loaded = timed(
             "harmony integration",
             lambda: integrate_harmony(loaded, cfg, parallelUmap=True),
         )
     else:
         raise ValueError(f"Unknown workflow {workflow!r}")
+
+    # RF merge of leiden_atlas (cluster_validation.merge.apply_rf_merge) could run here
+    # for validation and production, after Harmony Leiden and before plots/save.
 
     if cfg.writePlots:
         timed("scree plot", lambda: save_scree_plot(loaded, cfg))

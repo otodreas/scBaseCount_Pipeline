@@ -7,10 +7,10 @@ from shared.repo import REPO_ROOT as _REPO_ROOT
 
 def default_resolutions() -> list[float]:
     """Canonical Leiden resolution grid used by cluster validation."""
-    return [round(r, 1) for r in np.arange(0.1, 2.0, 0.1).tolist()]
+    return [round(r, 1) for r in np.arange(0.1, 2.0, 0.1).tolist()]  # TODO: include 2.0 ??
 
 
-class ClusterValidationConfig(BaseModel):
+class ClusterValidationConfig(BaseModel):  # mentioned in methods
     srxAccession: str | None = None
     datasetIndex: int = 2
     summaryPath: Path = _REPO_ROOT / "tests" / "quantiles_datasets.csv"

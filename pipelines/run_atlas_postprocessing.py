@@ -118,6 +118,7 @@ def main() -> None:
     log.info("config: %s", cfg.model_dump_json())
 
     started = datetime.datetime.now()
+    # RF merge of leiden_atlas could slot inside this production run, after Harmony Leiden.
     run_postprocessing(cfg, workflow="production")
     log.info("atlas postprocessing run complete in %s", datetime.datetime.now() - started)
 

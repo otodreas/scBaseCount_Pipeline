@@ -54,13 +54,19 @@ def write_config_manifest(cfg: H5adConcatConfig, log: logging.Logger) -> Path:
 
 
 def init_file_log(log_path: Path) -> None:
-    """Create or truncate the per-file JSONL log at run start."""
+    """Create or truncate the per-file JSONL log at run start. A new run overwrites any previous log at this path."""
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log_path.write_text("")
 
 
 def append_file_record(log_path: Path, record: FileRecord) -> None:
-    """Append one complete per-file JSONL record immediately after the accession is processed."""
+    """Append one complete FileRecord after the accession is processed.
+
+    These records match H5adConcatResult.files. They are flushed before concat so completed
+    files remain on disk if the run fails before the result manifest is written.
+
+    Accessions survive if run never writes _result.json manifest.
+    """
     with log_path.open("a") as handle:
         handle.write(record.model_dump_json() + "\n")
 
