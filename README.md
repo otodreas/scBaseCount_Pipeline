@@ -125,7 +125,7 @@ This runs the Jaccard and Hungarian-matching Leiden sweep on the five cell-count
 
 ### 4. Build the QC-filtered atlas
 
-For reproduction, set `uploadAtlas=False` in the `H5adConcatConfig` block in [`pipelines/run_atlas_concat.py`](pipelines/run_atlas_concat.py). This keeps the completed atlas at `output/atlas/2026-08-12/atlas.h5ad` for the later steps and avoids an upload followed by a download.
+[`pipelines/run_atlas_concat.py`](pipelines/run_atlas_concat.py) does not have an argument parser. Before running it, review the `H5adConcatConfig` block in that file and the remaining defaults in [`scripts/h5ad_concat/config.py`](scripts/h5ad_concat/config.py). For local reproduction, set `uploadAtlas=False`; this keeps the completed atlas at `output/atlas/2026-08-12/atlas.h5ad` for the later steps and avoids an upload followed by a download.
 
 ```sh
 uv run python pipelines/run_atlas_concat.py
@@ -170,7 +170,7 @@ uv run python pipelines/select_atlas_parameters.py validate \
   --force-scib
 ```
 
-This writes deterministic uncorrected and Harmony-corrected subset UMAPs, the `leiden_uncorrected` and `leiden_atlas` partitions, and scIB results under `output/atlas/2026-08-12/post/subset_validation/`. scIB compares the uncorrected and Harmony-corrected PCA representations. No random-forest merge is run.
+This writes deterministic uncorrected and Harmony-corrected subset UMAPs, the `leiden_uncorrected` and `leiden_atlas` partitions, and scIB results under `output/atlas/2026-08-12/post/subset_validation/`. scIB compares the uncorrected and Harmony-corrected PCA representations. No random-forest merge is run. The 100,000-cell sample is drawn with a different random seed than the calibration sample.
 
 ### 7. Process the full atlas
 
