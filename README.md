@@ -13,27 +13,26 @@ A pipeline for large-scale scRNA-seq cluster labeling assessment, built on the A
 
 The repo splits reusable code, batch orchestration, and interactive analysis:
 
-- `[scripts/](scripts/)`: Importable Python packages shared across notebooks, pipelines, and ad hoc use. See `[scripts/README.md](scripts/README.md)`.
-- `[pipelines/](pipelines/)`: Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See `[pipelines/README.md](pipelines/README.md)`.
-- `[notebooks/](notebooks/)`: Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See `[notebooks/README.md](notebooks/README.md)`.
+- [`scripts/`](scripts/): Importable Python packages shared across notebooks, pipelines, and ad hoc use. See [`scripts/README.md`](scripts/README.md).
+- [`pipelines/`](pipelines/): Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See [`pipelines/README.md`](pipelines/README.md).
+- [`notebooks/`](notebooks/): Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See [`notebooks/README.md`](notebooks/README.md).
 
 # Resources required
 
-The following resources are required to replicate the work presented in [the report](docs/report/report.pdf)
+The following resources are required to replicate the work presented in [`docs/report/report.pdf`](docs/report/report.pdf)
 - Data access
     - Access to the populated R2 raw-data mirror described below
     - Optional: a Google Cloud account and billing project subscribed to the Virtual Cell Atlas Marketplace dataset, only when building a new mirror
 - Compute
     - Ca 100 GB disk space
-    - 1 CPU core
     - Ca 2 TB RAM
-    - Persistent shell session (eg tmux) or detached process (eg nohup)
+    - Persistent shell session (e.g. `tmux`) or detached process (e.g. `nohup`)
 
 
 ## Data access
 ### Google Cloud
 
-A Google Cloud account and project are only needed when downloading source data to build a new mirror. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in `[uv.lock](uv.lock)`).
+A Google Cloud account and project are only needed when downloading source data to build a new mirror. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in [`uv.lock`](uv.lock)).
 
 The historical GCS-to-R2 transfers, including their repository snapshots, input CSVs, and run manifests, are recorded in [`output/migration/README.md`](output/migration/README.md).
 
@@ -41,7 +40,7 @@ GCS-to-R2 migration is an optional storage preparation step, not part of the atl
 
 ### Cloudflare R2
 
-Raw input and processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see `[.env.example](.env.example)`).
+Raw input and processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see [`.env.example`](.env.example)).
 
 ### Optional API keys
 
@@ -49,7 +48,7 @@ NCBI and CyteType API keys support workflows outside the report. Neither is requ
 
 # Reproducibility
 
-If you have access to the resources required, you can reproduce the work presented in [the report](docs/report/report.pdf) by following the steps below.
+If you have access to the resources required, you can reproduce the work presented in [`docs/report/report.pdf`](docs/report/report.pdf) by following the steps below.
 
 ## Setup
 ```sh
@@ -63,7 +62,7 @@ uv sync --locked --group dev
 git config core.hooksPath .githooks   # once per clone
 ```
 
-`[.githooks/pre-commit](.githooks/pre-commit)` runs ruff and nbstripout on staged files; `[.githooks/pre-push](.githooks/pre-push)` runs the cluster validation regression test when `scripts/cluster_validation/` changed. Both are optional local help; [CI](.github/workflows/ci.yml) enforces ruff, pytest, and stripped `notebooks/` on `main`.
+[`.githooks/pre-commit`](.githooks/pre-commit) runs ruff and nbstripout on staged files; [`.githooks/pre-push`](.githooks/pre-push) runs the cluster validation regression test when [`scripts/cluster_validation/`](scripts/cluster_validation/) changed. Both are optional local help; [`.github/workflows/ci.yml`](.github/workflows/ci.yml) enforces ruff, pytest, and stripped [`notebooks/`](notebooks/) on `main`.
 
 ## Run the pipeline
 
@@ -188,7 +187,7 @@ The production runner writes the Harmony-corrected graph and `leiden_atlas` part
 
 # On the work presented
 
-The work presented here was done in conjunction with Nygen Analytics AB, a private, for-profit company in Lund. The work was exploratory in many regards, and therefore many tasks we embarked on did not reach the final report. For instance, these include CyteType integration efforts and differential expression analyses on the atlas. During the course of the project, reports such as [STATE vs Leiden](writeups/state_vs_leiden/README.md) were written up for internal discussions, but were ultimately deemed unnecessary or out of scope for the final report.
+The work presented here was done in conjunction with Nygen Analytics AB, a private, for-profit company in Lund. The work was exploratory in many regards, and therefore many tasks we embarked on did not reach the final report. For instance, these include CyteType integration efforts and differential expression analyses on the atlas. During the course of the project, reports such as [`writeups/state_vs_leiden/README.md`](writeups/state_vs_leiden/README.md) were written up for internal discussions, but were ultimately deemed unnecessary or out of scope for the final report.
 
 ## Generative AI usage
 

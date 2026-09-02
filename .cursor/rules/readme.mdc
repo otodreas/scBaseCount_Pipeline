@@ -47,3 +47,19 @@ READMEs are committed and public-facing. Never put real credentials, tokens, or 
 ## Style
 
 Match existing package READMEs: usage example, config reference, outputs. Keep `scripts/README.md` package table aligned with each package README entry point and output paths.
+
+## Path conventions
+
+When providing paths to files, always give paths relative to the repo root. The repo root is the directory containing the venv, the directory where uv was initialized, and the directory that contains the `.git` folder.
+
+When referencing a file in the repo, point to it like so:
+[`my_program.py`](my_program.py)
+With backticks inside the brackets.
+
+When pointing to a file at a particular commit, use the following format:
+[commit hash](github/link/to/commit)
+With backticks inside the brackets.
+
+When pointing to a file at a particular commit (and line, optionally), use the following format:
+[file name](github/link/to/file#L1-L10)
+With backticks inside the brackets.
