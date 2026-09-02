@@ -6,7 +6,7 @@ The server log at `logs/migrate_gcs_to_r2.log` was ignored by Git and remains on
 
 ## Historical repository snapshots
 
-The current migration runner does not reproduce both historical selections. In particular, `pipelines/migrate_gcs_to_r2.py` now subtracts a baseline CSV from a source CSV. The May runner instead processed every row in one CSV.
+The current migration runner supports both historical selection patterns. Omitting `--baseline` processes every row in the source CSV, as the May runner did. Passing a baseline CSV excludes its accessions from the source, as the July runner did. The snapshots below remain the authoritative record of the exact code, inputs, and environment used for each historical transfer.
 
 At the May snapshot, the runner was located at the repository root as `migrate_gcs_to_r2.py`. It accepted `--datasets` and `--dry-run`, defaulted to `output/metadata/datasets.csv`, and selected rows by loading that CSV and iterating over it directly:
 

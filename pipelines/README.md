@@ -18,7 +18,7 @@ migrate_gcs_to_r2  →  run_clustering_pipeline  →  run_cytetype_pipeline  →
    raw h5ad in R2      clustered h5ad in R2        annotated h5ad in R2        cyteonto CSV in R2
 ```
 
-`migrate_gcs_to_r2` is optional when raw files are already mirrored to R2. Notebooks can replace any batch step for a single accession.
+`migrate_gcs_to_r2` only prepares the raw-data mirror and is optional when the raw files are already in R2. It is not an atlas analysis step. Notebooks can replace any batch step for a single accession.
 
 ## Shared inputs
 
@@ -50,25 +50,29 @@ Study context is produced by `[notebooks/pipeline/study_context.ipynb](../notebo
 
 ## `migrate_gcs_to_r2.py`
 
-Copies raw scBaseCount h5ad files from GCS to R2 for accessions present in the source CSV but absent from the baseline CSV. Skips objects already in R2 with a matching MD5. Uses a local cache under `data/` when the file is not already on disk.
+Copies raw scBaseCount h5ad files from GCS to R2. With no baseline, it selects every row in the source CSV. When a baseline CSV is supplied, it excludes source accessions present in that file. It skips objects already in R2 with a matching MD5 and uses a local cache under `data/` when the file is not already on disk.
 
 **Output:** `output/migration/{timestamp}/run.csv`
 
 
-| Flag         | Default                           | Description                          |
-| ------------ | --------------------------------- | ------------------------------------ |
-| `--datasets` | `output/metadata/datasets_v2.csv` | Source accession list                |
-| `--baseline` | `output/metadata/datasets.csv`    | Accessions to exclude from migration |
-| `--dry-run`  | off                               | Log planned uploads only             |
+| Flag         | Default                           | Description                                    |
+| ------------ | --------------------------------- | ---------------------------------------------- |
+| `--datasets` | `output/metadata/datasets_v2.csv` | Source accession list                          |
+| `--baseline` | none                              | Optional accession list to exclude from source |
+| `--dry-run`  | off                               | Log planned uploads only                       |
 
 
-With the current metadata files, the default selection is 1,048 accessions. The process exits with status 1 if any selected row fails.
+The default command selects all 1,816 accessions in `datasets_v2.csv`; matching R2 objects are then skipped. Passing `--baseline output/metadata/datasets.csv` selects the 1,048 accessions absent from that baseline. The process exits with status 1 if any selected row fails.
 
 **Log:** `logs/migrate_gcs_to_r2.log`
 
 ```sh
-uv run python pipelines/migrate_gcs_to_r2.py --dry-run
-uv run python pipelines/migrate_gcs_to_r2.py
+uv run python pipelines/migrate_gcs_to_r2.py \
+  --datasets output/metadata/datasets_v2.csv \
+  --dry-run
+
+uv run python pipelines/migrate_gcs_to_r2.py \
+  --datasets output/metadata/datasets_v2.csv
 ```
 
 ---
