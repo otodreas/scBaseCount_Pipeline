@@ -21,7 +21,6 @@ from storage.transfer import _MD5_METADATA_KEY, _local_md5_b64
 load_dotenv()
 
 _DEFAULT_SOURCE_CSV = REPO_ROOT / "output" / "metadata" / "datasets_v2.csv"
-_DEFAULT_BASELINE_CSV = REPO_ROOT / "output" / "metadata" / "datasets.csv"
 RUN_OUTPUT_DIR = REPO_ROOT / "output" / "migration"
 
 log = configure_file_logger("migrate_gcs_to_r2.log", __name__)
@@ -76,8 +75,8 @@ def select_migration_rows(source: pd.DataFrame, baseline: pd.DataFrame) -> pd.Da
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Copy raw h5ad files from GCS to R2 for accessions present in the source CSV "
-            "but absent from the baseline CSV. Safe to re-run: files already in R2 with a matching MD5 are skipped."
+            "Copy raw h5ad files from GCS to R2, optionally excluding accessions in a baseline CSV. "
+            "Safe to re-run: files already in R2 with a matching MD5 are skipped."
         )
     )
     parser.add_argument(
@@ -89,10 +88,15 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--baseline",
+        nargs="?",
         type=Path,
-        default=_DEFAULT_BASELINE_CSV,
+        const=None,
+        default=None,
         metavar="PATH",
-        help=f"Baseline datasets CSV used to exclude already-migrated accessions (default: {_DEFAULT_BASELINE_CSV})",
+        help=(
+            "Optional datasets CSV used to exclude already-migrated accessions; "
+            "omit the flag or pass it without PATH to exclude nothing"
+        ),
     )
     parser.add_argument(
         "--dry-run",
@@ -104,9 +108,16 @@ def _parse_args() -> argparse.Namespace:
 
 def run_migration(args: argparse.Namespace, *, run_timestamp: str | None = None) -> int:
     source = pd.read_csv(args.datasets)
-    baseline = pd.read_csv(args.baseline)
     validate_datasets_csv(source, args.datasets, require_unique_accessions=True)
-    validate_datasets_csv(baseline, args.baseline, require_unique_accessions=False)
+
+    if args.baseline is None:
+        baseline = pd.DataFrame({_ACCESSION_COLUMN: [], _PATH_COLUMN: []})
+    else:
+        try:
+            baseline = pd.read_csv(args.baseline)
+        except pd.errors.EmptyDataError:
+            baseline = pd.DataFrame({_ACCESSION_COLUMN: [], _PATH_COLUMN: []})
+        validate_datasets_csv(baseline, args.baseline, require_unique_accessions=False)
 
     overlap_count = int(source[_ACCESSION_COLUMN].isin(baseline[_ACCESSION_COLUMN]).sum())
     datasets = select_migration_rows(source, baseline)

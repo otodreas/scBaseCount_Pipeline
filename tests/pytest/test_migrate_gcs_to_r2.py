@@ -83,6 +83,51 @@ def test_validate_datasets_csv_rejects_duplicate_accessions(tmp_path: Path) -> N
         migrate.validate_datasets_csv(pd.read_csv(csv_path), csv_path, require_unique_accessions=True)
 
 
+@pytest.mark.parametrize("baseline_args", [[], ["--baseline"]], ids=["omitted", "blank"])
+def test_optional_baseline_excludes_nothing(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, baseline_args: list[str]
+) -> None:
+    source_path = tmp_path / "source.csv"
+    _source_csv(source_path, [{"srx_accession": "SRX1", "file_path": "gs://bucket/a/SRX1.h5ad"}])
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["migrate_gcs_to_r2.py", "--datasets", str(source_path), *baseline_args, "--dry-run"],
+    )
+    monkeypatch.setattr(migrate, "gcs_uri_to_r2_raw_key", lambda _gs_uri: "raw/key")
+    monkeypatch.setattr(migrate, "gcs_blob_md5", lambda _gs_uri: "md5-ok")
+    monkeypatch.setattr(migrate, "r2_raw_matches_gcs", lambda _key, _md5: False)
+    monkeypatch.setattr(migrate, "RUN_OUTPUT_DIR", tmp_path / "migration")
+
+    args = migrate._parse_args()
+    exit_code = migrate.run_migration(args, run_timestamp="test_run")
+
+    summary = pd.read_csv(tmp_path / "migration" / "test_run" / "run.csv")
+    assert args.baseline is None
+    assert summary["status"].tolist() == ["dry_run"]
+    assert exit_code == 0
+
+
+def test_run_migration_accepts_blank_baseline(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    source_path = tmp_path / "source.csv"
+    baseline_path = tmp_path / "baseline.csv"
+    _source_csv(source_path, [{"srx_accession": "SRX1", "file_path": "gs://bucket/a/SRX1.h5ad"}])
+    baseline_path.touch()
+
+    monkeypatch.setattr(migrate, "gcs_uri_to_r2_raw_key", lambda _gs_uri: "raw/key")
+    monkeypatch.setattr(migrate, "gcs_blob_md5", lambda _gs_uri: "md5-ok")
+    monkeypatch.setattr(migrate, "r2_raw_matches_gcs", lambda _key, _md5: False)
+    monkeypatch.setattr(migrate, "RUN_OUTPUT_DIR", tmp_path / "migration")
+
+    args = argparse.Namespace(datasets=source_path, baseline=baseline_path, dry_run=True)
+    exit_code = migrate.run_migration(args, run_timestamp="test_run")
+
+    summary = pd.read_csv(tmp_path / "migration" / "test_run" / "run.csv")
+    assert summary["status"].tolist() == ["dry_run"]
+    assert exit_code == 0
+
+
 def test_run_migration_continues_after_precheck_failure(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     source_path = tmp_path / "source.csv"
     baseline_path = tmp_path / "baseline.csv"
