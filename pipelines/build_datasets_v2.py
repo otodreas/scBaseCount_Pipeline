@@ -65,6 +65,4 @@ metadata_pq = metadata_pq.loc[
 
 
 metadata_pq.to_csv(OUTPUT_FILE)
-print(
-    f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {OUTPUT_FILE}"
-)
+print(f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {OUTPUT_FILE}")
