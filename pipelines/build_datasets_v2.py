@@ -16,13 +16,14 @@ from study_context import fetch_study_accession
 ENA_MAX_REQUESTS_PER_SECOND = 50
 MIN_OBS_COUNT_PER_STUDY = 1_000
 EXCLUDED_STUDY_ACCESSIONS = (
-    "PRJEB51634",
-    "PRJNA1005589",
-    "PRJNA1179423",
-    "PRJNA1188170",
-    "PRJNA1215450",
-    "PRJNA657844",
-    "PRJNA902813",
+    # Short ena context listed below
+    "PRJEB51634",  # The goal of this project is to perform a systematic comparison of immune cell lineages across human tissues. To this end, we collected up to 16 tissues from twelve adult deceased organ donors, isolated immune cells and profiled them using single-cell RNA sequencing and VDJ sequencing generating a dataset of around 360,000 cells.
+    "PRJNA1005589",  # Through analysis of gd T cells in mucosal and lymphoid tissues across the human lifespan ...
+    "PRJNA1179423",  # Here, using single nucleus (sn)RNA-seq on temporal lobe tissue
+    "PRJNA1188170",  # unclear
+    "PRJNA1215450",  # Here, we took a systems approach to comprehensively profile RNA and surface protein expression of over 1.25 million immune cells isolated from blood, lymphoid organs, and mucosal tissues
+    "PRJNA657844",  # Pancreatic Cancer Biopsies
+    "PRJNA902813",  # Overall design: We sorted CD3+ T cells from four patients with lung cancer
 )
 
 metadata_pq: pd.DataFrame = pd.read_parquet(
@@ -63,5 +64,5 @@ metadata_pq = metadata_pq.loc[
 
 metadata_pq.to_csv(REPO_ROOT / "output/metadata/datasets_v2.csv")
 print(
-    f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {REPO_ROOT / 'output/metadata/datasets_v2.csv'}"
+    f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {REPO_ROOT / 'output/metadata/datasets_v2_1.csv'}"
 )
