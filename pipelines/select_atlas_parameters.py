@@ -1,7 +1,5 @@
 import argparse
 import datetime
-import json
-import time
 from pathlib import Path
 
 import scanpy as sc
@@ -9,13 +7,12 @@ from atlas_postprocessing.artifacts import (
     apply_parameters_to_config,
     load_approved_parameters,
     validate_approved_against_calibration,
-    write_json,
 )
 from atlas_postprocessing.config import AtlasPostprocessingConfig
-from atlas_postprocessing.core import apply_thread_settings, run_postprocessing, timed
-from atlas_postprocessing.sampling import sample_metadata, sample_study_proportional
-from atlas_postprocessing.scib import run_scib_benchmark
+from atlas_postprocessing.core import apply_thread_settings, timed
+from atlas_postprocessing.sampling import sample_study_proportional
 from atlas_postprocessing.selection import FIXED_N_NEIGHBORS, FIXED_N_TOP_GENES, run_calibration
+from atlas_postprocessing.validation import run_validation
 from shared.logger import add_stdout_handler, configure_file_logger, log_run_separator
 from shared.repo import rel_to_repo
 
@@ -191,74 +188,6 @@ def _load_and_sample(cfg: AtlasPostprocessingConfig, sampleCells: int, command: 
     return adata
 
 
-def _run_validate(args: argparse.Namespace) -> None:
-    cfg = _cfg_from_validate_args(args)
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    scib_dir = args.output_dir / "scib"
-
-    started = time.perf_counter()
-    sampled = _load_and_sample(cfg, args.sample_cells, args.command)
-    adata = timed(
-        "approved subset postprocessing",
-        lambda: run_postprocessing(cfg, adata=sampled, workflow="validation"),
-        logger=log,
-    )
-    # RF merge of leiden_atlas could run here before scIB.
-    timed(
-        "scIB benchmark",
-        lambda: run_scib_benchmark(
-            adata,
-            outDir=scib_dir,
-            batchKey=cfg.batchKey,
-            labelKey=cfg.cellTypeKey,
-            nJobs=args.scib_jobs,
-            force=args.force_scib,
-        ),
-        logger=log,
-    )
-
-    parameters = load_approved_parameters(args.parameters_json)
-    summary = validate_approved_against_calibration(parameters, parametersPath=args.parameters_json)
-    recommendation = summary.get("recommendation") or {}
-    validation_summary = {
-        "input": rel_to_repo(cfg.inputH5ad),
-        "outputDir": rel_to_repo(args.output_dir),
-        "parametersJson": rel_to_repo(args.parameters_json),
-        "calibrationSummary": parameters.calibrationSummary,
-        "resolved": {
-            "nTopGenes": cfg.nTopGenes,
-            "nPcs": cfg.nPcs,
-            "nNeighbors": cfg.nNeighbors,
-            "resolution": cfg.resolution,
-        },
-        "recommendation": recommendation,
-        "approvedVersusRecommendedResolution": {
-            "approved": cfg.resolution,
-            "recommended": recommendation.get("resolution"),
-            "matchesRecommendation": (
-                recommendation.get("resolution") is not None
-                and abs(float(recommendation["resolution"]) - float(cfg.resolution)) < 1e-9
-            ),
-        },
-        "rfMerge": None,  # not implemented at time of submission
-        "sampling": sample_metadata(adata),
-        "subsetH5ad": rel_to_repo(cfg.outputH5ad),
-        "runJson": rel_to_repo(cfg.outputH5ad.with_name(f"{cfg.outputH5ad.stem}_run.json")),
-        "figuresDir": rel_to_repo(cfg.figsDir),
-        "scib": {
-            "csv": rel_to_repo(scib_dir / "scib_results.csv"),
-            "svg": rel_to_repo(scib_dir / "scib_results.svg"),
-        },
-        "timingsSeconds": round(time.perf_counter() - started, 3),
-        "note": (
-            "Review the full scIB metric table before launching full-atlas production. "
-            "There is no automatic pass/fail threshold."
-        ),
-    }
-    write_json(args.output_dir / "subset_validation_summary.json", validation_summary)
-    log.info("Validation summary: %s", json.dumps(validation_summary["resolved"]))
-
-
 def main() -> None:
     args = _parse_args()
 
@@ -268,12 +197,24 @@ def main() -> None:
     started = datetime.datetime.now()
     if args.command == "calibrate":
         cfg = _cfg_from_calibrate_args(args)
-        apply_thread_settings(cfg)
-        log.info("config: %s", cfg.model_dump_json())
-        sampled = _load_and_sample(cfg, args.sample_cells, args.command)
+    elif args.command == "validate":
+        cfg = _cfg_from_validate_args(args)
+    else:
+        raise ValueError(f"Unknown command {args.command!r}")
+
+    apply_thread_settings(cfg)
+    log.info("config: %s", cfg.model_dump_json())
+    sampled = _load_and_sample(cfg, args.sample_cells, args.command)
+
+    if args.command == "calibrate":
         run_calibration(cfg, adata=sampled)
     elif args.command == "validate":
-        _run_validate(args)
+        run_validation(
+            cfg,
+            adata=sampled,
+            scibJobs=args.scib_jobs,
+            forceScib=args.force_scib,
+        )
     else:
         raise ValueError(f"Unknown command {args.command!r}")
 

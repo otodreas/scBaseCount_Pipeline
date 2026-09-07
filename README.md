@@ -88,6 +88,8 @@ Optionally, rerun the accession selection against the live ENA API before popula
 uv run python pipelines/build_datasets_v2.py
 ```
 
+I built this at [generate_datasets_v2](https://github.com/otodreas/scBaseCount_Pipeline/releases/tag/generate_datasets_v2).
+
 This live lookup can differ if ENA records have changed. Skip it and use the committed CSV when reproducing the reported accession set.
 
 ### 2. Configure R2 access
