@@ -13,6 +13,8 @@ from study_context import fetch_study_accession
 # def fetch_study_accession(accession: str) -> str:
 #     return rng.choice(np.arange(1000))
 
+OUTPUT_FILE = REPO_ROOT / "output/metadata/datasets_v2.csv"
+
 ENA_MAX_REQUESTS_PER_SECOND = 50
 MIN_OBS_COUNT_PER_STUDY = 1_000
 EXCLUDED_STUDY_ACCESSIONS = (
@@ -62,7 +64,7 @@ metadata_pq = metadata_pq.loc[
 ]
 
 
-metadata_pq.to_csv(REPO_ROOT / "output/metadata/datasets_v2.csv")
+metadata_pq.to_csv(OUTPUT_FILE)
 print(
-    f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {REPO_ROOT / 'output/metadata/datasets_v2_1.csv'}"
+    f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {OUTPUT_FILE}"
 )
