@@ -31,8 +31,13 @@ def r2_key_exists(r2_key: str) -> bool:
         raise
 
 
-def download_from_r2(r2_key: str, local_path: Path, verify_md5: bool = False) -> None:
+def download_from_r2(r2_key: str, local_path: str | Path, verify_md5: bool = False) -> None:
+    """Download a file from R2 to a local path"""
     bucket = os.environ["BUCKET"]
+    if isinstance(local_path, str):
+        local_path = Path(local_path)
+    if not local_path.suffix:
+        raise ValueError(f"Local path {local_path} has no suffix, not a file")
     local_path.parent.mkdir(parents=True, exist_ok=True)  # local path is a file, not the location of the file
     _log.info("Downloading r2://%s/%s -> %s", bucket, r2_key, local_path)
     _r2_client().download_file(bucket, r2_key, str(local_path))
