@@ -349,6 +349,8 @@ def run_postprocessing(
             raise ValueError(f"adata.obs is missing validation label key {cfg.cellTypeKey!r}")
     elif workflow == "production":
         loaded = timed("HVG + PCA", lambda: prepare_pca(loaded, cfg))
+        # retain the uncorrected embedding for plotting (neighbor graph gets overwritten)
+        loaded = timed("uncorrected embedding", lambda: embed_uncorrected(loaded, cfg))
         loaded = timed(
             "harmony integration",
             lambda: integrate_harmony(loaded, cfg, parallelUmap=True),
