@@ -2,12 +2,14 @@
 
 Master's project, 30 hp, Lund University
 
-A pipeline for large-scale scRNA-seq cluster labeling assessment, built on the Arc Institute's [Virtual Cell Atlas](https://console.cloud.google.com/storage/browser/arc-institute-virtual-cell-atlas?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))).
+A large-scale scRNA-seq atlas and automated clustering parameter selection pipeline, built on the Arc Institute's [Virtual Cell Atlas](https://console.cloud.google.com/storage/browser/arc-institute-virtual-cell-atlas?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))).
 
 # Requirements
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
-- Python >= 3.12.12 (installed automatically by uv)
+- Python 3.12.12 (installed automatically by uv)
+
+> Python 3.12 is in security-only support as of September 2026 until October 2028. I pinned the interpreter at 3.12.12 (see [`.python-version`](.python-version)) so anyone reproducing my work with uv will install the same patch I used.
 
 # Repository layout
 
@@ -17,9 +19,14 @@ The repo splits reusable code, batch orchestration, and interactive analysis:
 - [`pipelines/`](pipelines/): Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See [`pipelines/README.md`](pipelines/README.md).
 - [`notebooks/`](notebooks/): Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See [`notebooks/README.md`](notebooks/README.md).
 
+
+[`pipelines/`](pipelines/) contains the code that you (the reviewer) will run to reproduce the work presented in the [report](docs/report/report.pdf).
+
+[`docs/report/scripts/`](docs/report/scripts/) contains some small scripts that generate the plots and tables in the [report](docs/report/report.pdf).
+
 # Resources required
 
-The following resources are required to replicate the work presented in [`docs/report/report.pdf`](docs/report/report.pdf)
+The following resources are required to replicate the work presented in the [report](docs/report/report.pdf)
 - Data access
     - Access to the populated R2 raw-data mirror described below
     - Optional: a Google Cloud account and billing project subscribed to the Virtual Cell Atlas Marketplace dataset, only when building a new mirror
@@ -28,6 +35,7 @@ The following resources are required to replicate the work presented in [`docs/r
     - Ca 2 TB RAM
     - Persistent shell session (e.g. `tmux`) or detached process (e.g. `nohup`)
 
+If you do not want to set up an R2 bucket and rerun the data aquisition pipeline, I can supply you with the unprocessed atlas, which I have archived on the Lund University Bioinformatics course server.
 
 ## Data access
 ### Google Cloud
