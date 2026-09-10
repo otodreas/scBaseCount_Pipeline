@@ -13,7 +13,7 @@ A pipeline for large-scale scRNA-seq cluster labeling assessment, built on the A
 
 The repo splits reusable code, batch orchestration, and interactive analysis:
 
-- [`scripts/`](scripts/): Importable Python packages shared across notebooks, pipelines, and ad hoc use. See [`scripts/README.md`](scripts/README.md).
+- [`scripts/`](scripts/): Importable Python packages shared across notebooks, pipelines, and ad hoc use. See [`scripts/README.md`](scripts/README.md). The directory was named at the beginning of the project, but if I were building this today, the more appropriate name would be `src/`.
 - [`pipelines/`](pipelines/): Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See [`pipelines/README.md`](pipelines/README.md).
 - [`notebooks/`](notebooks/): Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See [`notebooks/README.md`](notebooks/README.md).
 
@@ -63,6 +63,22 @@ git config core.hooksPath .githooks   # once per clone
 ```
 
 [`.githooks/pre-commit`](.githooks/pre-commit) runs ruff and nbstripout on staged files; [`.githooks/pre-push`](.githooks/pre-push) runs the cluster validation regression test when [`scripts/cluster_validation/`](scripts/cluster_validation/) changed. Both are optional local help; [`.github/workflows/ci.yml`](.github/workflows/ci.yml) enforces ruff, pytest, and stripped [`notebooks/`](notebooks/) on `main`.
+
+## Logging
+
+Files under `logs/` are created if missing and appended across runs.
+
+| Step | Runner | Output | Log |
+| --- | --- | --- | --- |
+| 1 | Optional [`pipelines/build_datasets_v2.py`](pipelines/build_datasets_v2.py) | `output/metadata/datasets_v2.csv` | `logs/study_context.log`; lookup progress also goes to the terminal |
+| 2 | Optional [`pipelines/migrate_gcs_to_r2.py`](pipelines/migrate_gcs_to_r2.py) | Raw R2 objects; `output/migration/<timestamp>/run.csv` | `logs/migrate_gcs_to_r2.log`; `logs/gcs.log` for downloads; `logs/r2.log` for transfers |
+| 3 | [`pipelines/run_clustering_pipeline.py`](pipelines/run_clustering_pipeline.py) | `output/clustering_pipeline/<timestamp>/run.csv`, `metadata.json`, `figs/`, and `data/`; clustered R2 objects | `logs/clustering_pipeline.log`; `logs/cluster_validation.log`; `logs/r2.log`; `logs/gcs.log` on fallback |
+| 4 | [`pipelines/run_atlas_concat.py`](pipelines/run_atlas_concat.py) | Configured atlas; sibling `<stem>_config.json`, `<stem>_files.jsonl`, and `<stem>_result.json` | `logs/h5ad_concat.log`; `logs/r2.log`. The JSONL file is reset, then appended per input |
+| 5 | [`pipelines/select_atlas_parameters.py`](pipelines/select_atlas_parameters.py) `calibrate` | Configured calibration directory: `metrics/`, `figures/`, `calibration_summary.json`, and `parameters_template.json` | `logs/select_atlas_parameters.log` |
+| 6 | [`pipelines/select_atlas_parameters.py`](pipelines/select_atlas_parameters.py) `validate` | Configured validation directory: subset h5ad, `atlas_pp_subset_run.json`, `subset_validation_summary.json`, `figures/`, and `scib/` | `logs/select_atlas_parameters.log` |
+| 7 | [`pipelines/run_atlas_postprocessing.py`](pipelines/run_atlas_postprocessing.py) | Configured output h5ad, `<output_stem>_run.json`, and figures | `logs/atlas_postprocessing.log` |
+
+Shared imports can also create empty `logs/gcs.log`, `logs/r2.log`, or `logs/cluster_validation.log`.
 
 ## Run the pipeline
 
@@ -126,7 +142,11 @@ This runs the Leiden sweep on the five cell-count quantiles used for the cluster
 
 ### 4. Build the QC-filtered atlas
 
-[`pipelines/run_atlas_concat.py`](pipelines/run_atlas_concat.py) does not have an argument parser. Before running it, review the `H5adConcatConfig` block in that file and the remaining defaults in [`scripts/h5ad_concat/config.py`](scripts/h5ad_concat/config.py). For local reproduction, set `uploadAtlas=False`; this keeps the completed atlas at `output/atlas/2026-08-12/atlas.h5ad` for the later steps and avoids an upload followed by a download.
+[`pipelines/run_atlas_concat.py`](pipelines/run_atlas_concat.py) does not have an argument parser. Before running it, review the following:
+- The `H5adConcatConfig` block in [`scripts/h5ad_concat/config.py`](scripts/h5ad_concat/config.py)
+- The `H5adConcatConfig` block in the top of [`pipelines/run_atlas_concat.py`](pipelines/run_atlas_concat.py). This overwrites the defaults defined in the `H5adConcatConfig` block in [`scripts/h5ad_concat/config.py`](scripts/h5ad_concat/config.py).
+
+For local reproduction, set `uploadAtlas=False`; this keeps the completed atlas at `your/path/to/atlas.h5ad` for the later steps and avoids an upload followed by a download.
 
 ```sh
 uv run python pipelines/run_atlas_concat.py
@@ -134,13 +154,13 @@ uv run python pipelines/run_atlas_concat.py
 
 The run applies the report's cell and file filters, aligns every input to `geneInfo.tab`, and concatenates the passing datasets. If `uploadAtlas=True`, it instead uploads the atlas and its manifests to the configured R2 keys, verifies them, and removes the local atlas. A failed upload leaves the local atlas in place.
 
-The concatenation manifest should report 1,410 accepted datasets, 172 BioProjects, and 9,307,963 cells.
+The concatenation manifest, which lands parallel to the concatenated atlas, should report 1,410 accepted datasets, 172 BioProjects, and 9,307,963 cells.
 
 ### 5. Calibrate on the deterministic 100,000-cell sample
 
 ```sh
 uv run python pipelines/select_atlas_parameters.py calibrate \
-  --input output/atlas/2026-08-12/atlas.h5ad \
+  --input your/path/to/atlas.h5ad \
   --sample-cells 100000 \
   --output-dir output/atlas/2026-08-12/post/parameter_selection/cluster_validation \
   --n-pcs-compute 50 \
@@ -152,8 +172,8 @@ Calibration now follows the single-dataset graph rules on the Harmony-corrected 
 Review those artifacts, then create the approved parameter file:
 
 ```sh
-cp output/atlas/2026-08-12/post/parameter_selection/cluster_validation/parameters_template.json \
-   output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json
+cp your/path/to/post/parameter_selection/cluster_validation/parameters_template.json \
+   your/path/to/post/parameter_selection/cluster_validation/approved_parameters.json
 ```
 
 To reproduce the report, confirm that `resolution` is `0.8` in the approved JSON. The HVG, PC, and neighbor values must remain the values recorded by calibration.
@@ -162,7 +182,7 @@ To reproduce the report, confirm that `resolution` is `0.8` in the approved JSON
 
 ```sh
 uv run python pipelines/select_atlas_parameters.py validate \
-  --input output/atlas/2026-08-12/atlas.h5ad \
+  --input your/path/to/atlas.h5ad \
   --sample-cells 100000 \
   --parameters-json output/atlas/2026-08-12/post/parameter_selection/cluster_validation/approved_parameters.json \
   --output-dir output/atlas/2026-08-12/post/subset_validation \
@@ -171,7 +191,7 @@ uv run python pipelines/select_atlas_parameters.py validate \
   --force-scib
 ```
 
-This writes deterministic uncorrected and Harmony-corrected subset UMAPs, the `leiden_uncorrected` and `leiden_atlas` partitions, and scIB results under `output/atlas/2026-08-12/post/subset_validation/`. scIB compares the uncorrected and Harmony-corrected PCA representations. No random-forest merge is run. The 100,000-cell sample is drawn with a different random seed than the calibration sample.
+This writes deterministic uncorrected and Harmony-corrected subset UMAPs, the `leiden_uncorrected` and `leiden_atlas` partitions, and scIB results under `output/atlas/2026-08-12/post/subset_validation/`. scIB compares the uncorrected and Harmony-corrected PCA representations. The 100,000-cell sample is drawn with a different random seed than the calibration sample.
 
 ### 7. Process the full atlas
 
