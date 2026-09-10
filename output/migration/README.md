@@ -1,12 +1,8 @@
 # GCS to R2 migration
 
-The raw scBaseCount `h5ad` files used by this project were copied from Google Cloud Storage to Cloudflare R2 in two migrations on the Lund University bioinformatics server. The first migration created the initial mirror on May 6, 2026. The second added datasets selected by the revised metadata on July 30, 2026. The R2 mirror avoids repeated GCS downloads and does not incur R2 egress charges.
-
-The server log at `logs/migrate_gcs_to_r2.log` was ignored by Git and remains on that server. The committed CSV manifests listed below are the durable run records.
+The raw scBaseCount `h5ad` files used by this project were copied from Google Cloud Storage to Cloudflare R2 in two migrations on the Lund University bioinformatics server. The first migration created the initial mirror on May 6, 2026. The second added datasets selected by the revised metadata on July 30, 2026. The R2 mirror avoids repeated GCS downloads and lets me enforce file provenance.
 
 ## Historical repository snapshots
-
-The current migration runner supports both historical selection patterns. Omitting `--baseline` processes every row in the source CSV, as the May runner did. Passing a baseline CSV excludes its accessions from the source, as the July runner did. The snapshots below remain the authoritative record of the exact code, inputs, and environment used for each historical transfer.
 
 At the May snapshot, the runner was located at the repository root as `migrate_gcs_to_r2.py`. It accepted `--datasets` and `--dry-run`, defaulted to `output/metadata/datasets.csv`, and selected rows by loading that CSV and iterating over it directly:
 
@@ -25,7 +21,7 @@ Use the post-run snapshot for the migration being inspected:
 | May 6 initial mirror | [d368c02](https://github.com/otodreas/scBaseCount_Pipeline/commit/d368c023d64368df65c6f66cfab42f1877d6bef9) | `git checkout d368c023d64368df65c6f66cfab42f1877d6bef9` |
 | July 30 metadata delta | [68c0425](https://github.com/otodreas/scBaseCount_Pipeline/commit/68c04253addf9fd01ca6671771a36628b50afab9) | `git checkout 68c04253addf9fd01ca6671771a36628b50afab9` |
 
-These snapshots were committed after their transfers. They preserve the code, input CSVs, dependency lock, and run manifests together. Manifest timestamps use the server's local clock and do not include a timezone.
+These snapshots were committed after their transfers. They preserve the code, input CSVs, dependency lock, and run manifests together.
 
 ## GCS access at the time
 

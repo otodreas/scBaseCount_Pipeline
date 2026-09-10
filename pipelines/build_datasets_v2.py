@@ -1,5 +1,7 @@
+import argparse
 from concurrent.futures import ThreadPoolExecutor
 from itertools import batched
+from pathlib import Path
 from time import sleep
 
 import pandas as pd
@@ -7,13 +9,27 @@ from metadata.regexes import LUNG_TISSUE_RE
 from shared.repo import REPO_ROOT
 from study_context import fetch_study_accession
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--output", help="Path to the output CSV file", type=Path, required=True)
+args = parser.parse_args()
+OUTPUT_FILE = args.output
+
+if OUTPUT_FILE.suffix != ".csv":
+    raise ValueError("Output file must have a .csv suffix")
+
+if OUTPUT_FILE.exists():
+    raise ValueError("File already exists and will be overwritten. Aborting.")
+
+OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+
 # # Debug version of fetch_study_accession
 # import numpy as np
 # rng = np.random.default_rng()
 # def fetch_study_accession(accession: str) -> str:
 #     return rng.choice(np.arange(1000))
 
-OUTPUT_FILE = REPO_ROOT / "output/metadata/datasets_v2.csv"
+# OUTPUT_FILE = REPO_ROOT / "output/metadata/datasets_v2.csv"
 
 ENA_MAX_REQUESTS_PER_SECOND = 50
 MIN_OBS_COUNT_PER_STUDY = 1_000
@@ -62,7 +78,6 @@ metadata_pq = metadata_pq.loc[
     metadata_pq.groupby("study_accession")["obs_count"].transform("sum") > MIN_OBS_COUNT_PER_STUDY,
     :,
 ]
-
 
 metadata_pq.to_csv(OUTPUT_FILE)
 print(f"Saved datasets with {len(metadata_pq.loc[metadata_pq['is_lung']])} lung samples to {OUTPUT_FILE}")
