@@ -56,6 +56,7 @@ def _parse_args() -> argparse.Namespace:
         help="Thread budget for Scanpy, Harmony, and parallel UMAP (0 leaves library defaults)",
     )
     parser.add_argument("--r2-key", type=str, default=d.r2Key, metavar="KEY", help="R2 key")
+    parser.add_argument("--umap-parallel", action="store_true", help="Run UMAP in parallel")
     return parser.parse_args()
 
 
@@ -79,6 +80,7 @@ def build_config(args: argparse.Namespace) -> AtlasPostprocessingConfig:
             "writePlots": not args.no_plots,
             "r2Key": args.r2_key,
             "nJobs": args.threads,
+            "umapParallel": args.umap_parallel,
         }
     )
 

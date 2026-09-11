@@ -39,3 +39,4 @@ class AtlasPostprocessingConfig(BaseModel):
     calibrationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "parameter_selection"
     validationDir: Path = REPO_ROOT / "output" / "atlas" / "v2" / "post" / "subset_validation"
     resolutionCandidates: list[float] = Field(default_factory=default_resolutions)
+    umapParallel: bool = False

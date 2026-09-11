@@ -147,7 +147,7 @@ def run_leiden(adata: sc.AnnData, *, resolution: float, keyAdded: str) -> None:
 
 def run_umap_deterministic(adata: sc.AnnData) -> None:
     """Run Scanpy UMAP with the default fixed seed (reproducible, single-threaded)."""
-    sc.tl.umap(adata)
+    sc.tl.umap(adata)  # random seed defaults to 0
     log.info("Computed deterministic UMAP")
 
 
@@ -247,8 +247,6 @@ def run_harmony_on_pcs(
 def integrate_harmony(
     adata: sc.AnnData,
     cfg: AtlasPostprocessingConfig,
-    *,
-    parallelUmap: bool = False,
 ) -> sc.AnnData:
     """Run Harmony on the PCA embedding and build the corrected UMAP and Leiden partition."""
     validate_graph_settings(cfg, adata.n_obs)
@@ -272,7 +270,7 @@ def integrate_harmony(
         lambda: run_leiden(adata, resolution=cfg.resolution, keyAdded="leiden_atlas"),
     )
     # Compute UMAP regardless of if cfg.writePlots is True or False so that they can still be plotted later
-    if parallelUmap:
+    if cfg.umapParallel:
         timed("Harmony UMAP", lambda: run_umap_parallel(adata, cfg))
     else:
         timed("Harmony UMAP", lambda: run_umap_deterministic(adata))
@@ -343,7 +341,7 @@ def run_postprocessing(
         loaded = timed("uncorrected embedding", lambda: embed_uncorrected(loaded, cfg))
         loaded = timed(
             "harmony integration",
-            lambda: integrate_harmony(loaded, cfg, parallelUmap=False),
+            lambda: integrate_harmony(loaded, cfg),
         )
         if cfg.cellTypeKey not in loaded.obs:
             raise ValueError(f"adata.obs is missing validation label key {cfg.cellTypeKey!r}")
@@ -353,7 +351,7 @@ def run_postprocessing(
         loaded = timed("uncorrected embedding", lambda: embed_uncorrected(loaded, cfg))
         loaded = timed(
             "harmony integration",
-            lambda: integrate_harmony(loaded, cfg, parallelUmap=True),
+            lambda: integrate_harmony(loaded, cfg),
         )
     else:
         raise ValueError(f"Unknown workflow {workflow!r}")
