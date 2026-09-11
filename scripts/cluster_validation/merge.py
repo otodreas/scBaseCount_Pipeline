@@ -1,3 +1,8 @@
+"""
+This method was originally implemented by Parashar at Nygen and fitted to the
+processing pipeline by Oliver.
+"""
+
 from dataclasses import dataclass
 
 import numpy as np
