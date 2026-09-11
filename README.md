@@ -9,7 +9,7 @@ A large-scale scRNA-seq atlas and automated clustering parameter selection pipel
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
 - Python 3.12.12 (installed automatically by uv)
 
-> Python 3.12 is in security-only support as of September 2026 until October 2028. I pinned the interpreter at 3.12.12 (see `[.python-version](.python-version)`) so anyone reproducing my work with uv will install the same patch I used.
+> Python 3.12 is in security-only support as of September 2026 until October 2028. I pinned the interpreter at 3.12.12 (see [.python-version](.python-version)) so anyone reproducing my work with uv will install the same patch I used.
 
 
 
@@ -17,13 +17,13 @@ A large-scale scRNA-seq atlas and automated clustering parameter selection pipel
 
 The repo splits reusable code, batch orchestration, and interactive analysis:
 
-- `[scripts/](scripts/)`: Importable Python packages shared across notebooks, pipelines, and ad hoc use. See `[scripts/README.md](scripts/README.md)`. The directory was named at the beginning of the project, but if I were building this today, the more appropriate name would be `src/`.
-- `[pipelines/](pipelines/)`: Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See `[pipelines/README.md](pipelines/README.md)`.
-- `[notebooks/](notebooks/)`: Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See `[notebooks/README.md](notebooks/README.md)`.
+- [scripts/](scripts/): Importable Python packages shared across notebooks, pipelines, and ad hoc use. See [scripts/README.md](scripts/README.md). The directory was named at the beginning of the project, but if I were building this today, the more appropriate name would be `src/`.
+- [pipelines/](pipelines/): Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See [pipelines/README.md](pipelines/README.md).
+- [notebooks/](notebooks/): Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See [notebooks/README.md](notebooks/README.md).
 
-`[pipelines/](pipelines/)` contains the code that you (the reviewer) will run to reproduce the work presented in the [report](docs/report/report.pdf).
+[pipelines/](pipelines/) contains the code that you (the reviewer) will run to reproduce the work presented in the [report](docs/report/report.pdf).
 
-`[docs/report/scripts/](docs/report/scripts/)` contains some small scripts that generate the plots and tables in the [report](docs/report/report.pdf).
+[docs/report/scripts/](docs/report/scripts/) contains some small scripts that generate the plots and tables in the [report](docs/report/report.pdf).
 
 # Resources required
 
@@ -37,7 +37,7 @@ The following resources are required to replicate the work presented in the [rep
   - Ca 2 TB RAM
   - Persistent shell session (e.g. `tmux`) or detached process (e.g. `nohup`)
 
-Because the data aquisition pipeline (shown below) requires Google Cloud Credentials (see `[output/migration/README.md](output/migration/README.md)`) and a Cloudflare R2 bucket, I can supply you with the concatenated, single file atlas, which I have archived on the Lund University Bioinformatics course server. If I give you the file, skip to [step 5](#5-calibrate-on-the-deterministic-100000-cell-sample) of the pipeline.
+Because the data aquisition pipeline (shown below) requires Google Cloud Credentials (see [output/migration/README.md](output/migration/README.md)) and a Cloudflare R2 bucket, I can supply you with the concatenated, single file atlas, which I have archived on the Lund University Bioinformatics course server. If I give you the file, skip to [step 5](#5-calibrate-on-the-deterministic-100000-cell-sample) of the pipeline.
 
 ```mermaid
 flowchart TD
@@ -65,13 +65,13 @@ flowchart TD
 
 ### Google Cloud
 
-A Google Cloud account and project are only needed when downloading source data to build a new mirror. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in `[uv.lock](uv.lock)`).
+A Google Cloud account and project are only needed when downloading source data to build a new mirror. The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install-sdk) is used via `google-cloud-storage` (locked in [uv.lock](uv.lock)).
 
-The historical GCS-to-R2 transfers, including their repository snapshots, input CSVs, and run manifests, are recorded in `[output/migration/README.md](output/migration/README.md)`.
+The historical GCS-to-R2 transfers, including their repository snapshots, input CSVs, and run manifests, are recorded in [output/migration/README.md](output/migration/README.md).
 
 ### Cloudflare R2
 
-Raw input and processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see `[.env.example](.env.example)`).
+Raw input and processed `h5ad` files are stored in Cloudflare's S3-compatible R2 storage. Credentials are required (see [.env.example](.env.example)).
 
 ### Optional API keys
 
@@ -79,7 +79,7 @@ NCBI and CyteType API keys support workflows outside the report. Neither is requ
 
 # Reproducibility
 
-If you have access to the resources required, you can reproduce the work presented in `[docs/report/report.pdf](docs/report/report.pdf)` by following the steps below.
+If you have access to the resources required, you can reproduce the work presented in [docs/report/report.pdf](docs/report/report.pdf) by following the steps below.
 
 ## Setup
 
@@ -99,7 +99,7 @@ Since this step aids in development rather than reproduction, it is not recommen
 git config core.hooksPath .githooks   # once per clone
 ```
 
-`[.githooks/pre-commit](.githooks/pre-commit)` runs ruff and nbstripout on staged files; `[.githooks/pre-push](.githooks/pre-push)` runs the cluster validation regression test when `[scripts/cluster_validation/](scripts/cluster_validation/)` changed. Both are optional local help; `[.github/workflows/ci.yml](.github/workflows/ci.yml)` enforces ruff, pytest, and stripped `[notebooks/](notebooks/)` on `main`.
+[.githooks/pre-commit](.githooks/pre-commit) runs ruff and nbstripout on staged files; [.githooks/pre-push](.githooks/pre-push) runs the cluster validation regression test when [scripts/cluster_validation/](scripts/cluster_validation/) changed. Both are optional local help; [.github/workflows/ci.yml](.github/workflows/ci.yml) enforces ruff, pytest, and stripped [notebooks/](notebooks/) on `main`.
 
 Files under `logs/` are created if missing and appended across runs.
 
@@ -110,13 +110,13 @@ Run every command from the repository root. The steps of the pipeline, their out
 
 | Step | Runner                                                                                     | Output                                                                                                                              | Log                                                                                                      |
 | ---- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| 1    | Optional `[pipelines/build_datasets_v2.py](pipelines/build_datasets_v2.py)`                | `output/metadata/datasets_v2.csv`                                                                                                   | `logs/study_context.log`; lookup progress also goes to the terminal                                      |
-| 2    | Optional `[pipelines/migrate_gcs_to_r2.py](pipelines/migrate_gcs_to_r2.py)`                | Raw R2 objects; `output/migration/<timestamp>/run.csv`                                                                              | `logs/migrate_gcs_to_r2.log`; `logs/gcs.log` for downloads; `logs/r2.log` for transfers                  |
-| 3    | `[pipelines/run_clustering_pipeline.py](pipelines/run_clustering_pipeline.py)`             | `output/clustering_pipeline/<timestamp>/run.csv`, `metadata.json`, `figs/`, and `data/`; clustered R2 objects                       | `logs/clustering_pipeline.log`; `logs/cluster_validation.log`; `logs/r2.log`; `logs/gcs.log` on fallback |
-| 4    | `[pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py)`                           | Configured atlas; sibling `<stem>_config.json`, `<stem>_files.jsonl`, and `<stem>_result.json`                                      | `logs/h5ad_concat.log`; `logs/r2.log`. The JSONL file is reset, then appended per input                  |
-| 5    | `[pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py)` `calibrate` | Configured calibration directory: `metrics/`, `figures/`, `calibration_summary.json`, and `parameters_template.json`                | `logs/select_atlas_parameters.log`                                                                       |
-| 6    | `[pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py)` `validate`  | Configured validation directory: subset h5ad, `atlas_pp_subset_run.json`, `subset_validation_summary.json`, `figures/`, and `scib/` | `logs/select_atlas_parameters.log`                                                                       |
-| 7    | `[pipelines/run_atlas_postprocessing.py](pipelines/run_atlas_postprocessing.py)`           | Configured output h5ad, `<output_stem>_run.json`, and figures                                                                       | `logs/atlas_postprocessing.log`                                                                          |
+| 1    | Optional [pipelines/build_datasets_v2.py](pipelines/build_datasets_v2.py)                | `output/metadata/datasets_v2.csv`                                                                                                   | `logs/study_context.log`; lookup progress also goes to the terminal                                      |
+| 2    | Optional [pipelines/migrate_gcs_to_r2.py](pipelines/migrate_gcs_to_r2.py)                | Raw R2 objects; `output/migration/<timestamp>/run.csv`                                                                              | `logs/migrate_gcs_to_r2.log`; `logs/gcs.log` for downloads; `logs/r2.log` for transfers                  |
+| 3    | [pipelines/run_clustering_pipeline.py](pipelines/run_clustering_pipeline.py)             | `output/clustering_pipeline/<timestamp>/run.csv`, `metadata.json`, `figs/`, and `data/`; clustered R2 objects                       | `logs/clustering_pipeline.log`; `logs/cluster_validation.log`; `logs/r2.log`; `logs/gcs.log` on fallback |
+| 4    | [pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py)                           | Configured atlas; sibling `<stem>_config.json`, `<stem>_files.jsonl`, and `<stem>_result.json`                                      | `logs/h5ad_concat.log`; `logs/r2.log`. The JSONL file is reset, then appended per input                  |
+| 5    | [pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py) `calibrate` | Configured calibration directory: `metrics/`, `figures/`, `calibration_summary.json`, and `parameters_template.json`                | `logs/select_atlas_parameters.log`                                                                       |
+| 6    | [pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py) `validate`  | Configured validation directory: subset h5ad, `atlas_pp_subset_run.json`, `subset_validation_summary.json`, `figures/`, and `scib/` | `logs/select_atlas_parameters.log`                                                                       |
+| 7    | [pipelines/run_atlas_postprocessing.py](pipelines/run_atlas_postprocessing.py)           | Configured output h5ad, `<output_stem>_run.json`, and figures                                                                       | `logs/atlas_postprocessing.log`                                                                          |
 
 
 Shared imports can also create empty `logs/gcs.log`, `logs/r2.log`, or `logs/cluster_validation.log`.
@@ -131,7 +131,7 @@ mkdir -p $OUTPUT_DIR
 
 ### 1. Prepare the fixed inputs
 
-The exact 1,816-accession input catalog used by the atlas build is committed at `[output/metadata/datasets_v2.csv](output/metadata/datasets_v2.csv)`. The release metadata used to generate that catalog is committed at:
+The exact 1,816-accession input catalog used by the atlas build is committed at [output/metadata/datasets_v2.csv](output/metadata/datasets_v2.csv). The release metadata used to generate that catalog is committed at:
 
 ```text
 data/scbasecount/2026-01-12/metadata/GeneFull/Homo_sapiens/scbasecount_2026-01-12_metadata_GeneFull_Homo_sapiens_sample_metadata.parquet
@@ -159,7 +159,7 @@ This live lookup can differ if ENA records have changed. Skip it and use the com
 cp .env.example .env
 ```
 
-Fill the R2 variables in `.env`. The atlas constructor reads raw `h5ad` files from R2 keys derived from their GCS URIs, so it requires the populated mirror created by the migrations recorded in `[output/migration/README.md](output/migration/README.md)`. Each object must retain its `gcs-md5` metadata.
+Fill the R2 variables in `.env`. The atlas constructor reads raw `h5ad` files from R2 keys derived from their GCS URIs, so it requires the populated mirror created by the migrations recorded in [output/migration/README.md](output/migration/README.md). Each object must retain its `gcs-md5` metadata.
 
 If you need to populate an R2 mirror, the migration runner can process every accession in a datasets CSV without a baseline:
 
@@ -172,7 +172,7 @@ The CSV must contain unique, non-empty `srx_accession` values and a non-empty GC
 
 This migration is not required to reproduce the analysis when the raw `h5ad` mirror is already available. In that case, configure R2 and continue to the clustering check below. The atlas construction itself begins in step 4.
 
-The migration helper uses the anonymous GCS access that worked for the historical transfers. It does not implement Arc's current Requester Pays flow, so it cannot initialize a new mirror from the Marketplace bucket as written if anonymous access is unavailable. See `[output/migration/README.md](output/migration/README.md)`, under "GCS access at the time", for details.
+The migration helper uses the anonymous GCS access that worked for the historical transfers. It does not implement Arc's current Requester Pays flow, so it cannot initialize a new mirror from the Marketplace bucket as written if anonymous access is unavailable. See [output/migration/README.md](output/migration/README.md), under "GCS access at the time", for details.
 
 ### 3. Reproduce the five-dataset clustering check
 
@@ -187,10 +187,10 @@ This runs the Leiden sweep on the five cell-count quantiles used for the cluster
 
 ### 4. Build the QC-filtered atlas
 
-Before running `[pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py)`, review the following:
+Before running [pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py), review the following:
 
-- The `H5adConcatConfig` block in `[scripts/h5ad_concat/config.py](scripts/h5ad_concat/config.py)`
-- The `H5adConcatConfig` block in `[pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py)`. This overwrites the defaults defined in the `H5adConcatConfig` block in `[scripts/h5ad_concat/config.py](scripts/h5ad_concat/config.py)`.
+- The `H5adConcatConfig` block in [scripts/h5ad_concat/config.py](scripts/h5ad_concat/config.py)
+- The `H5adConcatConfig` block in [pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py). This overwrites the defaults defined in the `H5adConcatConfig` block in [scripts/h5ad_concat/config.py](scripts/h5ad_concat/config.py).
 
 For local reproduction, set `uploadAtlas=False`; this keeps the completed atlas at `$OUTPUT_DIR/atlas.h5ad` for the later steps and avoids an upload followed by a download.
 
@@ -215,7 +215,7 @@ uv run python pipelines/select_atlas_parameters.py calibrate \
   --threads 1
 ```
 
-Calibration now follows the single-dataset graph rules on the Harmony-corrected representation: 2,000 HVGs and 15 neighbors are fixed, while the retained PC count is selected from 15–50 by cumulative explained variance. It sweeps the shared resolution grid from 0.1 through 1.9, then writes `metrics/resolution.csv`, a resolution diagnostic, `calibration_summary.json`, and `parameters_template.json`. The matched-Jaccard maximum is advisory. See the worked Jaccard calculation in `[scripts/cluster_validation/README.md](scripts/cluster_validation/README.md#computing-the-jaccard-index)`.
+Calibration now follows the single-dataset graph rules on the Harmony-corrected representation: 2,000 HVGs and 15 neighbors are fixed, while the retained PC count is selected from 15–50 by cumulative explained variance. It sweeps the shared resolution grid from 0.1 through 1.9, then writes `metrics/resolution.csv`, a resolution diagnostic, `calibration_summary.json`, and `parameters_template.json`. The matched-Jaccard maximum is advisory. See the worked Jaccard calculation in [scripts/cluster_validation/README.md](scripts/cluster_validation/README.md#computing-the-jaccard-index).
 
 Review those artifacts, then create the approved parameter file:
 
@@ -257,7 +257,7 @@ The production runner writes the Harmony-corrected graph and `leiden_atlas` part
 
 # On the work presented
 
-The work presented here was done in conjunction with Nygen Analytics AB, a private, for-profit company in Lund. The work was exploratory in many regards, and therefore many tasks we embarked on did not reach the final report. For instance, these include CyteType integration efforts and differential expression analyses on the atlas. During the course of the project, reports such as `[writeups/state_vs_leiden/README.md](writeups/state_vs_leiden/README.md)` were written up for internal discussions, but were ultimately deemed unnecessary or out of scope for the final report.
+The work presented here was done in conjunction with Nygen Analytics AB, a private, for-profit company in Lund. The work was exploratory in many regards, and therefore many tasks we embarked on did not reach the final report. For instance, these include CyteType integration efforts and differential expression analyses on the atlas. During the course of the project, reports such as [writeups/state_vs_leiden/README.md](writeups/state_vs_leiden/README.md) were written up for internal discussions, but were ultimately deemed unnecessary or out of scope for the final report.
 
 ## Generative AI usage
 
