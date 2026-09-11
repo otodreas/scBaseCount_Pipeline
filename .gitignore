@@ -15,6 +15,7 @@ tmp/
 .tmp/
 extra/
 output/r2/
+output/atlas/2026-08-12/
 
 # Large outputs
 output/clustering/
