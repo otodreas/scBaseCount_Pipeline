@@ -300,7 +300,7 @@ UMAP of the integrated atlas colored by CZ CELLxGENE \texttt{cell_type}. A: Unco
 \label{fig1}
 \end{figure}
 
-On the 100,000-cell atlas validation subset, Harmony correction using NCBI BioProject as the batch key increased the aggregate batch correction score from 0.28 to 0.45, while the aggregate biological conservation score decreased from 0.53 to 0.51 (Fig~\ref{fig2}A, \textcite{lueckenBenchmarkingAtlaslevelData2022}). Four of five individual scIB batch correction metrics increased, while one (graph connectivity) decreased from 0.60 to 0.47. All five scIB biological conservation metrics decreased, although their aggregate changed by only 0.02 (Fig~\ref{fig2}B).
+On the 100,000-cell atlas validation subset, Harmony correction using NCBI BioProject as the batch key increased the aggregate batch correction score from 0.28 to 0.45, while the aggregate biological conservation score decreased from 0.53 to 0.51 (Fig~\ref{fig2}A, \textcite{lueckenBenchmarkingAtlaslevelData2022}). Each aggregate is the unweighted mean of its five component metrics. Four of five individual scIB batch correction metrics increased, while one (graph connectivity) decreased from 0.60 to 0.47. All five scIB biological conservation metrics decreased, although their aggregate changed by only 0.02 (Fig~\ref{fig2}B).
 
 (TODO: CHECK CITED NUMBERS IN THE BODY TEXT FOR AGREEMENT WITH FIGURE)
 
@@ -310,7 +310,7 @@ Harmony takes the PC coordinates of cells and attempts to correct them by moving
 \centering
 \includegraphics[width=\textwidth]{figs/batch_benchmark.pdf}
 \caption{\textbf{Batch correction metrics before and after Harmonization of PCs.}
-A: Aggregate biological conservation and batch correction scores. B: Individual scIB metrics. Uncorrected PCs versus Harmony-corrected PCs (batch key: NCBI BioProject). Aggregate biological conservation decreased from 0.53 to 0.51; aggregate batch correction increased from 0.28 to 0.45.}
+A: Aggregate biological conservation and batch correction scores, each computed as the unweighted mean of its five component metrics. B: Individual scIB metrics. Uncorrected PCs versus Harmony-corrected PCs (batch key: NCBI BioProject). Aggregate biological conservation decreased from 0.53 to 0.51; aggregate batch correction increased from 0.28 to 0.45.}
 \label{fig2}
 \end{figure}
 
