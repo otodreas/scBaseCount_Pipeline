@@ -255,7 +255,7 @@ uv run python pipelines/run_atlas_postprocessing.py \
   --threads 1
 ```
 
-The production runner writes the Harmony-corrected graph and `leiden_atlas` partition, then computes the full-atlas UMAP. It does not run the random-forest merge. Its parallel UMAP optimizer is unseeded, so the full-atlas UMAP coordinates will not be byte-for-byte identical between runs. The deterministic subset validation produces both representations used for the scIB comparison. These current-code steps reproduce the analysis flow, not the archived full-atlas uncorrected UMAP or byte-identical report figures.
+The production runner writes the Harmony-corrected graph and `leiden_atlas` partition, then computes the full-atlas UMAP. It does not run the random-forest merge. UMAP is deterministic by default; pass `--umap-parallel` to opt into faster, non-reproducible optimization. The deterministic subset validation produces both representations used for the scIB comparison. These current-code steps reproduce the analysis flow, not the archived full-atlas uncorrected UMAP or byte-identical report figures.
 
 # On the work presented
 

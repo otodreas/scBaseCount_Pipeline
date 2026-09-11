@@ -413,7 +413,7 @@ Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs
 
 ### `run_atlas_postprocessing.py`
 
-Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, then a **Harmony-only** neighbor graph, UMAP, and Leiden. Parallel production UMAP is intentionally non-reproducible for speed; revisit and freeze a seeded embedding before publication.
+Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, then a **Harmony-only** neighbor graph, UMAP, and Leiden. UMAP is deterministic by default; pass `--umap-parallel` to opt into faster, non-reproducible optimization.
 
 **Output defaults:** `output/atlas/v2/post/production/atlas_pp.h5ad` and `.../figures/`.
 
@@ -442,6 +442,7 @@ Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, the
 | `--resolution`      | `1.0`                                           | Leiden resolution (disallowed with `--parameters-json`)               |
 | `--no-plots`        | off                                             | Skip writing PNGs                                                     |
 | `--threads`         | `0`                                             | Thread budget for Scanpy, Harmony, and parallel UMAP (`0` = library defaults) |
+| `--umap-parallel`   | off                                             | Use faster, non-reproducible parallel UMAP                            |
 
 
 **Log:** `logs/atlas_postprocessing.log`

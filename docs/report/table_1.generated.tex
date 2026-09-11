@@ -1,0 +1,18 @@
+\begin{table}[!ht]
+\centering
+\caption{\textbf{Atlas contained 1,410 datasets (9,307,963 barcodes) across 172 BioProject accessions, of 1,816 eligible datasets (13,013,643 barcodes) following filtering.}}
+\begin{tabular}{|l|l|l|}
+\hline
+Filter & Datasets dropped, $n$ (\%) & Barcodes dropped, $n$ (\%)\\ \thickhline
+MD5 hash (mismatch) & 0 (0) & 0 (0)\\ \hline
+CZ CELLxGENE \texttt{cell_type} (labels absent) & 238 (13.1) & 1,509,128 (11.6)\\ \hline
+Min.\ genes per cell ($<$ 200) & --- & 1,600,056 (12.3)\\ \hline
+Max.\ mitochondrial fraction ($\geq$ 20\%) & --- & 517,018 (4.0)\\ \hline
+Max.\ ribosomal fraction ($\geq$ 50\%) & --- & 2,775 (0.02)\\ \hline
+Min.\ cells remaining ($<$ 100) & 100 (5.5) & 1,169 (0.01)\\ \hline
+Min.\ fraction of cells remaining ($<$ 50\%) & 68 (3.7) & 75,534 (0.58)\\ \hline
+\end{tabular}
+\begin{flushleft} Dataset percentages use the 1,816 eligible datasets as the denominator. Barcode percentages use the 13,013,643 barcodes present in those datasets before QC. Per-cell filter counts include every file that reached QC, including files later rejected by file-level gates; they are not restricted to concatenated files. A total of 406 datasets were dropped. Of those, 0 were dropped due to MD5 hash mismatch, 238 (13.1\% total datasets) were dropped due to fully absent CZ CELLxGENE \texttt{cell_type} labels. Of the 3,705,680 barcodes that were dropped from the eligible set, 1,600,056 (12.3\% total barcodes) were dropped for gene counts of less than 200, 517,018 (4.0\% total barcodes) were dropped for having 20\% or more of total gene count being mitochondrial, and 2,775 (0.02\% total barcodes) for having 50\% or more of total gene counts being ribosomal. Following cell filtering, 100 (5.5\% total datasets) were dropped for retaining fewer than 100 cells, and 68 (3.7\% total datasets) were dropped for retaining less than 50\% of cells. Among concatenated files only, cell filters dropped 578,434 barcodes.
+\end{flushleft}
+\label{table1}
+\end{table}
