@@ -1,0 +1,86 @@
+{
+  "input": "output/atlas/2026-09-07/atlas.h5ad",
+  "calibrationDir": "output/atlas/2026-09-07/post/param_select",
+  "cells": 100000,
+  "genes": 36601,
+  "hvgs": 2000,
+  "sampling": {
+    "sourceCells": 9307963,
+    "sampleCells": 100000,
+    "method": "studyProportional",
+    "stratifyKey": "study_accession",
+    "seed": 1234,
+    "nStudies": 172
+  },
+  "batchKey": "study_accession",
+  "cellTypeKey": "cell_type",
+  "graphMethod": {
+    "nTopGenes": 2000,
+    "nNeighbors": 15,
+    "nPcsCompute": 50,
+    "nPcsMin": 15,
+    "nPcsCumvarTarget": 0.5,
+    "selectedNPcs": 50,
+    "selectedCumvarPercent": 32.6062532330416,
+    "batchCorrection": "harmony",
+    "harmonyBatchKey": "study_accession",
+    "useRep": "X_pca_harmony"
+  },
+  "baseline": {
+    "nTopGenes": 2000,
+    "nPcs": 50,
+    "nNeighbors": 15,
+    "resolution": 0.8,
+    "nPcsCompute": 50
+  },
+  "candidates": {
+    "hvg": [
+      2000
+    ],
+    "pc": [
+      50
+    ],
+    "neighbors": [
+      15
+    ],
+    "resolution": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9
+    ]
+  },
+  "recommendation": {
+    "nTopGenes": 2000,
+    "nPcs": 50,
+    "nNeighbors": 15,
+    "resolution": 0.8,
+    "matchedJaccard": 7.043192903272089,
+    "nClusters": 21,
+    "method": "matched_jaccard_argmax",
+    "note": "Advisory only; copy parameters_template.json to approved_parameters.json after review."
+  },
+  "metrics": {
+    "resolution": "output/atlas/2026-09-07/post/param_select/metrics/resolution.csv"
+  },
+  "figures": {
+    "resolution": "output/atlas/2026-09-07/post/param_select/figures/resolution_matched_jaccard.png"
+  },
+  "timingsSeconds": 169.632,
+  "note": "Cell-type labels are weak priors, not ground truth. The matched-Jaccard argmax is advisory. Copy parameters_template.json to approved_parameters.json only after review."
+}

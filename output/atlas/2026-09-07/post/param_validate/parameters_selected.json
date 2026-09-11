@@ -1,0 +1,7 @@
+{
+  "nTopGenes": 2000,
+  "nPcs": 50,
+  "nNeighbors": 15,
+  "resolution": 0.8,
+  "calibrationSummary": "output/atlas/2026-09-07/post/param_select/calibration_summary.json"
+}

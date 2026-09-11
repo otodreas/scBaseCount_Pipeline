@@ -1,0 +1,29 @@
+{
+  "input": "output/atlas/2026-09-07/atlas.h5ad",
+  "output": "output/atlas/2026-09-07/post/param_validate/atlas_pp_subset.h5ad",
+  "figsDir": "output/atlas/2026-09-07/post/param_validate/figures",
+  "workflow": "validation",
+  "cells": 100000,
+  "hvgs": 2000,
+  "rawGenes": 36601,
+  "studies": 172,
+  "clustersUncorrected": 36,
+  "clustersHarmony": 21,
+  "clustersMerged": null,
+  "resolution": 0.8,
+  "nPcs": 50,
+  "nPcsCompute": 50,
+  "nTopGenes": 2000,
+  "nNeighbors": 15,
+  "nJobs": 1,
+  "parametersJson": "output/atlas/2026-09-07/post/param_validate/parameters_selected.json",
+  "calibrationSummary": "output/atlas/2026-09-07/post/param_select/calibration_summary.json",
+  "sampling": {
+    "sourceCells": 9307963,
+    "sampleCells": 100000,
+    "method": "studyProportional",
+    "stratifyKey": "study_accession",
+    "seed": 6789,
+    "nStudies": 172
+  }
+}

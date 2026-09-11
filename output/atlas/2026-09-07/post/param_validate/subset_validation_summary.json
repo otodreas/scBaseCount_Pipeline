@@ -1,0 +1,45 @@
+{
+  "input": "output/atlas/2026-09-07/atlas.h5ad",
+  "outputDir": "output/atlas/2026-09-07/post/param_validate",
+  "parametersJson": "output/atlas/2026-09-07/post/param_validate/parameters_selected.json",
+  "calibrationSummary": "output/atlas/2026-09-07/post/param_select/calibration_summary.json",
+  "resolved": {
+    "nTopGenes": 2000,
+    "nPcs": 50,
+    "nNeighbors": 15,
+    "resolution": 0.8
+  },
+  "recommendation": {
+    "nTopGenes": 2000,
+    "nPcs": 50,
+    "nNeighbors": 15,
+    "resolution": 0.8,
+    "matchedJaccard": 7.043192903272089,
+    "nClusters": 21,
+    "method": "matched_jaccard_argmax",
+    "note": "Advisory only; copy parameters_template.json to approved_parameters.json after review."
+  },
+  "approvedVersusRecommendedResolution": {
+    "approved": 0.8,
+    "recommended": 0.8,
+    "matchesRecommendation": true
+  },
+  "rfMerge": null,
+  "sampling": {
+    "sourceCells": 9307963,
+    "sampleCells": 100000,
+    "method": "studyProportional",
+    "stratifyKey": "study_accession",
+    "seed": 6789,
+    "nStudies": 172
+  },
+  "subsetH5ad": "output/atlas/2026-09-07/post/param_validate/atlas_pp_subset.h5ad",
+  "runJson": "output/atlas/2026-09-07/post/param_validate/atlas_pp_subset_run.json",
+  "figuresDir": "output/atlas/2026-09-07/post/param_validate/figures",
+  "scib": {
+    "csv": "output/atlas/2026-09-07/post/param_validate/scib/scib_results.csv",
+    "svg": "output/atlas/2026-09-07/post/param_validate/scib/scib_results.svg"
+  },
+  "timingsSeconds": 1178.655,
+  "note": "Review the full scIB metric table before launching full-atlas production. There is no automatic pass/fail threshold."
+}
