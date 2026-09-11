@@ -206,6 +206,8 @@ The concatenation manifest, which lands parallel to the concatenated atlas, shou
 
 ### 5. Calibrate on the deterministic 100,000-cell sample
 
+Make sure you have an output directory for the calibration results (see [step 0](#0-set-up-a-directory-to-populate))
+
 ```sh
 uv run python pipelines/select_atlas_parameters.py calibrate \
   --input $OUTPUT_DIR/atlas.h5ad \
