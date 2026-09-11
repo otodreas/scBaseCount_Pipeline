@@ -294,8 +294,7 @@ Min.\ fraction of cells remaining ($<$ 50\%) & 68 (3.7) & 75,534 (0.58)\\ \hline
 % Place figure captions after the first paragraph in which they are cited.
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.48\textwidth]{figs/umap_uncorrected.png}
-\includegraphics[width=0.48\textwidth]{figs/umap_corrected.png}
+\includegraphics[width=\textwidth]{figs/atlas_umaps.png}
 \caption{\textbf{Single-file integrated lung disease atlas derived from scBaseCount.}
 UMAP of the integrated atlas colored by CZ CELLxGENE \texttt{cell_type}. A: Uncorrected embedding. B: Harmony-corrected embedding (batch key: BioProject).}
 \label{fig1}
@@ -309,7 +308,7 @@ Harmony takes the PC coordinates of cells and attempts to correct them by moving
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\textwidth]{figs/scib_results.pdf}
+\includegraphics[width=\textwidth]{figs/batch_benchmark.pdf}
 \caption{\textbf{Batch correction metrics before and after Harmonization of PCs.}
 Benchmark results on a stratified atlas subset comparing uncorrected PCs and Harmony-corrected PCs (batch key: NCBI BioProject). Aggregate biological conservation decreased from 0.53 to 0.51; aggregate batch correction increased from 0.28 to 0.45. kBET was lower for uncorrected than batch-corrected embeddings.}
 \label{fig2}
@@ -319,10 +318,7 @@ We validated our resolution selection methodology on five lung experiment files 
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.48\textwidth]{figs/umap_selected_SRX24313469.png}
-\includegraphics[width=0.48\textwidth]{figs/composition_bars_SRX24313469.png}\\
-\includegraphics[width=0.48\textwidth]{figs/resolution_sweep_SRX24313469.png}
-\includegraphics[width=0.48\textwidth]{figs/homogeneity_completeness_nmi_vscore_ari_vs_resolution_SRX24313469.png}
+\includegraphics[width=\textwidth]{figs/resolution_validation.png}
 \caption{\textbf{Representative Leiden resolution sweep from the five-file validation (SRX24313469, 67th percentile of cell count).}
 A: UMAP of Leiden clusters at the Jaccard-selected resolution versus CZ CELLxGENE \texttt{cell_type} labels. B: Cluster and cell-type composition. C: Cluster count and matched Jaccard score across resolutions 0.1--2.0. D: Homogeneity, completeness, V-measure, NMI, and ARI versus resolution. The selected resolution was 0.8.}
 \label{fig3}
