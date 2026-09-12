@@ -1,3 +1,11 @@
+"""
+This script calls the same functions as the single-SRX cluster validation
+notebook (REPO_ROOT/notebooks/utility/single_srx_cluster_validation.ipynb) to
+generate the figures for Supporting information S1 in the report. It loads
+the five validation SRXs, runs the cluster validation, and saves the figures
+to a PDF.
+"""
+
 import argparse
 from pathlib import Path
 

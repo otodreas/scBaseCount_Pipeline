@@ -6,7 +6,7 @@ cd "$ROOT"
 
 # Committed in git
 ATLAS_QC_IN="output/atlas/2026-09-07/atlas_result.json"
-ATLAS_QC_OUT="docs/report/table_1.generated.tex"
+ATLAS_QC_OUT="docs/report/tables/table_1.tex"
 
 # Committed in git
 SCIB_IN="output/atlas/2026-09-07/post/param_validate/scib/scib_results.csv"
