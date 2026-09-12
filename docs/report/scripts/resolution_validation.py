@@ -31,7 +31,7 @@ from sklearn.metrics import (
 
 _EXPECTED_ACCESSION = "SRX17412841"
 _CELL_TYPE_KEY = "cell_type"
-_RESOLUTIONS = [i / 10 for i in range(1, 21)]
+_RESOLUTIONS = [i / 10 for i in range(1, 20)]
 _DPI = 200
 _UMAP_CATEGORY_LABEL_GID = "umap-category-label"
 

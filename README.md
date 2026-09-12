@@ -112,7 +112,7 @@ Run every command from the repository root. The steps of the pipeline, their out
 | ---- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 1    | Optional [pipelines/build_datasets_v2.py](pipelines/build_datasets_v2.py)                | `output/metadata/datasets_v2.csv`                                                                                                   | `logs/study_context.log`; lookup progress also goes to the terminal                                      |
 | 2    | Optional [pipelines/migrate_gcs_to_r2.py](pipelines/migrate_gcs_to_r2.py)                | Raw R2 objects; `output/migration/<timestamp>/run.csv`                                                                              | `logs/migrate_gcs_to_r2.log`; `logs/gcs.log` for downloads; `logs/r2.log` for transfers                  |
-| 3    | [pipelines/run_clustering_pipeline.py](pipelines/run_clustering_pipeline.py)             | `output/clustering_pipeline/<timestamp>/run.csv`, `metadata.json`, `figs/`, and `data/`; clustered R2 objects                       | `logs/clustering_pipeline.log`; `logs/cluster_validation.log`; `logs/r2.log`; `logs/gcs.log` on fallback |
+| 3    | [notebooks/utility/single_srx_cluster_validation.ipynb](notebooks/utility/single_srx_cluster_validation.ipynb) | Interactive clustering-resolution figures; no h5ad or figure files written                                                         | `logs/cluster_validation.log`                                                                            |
 | 4    | [pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py)                           | Configured atlas; sibling `<stem>_config.json`, `<stem>_files.jsonl`, and `<stem>_result.json`                                      | `logs/h5ad_concat.log`; `logs/r2.log`. The JSONL file is reset, then appended per input                  |
 | 5    | [pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py) `calibrate` | Configured calibration directory: `metrics/`, `figures/`, `calibration_summary.json`, and `parameters_template.json`                | `logs/select_atlas_parameters.log`                                                                       |
 | 6    | [pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py) `validate`  | Configured validation directory: subset h5ad, `atlas_pp_subset_run.json`, `subset_validation_summary.json`, `figures/`, and `scib/` | `logs/select_atlas_parameters.log`                                                                       |
@@ -170,20 +170,21 @@ uv run python pipelines/migrate_gcs_to_r2.py \
 
 The CSV must contain unique, non-empty `srx_accession` values and a non-empty GCS `file_path` for each row. With no `--baseline`, every row is selected; objects already present in R2 with the matching GCS MD5 are skipped. Pass `--baseline PATH` only when you want to exclude accessions listed in another datasets CSV.
 
-This migration is not required to reproduce the analysis when the raw `h5ad` mirror is already available. In that case, configure R2 and continue to the clustering check below. The atlas construction itself begins in step 4.
+This migration is not required to reproduce the analysis when the raw `h5ad` mirror is already available. In that case, configure R2 and continue to the clustering walkthrough below. The atlas construction itself begins in step 4.
 
 The migration helper uses the anonymous GCS access that worked for the historical transfers. It does not implement Arc's current Requester Pays flow, so it cannot initialize a new mirror from the Marketplace bucket as written if anonymous access is unavailable. See [output/migration/README.md](output/migration/README.md), under "GCS access at the time", for details.
 
-### 3. Reproduce the five-dataset clustering check
+### 3. Inspect clustering resolution selection interactively
+
+To inspect the clustering resolution selection interactively, run the command below to open a Jupyter server in your browser.
 
 ```sh
-uv run python pipelines/run_clustering_pipeline.py \
-  --datasets tests/quantiles_datasets.csv \
-  --r2-prefix report_cluster_validation \
-  --workers 1
+uv run jupyter lab notebooks/utility/single_srx_cluster_validation.ipynb
 ```
 
-This runs the Leiden sweep on the five cell-count quantiles used for the clustering-method check, scoring each partition by the Jaccard sum selected through SciPy's linear sum assignment. It then applies the single-dataset random-forest merge. Results are written under `output/clustering_pipeline/`. The current single-dataset grid ends at 1.9, although the report describes 2.0 as inclusive. The atlas workflow below uses the selected Leiden partition directly and does not apply the random-forest merge.
+The notebook walks through the single-SRX clustering implementation using the committed `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24313469.h5ad`. Update its configuration cell to inspect another local h5ad.
+
+The single-SRX and atlas workflows use different preprocessing and orchestration, but both call the shared [resolution-selection function](scripts/cluster_validation/resolution.py#L55-L68) and [matched-Jaccard score](scripts/cluster_validation/metrics.py#L19-L58). The notebook implements the multiple core functions used in the atlas workflow in seconds, rather than hours.
 
 ### 4. Build the QC-filtered atlas
 
@@ -265,6 +266,19 @@ A few helper scripts are provided to generate the plots and tables used in the r
 chmod +x docs/report/scripts/plot_report_figures.sh
 ./docs/report/scripts/plot_report_figures.sh
 ```
+
+## Optional five-dataset clustering check
+
+To reproduce the clustering-method check across the five cell-count quantiles used in the report, run:
+
+```sh
+uv run python pipelines/run_clustering_pipeline.py \
+  --datasets tests/quantiles_datasets.csv \
+  --r2-prefix report_cluster_validation \
+  --workers 1
+```
+
+This runs the same single-SRX implementation for each dataset, writes results under `output/clustering_pipeline/`, and uploads the clustered h5ad files to the configured R2 prefix. The current single-dataset grid ends at 1.9, although the report describes 2.0 as inclusive.
 
 # Appendix
 

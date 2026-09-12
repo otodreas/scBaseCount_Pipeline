@@ -97,10 +97,10 @@ def plot_umap_selected(
     adata: sc.AnnData,
     result: ClusterValidationResult,
     figs_dir: Path | None = None,
-) -> None:
+) -> plt.Figure:
     prior_key = result.weakPriorKey
     n_clusters = result.nClustersPreMerge
-    sc.pl.umap(
+    fig = sc.pl.umap(
         adata,
         color=[result.clusterKey, prior_key],
         ncols=2,
@@ -112,11 +112,11 @@ def plot_umap_selected(
             f"{prior_key} filtered  ({result.kFiltered} types)",
         ],
         show=False,
+        return_fig=True,
     )
-    plt.suptitle(f"Dataset: {result.datasetTitleSuffix}\n{_now()}", y=1.02)
-    if figs_dir is not None:
-        figs_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(figs_dir / f"umap_selected_{_figure_tag(result)}.png", bbox_inches="tight")
+    fig.suptitle(f"Dataset: {result.datasetTitleSuffix}\n{_now()}", y=1.02)
+    _save(fig, figs_dir, f"umap_selected_{_figure_tag(result)}.png")
+    return fig
 
 
 def plot_rf_confusion(
@@ -152,7 +152,7 @@ def plot_umap_merged(
     adata: sc.AnnData,
     result: ClusterValidationResult,
     figs_dir: Path | None = None,
-) -> None:
+) -> plt.Figure:
     merged_groups = result.mergedGroups
     multi = {m: g for m, g in merged_groups.items() if len(g) > 1}
     if multi:
@@ -177,15 +177,13 @@ def plot_umap_merged(
         show=False,
         return_fig=True,
     )
-    if fig is not None:
-        fig.suptitle(
-            f"Dataset: {result.datasetTitleSuffix}\nRF-based cluster merging summary\n{_now()}",
-            fontsize=16,
-            y=1.03,
-        )
-    if figs_dir is not None:
-        figs_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(figs_dir / f"umap_merged_{_figure_tag(result)}.png", bbox_inches="tight")
+    fig.suptitle(
+        f"Dataset: {result.datasetTitleSuffix}\nRF-based cluster merging summary\n{_now()}",
+        fontsize=16,
+        y=1.03,
+    )
+    _save(fig, figs_dir, f"umap_merged_{_figure_tag(result)}.png")
+    return fig
 
 
 def plot_composition_bars(
