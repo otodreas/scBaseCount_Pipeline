@@ -18,9 +18,9 @@ _CELL_TYPE_KEY = "cell_type"
 _UNCORRECTED_KEY = "X_umap_uncorrected"
 _CORRECTED_KEY = "X_umap"
 _DPI = 300
-_ALPHA = 0.55
+_ALPHA = 0.8
 _N_LEGEND = 10
-_LEGEND_TITLE = "Just the 10 most common cell types"
+_LEGEND_TITLE = "10 most common CxG cell_type labels"
 
 
 def main() -> None:

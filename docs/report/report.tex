@@ -318,7 +318,7 @@ We validated our resolution selection methodology on five lung experiment files 
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\textwidth]{figs/resolution_validation.png}
+\includegraphics[width=\textwidth]{figs/resolution_validation.pdf}
 \caption{\textbf{Representative Leiden resolution sweep from the five-file validation (SRX24313469, 67th percentile of cell count).}
 A: UMAP of Leiden clusters at the Jaccard-selected resolution versus CZ CELLxGENE \texttt{cell_type} labels. B: Cluster and cell-type composition. C: Cluster count and matched Jaccard score across resolutions 0.1--2.0. D: Homogeneity, completeness, V-measure, NMI, and ARI versus resolution. The selected resolution was 0.8.}
 \label{fig3}
@@ -338,7 +338,16 @@ The field of single-cell technology continues to grow rapidly. With it, the avai
 
 The atlas building pipeline proposed here does not exist in isolation. During the writing of the present report, a Snakemake workflow for concatenating raw count matrices, and applying quality control and batch correction was developed by~\textcite{muellerBuildingOptimizedSinglecell2026}, a method that addresses the growing demand for curated atlases to be used for downlstream data analysis. Continued work would certainly be warranted in implementing the pipeline built by~\cite{muellerBuildingOptimizedSinglecell2026}, as a means of validating the quality control and integration decisions made in the present method or producing more atlases.
 
-% \section*{Supporting information}
+\section*{Supporting information}
+
+\subsection*{Data and code availability}
+
+The code used to aquire, process and analyze data is tracked with Git and hosted on GitHub at \url{https://github.com/otodreas/scBaseCount_Pipeline}. Instructions to reproduce the results shown in this report can be found in the \texttt{README.md} file at the project root. At the time of submission (November 2026), we maintain a Cloudflare R2 bucket containing relevant \texttt{h5ad} files from scBaseCount, as well as build artifacts such as the quality controlled and concatenated atlas, as well as the final, post-processed atlas.
+
+\subsection*{Usage of generative artificial intelligence}
+
+Nygen AB uses Cursor, an integrated development environment with features built around large language models (LLMs), across the company. We used Cursor to draft code and brainstorm code architecture. We did not use Cursor to write reports or analyze and interpret data. The repository presented here represents our own work. More information can be found at \url{https://github.com/otodreas/scBaseCount_Pipeline/blob/main/README.md#generative-ai-usage}.
+
 
 % % Include only the SI item label in the paragraph heading. Use the \nameref{label} command to cite SI items in the text.
 % \paragraph*{S1 Fig.}

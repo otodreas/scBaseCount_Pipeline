@@ -32,6 +32,8 @@ Not part of the main pipeline. Use these to verify connectivity or inspect h5ad 
 
 **`utility/h5ad_extractor.ipynb`** — Pulls `obs` or `var` columns from an h5ad file into Parquet or CSV using the `h5ad_extractor` package (backed read, so the full file is not loaded into memory). Useful for inspecting annotation columns without running the full pipeline.
 
+**`utility/single_srx_cluster_validation.ipynb`**: Runs cluster validation for one local SRX without writing another h5ad. Each existing validation figure has its own cell and is saved under `output/clustering/figs/{srx}/`.
+
 **`utility/gcs_test.ipynb`** — Verifies that `google-cloud-storage` can authenticate and reach the scBaseCount GCS bucket. Run this first if `gcloud auth application-default login` has not been set up yet.
 
 **`utility/r2_inspect.ipynb`** — Verifies that `boto3` can authenticate and reach the Cloudflare R2 bucket using the credentials in `.env`. Lists objects and confirms the bucket is reachable before uploading processed files.

@@ -4,17 +4,21 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$ROOT"
 
+# Committed in git
 ATLAS_QC_IN="output/atlas/2026-09-07/atlas_result.json"
 ATLAS_QC_OUT="docs/report/table_1.generated.tex"
 
+# Committed in git
 SCIB_IN="output/atlas/2026-09-07/post/param_validate/scib/scib_results.csv"
 SCIB_OUT="docs/report/figs/batch_benchmark.pdf"
 
+# NOT committed in git -- ensure ATLAS_UMAP_IN exists
 ATLAS_UMAP_IN="output/atlas/2026-09-07/post/production/atlas_post.h5ad"
 ATLAS_UMAP_OUT="docs/report/figs/atlas_umaps.png"
 
+# NOT committed in git -- ensure RESOLUTION_IN exists
 RESOLUTION_IN="data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX17412841.h5ad"
-RESOLUTION_OUT="docs/report/figs/resolution_validation.png"
+RESOLUTION_OUT="docs/report/figs/resolution_validation.pdf"
 
 missing=0
 for path in "$ATLAS_QC_IN" "$SCIB_IN" "$ATLAS_UMAP_IN" "$RESOLUTION_IN"; do

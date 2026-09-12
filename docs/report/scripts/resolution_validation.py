@@ -1,4 +1,5 @@
 import argparse
+from itertools import combinations
 from pathlib import Path
 
 import matplotlib
@@ -15,7 +16,10 @@ from cluster_validation.embedding import embed_dataset
 from cluster_validation.preprocess import preprocess
 from cluster_validation.resolution import select_resolution_on_graph
 from matplotlib.axes import Axes
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
+from matplotlib.text import Text
 from numpy.typing import NDArray
 from sklearn.metrics import (
     adjusted_rand_score,
@@ -29,12 +33,20 @@ _EXPECTED_ACCESSION = "SRX17412841"
 _CELL_TYPE_KEY = "cell_type"
 _RESOLUTIONS = [i / 10 for i in range(1, 21)]
 _DPI = 200
+_UMAP_CATEGORY_LABEL_GID = "umap-category-label"
+
+
+def _pdf_path(value: str) -> Path:
+    path = Path(value)
+    if path.suffix.lower() != ".pdf":
+        raise argparse.ArgumentTypeError("output path must end in .pdf")
+    return path
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write the Leiden resolution-validation composite.")
     parser.add_argument("-i", "--input", type=Path, required=True, help="raw SRX24313469 h5ad")
-    parser.add_argument("-o", "--output", type=Path, required=True, help="output PNG path")
+    parser.add_argument("-o", "--output", type=_pdf_path, required=True, help="output PDF path")
     args = parser.parse_args()
     adata = load_srx(args.input)
     adata, selected, k_arr, jacc_arr, metrics = run_validation(adata)
@@ -90,7 +102,7 @@ def render(
         raise ValueError("adata.obsm is missing 'X_umap'")
 
     fig = plt.figure(figsize=(14.0, 11.0))
-    outer = GridSpec(2, 2, figure=fig, wspace=0.28, hspace=0.32)
+    outer = GridSpec(2, 2, figure=fig, width_ratios=(0.9, 1.1), wspace=0.3, hspace=0.55)
 
     umap_gs = GridSpecFromSubplotSpec(1, 2, subplot_spec=outer[0, 0], wspace=0.35)
     ax_umap_cluster = fig.add_subplot(umap_gs[0, 0])
@@ -116,7 +128,7 @@ def render(
     _plot_jaccard(ax_jacc, _RESOLUTIONS, jacc_arr, selected)
     _panel_label(ax_k, "C")
 
-    metric_gs = GridSpecFromSubplotSpec(2, 3, subplot_spec=outer[1, 1], wspace=0.35, hspace=0.45)
+    metric_gs = GridSpecFromSubplotSpec(2, 3, subplot_spec=outer[1, 1], wspace=0.8, hspace=0.55)
     metric_axes = [fig.add_subplot(metric_gs[i, j]) for i in range(2) for j in range(3)]
     names = list(metrics)
     for idx, ax in enumerate(metric_axes):
@@ -125,10 +137,11 @@ def render(
             continue
         name = names[idx]
         _plot_metric(ax, metrics[name], selected, name)
-    _panel_label(metric_axes[0], "D")
+    _panel_label(metric_axes[0], "D", x=-0.4)
 
+    _assert_no_text_overlaps(fig)
     output.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output, dpi=_DPI, bbox_inches="tight")
+    fig.savefig(output, format="pdf", dpi=_DPI, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -179,7 +192,8 @@ def _plot_umap(ax: Axes, adata: AnnData, color_by: str, title: str) -> None:
             rasterized=True,
         )
         centroid = coords[mask].mean(axis=0)
-        ax.text(centroid[0], centroid[1], category, fontsize=6, ha="center", va="center")
+        label = ax.text(centroid[0], centroid[1], category, fontsize=6, ha="center", va="center")
+        label.set_gid(_UMAP_CATEGORY_LABEL_GID)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_xlabel("UMAP1")
@@ -192,7 +206,7 @@ def _plot_composition(ax: Axes, series: pd.Series, title: str, color: str) -> No
     counts = series.astype(str).value_counts(normalize=True).sort_values(ascending=False) * 100
     ax.bar(range(len(counts)), counts.to_numpy(), color=color)
     ax.set_xticks(range(len(counts)))
-    ax.set_xticklabels(list(counts.index), rotation=90, fontsize=7)
+    ax.set_xticklabels(list(counts.index), rotation=90, fontsize=6)
     ax.set_title(title, fontsize=9)
     ax.set_xlabel("")
 
@@ -230,9 +244,9 @@ def _plot_metric(ax: Axes, values: list[tuple[float, float]], selected: float, t
     ax.legend(fontsize=6)
 
 
-def _panel_label(ax: Axes, letter: str) -> None:
+def _panel_label(ax: Axes, letter: str, x: float = -0.18) -> None:
     ax.text(
-        -0.18,
+        x,
         1.08,
         letter,
         transform=ax.transAxes,
@@ -241,6 +255,29 @@ def _panel_label(ax: Axes, letter: str) -> None:
         va="bottom",
         ha="right",
     )
+
+
+def _assert_no_text_overlaps(fig: Figure) -> None:
+    fig.canvas.draw()
+    if not isinstance(fig.canvas, FigureCanvasAgg):
+        raise TypeError(f"expected an Agg canvas, got {type(fig.canvas).__name__}")
+    renderer = fig.canvas.get_renderer()
+    texts = [
+        text
+        for text in fig.findobj(Text)
+        if text.get_visible()
+        and text.get_text().strip()
+        and text.get_gid() != _UMAP_CATEGORY_LABEL_GID
+        and (text.axes is None or text.axes.get_visible())
+    ]
+    overlaps = [
+        (left, right)
+        for left, right in combinations(texts, 2)
+        if left.get_window_extent(renderer).overlaps(right.get_window_extent(renderer))
+    ]
+    if overlaps:
+        examples = ", ".join(f"{left.get_text()!r} with {right.get_text()!r}" for left, right in overlaps[:5])
+        raise RuntimeError(f"{len(overlaps)} non-UMAP text overlaps remain: {examples}")
 
 
 if __name__ == "__main__":
