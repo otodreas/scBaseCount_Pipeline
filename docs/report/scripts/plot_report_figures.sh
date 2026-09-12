@@ -16,6 +16,7 @@ SCIB_OUT="docs/report/figs/batch_benchmark.pdf"
 ATLAS_UMAP_IN="output/atlas/2026-09-07/post/production/atlas_post.h5ad"
 ATLAS_UMAP_OUT="docs/report/figs/atlas_umaps.png"
 
+# Inputs are NOT committed in git
 RESOLUTION_OUT="docs/report/si/resolution_validation.pdf"
 
 missing=0
