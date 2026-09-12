@@ -45,7 +45,7 @@ Rebuild the atlas with this fixed AnnData contract:
 - `.var`: the complete gene table plus full-axis HVG statistics and `highly_variable`; exactly `nTopGenes` rows should be selected.
 - Scaled HVG expression: use an HVG-only temporary AnnData for scaling and PCA, then discard its dense `.X`. Do not put it in a layer because AnnData layers must have the full `.X` shape. Preserve the relevant scale means/standard deviations on the HVG rows of full `.var`, with missing values for non-HVGs.
 - `.obsm["X_pca"]`: PCA scores from the scaled HVG workspace. `.varm["PCs"]` must have `nGenes x nPcsCompute`; copy HVG loadings into their full-gene rows and use zero loadings for genes excluded from PCA. Keep PCA variance metadata in `.uns["pca"]`.
-- `.obsm["X_pca_harmony"]`, `.obsm["X_umap"]`, `.obs["leiden_atlas"]`, and the active neighbor graph remain the production integration outputs. Validation may additionally retain `X_umap_uncorrected` and `leiden_uncorrected`.
+- `.obsm["X_pca_harmony"]`, `.obsm["X_umap"]`, `.obs["leiden_atlas"]`, and the active Harmony-corrected neighbor graph remain the production integration outputs. Production and validation also retain `.obsm["X_umap_uncorrected"]` and `.obs["leiden_uncorrected"]`.
 
 ## Implementation
 

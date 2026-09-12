@@ -207,7 +207,10 @@ def embed_uncorrected(adata: sc.AnnData, cfg: AtlasPostprocessingConfig) -> sc.A
     if "X_pca" not in adata.obsm:
         raise ValueError("adata.obsm['X_pca'] is required before uncorrected embedding")
     timed("uncorrected neighbors", lambda: build_neighbors(adata, nNeighbors=cfg.nNeighbors, nPcs=cfg.nPcs))
-    timed("uncorrected UMAP", lambda: run_umap_deterministic(adata))
+    if cfg.umapParallel:
+        timed("uncorrected UMAP", lambda: run_umap_parallel(adata, cfg))
+    else:
+        timed("uncorrected UMAP", lambda: run_umap_deterministic(adata))
     adata.obsm["X_umap_uncorrected"] = adata.obsm["X_umap"].copy()
     timed(
         "uncorrected Leiden",
@@ -331,7 +334,7 @@ def run_postprocessing(
     *,
     workflow: Workflow = "production",
 ) -> sc.AnnData:
-    """Run atlas postprocessing for production (Harmony-only graph) or validation (both graphs)."""
+    """Run atlas postprocessing with uncorrected and Harmony-corrected embeddings."""
     apply_thread_settings(cfg)
     loaded = timed("load + normalize", lambda: load_and_normalize(cfg, adata=adata))
     validate_graph_settings(cfg, loaded.n_obs)

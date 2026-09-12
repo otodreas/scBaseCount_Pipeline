@@ -313,7 +313,7 @@ Atlas postprocessing (normalize, HVG, PCA, Harmony, neighbors, UMAP, Leiden) is 
 
 Sampling is deterministic (seed `0`), stratified by `--batch-key` (default `study_accession`). Every study gets at least one cell when `N` is at least the study count; remaining slots use largest-remainder proportions by study size. Requests smaller than the study count, or larger than the atlas, are rejected. The full atlas is loaded into memory once per command, so plan RAM for the whole object even though selection runs on the sample.
 
-Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/<date>/post/` (legacy `v2` paths remain valid). Full-atlas production builds **only** the Harmony-corrected neighbor graph, UMAP, and Leiden partition. Subset validation still builds both the uncorrected and Harmony-corrected embeddings so scIB can compare `X_pca` vs `X_pca_harmony`.
+Harmony remains a method-specific stage (`X_pca_harmony`, Harmony UMAP plots). Overall outputs use the `post` layout under `output/atlas/<date>/post/` (legacy `v2` paths remain valid). Full-atlas production retains the uncorrected UMAP and Leiden partition before building the Harmony-corrected UMAP and Leiden partition. The active neighbor graph is Harmony-corrected. Subset validation builds the same two embeddings so scIB can compare `X_pca` vs `X_pca_harmony`.
 
 ### Recommended workflow
 
@@ -413,17 +413,18 @@ Loads the full atlas, draws a sample with the same `--sample-cells` policy, runs
 
 ### `run_atlas_postprocessing.py`
 
-Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, then a **Harmony-only** neighbor graph, UMAP, and Leiden. UMAP is deterministic by default; pass `--umap-parallel` to opt into faster, non-reproducible optimization.
+Lightweight production runner. No sweeps and no scIB. Builds HVG + PCA once, retains the uncorrected UMAP and Leiden partition, then builds the Harmony-corrected graph, UMAP, and Leiden partition. UMAP is deterministic by default; pass `--umap-parallel` to use faster, non-reproducible optimization for both embeddings.
 
 **Output defaults:** `output/atlas/v2/post/production/atlas_pp.h5ad` and `.../figures/`.
 
 
-| File                                      | Description                                                                                                                                     |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{output}.h5ad`                           | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with `X_pca_harmony`, `X_umap`, and `leiden_atlas` (no uncorrected graph artifacts) |
-| `{output_stem}_run.json`                  | Run summary including `workflow`, `nNeighbors`, `nJobs`, and optional `parametersJson` (`clustersUncorrected` is `null` in production)         |
-| `{figs_dir}/umap_{batch_key}_harmony.png` | Harmony UMAP colored by batch and cell type                                                                                                     |
-| `{figs_dir}/pca_scree.png`                | PCA scree plot                                                                                                                                  |
+| File                                          | Description                                                                                                                                                                              |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{output}.h5ad`                               | Processed atlas (HVGs in `.X`, full-gene counts in `.raw`) with uncorrected and Harmony UMAPs and Leiden partitions; the active neighbor graph is Harmony-corrected                      |
+| `{output_stem}_run.json`                      | Run summary including `workflow`, `nNeighbors`, `nJobs`, `clustersUncorrected`, and optional `parametersJson`                                                                            |
+| `{figs_dir}/umap_{batch_key}_uncorrected.png` | Uncorrected UMAP colored by batch and cell type                                                                                                                                           |
+| `{figs_dir}/umap_{batch_key}_harmony.png`     | Harmony UMAP colored by batch and cell type                                                                                                                                               |
+| `{figs_dir}/pca_scree.png`                    | PCA scree plot                                                                                                                                                                           |
 
 
 

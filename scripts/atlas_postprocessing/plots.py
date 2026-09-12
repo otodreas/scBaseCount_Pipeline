@@ -24,13 +24,13 @@ def make_atlas_plots(
     *,
     workflow: Workflow = "production",
 ) -> None:
-    """Write UMAP PNGs for the active workflow with atlas-scale point styling."""
+    """Write available UMAP PNGs with atlas-scale point styling."""
     cfg.figsDir.mkdir(parents=True, exist_ok=True)
     for color_by in (cfg.batchKey, cfg.cellTypeKey):
         if color_by not in adata.obs:
             log.warning("Skipping UMAP for missing obs column %s", color_by)
             continue
-        if workflow == "validation" and "X_umap_uncorrected" in adata.obsm:
+        if "X_umap_uncorrected" in adata.obsm:
             _save_embedding_plot(
                 adata,
                 basis="X_umap_uncorrected",

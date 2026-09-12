@@ -4,6 +4,8 @@ Master's project, 30 hp, Lund University
 
 A large-scale scRNA-seq atlas and automated clustering parameter selection pipeline, built on the Arc Institute's [Virtual Cell Atlas](https://console.cloud.google.com/storage/browser/arc-institute-virtual-cell-atlas?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))).
 
+> **Along with the code, the repository contains a reproducible PLOS-style [report](docs/report/report.pdf).**
+
 # Requirements
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
@@ -128,6 +130,8 @@ Assuming you've already cloned and `cd`'d into the directory, make an output dir
 export OUTPUT_DIR="output/atlas/$(date +"%Y-%m-%d")"
 mkdir -p $OUTPUT_DIR
 ```
+
+The pipeline artifacts I generated are committed to [output/atlas/2026-09-07/](output/atlas/2026-09-07/).
 
 ### 1. Prepare the fixed inputs
 
@@ -256,7 +260,7 @@ uv run python pipelines/run_atlas_postprocessing.py \
   --threads 1
 ```
 
-The production runner writes the Harmony-corrected graph and `leiden_atlas` partition, then computes the full-atlas UMAP. It does not run the random-forest merge. UMAP is deterministic by default; pass `--umap-parallel` to opt into faster, non-reproducible optimization. The deterministic subset validation produces both representations used for the scIB comparison. These current-code steps reproduce the analysis flow, not the archived full-atlas uncorrected UMAP or byte-identical report figures.
+The production runner retains the uncorrected UMAP and Leiden partition, then writes the Harmony-corrected graph, UMAP, and `leiden_atlas` partition. It does not run the random-forest merge. UMAP is deterministic by default; pass `--umap-parallel` to use faster, non-reproducible optimization for both embeddings. Subset validation produces the same two representations for the scIB comparison. These current-code steps reproduce the analysis flow, but not byte-identical report figures.
 
 ### 8. Generate plots and tables used in the report
 

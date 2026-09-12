@@ -10,6 +10,7 @@ from atlas_postprocessing.artifacts import reject_tuning_overrides_with_paramete
 from atlas_postprocessing.config import AtlasPostprocessingConfig
 from atlas_postprocessing.core import (
     build_neighbors,
+    embed_uncorrected,
     integrate_harmony,
     run_postprocessing,
     scale_and_pca,
@@ -40,6 +41,35 @@ def test_build_neighbors_passes_harmony_graph_args() -> None:
     neighbors.assert_called_once_with(adata, n_neighbors=7, use_rep="X_pca_harmony", n_pcs=4)
 
 
+@pytest.mark.parametrize("parallel_umap", [False, True])
+def test_embed_uncorrected_uses_configured_umap_mode(parallel_umap: bool) -> None:
+    adata = sc.AnnData(np.zeros((20, 5), dtype=np.float32))
+    adata.obsm["X_pca"] = np.zeros((20, 4), dtype=np.float32)
+    adata.obsm["X_umap"] = np.zeros((20, 2), dtype=np.float32)
+    cfg = AtlasPostprocessingConfig(
+        nPcs=4,
+        nPcsCompute=4,
+        nNeighbors=5,
+        umapParallel=parallel_umap,
+    )
+
+    with (
+        patch("atlas_postprocessing.core.build_neighbors"),
+        patch("atlas_postprocessing.core.run_umap_deterministic") as deterministic,
+        patch("atlas_postprocessing.core.run_umap_parallel") as parallel,
+        patch("atlas_postprocessing.core.run_leiden"),
+    ):
+        embed_uncorrected(adata, cfg)
+
+    if parallel_umap:
+        parallel.assert_called_once_with(adata, cfg)
+        deterministic.assert_not_called()
+    else:
+        deterministic.assert_called_once_with(adata)
+        parallel.assert_not_called()
+    np.testing.assert_array_equal(adata.obsm["X_umap_uncorrected"], adata.obsm["X_umap"])
+
+
 def test_scale_and_pca_uses_auto_svd_solver() -> None:
     adata = sc.AnnData(np.random.default_rng(0).normal(size=(40, 25)).astype(np.float32))
     cfg = AtlasPostprocessingConfig(nPcsCompute=5, nPcs=5, nTopGenes=25)
@@ -59,7 +89,7 @@ def test_integrate_harmony_uses_configured_neighbors_pcs_and_threads() -> None:
     adata = sc.AnnData(np.zeros((30, 10), dtype=np.float32))
     adata.obs = pd.DataFrame({"study_accession": ["A"] * 15 + ["B"] * 15})
     adata.obsm["X_pca"] = np.random.default_rng(1).normal(size=(30, 12)).astype(np.float32)
-    cfg = AtlasPostprocessingConfig(nPcs=5, nNeighbors=8, resolution=0.4, nJobs=4)
+    cfg = AtlasPostprocessingConfig(nPcs=5, nNeighbors=8, resolution=0.4, nJobs=4, umapParallel=False)
 
     fake_harmony = MagicMock()
     fake_harmony.Z_corr = np.random.default_rng(2).normal(size=(30, 5)).astype(np.float32)
@@ -71,7 +101,7 @@ def test_integrate_harmony_uses_configured_neighbors_pcs_and_threads() -> None:
         patch("atlas_postprocessing.core.run_umap_parallel") as umap_par,
         patch("atlas_postprocessing.core.run_leiden"),
     ):
-        integrate_harmony(adata, cfg, parallelUmap=False)
+        integrate_harmony(adata, cfg)
 
     assert run_harmony.call_args.args[0].shape == (30, 5)
     assert run_harmony.call_args.kwargs["ncores"] == 4
@@ -89,7 +119,7 @@ def test_integrate_harmony_uses_parallel_umap_when_requested() -> None:
     adata = sc.AnnData(np.zeros((30, 10), dtype=np.float32))
     adata.obs = pd.DataFrame({"study_accession": ["A"] * 15 + ["B"] * 15})
     adata.obsm["X_pca"] = np.random.default_rng(1).normal(size=(30, 12)).astype(np.float32)
-    cfg = AtlasPostprocessingConfig(nPcs=5, nNeighbors=8, resolution=0.4, nJobs=2)
+    cfg = AtlasPostprocessingConfig(nPcs=5, nNeighbors=8, resolution=0.4, nJobs=2, umapParallel=True)
 
     fake_harmony = MagicMock()
     fake_harmony.Z_corr = np.random.default_rng(2).normal(size=(30, 5)).astype(np.float32)
@@ -101,7 +131,7 @@ def test_integrate_harmony_uses_parallel_umap_when_requested() -> None:
         patch("atlas_postprocessing.core.run_umap_parallel") as umap_par,
         patch("atlas_postprocessing.core.run_leiden"),
     ):
-        integrate_harmony(adata, cfg, parallelUmap=True)
+        integrate_harmony(adata, cfg)
 
     umap_par.assert_called_once_with(adata, cfg)
     umap_det.assert_not_called()
@@ -124,7 +154,7 @@ def _tiny_counts_adata(n_obs: int = 24, n_vars: int = 40) -> sc.AnnData:
     return adata
 
 
-def test_production_workflow_skips_uncorrected_graph(tmp_path: Path) -> None:
+def test_production_workflow_runs_uncorrected_embedding(tmp_path: Path) -> None:
     cfg = AtlasPostprocessingConfig(
         inputH5ad=tmp_path / "unused.h5ad",
         outputH5ad=tmp_path / "out.h5ad",
@@ -139,8 +169,11 @@ def test_production_workflow_skips_uncorrected_graph(tmp_path: Path) -> None:
     )
     adata = _tiny_counts_adata()
 
+    def _return_loaded(loaded: sc.AnnData, _cfg: AtlasPostprocessingConfig) -> sc.AnnData:
+        return loaded
+
     with (
-        patch("atlas_postprocessing.core.embed_uncorrected") as uncorrected,
+        patch("atlas_postprocessing.core.embed_uncorrected", side_effect=_return_loaded) as uncorrected,
         patch("atlas_postprocessing.core.harmonypy.run_harmony") as run_harmony,
         patch("atlas_postprocessing.core.build_neighbors") as neighbors,
         patch("atlas_postprocessing.core.run_umap_parallel") as umap_par,
@@ -151,19 +184,16 @@ def test_production_workflow_skips_uncorrected_graph(tmp_path: Path) -> None:
         run_harmony.return_value = MagicMock(Z_corr=np.zeros((adata.n_obs, cfg.nPcs), dtype=np.float32))
         adata.obsm["X_pca"] = np.zeros((adata.n_obs, cfg.nPcsCompute), dtype=np.float32)
         adata.obs["leiden_atlas"] = "0"
-        result = run_postprocessing(cfg, adata=adata, workflow="production")
+        run_postprocessing(cfg, adata=adata, workflow="production")
 
     prep.assert_called_once()
-    uncorrected.assert_not_called()
+    uncorrected.assert_called_once_with(adata, cfg)
     neighbors.assert_called_once()
-    umap_par.assert_called_once()
-    umap_det.assert_not_called()
+    umap_par.assert_not_called()
+    umap_det.assert_called_once_with(adata)
     leiden.assert_called_once()
-    assert "X_umap_uncorrected" not in result.obsm
-    assert "leiden_uncorrected" not in result.obs
     summary = json.loads((tmp_path / "out_run.json").read_text())
     assert summary["workflow"] == "production"
-    assert summary["clustersUncorrected"] is None
 
 
 def test_validation_workflow_keeps_both_graphs(tmp_path: Path) -> None:
@@ -182,8 +212,7 @@ def test_validation_workflow_keeps_both_graphs(tmp_path: Path) -> None:
     adata = _tiny_counts_adata()
     adata.obsm["X_pca"] = np.zeros((adata.n_obs, cfg.nPcsCompute), dtype=np.float32)
 
-    def _fake_harmony(loaded, _cfg, parallelUmap=False):
-        del parallelUmap
+    def _fake_harmony(loaded: sc.AnnData, _cfg: AtlasPostprocessingConfig) -> sc.AnnData:
         loaded.obs["leiden_atlas"] = pd.Categorical(["0"] * loaded.n_obs)
         loaded.obs["leiden_uncorrected"] = "0"
         return loaded
@@ -196,8 +225,7 @@ def test_validation_workflow_keeps_both_graphs(tmp_path: Path) -> None:
         result = run_postprocessing(cfg, adata=adata, workflow="validation")
 
     uncorrected.assert_called_once()
-    harmony.assert_called_once()
-    assert harmony.call_args.kwargs["parallelUmap"] is False
+    harmony.assert_called_once_with(adata, cfg)
     assert "leiden_merged" not in result.obs
     assert "rfMerge" not in result.uns
     summary = json.loads((tmp_path / "out_run.json").read_text())
@@ -205,7 +233,7 @@ def test_validation_workflow_keeps_both_graphs(tmp_path: Path) -> None:
     assert summary["clustersMerged"] is None
 
 
-def test_make_atlas_plots_production_writes_harmony_only(tmp_path: Path) -> None:
+def test_make_atlas_plots_production_writes_both_embeddings(tmp_path: Path) -> None:
     n_obs = 12
     adata = sc.AnnData(csr_matrix(np.zeros((n_obs, 4), dtype=np.float32)))
     adata.obs = pd.DataFrame(
@@ -224,9 +252,10 @@ def test_make_atlas_plots_production_writes_harmony_only(tmp_path: Path) -> None
     with patch("atlas_postprocessing.plots.sc.pl.embedding", return_value=fake_fig) as embedding:
         make_atlas_plots(adata, cfg, workflow="production")
 
-    assert embedding.call_count == 2
+    assert embedding.call_count == 4
     bases = [call.kwargs["basis"] for call in embedding.call_args_list]
-    assert bases == ["X_umap", "X_umap"]
+    assert bases.count("X_umap_uncorrected") == 2
+    assert bases.count("X_umap") == 2
 
 
 def test_make_atlas_plots_validation_writes_both(tmp_path: Path) -> None:
