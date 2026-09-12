@@ -2,14 +2,16 @@
 This script calls the same functions as the single-SRX cluster validation
 notebook (REPO_ROOT/notebooks/utility/single_srx_cluster_validation.ipynb) to
 generate the figures for Supporting information S1 in the report. It loads
-the five validation SRXs, runs the cluster validation, and saves the figures
-to a PDF.
+a reproducible five-dataset sample from the report cohort that is tracked in git,
+runs the cluster validation, and saves the figures to a PDF.
 """
 
 import argparse
 from pathlib import Path
 
 import matplotlib
+import pandas as pd
+from dotenv import load_dotenv
 
 matplotlib.use("Agg")
 
@@ -26,14 +28,14 @@ from cluster_validation.viz import (
 )
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
+from shared.repo import REPO_ROOT
+from storage import download_from_r2, gcs_local_path, gcs_uri_to_r2_raw_key
 
-_EXPECTED_ACCESSIONS = (
-    "SRX22996378",
-    "SRX12366723",
-    "SRX17412841",
-    "SRX24313469",
-    "SRX13198730",
-)
+_DEFAULT_DATASETS = REPO_ROOT / "output" / "metadata" / "datasets_v2.csv"
+_DEFAULT_DATA_ROOT = REPO_ROOT / "data"
+_SAMPLE_SIZE = 5
+_SAMPLE_SEED = 42
+_REQUIRED_COLUMNS = ("srx_accession", "file_path")
 _CELL_TYPE_KEY = "cell_type"
 _RESOLUTIONS = [i / 10 for i in range(1, 20)]
 _DPI = 200
@@ -49,21 +51,20 @@ def _pdf_path(value: str) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write the 25-page single-SRX cluster-validation PDF.")
     parser.add_argument(
-        "-i",
-        "--input",
+        "--datasets",
         type=Path,
-        nargs=len(_EXPECTED_ACCESSIONS),
-        required=True,
-        metavar="H5AD",
-        help="raw h5ad paths for the five validation SRXs",
+        default=_DEFAULT_DATASETS,
+        help="dataset catalog sampled for validation",
     )
+    parser.add_argument("--data-root", type=Path, default=_DEFAULT_DATA_ROOT, help="local h5ad root")
     parser.add_argument("-o", "--output", type=_pdf_path, required=True, help="output PDF path")
     args = parser.parse_args()
-    inputs = _index_inputs(args.input)
+    load_dotenv(REPO_ROOT / ".env")
+    inputs = prepare_inputs(args.datasets, args.data_root)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with PdfPages(args.output) as pdf:
-        for accession in _EXPECTED_ACCESSIONS:
-            adata = load_srx(inputs[accession], accession)
+        for accession, path in inputs:
+            adata = load_srx(path, accession)
             adata, result = run_validation(adata, accession)
             for plot_name, fig in validation_figures(adata, result):
                 pdf.savefig(fig, dpi=_DPI, bbox_inches="tight")
@@ -73,23 +74,45 @@ def main() -> None:
     print(f"Wrote {args.output}")
 
 
-def _index_inputs(paths: list[Path]) -> dict[str, Path]:
-    missing_paths = [str(path) for path in paths if not path.is_file()]
-    if missing_paths:
-        raise FileNotFoundError(f"h5ad files not found: {', '.join(missing_paths)}")
+def sample_datasets(path: Path) -> pd.DataFrame:
+    if not path.is_file():
+        raise FileNotFoundError(f"dataset catalog not found: {path}")
+    datasets = pd.read_csv(path)
+    missing_columns = [column for column in _REQUIRED_COLUMNS if column not in datasets.columns]
+    if missing_columns:
+        raise ValueError(f"{path}: missing required columns: {', '.join(missing_columns)}")
+    if len(datasets) < _SAMPLE_SIZE:
+        raise ValueError(f"{path}: expected at least {_SAMPLE_SIZE} datasets, found {len(datasets)}")
+    if datasets[list(_REQUIRED_COLUMNS)].isna().to_numpy().any():
+        raise ValueError(f"{path}: required columns contain missing values")
+    return datasets.sample(n=_SAMPLE_SIZE, random_state=_SAMPLE_SEED).reset_index(drop=True)
 
-    accessions = [path.stem for path in paths]
+
+def prepare_inputs(datasets_path: Path, data_root: Path) -> list[tuple[str, Path]]:
+    sampled = sample_datasets(datasets_path)
+    accessions = sampled["srx_accession"].astype(str).tolist()
     duplicates = sorted({accession for accession in accessions if accessions.count(accession) > 1})
     if duplicates:
-        raise ValueError(f"duplicate input accessions: {', '.join(duplicates)}")
+        raise ValueError(f"sampled duplicate accessions: {', '.join(duplicates)}")
 
-    expected: set[str] = set(_EXPECTED_ACCESSIONS)
-    found = set(accessions)
-    if found != expected:
-        missing = sorted(expected - found)
-        unexpected = sorted(found - expected)
-        raise ValueError(f"input accessions do not match validation set; missing={missing}, unexpected={unexpected}")
-    return dict(zip(accessions, paths, strict=True))
+    inputs: list[tuple[str, Path]] = []
+    for (_, row), accession in zip(sampled.iterrows(), accessions, strict=True):
+        gs_uri = str(row["file_path"])
+        local_path = gcs_local_path(gs_uri, data_root)
+        if local_path.stem != accession:
+            raise ValueError(f"{datasets_path}: accession {accession!r} does not match file path {gs_uri!r}")
+        if local_path.is_file():
+            print(f"Using local h5ad for {accession}: {local_path}")
+        else:
+            r2_key = gcs_uri_to_r2_raw_key(gs_uri)
+            print(f"Downloading {accession} from R2: {r2_key}")
+            try:
+                download_from_r2(r2_key, local_path, verify_md5=True)
+            except Exception:
+                local_path.unlink(missing_ok=True)
+                raise
+        inputs.append((accession, local_path))
+    return inputs
 
 
 def load_srx(path: Path, expected_accession: str) -> AnnData:

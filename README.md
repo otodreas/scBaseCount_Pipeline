@@ -186,7 +186,9 @@ To inspect the clustering resolution selection interactively, run the command be
 uv run jupyter lab notebooks/utility/single_srx_cluster_validation.ipynb
 ```
 
-The notebook walks through the single-SRX clustering implementation using the committed `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/SRX24313469.h5ad`. Update its configuration cell to inspect another local h5ad.
+The notebook walks through the single-SRX clustering implementation using the accession configured in its input cell. It expects the corresponding h5ad under `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`.
+
+The report validation script draws five datasets from `output/metadata/datasets_v2.csv` with seed 42. It uses local h5ads under `data/` when available and otherwise downloads the missing files from R2 with MD5 verification.
 
 The single-SRX and atlas workflows use different preprocessing and orchestration, but both call the shared [resolution-selection function](scripts/cluster_validation/resolution.py#L55-L68) and [matched-Jaccard score](scripts/cluster_validation/metrics.py#L19-L58). The notebook implements the multiple core functions used in the atlas workflow in seconds, rather than hours.
 

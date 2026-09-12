@@ -10,7 +10,7 @@ from cluster_validation.viz import plot_all
 from pathlib import Path
 
 cfg = ClusterValidationConfig(
-    srxAccession="SRX17412841",
+    srxAccession="SRX9246208",
     localH5adRoot=Path("data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens"),
 )
 
@@ -120,11 +120,11 @@ from cluster_validation import ClusterValidationConfig, run_cluster_validation_o
 
 cfg = ClusterValidationConfig(
     weakPriorKey="predicted_labels",
-    runLabel="SRX12366723_predicted_labels",
+    runLabel="SRX9246208_predicted_labels",
     outputDir=Path("tmp/clustering/data"),
     figsDir=Path("tmp/clustering/figs"),
 )
-adata, result = run_cluster_validation_on_adata(adata, cfg, srx="SRX12366723")
+adata, result = run_cluster_validation_on_adata(adata, cfg, srx="SRX9246208")
 ```
 
 All default paths are relative to the repo root.
