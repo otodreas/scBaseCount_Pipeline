@@ -48,10 +48,10 @@ The repo splits reusable code, batch orchestration, and interactive analysis:
 - [scripts/](scripts/): Importable Python packages shared across notebooks, pipelines, and ad hoc use. See [scripts/README.md](scripts/README.md). The directory was named at the beginning of the project, but if I were building this today, the more appropriate name would be `src/`.
 - [pipelines/](pipelines/): Batch runners for long, unattended jobs on a server (many accessions, sustained runtime). See [pipelines/README.md](pipelines/README.md).
 - [notebooks/](notebooks/): Interactive workflows for one-off or short tasks, and for repeatable steps where reviewing outputs (figures, tables, spot checks) is part of the work. See [notebooks/README.md](notebooks/README.md).
+- [docs/report/scripts/](docs/report/scripts/) contains some small scripts that generate the plots and tables in the [report](docs/report/report.pdf).
 
-[pipelines/](pipelines/) contains the code that you (the reviewer) will run to reproduce the work presented in the [report](docs/report/report.pdf).
+[pipelines/](pipelines/) and [docs/report/scripts/](docs/report/scripts/) contain the code that you (the reviewer) will run to reproduce the work presented in the [report](docs/report/report.pdf).
 
-[docs/report/scripts/](docs/report/scripts/) contains some small scripts that generate the plots and tables in the [report](docs/report/report.pdf).
 
 # Resources required
 
@@ -59,11 +59,12 @@ The following resources are required to replicate the work presented in the [rep
 
 - Data access
   - Access to the populated R2 raw-data mirror described below
-  - Optional: a Google Cloud account and billing project subscribed to the Virtual Cell Atlas Marketplace dataset, only when building a new mirror
+  - A Google Cloud account and billing project subscribed to the Virtual Cell Atlas Marketplace dataset. Only required when building a new mirror
 - Compute
   - Ca 100 GB disk space
   - Ca 2 TB RAM
   - Persistent shell session (e.g. `tmux`) or detached process (e.g. `nohup`)
+  - Ca 14 h compute time
 
 Because the data aquisition pipeline (shown below) requires Google Cloud Credentials (see [output/migration/README.md](output/migration/README.md)) and a Cloudflare R2 bucket, I can supply you with the concatenated, single file atlas, which I have archived on the Lund University Bioinformatics course server. If I give you the file, skip to [step 5](#5-calibrate-on-the-deterministic-100000-cell-sample) of the pipeline.
 
@@ -157,19 +158,17 @@ export OUTPUT_DIR="output/atlas/$(date +"%Y-%m-%d")"
 mkdir -p $OUTPUT_DIR
 ```
 
-The pipeline artifacts I generated are committed to [output/atlas/2026-09-07/](output/atlas/2026-09-07/).
+The pipeline artifacts I generated are committed to [output/atlas/2026-09-07/](output/atlas/2026-09-07/). You can compare those you write to `OUTPUT_DIR`.
 
 ### 1. Inspect clustering resolution selection interactively
 
-To inspect the clustering resolution selection interactively, run the command below to open a Jupyter server in your browser.
+If you want to inspect the clusterint resolution selection algorithm quickly using only resources committed to the repository and accessable via Git clone, run the command below to open a Jupyter server in your browser to inspect the clustering resolution selection.
 
 ```sh
 uv run jupyter lab notebooks/utility/single_srx_cluster_validation.ipynb
 ```
 
 The notebook walks through the single-SRX clustering implementation using the accession configured in its input cell. It expects the corresponding h5ad under `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`.
-
-The report validation script draws five datasets from `output/metadata/datasets_v2.csv` with seed 42. It uses local h5ads under `data/` when available and otherwise downloads the missing files from R2 with MD5 verification.
 
 The single-SRX and atlas workflows use different preprocessing and orchestration, but both call the shared [resolution-selection function](scripts/cluster_validation/resolution.py#L55-L68) and [matched-Jaccard score](scripts/cluster_validation/metrics.py#L19-L58). The notebook implements the multiple core functions used in the atlas workflow in seconds, rather than hours.
 
@@ -299,18 +298,7 @@ chmod +x docs/report/scripts/plot_report_figures.sh
 ./docs/report/scripts/plot_report_figures.sh
 ```
 
-## Optional five-dataset clustering check
-
-To reproduce the clustering-method check across the five cell-count quantiles used in the report, run:
-
-```sh
-uv run python pipelines/run_clustering_pipeline.py \
-  --datasets tests/quantiles_datasets.csv \
-  --r2-prefix report_cluster_validation \
-  --workers 1
-```
-
-This runs the same single-SRX implementation for each dataset, writes results under `output/clustering_pipeline/`, and uploads the clustered h5ad files to the configured R2 prefix. The current single-dataset grid ends at 1.9, although the report describes 2.0 as inclusive.
+Each script in [docs/report/scripts/](docs/report/scripts/) can be run independently as well. Note that the [resolution_validation.py](docs/report/scripts/resolution_validation.py) script requires the five `h5ad` files sampled from the eligible cohort to be present in the `data/` directory. If you do not have them, the script is wired to download them from an R2 mirror. If you do not have one configured, you will need to download the files manually and place them in [data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/](data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens/).
 
 # Appendix
 
