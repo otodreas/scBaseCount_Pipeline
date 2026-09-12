@@ -28,7 +28,6 @@ A large-scale scRNA-seq atlas and automated clustering parameter selection pipel
     - [6. Validate Harmony and run scIB](#6-validate-harmony-and-run-scib)
     - [7. Process the full atlas](#7-process-the-full-atlas)
     - [8. Generate plots and tables used in the report](#8-generate-plots-and-tables-used-in-the-report)
-  - [Optional five-dataset clustering check](#optional-five-dataset-clustering-check)
 - [Appendix](#appendix)
   - [Generative AI usage](#generative-ai-usage)
 
