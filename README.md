@@ -6,6 +6,32 @@ A large-scale scRNA-seq atlas and automated clustering parameter selection pipel
 
 > **Along with the code, the repository contains a reproducible PLOS-style [report](docs/report/report.pdf).**
 
+## Table of contents
+
+- [Requirements](#requirements)
+- [Repository layout](#repository-layout)
+- [Resources required](#resources-required)
+  - [Data access](#data-access)
+    - [Google Cloud](#google-cloud)
+    - [Cloudflare R2](#cloudflare-r2)
+    - [Optional API keys](#optional-api-keys)
+- [Reproducibility](#reproducibility)
+  - [Setup](#setup)
+    - [Install pre-commit and pre-push hooks (not recommended)](#install-pre-commit-and-pre-push-hooks-not-recommended)
+  - [Run the pipeline](#run-the-pipeline)
+    - [0. Set up a directory to populate](#0-set-up-a-directory-to-populate)
+    - [1. Inspect clustering resolution selection interactively](#1-inspect-clustering-resolution-selection-interactively)
+    - [2. Prepare the fixed inputs](#2-prepare-the-fixed-inputs)
+    - [3. Configure R2 access](#3-configure-r2-access)
+    - [4. Build the QC-filtered atlas](#4-build-the-qc-filtered-atlas)
+    - [5. Calibrate on the deterministic 100,000-cell sample](#5-calibrate-on-the-deterministic-100000-cell-sample)
+    - [6. Validate Harmony and run scIB](#6-validate-harmony-and-run-scib)
+    - [7. Process the full atlas](#7-process-the-full-atlas)
+    - [8. Generate plots and tables used in the report](#8-generate-plots-and-tables-used-in-the-report)
+  - [Optional five-dataset clustering check](#optional-five-dataset-clustering-check)
+- [Appendix](#appendix)
+  - [Generative AI usage](#generative-ai-usage)
+
 # Requirements
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (package manager)
@@ -112,9 +138,9 @@ Run every command from the repository root. The steps of the pipeline, their out
 
 | Step | Runner                                                                                     | Output                                                                                                                              | Log                                                                                                      |
 | ---- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| 1    | Optional [pipelines/build_datasets_v2.py](pipelines/build_datasets_v2.py)                | `output/metadata/datasets_v2.csv`                                                                                                   | `logs/study_context.log`; lookup progress also goes to the terminal                                      |
-| 2    | Optional [pipelines/migrate_gcs_to_r2.py](pipelines/migrate_gcs_to_r2.py)                | Raw R2 objects; `output/migration/<timestamp>/run.csv`                                                                              | `logs/migrate_gcs_to_r2.log`; `logs/gcs.log` for downloads; `logs/r2.log` for transfers                  |
-| 3    | [notebooks/utility/single_srx_cluster_validation.ipynb](notebooks/utility/single_srx_cluster_validation.ipynb) | Interactive clustering-resolution figures; no h5ad or figure files written                                                         | `logs/cluster_validation.log`                                                                            |
+| 1    | [notebooks/utility/single_srx_cluster_validation.ipynb](notebooks/utility/single_srx_cluster_validation.ipynb) | Interactive clustering-resolution figures; no h5ad or figure files written                                                         | `logs/cluster_validation.log`                                                                            |
+| 2    | Optional [pipelines/build_datasets_v2.py](pipelines/build_datasets_v2.py)                | `output/metadata/datasets_v2.csv`                                                                                                   | `logs/study_context.log`; lookup progress also goes to the terminal                                      |
+| 3    | Optional [pipelines/migrate_gcs_to_r2.py](pipelines/migrate_gcs_to_r2.py)                | Raw R2 objects; `output/migration/<timestamp>/run.csv`                                                                              | `logs/migrate_gcs_to_r2.log`; `logs/gcs.log` for downloads; `logs/r2.log` for transfers                  |
 | 4    | [pipelines/run_atlas_concat.py](pipelines/run_atlas_concat.py)                           | Configured atlas; sibling `<stem>_config.json`, `<stem>_files.jsonl`, and `<stem>_result.json`                                      | `logs/h5ad_concat.log`; `logs/r2.log`. The JSONL file is reset, then appended per input                  |
 | 5    | [pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py) `calibrate` | Configured calibration directory: `metrics/`, `figures/`, `calibration_summary.json`, and `parameters_template.json`                | `logs/select_atlas_parameters.log`                                                                       |
 | 6    | [pipelines/select_atlas_parameters.py](pipelines/select_atlas_parameters.py) `validate`  | Configured validation directory: subset h5ad, `atlas_pp_subset_run.json`, `subset_validation_summary.json`, `figures/`, and `scib/` | `logs/select_atlas_parameters.log`                                                                       |
@@ -133,7 +159,21 @@ mkdir -p $OUTPUT_DIR
 
 The pipeline artifacts I generated are committed to [output/atlas/2026-09-07/](output/atlas/2026-09-07/).
 
-### 1. Prepare the fixed inputs
+### 1. Inspect clustering resolution selection interactively
+
+To inspect the clustering resolution selection interactively, run the command below to open a Jupyter server in your browser.
+
+```sh
+uv run jupyter lab notebooks/utility/single_srx_cluster_validation.ipynb
+```
+
+The notebook walks through the single-SRX clustering implementation using the accession configured in its input cell. It expects the corresponding h5ad under `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`.
+
+The report validation script draws five datasets from `output/metadata/datasets_v2.csv` with seed 42. It uses local h5ads under `data/` when available and otherwise downloads the missing files from R2 with MD5 verification.
+
+The single-SRX and atlas workflows use different preprocessing and orchestration, but both call the shared [resolution-selection function](scripts/cluster_validation/resolution.py#L55-L68) and [matched-Jaccard score](scripts/cluster_validation/metrics.py#L19-L58). The notebook implements the multiple core functions used in the atlas workflow in seconds, rather than hours.
+
+### 2. Prepare the fixed inputs
 
 The exact 1,816-accession input catalog used by the atlas build is committed at [output/metadata/datasets_v2.csv](output/metadata/datasets_v2.csv). The release metadata used to generate that catalog is committed at:
 
@@ -157,7 +197,7 @@ I built this at [generate_datasets_v2](https://github.com/otodreas/scBaseCount_P
 
 This live lookup can differ if ENA records have changed. Skip it and use the committed CSV when reproducing the reported accession set.
 
-### 2. Configure R2 access
+### 3. Configure R2 access
 
 ```sh
 cp .env.example .env
@@ -174,23 +214,9 @@ uv run python pipelines/migrate_gcs_to_r2.py \
 
 The CSV must contain unique, non-empty `srx_accession` values and a non-empty GCS `file_path` for each row. With no `--baseline`, every row is selected; objects already present in R2 with the matching GCS MD5 are skipped. Pass `--baseline PATH` only when you want to exclude accessions listed in another datasets CSV.
 
-This migration is not required to reproduce the analysis when the raw `h5ad` mirror is already available. In that case, configure R2 and continue to the clustering walkthrough below. The atlas construction itself begins in step 4.
+This migration is not required to reproduce the analysis when the raw `h5ad` mirror is already available. In that case, configure R2 and continue to the atlas construction in step 4.
 
 The migration helper uses the anonymous GCS access that worked for the historical transfers. It does not implement Arc's current Requester Pays flow, so it cannot initialize a new mirror from the Marketplace bucket as written if anonymous access is unavailable. See [output/migration/README.md](output/migration/README.md), under "GCS access at the time", for details.
-
-### 3. Inspect clustering resolution selection interactively
-
-To inspect the clustering resolution selection interactively, run the command below to open a Jupyter server in your browser.
-
-```sh
-uv run jupyter lab notebooks/utility/single_srx_cluster_validation.ipynb
-```
-
-The notebook walks through the single-SRX clustering implementation using the accession configured in its input cell. It expects the corresponding h5ad under `data/scbasecount/2026-01-12/h5ad/GeneFull/Homo_sapiens`.
-
-The report validation script draws five datasets from `output/metadata/datasets_v2.csv` with seed 42. It uses local h5ads under `data/` when available and otherwise downloads the missing files from R2 with MD5 verification.
-
-The single-SRX and atlas workflows use different preprocessing and orchestration, but both call the shared [resolution-selection function](scripts/cluster_validation/resolution.py#L55-L68) and [matched-Jaccard score](scripts/cluster_validation/metrics.py#L19-L58). The notebook implements the multiple core functions used in the atlas workflow in seconds, rather than hours.
 
 ### 4. Build the QC-filtered atlas
 
