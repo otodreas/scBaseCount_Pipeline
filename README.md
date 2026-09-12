@@ -260,7 +260,7 @@ The production runner writes the Harmony-corrected graph and `leiden_atlas` part
 
 ### 8. Generate plots and tables used in the report
 
-A few helper scripts are provided to generate the plots and tables used in the report. The can be found in [docs/report/scripts/](docs/report/scripts/). A shell script has also been provided to run the scripts given the data I generated. The artifacts that generate Table 1 and Figure 2 are committed to the repository, while those generating Figure 2 and 3 are not (TODO: mention if fig 3 ends up in supplementary material and if so change its name here). To generate the plots, select the filepaths for the input (pipeline outputs) and outputs (locations for generated files) in the [plot_report_figures.sh](docs/report/scripts/plot_report_figures.sh) script, and run
+A few helper scripts are provided to generate the plots and tables used in the report. The can be found in [docs/report/scripts/](docs/report/scripts/). A shell script has also been provided to run the scripts given the data I generated. The input artifacts used to generate Table 1 and Figure 2 are committed to the repository, while those used to generate Figure 1 and the five-page S1 Fig are not. To generate the plots, select the filepaths for the input (pipeline outputs) and outputs (locations for generated files) in the [plot_report_figures.sh](docs/report/scripts/plot_report_figures.sh) script, and run
 
 ```sh
 chmod +x docs/report/scripts/plot_report_figures.sh

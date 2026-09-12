@@ -17,6 +17,7 @@ from cluster_validation.preprocess import preprocess
 from cluster_validation.resolution import select_resolution_on_graph
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 from matplotlib.text import Text
@@ -29,7 +30,13 @@ from sklearn.metrics import (
     v_measure_score,
 )
 
-_EXPECTED_ACCESSION = "SRX17412841"
+_EXPECTED_ACCESSIONS = (
+    "SRX22996378",
+    "SRX12366723",
+    "SRX17412841",
+    "SRX24313469",
+    "SRX13198730",
+)
 _CELL_TYPE_KEY = "cell_type"
 _RESOLUTIONS = [i / 10 for i in range(1, 20)]
 _DPI = 200
@@ -44,21 +51,55 @@ def _pdf_path(value: str) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Write the Leiden resolution-validation composite.")
-    parser.add_argument("-i", "--input", type=Path, required=True, help="raw SRX24313469 h5ad")
+    parser = argparse.ArgumentParser(description="Write the five-page Leiden resolution-validation PDF.")
+    parser.add_argument(
+        "-i",
+        "--input",
+        type=Path,
+        nargs=len(_EXPECTED_ACCESSIONS),
+        required=True,
+        metavar="H5AD",
+        help="raw h5ad paths for the five validation SRXs",
+    )
     parser.add_argument("-o", "--output", type=_pdf_path, required=True, help="output PDF path")
     args = parser.parse_args()
-    adata = load_srx(args.input)
-    adata, selected, k_arr, jacc_arr, metrics = run_validation(adata)
-    render(adata, selected, k_arr, jacc_arr, metrics, args.output)
+    inputs = _index_inputs(args.input)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with PdfPages(args.output) as pdf:
+        for accession in _EXPECTED_ACCESSIONS:
+            adata = load_srx(inputs[accession], accession)
+            adata, selected, k_arr, jacc_arr, metrics = run_validation(adata, accession)
+            fig = render(adata, accession, selected, k_arr, jacc_arr, metrics)
+            pdf.savefig(fig, dpi=_DPI, bbox_inches="tight")
+            plt.close(fig)
+            print(f"Added {accession} (selected resolution {selected:g})")
     print(f"Wrote {args.output}")
 
 
-def load_srx(path: Path) -> AnnData:
+def _index_inputs(paths: list[Path]) -> dict[str, Path]:
+    missing_paths = [str(path) for path in paths if not path.is_file()]
+    if missing_paths:
+        raise FileNotFoundError(f"h5ad files not found: {', '.join(missing_paths)}")
+
+    accessions = [path.stem for path in paths]
+    duplicates = sorted({accession for accession in accessions if accessions.count(accession) > 1})
+    if duplicates:
+        raise ValueError(f"duplicate input accessions: {', '.join(duplicates)}")
+
+    expected: set[str] = set(_EXPECTED_ACCESSIONS)
+    found = set(accessions)
+    if found != expected:
+        missing = sorted(expected - found)
+        unexpected = sorted(found - expected)
+        raise ValueError(f"input accessions do not match validation set; missing={missing}, unexpected={unexpected}")
+    return dict(zip(accessions, paths, strict=True))
+
+
+def load_srx(path: Path, expected_accession: str) -> AnnData:
     if not path.is_file():
         raise FileNotFoundError(f"h5ad not found: {path}")
-    if path.stem != _EXPECTED_ACCESSION:
-        raise ValueError(f"expected filename stem {_EXPECTED_ACCESSION!r}, got {path.stem!r}")
+    if path.stem != expected_accession:
+        raise ValueError(f"expected filename stem {expected_accession!r}, got {path.stem!r}")
     adata = sc.read_h5ad(path)
     adata.obs_names_make_unique()
     if _CELL_TYPE_KEY not in adata.obs.columns:
@@ -67,15 +108,16 @@ def load_srx(path: Path) -> AnnData:
         raise ValueError("adata.var is missing 'gene_symbols'")
     if "SRX_accession" in adata.obs.columns:
         found = sorted(adata.obs["SRX_accession"].astype(str).unique().tolist())
-        if found != [_EXPECTED_ACCESSION]:
-            raise ValueError(f"SRX_accession values {found} do not match {_EXPECTED_ACCESSION}")
+        if found != [expected_accession]:
+            raise ValueError(f"SRX_accession values {found} do not match {expected_accession}")
     return adata
 
 
 def run_validation(
     adata: AnnData,
+    accession: str,
 ) -> tuple[AnnData, float, NDArray[np.int64], NDArray[np.float64], dict[str, list[tuple[float, float]]]]:
-    cfg = ClusterValidationConfig(srxAccession=_EXPECTED_ACCESSION, resolutions=_RESOLUTIONS)
+    cfg = ClusterValidationConfig(srxAccession=accession, resolutions=_RESOLUTIONS)
     adata, _stats = preprocess(adata, cfg)
     adata, _n_pcs, _cumvar = embed_dataset(adata, cfg)
     adata, sel = select_resolution_on_graph(
@@ -89,12 +131,12 @@ def run_validation(
 
 def render(
     adata: AnnData,
+    accession: str,
     selected: float,
     k_arr: NDArray[np.int64],
     jacc_arr: NDArray[np.float64],
     metrics: dict[str, list[tuple[float, float]]],
-    output: Path,
-) -> None:
+) -> Figure:
     cluster_key = f"leiden_{selected}"
     if cluster_key not in adata.obs.columns:
         raise ValueError(f"adata.obs is missing {cluster_key!r}")
@@ -102,6 +144,7 @@ def render(
         raise ValueError("adata.obsm is missing 'X_umap'")
 
     fig = plt.figure(figsize=(14.0, 11.0))
+    fig.suptitle(accession, fontsize=12, fontweight="bold")
     outer = GridSpec(2, 2, figure=fig, width_ratios=(0.9, 1.1), wspace=0.3, hspace=0.55)
 
     umap_gs = GridSpecFromSubplotSpec(1, 2, subplot_spec=outer[0, 0], wspace=0.35)
@@ -128,7 +171,7 @@ def render(
     _plot_jaccard(ax_jacc, _RESOLUTIONS, jacc_arr, selected)
     _panel_label(ax_k, "C")
 
-    metric_gs = GridSpecFromSubplotSpec(2, 3, subplot_spec=outer[1, 1], wspace=0.8, hspace=0.55)
+    metric_gs = GridSpecFromSubplotSpec(2, 3, subplot_spec=outer[1, 1], wspace=0.8, hspace=0.8)
     metric_axes = [fig.add_subplot(metric_gs[i, j]) for i in range(2) for j in range(3)]
     names = list(metrics)
     for idx, ax in enumerate(metric_axes):
@@ -137,12 +180,10 @@ def render(
             continue
         name = names[idx]
         _plot_metric(ax, metrics[name], selected, name)
-    _panel_label(metric_axes[0], "D", x=-0.4)
+    _panel_label(metric_axes[0], "D", x=-0.55)
 
     _assert_no_text_overlaps(fig)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output, format="pdf", dpi=_DPI, bbox_inches="tight")
-    plt.close(fig)
+    return fig
 
 
 def _metrics_vs_cell_type(
@@ -206,7 +247,7 @@ def _plot_composition(ax: Axes, series: pd.Series, title: str, color: str) -> No
     counts = series.astype(str).value_counts(normalize=True).sort_values(ascending=False) * 100
     ax.bar(range(len(counts)), counts.to_numpy(), color=color)
     ax.set_xticks(range(len(counts)))
-    ax.set_xticklabels(list(counts.index), rotation=90, fontsize=6)
+    ax.set_xticklabels(list(counts.index), rotation=90, fontsize=4 if len(counts) > 12 else 6)
     ax.set_title(title, fontsize=9)
     ax.set_xlabel("")
 
@@ -216,6 +257,8 @@ def _plot_sweep(
 ) -> None:
     ax.plot(resolutions, k_arr, marker="o", ms=4, color="steelblue")
     ax.axvline(selected, color="red", linestyle="--", label=f"selected = {selected:g}")
+    ax.set_xlim(resolutions[0], resolutions[-1])
+    ax.set_xticks([resolution for resolution in resolutions if round(resolution * 10) % 5 == 0])
     ax.set_xlabel("Resolution")
     ax.set_ylabel(ylabel)
     ax.set_title(title, fontsize=9)
@@ -227,6 +270,8 @@ def _plot_jaccard(ax: Axes, resolutions: list[float], jacc_arr: NDArray[np.float
     ax.plot(resolutions, jacc_arr, marker="o", ms=4, color="darkorange", label="matched Jaccard")
     ax.axvline(selected, color="red", linestyle="--", label=f"argmax = {selected:g}")
     ax.scatter([selected], [jacc_arr[best_idx]], color="red", zorder=5, s=60)
+    ax.set_xlim(resolutions[0], resolutions[-1])
+    ax.set_xticks([resolution for resolution in resolutions if round(resolution * 10) % 5 == 0])
     ax.set_xlabel("Resolution")
     ax.set_ylabel("Matched Jaccard")
     ax.set_title("Matched Jaccard score", fontsize=9)
@@ -238,6 +283,8 @@ def _plot_metric(ax: Axes, values: list[tuple[float, float]], selected: float, t
     ys = [pair[1] for pair in values]
     ax.plot(xs, ys, marker="o", ms=3, color="steelblue")
     ax.axvline(selected, color="red", linestyle="--", linewidth=1, label=f"selected = {selected:g}")
+    ax.set_xlim(xs[0], xs[-1])
+    ax.set_xticks([resolution for resolution in xs if round(resolution * 10) % 5 == 0])
     ax.set_title(title, fontsize=9)
     ax.set_xlabel("Leiden resolution")
     ax.set_ylabel(title)
