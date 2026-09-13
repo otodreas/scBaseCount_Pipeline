@@ -1,3 +1,13 @@
+"""
+This script builds a CSV of datasets for the atlas pipeline.
+
+This file does not have a log. To validate the number of datasets dropped for a
+given reason, load the metadata parquet with pandas in a python REPL and apply
+the commands used to build the CSV. Unfortunately, observability for which srxs
+were dropped due to too few cells in the corresponding bioproject accession is
+not retrievable.
+"""
+
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 from itertools import batched
