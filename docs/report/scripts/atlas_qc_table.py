@@ -119,9 +119,9 @@ def build_table(result: dict[str, Any]) -> str:
     )
     footer = (
         f"Dataset percentages use the {_fmt_int(n_eligible)} eligible datasets as the denominator. "
-        f"Barcode percentages use the {_fmt_int(n_barcodes_eligible)} barcodes present in those datasets before QC. "
-        "Per-cell filter counts include every file that reached QC, including files later rejected by file-level gates; "
-        f"they are not restricted to concatenated files. A total of {_fmt_int(dropped_datasets)} datasets were dropped. "
+        f"Barcode percentages use the {_fmt_int(n_barcodes_eligible)} barcodes present in those datasets before quality control. "
+        "Per-cell filter counts include every file that reached quality control. This included files later rejected by file-level gates "
+        f". A total of {_fmt_int(dropped_datasets)} datasets were dropped. "
         f"Of those, {_fmt_int(skip_counts['md5_mismatch'])} were dropped due to MD5 hash mismatch, "
         f"{_fmt_int(skip_counts['cell_type_all_missing'])} "
         f"({_pct(skip_counts['cell_type_all_missing'], n_eligible)}\\% total datasets) were dropped due to fully absent "
