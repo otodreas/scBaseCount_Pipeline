@@ -38,6 +38,7 @@ def pick_n_pcs(
 
 
 def embed_dataset(adata: sc.AnnData, cfg: ClusterValidationConfig) -> tuple[sc.AnnData, int, float]:
+    sc.pp.scale(adata, max_value=10.0)
     sc.pp.pca(adata, n_comps=cfg.nPcsCompute, svd_solver="arpack")
     n_pcs, cumvar = pick_n_pcs(
         adata.uns["pca"]["variance_ratio"],
